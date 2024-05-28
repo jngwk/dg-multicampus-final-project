@@ -1,23 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import Navbar from './component/Navbar';
+import LineChart from './component/LineChart';
+import BarChart from './component/Barchart';
+import DoughnutChart from './component/DoughnutChart';
 
 function App() {
+  const [chartType, setChartType] = useState('line');
+
+  const renderChart = () => {
+    switch (chartType) {
+      case 'line':
+        return <LineChart />;
+      case 'bar':
+        return <BarChart />;
+      case 'doughnut':
+        return <DoughnutChart />;
+      default:
+        return <LineChart />;
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Navbar setChartType={setChartType} />
+      <h1>Chart Example</h1>
+      {renderChart()}
     </div>
   );
 }
