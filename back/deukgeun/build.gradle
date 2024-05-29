@@ -33,6 +33,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'   
 	// html구동하기 위해 추가
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	// @Vaild를 구동하기 위해 추가    --   유효성 검사를 위해 필요
+	implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl'
+    implementation "org.apache.tomcat.embed:tomcat-embed-jasper"
+	// jsp를 구동하기 위해 추가
 }
 
 tasks.named('test') {
