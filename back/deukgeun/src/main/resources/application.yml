@@ -2,7 +2,7 @@ spring:
   application:
     name: deukgeun
   datasource: # DB 내용 수정
-    url: jdbc:mysql://localhost:3306/scottdb
+    url: jdbc:mysql://localhost:3306/dgdb
     username: scott
     password: tiger
     driver-class-name: com.mysql.cj.jdbc.Driver
