@@ -1,17 +1,20 @@
 package com.dg.deukgeun.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-
 import com.dg.deukgeun.dto.UserDTO;
 import com.dg.deukgeun.service.UserService;
-
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -21,24 +24,57 @@ public class UserController {
     @Autowired
     private final UserService userService;
 
+    private String getParamsString(Map<String, String> params) {
+        return params.entrySet().stream()
+                .map(entry -> {
+                    try {
+                        return entry.getKey() + "=" + URLEncoder.encode(entry.getValue(), "UTF-8");
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .collect(Collectors.joining("&"));
+    }
+
+    private void setModelAttributes(Model model, Map<String, String> params) {
+        params.forEach(model::addAttribute);
+    }
+
     @GetMapping("/save")
-    public String saveForm() {
+    public String saveForm(@RequestParam Map<String, String> params, Model model) {
+        setModelAttributes(model, params);
         return "save";
     }
 
-    @PostMapping("/save")    // name값을 requestparam에 담아온다
-    public String save(@ModelAttribute UserDTO userDTO) {
-        userService.save(userDTO);
-        return "main";
+    @PostMapping("/save")
+    public void saveUser(@ModelAttribute UserDTO userDTO, HttpServletResponse response) throws IOException {
+        if (userService.isEmailExist(userDTO.getEmail())) {
+            // 이메일이 이미 존재하는 경우
+            String error = "이메일이 이미 존재합니다.";
+            Map<String, String> params = Map.of(
+                    "error", error,
+                    "userName", userDTO.getUserName(),
+                    "email", "",
+                    "password", userDTO.getPassword(),
+                    "address", userDTO.getAddress(),
+                    "category", userDTO.getCategory()
+            );
+            String redirectUrl = "/save?" + getParamsString(params);
+            response.sendRedirect(redirectUrl);
+        } else {
+            // 새로운 사용자 저장 로직
+            userService.save(userDTO);
+            response.sendRedirect("/"); // 성공 페이지로 리디렉션
+        }
     }
 
     @GetMapping("/login")
-    public String loginForm(){
+    public String loginForm() {
         return "login";
     }
 
-    @PostMapping("/login") // session : 로그인 유지
-    public String login(@ModelAttribute UserDTO userDTO, HttpSession session) {
+    @PostMapping("/login")
+    public String login(@ModelAttribute UserDTO userDTO, HttpSession session, Model model) {
         UserDTO loginResult = userService.login(userDTO);
         if (loginResult != null) {
             // login 성공
@@ -46,6 +82,7 @@ public class UserController {
             return "main";
         } else {
             // login 실패
+            model.addAttribute("error", "로그인 실패!");
             return "login";
         }
     }

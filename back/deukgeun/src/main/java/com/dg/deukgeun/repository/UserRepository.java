@@ -8,4 +8,7 @@ import com.dg.deukgeun.Entity.UserEntity;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long>{
     Optional<UserEntity> findByEmail(String email);
+      
+    // 이메일 존재 여부를 확인하는 메서드
+    boolean existsByEmail(String email);
 }

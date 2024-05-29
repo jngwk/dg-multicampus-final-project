@@ -20,6 +20,11 @@ spring:
   mvc:
     cors:
       allowed-origins: "*"
+    # view:
+    #   prefix: "/WEB-INF/views/"
+    #   suffix: ".jsp" 
+    #   # jsp를 구동하기위해 추가
+      
   thymeleaf:
     prefix: "classpath:/templates/"
     suffix: ".html"                             
