@@ -1,12 +1,10 @@
-package com.dg.deukgeun;
+package com.dg.deukgeun.repository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.dg.deukgeun.domain.Workout;
-import com.dg.deukgeun.repository.WorkoutRepository;
-
 import lombok.extern.log4j.Log4j2;
 
 @SpringBootTest
