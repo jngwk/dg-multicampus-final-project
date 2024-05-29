@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-DeukgeunApplication<deukgeun>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.dg.deukgeun.DeukgeunApplication",
+            "projectName": "deukgeun",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
