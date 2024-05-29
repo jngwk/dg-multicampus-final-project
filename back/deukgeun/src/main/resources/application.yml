@@ -1,8 +1,8 @@
 spring:
   application:
     name: deukgeun
-  datasource: # DB 내용 수정
-    url: jdbc:mysql://localhost:3306/scottdb
+  datasource:
+    url: jdbc:mysql://localhost:3306/dgdb
     username: scott
     password: tiger
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -17,9 +17,18 @@ spring:
     multipart:
       max-request-size: 30MB
       max-file-size: 10MB
+  mvc:
+    cors:
+      allowed-origins: "*"
+  thymeleaf:
+    prefix: "classpath:/templates/"
+    suffix: ".html"                             
+    # html구동하기위해 추가
+
 com:
   conan:
     upload:
       path: upload
+
 server:
   port: 8282
