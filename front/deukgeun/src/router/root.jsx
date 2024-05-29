@@ -14,6 +14,14 @@ const root = createBrowserRouter([
       </Suspense>
     ),
   },
+  {
+    path: "/",
+    element: (
+      <Suspense fallback={Loading}>
+        <Main />
+      </Suspense>
+    ),
+  },
 ]);
 
 export default root;

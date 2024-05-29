@@ -1,42 +1,53 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-export default function Input({ label, type = "text", className, ...props }) {
+export default function Input({
+  label,
+  type = "text",
+  className,
+  height = "44px",
+  width = "240px",
+  value = "",
+  validationState = null, // 'valid', 'invalid', or null
+  ...props
+}) {
   const [focus, setFocus] = useState(false);
-  const [value, setValue] = useState("");
 
   const handleFocus = () => setFocus(true);
-  const handleBlur = () => {
-    if (value === "") {
-      setFocus(false);
-    }
+  const handleBlur = () => setFocus(false);
+
+  const getBorderColor = () => {
+    if (validationState === "invalid") return "border-red-500";
+    if (validationState === "valid") return "border-green-400";
+    return focus ? "border-peach-fuzz" : "border-gray-400";
   };
 
-  const handleChange = (e) => {
-    setValue(e.target.value);
+  const getLabelColor = () => {
+    if (validationState === "invalid") return "text-red-500";
+    if (validationState === "valid") return "text-green-400";
+    return focus ? "text-peach-fuzz" : "text-gray-400";
   };
 
   return (
-    <div className="relative w-[240px] my-2">
+    <div className={`relative my-2`} style={{ width }}>
       <input
+        style={{ height }}
         type={type}
-        className={`${className} p-3 block w-full appearance-none bg-transparent border rounded-md
-        ${focus ? "border-peach-fuzz" : "border-gray-300"} 
-        focus:outline-none focus:ring-0 text-lg peer`}
+        height={height}
+        className={`py-3 px-4 block w-full appearance-none bg-transparent border-2 rounded-lg 
+        ${getBorderColor()} focus:outline-none focus:ring-0 text-sm peer ${className} border-red`}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        onChange={handleChange}
         value={value}
         {...props}
       />
       <label
-        className={`bg-white absolute left-2 transition-all duration-200 ease-in-out ${
-          focus || value
-            ? "-top-2 text-xs text-peach-fuzz"
-            : "top-3 text-gray-500"
-        } peer-focus:-top-2 peer-focus:text-xs peer-focus:text-peach-fuzz`}
+        className={`bg-white absolute transition-all duration-200 ease-in-out pointer-events-none ${
+          focus || value ? "left-2 -top-2 text-xs" : "left-4 top-3 text-sm"
+        }  ${getLabelColor()} `}
       >
         {label}
       </label>
+      {/* input 우측 끝에 icon 혹은 버튼 넣기 */}
     </div>
   );
 }

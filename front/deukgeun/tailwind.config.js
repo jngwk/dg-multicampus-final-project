@@ -5,7 +5,7 @@ module.exports = {
   theme: {
     colors: {
       "peach-fuzz": "#ffbe98",
-      "bright-orange": "#feb742",
+      "bright-orange": "#fe8742",
       ...colors,
     },
     fontFamily: {
