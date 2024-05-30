@@ -1,20 +1,21 @@
 import React, { useState } from "react";
 import ModalLayout from "./ModalLayout";
 import logo from "../../assets/dg_logo_small.png";
-import Input from "../inputs/Input";
+import Input from "../Input";
 import Button from "../Button";
 import { Link } from "react-router-dom";
 import useCustomNavigate from "../../hooks/useCustomNavigate";
 import { login } from "../../api/loginApi";
+import { useAuth } from "../../context/AuthContext";
 
 const LoginModal = ({ toggleModal }) => {
   const { moveToSignUp } = useCustomNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // const [isInputValid, setIsInputValid] = useState(false);
   const [emailValidationState, setEmailValidationState] = useState(null);
   const [passwordValidationState, setPasswordValidationState] = useState(null);
   const [error, setError] = useState("");
+  const { addUserToSession } = useAuth();
 
   const handleEmailChange = (e) => {
     const value = e.target.value;
@@ -55,17 +56,18 @@ const LoginModal = ({ toggleModal }) => {
       setError("이메일과 비밀번호를 입력해주세요.");
       return;
     }
-
-    try {
-      const data = await login(email, password);
-      // 로그인 성공시 context에 로그인 여부 넣기
-      console.log("로그인 성공", data);
-      toggleModal(); // 로그인 성공시 팝업 닫음
-    } catch (error) {
-      setError("로그인에 실패했습니다. 다시 시도하세요.");
-      setEmailValidationState("invalid");
-      setPasswordValidationState("invalid");
-    }
+    addUserToSession(email);
+    // try {
+    //   const data = await login(email, password);
+    //   // 로그인 성공시 context에 로그인 여부 넣기
+    //   addUserToSession(email);
+    //   console.log("로그인 성공", data);
+    //   toggleModal(); // 로그인 성공시 팝업 닫음
+    // } catch (error) {
+    //   setError("로그인에 실패했습니다. 다시 시도하세요.");
+    //   setEmailValidationState("invalid");
+    //   setPasswordValidationState("invalid");
+    // }
   };
 
   return (

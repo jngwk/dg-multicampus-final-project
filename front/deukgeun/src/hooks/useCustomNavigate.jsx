@@ -1,5 +1,5 @@
 const useCustomNavigate = () => {
-  //   const navigate = useCustomNavigate();
+  //   const navigate = useNavigate();
   const moveToLogin = () => {
     console.log("move to login");
   };
