@@ -30,7 +30,7 @@ public class WorkoutSession {
     
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false)
-    private UserEntity user;
+    private UserEntity userId;
 
     private LocalDate date;
     private String content;
