@@ -38,6 +38,7 @@ dependencies {
 	implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl'
     implementation "org.apache.tomcat.embed:tomcat-embed-jasper"
 	// jsp를 구동하기 위해 추가
+	testImplementation 'com.h2database:h2'//test용
 }
 
 tasks.named('test') {
