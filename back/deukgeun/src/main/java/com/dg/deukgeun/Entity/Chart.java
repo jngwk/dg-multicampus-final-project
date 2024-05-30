@@ -9,32 +9,22 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "chartdata")
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 
 public class Chart {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String label;
     private int value;
 
-    //setters
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
-    }
 }

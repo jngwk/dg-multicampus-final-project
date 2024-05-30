@@ -6,18 +6,13 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-
-public class UserDTO {
-
-    // private Long id;
+@NoArgsConstructor
+public class SignUpDTO {
     private int userId;
 
     @NotBlank(message = "이름은 필수 입력 항목입니다.")
@@ -42,6 +37,8 @@ public class UserDTO {
 
     private int approval;
 
+    private String token;   // 임시 추가
+
     public static UserDTO toUserDTO(UserEntity userEntity){
         UserDTO userDTO = new UserDTO();
         userDTO.setUserId(userEntity.getUserId());
@@ -55,3 +52,4 @@ public class UserDTO {
         return userDTO;
     }
 }
+
