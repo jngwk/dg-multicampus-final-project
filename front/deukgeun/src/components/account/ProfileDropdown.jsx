@@ -1,6 +1,6 @@
 import React from "react";
-import useCustomNavigate from "../hooks/useCustomNavigate";
-import { useAuth } from "../context/AuthContext";
+import useCustomNavigate from "../../hooks/useCustomNavigate";
+import { useAuth } from "../../context/AuthContext";
 
 const ProfileDropdown = ({ type }) => {
   // user type 별로 badge 내용을 다르게 표시

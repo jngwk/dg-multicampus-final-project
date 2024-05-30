@@ -2,8 +2,9 @@ import logo from "../../assets/dg_logo.png";
 import LoginModal from "../modals/LoginModal";
 import { useModal } from "../../hooks/useModal";
 import { useAuth } from "../../context/AuthContext";
-import ProfileDropdown from "../ProfileDropdown";
+import ProfileDropdown from "../account/ProfileDropdown";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 console.log(logo);
 export default function Header() {
@@ -11,6 +12,8 @@ export default function Header() {
   const { isModalVisible, toggleModal } = useModal();
   const [isProfileDropdownVisible, setIsProfileDropdownVisible] =
     useState(false);
+  const navigate = useNavigate();
+
   const toggleProfileDropdown = () => {
     setIsProfileDropdownVisible(!isProfileDropdownVisible);
     console.log(isProfileDropdownVisible);
@@ -18,7 +21,12 @@ export default function Header() {
 
   return (
     <div className="flex justify-between items-center w-full px-5 border-b-2 border-black">
-      <img className="w-24" src={logo} alt="logo" />
+      <img
+        onClick={() => navigate("/")}
+        className="w-24 hover:cursor-pointer"
+        src={logo}
+        alt="logo"
+      />
       {user ? (
         <>
           <button onClick={toggleProfileDropdown}>프로필 뱃지</button>

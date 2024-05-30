@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import ModalLayout from "./ModalLayout";
 import logo from "../../assets/dg_logo_small.png";
-import Input from "../Input";
-import Button from "../Button";
+import Input from "../shared/Input";
+import Button from "../shared/Button";
 import { Link } from "react-router-dom";
 import useCustomNavigate from "../../hooks/useCustomNavigate";
 import { login } from "../../api/loginApi";
