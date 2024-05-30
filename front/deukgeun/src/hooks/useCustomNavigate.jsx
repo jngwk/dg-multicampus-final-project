@@ -1,12 +1,14 @@
+import { useNavigate as useReactRouterNavigate } from "react-router-dom";
+
 const useCustomNavigate = () => {
-  //   const navigate = useNavigate();
-  const moveToLogin = () => {
-    console.log("move to login");
+  const navigate = useReactRouterNavigate();
+
+  const customNavigate = (path, options) => {
+    console.log(`${path}로 이동`);
+    navigate(path, options);
   };
-  const moveToSignUp = () => {
-    console.log("move to signup");
-  };
-  return { moveToLogin, moveToSignUp };
+
+  return customNavigate;
 };
 
 export default useCustomNavigate;

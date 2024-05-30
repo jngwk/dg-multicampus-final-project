@@ -70,6 +70,12 @@ const LoginModal = ({ toggleModal }) => {
     // }
   };
 
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      handleLogin();
+    }
+  };
+
   return (
     <ModalLayout toggleModal={toggleModal}>
       <img src={logo} alt="logo" width={120} className="mb-14" />
@@ -78,6 +84,7 @@ const LoginModal = ({ toggleModal }) => {
           label="이메일"
           value={email}
           onChange={handleEmailChange}
+          onKeyPress={handleKeyPress}
           validationState={emailValidationState}
         />
         <Input
@@ -85,6 +92,7 @@ const LoginModal = ({ toggleModal }) => {
           type="password"
           value={password}
           onChange={handlePasswordChange}
+          onKeyPress={handleKeyPress}
           validationState={passwordValidationState}
         />
         {error && <div className="text-red-500 text-xs">{error}</div>}

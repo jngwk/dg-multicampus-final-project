@@ -33,8 +33,8 @@ export default function Input({
         style={{ height }}
         type={type}
         height={height}
-        className={`py-3 px-4 block w-full appearance-none bg-transparent border-2 rounded-lg 
-        ${getBorderColor()} focus:outline-none focus:ring-0 text-sm peer ${className} border-red`}
+        className={`py-3 px-4 block w-full appearance-none bg-transparent border rounded-lg 
+        ${getBorderColor()} focus:border-2 focus:outline-none focus:ring-0 text-sm peer ${className}`}
         onFocus={handleFocus}
         onBlur={handleBlur}
         value={value}

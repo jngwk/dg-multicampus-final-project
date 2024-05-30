@@ -23,7 +23,7 @@ export default function Header() {
         <>
           <button onClick={toggleProfileDropdown}>프로필 뱃지</button>
           {isProfileDropdownVisible ? (
-            <ProfileDropdown userEmail={sessionStorage.getItem("user")} />
+            <ProfileDropdown type="user" /> // user type 지정해서 안에 메뉴 변경
           ) : (
             ""
           )}

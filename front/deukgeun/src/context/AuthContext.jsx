@@ -20,8 +20,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   const removeUserFromSession = () => {
+    const currentPath = window.location.pathname;
     setUser(null);
     sessionStorage.removeItem("user");
+    console.log("logged out");
   };
 
   return (
