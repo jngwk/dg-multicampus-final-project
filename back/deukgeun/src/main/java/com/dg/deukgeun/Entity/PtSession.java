@@ -1,41 +1,29 @@
 package com.dg.deukgeun.Entity;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.sql.Time;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
+@Table(name="pt_session")
+@Data
 @Builder
-@Getter
-@Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class PtSession {
+@NoArgsConstructor
+public class PtSession{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ptSessionId;
-
-    // @ManyToOne
-    // @JoinColumn(name = "trainerId", nullable = false)
-    // private Trainer trainer;
-
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-
-    @OneToMany(mappedBy = "ptSession", cascade = CascadeType.ALL)
-    private List<WorkoutSession> workoutSessions;
-
+    private Integer ptSessionId;
+    private Integer pt_id;
+    private Integer trainer_id;
+    private Time startTime;
+    private Time endTime;
 }

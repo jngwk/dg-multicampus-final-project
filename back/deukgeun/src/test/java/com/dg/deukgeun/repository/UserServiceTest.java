@@ -1,48 +1,42 @@
 package com.dg.deukgeun.repository;
-
-import com.dg.deukgeun.dto.UsersDTO;
-import com.dg.deukgeun.domain.Users;
-import com.dg.deukgeun.repository.UsersRepository;
-import com.dg.deukgeun.service.UsersService;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import java.util.Optional;
-import static org.assertj.core.api.Assertions.assertThat;
+
+import com.dg.deukgeun.Entity.UserEntity;
+import com.dg.deukgeun.service.UserService;
+
+import jakarta.transaction.Transactional;
+import lombok.extern.log4j.Log4j2;
+
 
 @SpringBootTest
+@Log4j2
 public class UserServiceTest {
 
     @Autowired
-    private UsersService usersService;
-
-    @MockBean
-    private UsersRepository usersRepository;
-
+    private UserService us;
     @Autowired
-    private ModelMapper modelMapper;
+    private UserRepository userRepository;
 
     @Test
-    public void getUserTest() {
-        Integer userId = 1;
-        Users users = new Users();
-        users.setUserId(userId);
-        users.setAddress("123 Main St");
-        users.setCategory("회원");
-        users.setDetail_address("Apt 4B");
-
-        Mockito.when(usersRepository.findById(userId)).thenReturn(Optional.of(users));
-
-        UsersDTO usersDTO = usersService.get(userId);
-
-        assertThat(usersDTO).isNotNull();
-        assertThat(usersDTO.getUserId()).isEqualTo(userId);
-        assertThat(usersDTO.getAddress()).isEqualTo("123 Main St");
-        assertThat(usersDTO.getCategory()).isEqualTo("회원");
-        assertThat(usersDTO.getDetail_address()).isEqualTo("Apt 4B");
+    public void testIntsert(){
+        for(int i =1 ; i <=10; i++){
+            UserEntity user = UserEntity.builder().userName("이름.."+i).email("email.."+i).address("주소.."+ i).category("일반회원").password("123"+i).approval(1).build();
+            userRepository.save(user);
+            log.info("-----------------------------------");
+        }
     }
+
+    @Test
+    @Transactional
+    public void testInfo(){
+        Integer id = 1;
+        Optional<UserEntity> result = userRepository.findById(id);
+        UserEntity user = result.orElseThrow();
+        log.info(user);
+    }
+
 }

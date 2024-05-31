@@ -1,5 +1,7 @@
 package com.dg.deukgeun.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -80,5 +82,21 @@ public class UserService {
         LoginResponseDTO loginResponseDto = new LoginResponseDTO(exprTime, userEntity);
 
         return ResponseDTO.setSuccessData("로그인에 성공하였습니다.", loginResponseDto);
+    }
+
+    public ResponseDTO<UserEntity> getUserInfo(String email) {
+        try {
+            Optional<UserEntity> userOptional = userRepository.findByEmail(email);
+            if (userOptional.isPresent()) {
+                UserEntity userEntity = userOptional.get();
+                // 사용자 비밀번호 필드를 빈 문자열로 설정하여 보안성을 유지합니다.
+                userEntity.setPassword("");
+                return ResponseDTO.setSuccessData("사용자 정보를 조회했습니다.", userEntity);
+            } else {
+                return ResponseDTO.setFailed("해당 이메일로 가입된 사용자를 찾을 수 없습니다.");
+            }
+        } catch (Exception e) {
+            return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
+        }
     }
 }
