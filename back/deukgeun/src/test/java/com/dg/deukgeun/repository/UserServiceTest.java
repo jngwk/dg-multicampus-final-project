@@ -32,7 +32,7 @@ public class UserServiceTest {
         Users users = new Users();
         users.setUserId(userId);
         users.setAddress("123 Main St");
-        users.setApproval(true);
+        users.setCategory("회원");
         users.setDetail_address("Apt 4B");
 
         Mockito.when(usersRepository.findById(userId)).thenReturn(Optional.of(users));
@@ -42,7 +42,7 @@ public class UserServiceTest {
         assertThat(usersDTO).isNotNull();
         assertThat(usersDTO.getUserId()).isEqualTo(userId);
         assertThat(usersDTO.getAddress()).isEqualTo("123 Main St");
-        assertThat(usersDTO.isApproval()).isTrue();
+        assertThat(usersDTO.getCategory()).isEqualTo("회원");
         assertThat(usersDTO.getDetail_address()).isEqualTo("Apt 4B");
     }
 }
