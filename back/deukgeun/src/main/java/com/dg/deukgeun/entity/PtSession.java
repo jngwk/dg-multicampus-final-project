@@ -1,4 +1,6 @@
-package com.dg.deukgeun.domain;
+package com.dg.deukgeun.entity;
+
+import java.sql.Time;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,20 +13,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="users")
+@Table(name="pt_session")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Users {
+public class PtSession{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userId;
-    private String userName;
-    private String password;
-    private String email;
-    private String address;
-    private String detail_address;
-    private String category;
-    private Integer approval;
+    private Integer ptSessionId;
+    private Integer pt_id;
+    private Integer trainer_id;
+    private Time startTime;
+    private Time endTime;
 }

@@ -1,4 +1,4 @@
-package com.dg.deukgeun.domain;
+package com.dg.deukgeun.entity;
 
 import java.sql.Date;
 
