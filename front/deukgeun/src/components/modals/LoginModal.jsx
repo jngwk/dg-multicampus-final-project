@@ -56,18 +56,27 @@ const LoginModal = ({ toggleModal }) => {
       setError("이메일과 비밀번호를 입력해주세요.");
       return;
     }
-    addUserToSession(email);
-    // try {
-    //   const data = await login(email, password);
-    //   // 로그인 성공시 context에 로그인 여부 넣기
-    //   addUserToSession(email);
-    //   console.log("로그인 성공", data);
-    //   toggleModal(); // 로그인 성공시 팝업 닫음
-    // } catch (error) {
-    //   setError("로그인에 실패했습니다. 다시 시도하세요.");
-    //   setEmailValidationState("invalid");
-    //   setPasswordValidationState("invalid");
-    // }
+    try {
+
+      const data = await login(email, password);
+
+      // 로그인 성공시 context에 로그인 여부 넣기
+      if(data.result){
+        addUserToSession(email);
+        console.log("로그인 성공", data);
+        toggleModal(); // 로그인 성공시 팝업 닫음
+
+      }
+      else{
+        setError("로그인 정보가 일치하지 않습니다.");
+        setEmailValidationState("invalid");
+      setPasswordValidationState("invalid");
+      }
+    } catch (error) {
+      setError("로그인에 실패했습니다. 다시 시도하세요.");
+      setEmailValidationState("invalid");
+      setPasswordValidationState("invalid");
+    }
   };
 
   const handleKeyPress = (event) => {
@@ -96,12 +105,15 @@ const LoginModal = ({ toggleModal }) => {
           validationState={passwordValidationState}
         />
         {error && <div className="text-red-500 text-xs">{error}</div>}
+
+        {/* find-password 모달띄우기 */}
         <Link
           to="find-password"
           className="text-right text-sm text-gray-500 hover:underline hover:underline-offset-4 hover:cursor-pointer hover:text-gray-600"
         >
           비밀번호를 잊으셨나요?
         </Link>
+        
         <br />
         <Button onClick={handleLogin} color="peach-fuzz" label="로그인" />
         <Button onClick={moveToSignUp} color="bright-orange" label="회원가입" />

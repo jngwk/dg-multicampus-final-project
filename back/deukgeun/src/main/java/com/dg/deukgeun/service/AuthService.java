@@ -55,7 +55,7 @@ public class AuthService {
         String password = dto.getPassword();
 
         try {
-            // 사용자 id/password 일치하는지 확인
+            // 사용자 email/password 일치하는지 확인
             boolean existed = userRepository.existsByEmailAndPassword(email, password);
             if(!existed) {
                 return ResponseDTO.setFailed("입력하신 로그인 정보가 존재하지 않습니다.");
@@ -75,10 +75,9 @@ public class AuthService {
 
         userEntity.setPassword("");
 
-        String token = "";
         int exprTime = 3600000;     // 1h
 
-        LoginResponseDTO loginResponseDto = new LoginResponseDTO(token, exprTime, userEntity);
+        LoginResponseDTO loginResponseDto = new LoginResponseDTO(exprTime, userEntity);
 
         return ResponseDTO.setSuccessData("로그인에 성공하였습니다.", loginResponseDto);
     }

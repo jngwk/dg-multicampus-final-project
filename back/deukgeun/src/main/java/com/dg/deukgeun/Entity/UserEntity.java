@@ -24,7 +24,7 @@ public class UserEntity {
     // 고유성: id는 데이터베이스 내에서 해당 엔티티의 유일한 값으로 작동하여, 다른 모든 엔티티와 구별되게 함
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    
+
     private Integer userId;
     private String userName;
     private String email;
@@ -32,8 +32,6 @@ public class UserEntity {
     private String category;
     private String password;
     private Integer approval;
-    
-    private String token;
 
 
     public UserEntity(SignUpDTO dto){
@@ -44,7 +42,6 @@ public class UserEntity {
         this.category = dto.getCategory();
         this.password = dto.getPassword();
         this.approval = dto.getApproval();
-        this.token = "";
     }
     // @Enumerated(EnumType.STRING)
     // private UserRole role;
