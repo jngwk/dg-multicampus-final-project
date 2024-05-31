@@ -1,6 +1,6 @@
 package com.dg.deukgeun.Entity;
 
-import com.dg.deukgeun.dto.SignUpDTO;
+import com.dg.deukgeun.dto.user.SignUpDTO;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
