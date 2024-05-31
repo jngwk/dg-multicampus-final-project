@@ -6,3 +6,7 @@
   font-family: "Noto Sans KR", sans-serif;
   src: url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap");
 }
+
+.profile-dropdown-list {
+  @apply px-2 my-2 hover:opacity-70 hover:cursor-pointer hover:transition ease-in-out duration-100 flex items-center;
+}

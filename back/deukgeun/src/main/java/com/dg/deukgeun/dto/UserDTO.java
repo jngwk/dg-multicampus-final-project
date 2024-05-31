@@ -16,7 +16,8 @@ import lombok.Setter;
 @AllArgsConstructor
 
 public class UserDTO {
-    private Long id;
+
+    // private Long id;
     private int userId;
 
     @NotBlank(message = "이름은 필수 입력 항목입니다.")

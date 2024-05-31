@@ -15,7 +15,7 @@ const Button = ({
     <button
       onClick={onClick}
       style={{ height, width }}
-      className={`${backgroundColorClass} rounded-lg my-[2px] font-semibold hover:ring-2 hover:ring-gray-400`}
+      className={`${backgroundColorClass} rounded-lg my-[2px] font-medium hover:ring-2 hover:ring-gray-400`}
     >
       {label}
     </button>
