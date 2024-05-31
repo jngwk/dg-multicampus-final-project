@@ -6,30 +6,30 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dg.deukgeun.dto.LoginDTO;
-import com.dg.deukgeun.dto.ResponseDTO;
-import com.dg.deukgeun.dto.SignUpDTO;
+import com.dg.deukgeun.dto.user.LoginDTO;
+import com.dg.deukgeun.dto.user.ResponseDTO;
+import com.dg.deukgeun.dto.user.SignUpDTO;
 import com.dg.deukgeun.repository.UserRepository;
-import com.dg.deukgeun.service.AuthService;
+import com.dg.deukgeun.service.UserService;
 
 
 @RestController
 @RequestMapping("/api")
 
-public class AuthController {
+public class UserController {
 
-    @Autowired AuthService authService;
+    @Autowired UserService userService;
     @Autowired UserRepository userRepository;
 
     @PostMapping("/signUp")
     public ResponseDTO<?> signUp(@RequestBody SignUpDTO requestBody) {
-        ResponseDTO<?> result = authService.signUp(requestBody);
+        ResponseDTO<?> result = userService.signUp(requestBody);
         return result;
     }
 
     @PostMapping("/login")
     public ResponseDTO<?> login(@RequestBody LoginDTO requestBody) {
-        ResponseDTO<?> result = authService.login(requestBody);
+        ResponseDTO<?> result = userService.login(requestBody);
         return result;
     }
 }

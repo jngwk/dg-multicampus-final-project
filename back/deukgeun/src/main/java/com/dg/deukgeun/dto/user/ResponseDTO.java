@@ -1,4 +1,4 @@
-package com.dg.deukgeun.dto;
+package com.dg.deukgeun.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
