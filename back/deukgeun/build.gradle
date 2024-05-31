@@ -43,6 +43,13 @@ dependencies {
 	implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl'
     implementation "org.apache.tomcat.embed:tomcat-embed-jasper"
 	// jsp를 구동하기 위해 추가
+
+	// 채팅 dependency
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+
+	// security dependency
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 }
 
 tasks.named('test') {
