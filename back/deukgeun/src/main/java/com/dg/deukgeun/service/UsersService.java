@@ -4,8 +4,8 @@ import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import com.dg.deukgeun.domain.Users;
 import com.dg.deukgeun.dto.UsersDTO;
+import com.dg.deukgeun.entity.Users;
 import com.dg.deukgeun.repository.UsersRepository;
 
 import jakarta.transaction.Transactional;

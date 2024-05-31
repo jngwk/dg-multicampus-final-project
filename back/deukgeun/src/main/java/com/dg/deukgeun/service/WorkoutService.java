@@ -5,8 +5,8 @@ import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import com.dg.deukgeun.domain.Workout;
 import com.dg.deukgeun.dto.WorkoutDTO;
+import com.dg.deukgeun.entity.Workout;
 import com.dg.deukgeun.repository.WorkoutRepository;
 
 import jakarta.transaction.Transactional;
