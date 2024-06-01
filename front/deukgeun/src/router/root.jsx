@@ -4,7 +4,11 @@ import { createBrowserRouter } from "react-router-dom";
 const Loading = <div>Loading...</div>;
 
 const Main = lazy(() => import("../pages/Main"));
+<<<<<<< HEAD
 const Profile = lazy(()=> import("../components/modals/MyInfo"));
+=======
+const ChartPage = lazy(() => import("../pages/ChartPage"));
+>>>>>>> develop
 
 const root = createBrowserRouter([
   {
@@ -16,10 +20,10 @@ const root = createBrowserRouter([
     ),
   },
   {
-    path: "/",
+    path: "/chart",
     element: (
       <Suspense fallback={Loading}>
-        <Main />
+        <ChartPage />
       </Suspense>
     ),
   },

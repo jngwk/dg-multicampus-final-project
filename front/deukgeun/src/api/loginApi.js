@@ -1,5 +1,5 @@
 import axios from "axios";
-export const API_SERVER_HOST = "http://localhost:8181";
+export const API_SERVER_HOST = "http://localhost:8282";
 const prefix = `${API_SERVER_HOST}/api`;
 
 export const login = async (email, password) => {
