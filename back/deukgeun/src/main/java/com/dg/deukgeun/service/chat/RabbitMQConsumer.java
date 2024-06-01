@@ -1,4 +1,4 @@
-package com.dg.deukgeun.service;
+package com.dg.deukgeun.service.chat;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;

@@ -41,11 +41,15 @@ com:
 server:
   port: 8282
 
-# RabbitMQConfig.java에 있는 값을 dynamic하게 사용하기 위한 값
+# rabbitmq 값을 dynamic하게 사용하기 위한 값
 rabbitmq:
   queue:
-    name: dg_queue
+    name: dgQueue
+    json:
+      name: dqJsonQueue
   exchange:
-    name: dg_exchange
+    name: dgExchange
   routing:
-    key: dg_routing_key
+    key: dgRoutingKey
+    json:
+      key: dgRoutingJsonKey

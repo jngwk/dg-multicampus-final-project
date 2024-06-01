@@ -1,9 +1,14 @@
 package com.dg.deukgeun.config;
 
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,15 +18,25 @@ public class RabbitMQConfig {
     // 해당 값들을 application.yml에서 정의하여 사용
     @Value("${rabbitmq.queue.name}")
     private String queue;
+    @Value("${rabbitmq.queue.json.name}")
+    private String jsonQueue;
     @Value("${rabbitmq.exchange.name}")
     private String exchange;
     @Value("${rabbitmq.routing.key}")
     private String routingKey;
+    @Value("${rabbitmq.routing.json.key}")
+    private String routingJsonKey;
 
     // rabbit mq queue를 위한 bean 생성
     @Bean
     public Queue queue() {
         return new Queue(queue);
+    }
+
+    // rabbit mq json 메시지를 위한 queue bean 생성
+    @Bean
+    public Queue jsonQueue() {
+        return new Queue(jsonQueue);
     }
 
     // rabbit mq exchange를 위한 bean 설정
@@ -37,6 +52,30 @@ public class RabbitMQConfig {
                 .bind(queue()) // queue와
                 .to(exchange()) // exchange를 binding
                 .with(routingKey); // routing key 사용
+    }
+
+    // routing key를 사용해 jsonQueue와 exchange를 binding
+    @Bean
+    public Binding jsonBinding() {
+        return BindingBuilder
+                .bind(jsonQueue())
+                .to(exchange())
+                .with(routingJsonKey);
+    }
+
+    // rabbit template을 위한 json 변환 converter bean 생성
+    @Bean
+    public MessageConverter converter() {
+        return new Jackson2JsonMessageConverter();
+    }
+
+    // json 메시지를 다루는 converter를 갖고있는 template bean 생성
+    @Bean
+    public AmqpTemplate amqpTemplate(ConnectionFactory connectionFactory) {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(converter());
+        return rabbitTemplate;
+
     }
 
     // ConnectionFactory, RabbitTemplate, RabbitAdmin은
