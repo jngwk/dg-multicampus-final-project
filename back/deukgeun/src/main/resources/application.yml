@@ -17,17 +17,20 @@ spring:
     multipart:
       max-request-size: 30MB
       max-file-size: 10MB
+  rabbitmq:
+    host: localhost
+    port: 5672
   mvc:
     cors:
       allowed-origins: "*"
     # view:
     #   prefix: "/WEB-INF/views/"
-    #   suffix: ".jsp" 
+    #   suffix: ".jsp"
     #   # jsp를 구동하기위해 추가
-      
+
   thymeleaf:
     prefix: "classpath:/templates/"
-    suffix: ".html"                             
+    suffix: ".html"
     # html구동하기위해 추가
 
 com:
@@ -37,3 +40,12 @@ com:
 
 server:
   port: 8282
+
+# RabbitMQConfig.java에 있는 값을 dynamic하게 사용하기 위한 값
+rabbitmq:
+  queue:
+    name: dg_queue
+  exchange:
+    name: dg_exchange
+  routing:
+    key: dg_routing_key
