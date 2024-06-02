@@ -4,7 +4,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.dg.deukgeun.Entity.UserEntity;
+import com.dg.deukgeun.Entity.User;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -23,7 +23,7 @@ public class RabbitMQJsonProducer {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public void sendJsonMessage(UserEntity user) {
+    public void sendJsonMessage(User user) {
         log.info("Json message sent : " + user.toString());
         rabbitTemplate.convertAndSend(exchange, routingJsonKey, user);
     }
