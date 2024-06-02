@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import ModalLayout from "./ModalLayout";
-import Button from "../Button";
+import Button from "../shared/Button";
 import Bprofile from "../../assets/blank_profile.png";
 import { Link } from "react-router-dom";
-// import 'boxicons';
-import {FaRegEyeSlash , FaRegEye } from 'react-icons/fa';
+
 
 
 const MyInfo = ({ toggleModal }) => {
@@ -50,8 +49,8 @@ const MyInfo = ({ toggleModal }) => {
                                 <div>
                                     {/* <box-icons name='show-alt'></box-icon>
                                     <box-icon name='low-vision'></box-icon> */}
-                                    <FaRegEye/>
-                                    <FaRegEyeSlash/>
+                                    {/* <FaRegEye/>
+                                    <FaRegEyeSlash/> */}
                                 </div>
                             </dd>
                         </div>

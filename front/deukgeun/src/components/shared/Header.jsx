@@ -22,12 +22,6 @@ export default function Header() {
 
   return (
     <div className="flex justify-between items-center w-full px-5 border-b-2 border-black">
-<<<<<<< HEAD
-      <img className="w-24" src={logo} alt="logo" />
-      
-      <button onClick={toggleModal}>로그인</button>
-      {isModalVisible ? <LoginModal toggleModal={toggleModal} /> : ""}
-=======
       <img
         onClick={() => navigate("/")}
         className="w-24 hover:cursor-pointer"
@@ -49,7 +43,6 @@ export default function Header() {
           {isModalVisible ? <LoginModal toggleModal={toggleModal} /> : ""}
         </>
       )}
->>>>>>> develop
     </div>
   );
 }
