@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginResponseDTO {
+    private String token;
     private int exprTime;
     private User user;
 }

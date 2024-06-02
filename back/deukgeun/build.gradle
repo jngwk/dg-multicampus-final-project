@@ -41,6 +41,14 @@ dependencies {
 	
 	// jsp
 	implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl'
+    implementation "org.apache.tomcat.embed:tomcat-embed-jasper"  // jsp를 구동하기 위해 추가
+
+	// jwt token
+    implementation 'com.nimbusds:nimbus-jose-jwt:9.31'	// *jwt 토큰 생성을 위해 추가
+
+	// security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
     implementation "org.apache.tomcat.embed:tomcat-embed-jasper"
 	// jsp를 구동하기 위해 추가
 

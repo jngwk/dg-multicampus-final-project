@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChartDataDTO {
+public class ChartDTO {
     private String label;
     private int value;
     
