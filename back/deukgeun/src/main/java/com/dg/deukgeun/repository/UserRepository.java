@@ -13,9 +13,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer>{
       
     // 이메일 존재 여부를 확인하는 메서드
     boolean existsByEmail(String email);
-
-    // // password 존재 여부를 확인하는 메서드
-    // boolean existsByPassword(String password);
     
      //email과 password의 존재 여부 확인 메서드
      public boolean existsByEmailAndPassword(String email, String password);

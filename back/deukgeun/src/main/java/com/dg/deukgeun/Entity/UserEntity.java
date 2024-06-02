@@ -34,6 +34,7 @@ public class UserEntity {
     private Integer approval;
 
 
+    
     public UserEntity(SignUpDTO dto){
         this.userId = dto.getUserId();
         this.userName = dto.getUserName();

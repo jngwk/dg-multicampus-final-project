@@ -21,12 +21,14 @@ public class UserController {
     @Autowired UserService userService;
     @Autowired UserRepository userRepository;
 
+    //회원가입
     @PostMapping("/signUp")
     public ResponseDTO<?> signUp(@RequestBody SignUpDTO requestBody) {
         ResponseDTO<?> result = userService.signUp(requestBody);
         return result;
     }
 
+    //로그인
     @PostMapping("/login")
     public ResponseDTO<?> login(@RequestBody LoginDTO requestBody) {
         ResponseDTO<?> result = userService.login(requestBody);
