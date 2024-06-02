@@ -1,6 +1,6 @@
 package com.dg.deukgeun.dto.user;
 
-import com.dg.deukgeun.Entity.UserEntity;
+import com.dg.deukgeun.Entity.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LoginResponseDTO {
     private int exprTime;
-    private UserEntity user;
+    private User user;
 }

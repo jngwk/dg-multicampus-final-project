@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dg.deukgeun.Entity.UserEntity;
+import com.dg.deukgeun.Entity.User;
 import com.dg.deukgeun.service.chat.RabbitMQJsonProducer;
 
 @RestController
@@ -19,7 +19,7 @@ public class JsonMessageController {
     }
 
     @PostMapping("/publish")
-    public ResponseEntity<String> sendJsonMessage(@RequestBody UserEntity user) {
+    public ResponseEntity<String> sendJsonMessage(@RequestBody User user) {
         jsonProducer.sendJsonMessage(user);
         return ResponseEntity.ok("Json message sent to RabbitMQ ...");
     }
