@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dg.deukgeun.service.chat.RabbitMQProducer;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/chat")
 public class MessageController {
 
     private RabbitMQProducer producer;
