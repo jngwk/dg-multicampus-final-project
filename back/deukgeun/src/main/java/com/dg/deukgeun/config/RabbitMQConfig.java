@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 
 // terminal에서 docker command를 사용해 rabbit mq 사용시 command:
 // docker run --rm -it -p 15672:15672 -p 5672:5672 rabbitmq:3.13.2-management
+// management 접속 URL : http://localhost:15672
+// 로그인 정보: guest/guest
 
 @Configuration
 public class RabbitMQConfig {
