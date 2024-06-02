@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "java.project.sourcePaths": [
         "back/deukgeun/src/test/java/com/dg/deukgeun/repository"
     ],
@@ -6,3 +7,7 @@
     "java.configuration.updateBuildConfiguration": "interactive",
     "java.debug.settings.onBuildFailureProceed": true
 }
+=======
+  "java.configuration.updateBuildConfiguration": "automatic"
+}
+>>>>>>> e442cacb02ac6aa4b59dcb064048a91308f2b4b4
