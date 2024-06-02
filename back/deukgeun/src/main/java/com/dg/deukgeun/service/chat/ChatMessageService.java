@@ -1,7 +1,5 @@
 package com.dg.deukgeun.service.chat;
 
-import java.util.List;
-
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +13,8 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
-public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하는 서비스
+public class ChatMessageService { // 채팅 메시지 발행/구독 관련 서비스
+
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
@@ -36,9 +35,4 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
         chatMessageRepository.save(chatMessage);
         messagingTemplate.convertAndSend("/topic/" + chatMessage.getChatRoomId(), chatMessage);
     }
-
-    public List<ChatMessage> getChatHistory(Integer chatId) {
-        return chatMessageRepository.findByChatId(chatId);
-    }
-
 }
