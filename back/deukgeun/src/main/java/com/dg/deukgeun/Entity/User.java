@@ -32,13 +32,7 @@ public class User {
     private String password;
     private Integer approval;
 
-<<<<<<< HEAD:back/deukgeun/src/main/java/com/dg/deukgeun/Entity/User.java
     public User(SignUpDTO dto) {
-=======
-
-    
-    public UserEntity(SignUpDTO dto){
->>>>>>> minkyu:back/deukgeun/src/main/java/com/dg/deukgeun/Entity/UserEntity.java
         this.userId = dto.getUserId();
         this.userName = dto.getUserName();
         this.email = dto.getEmail();
@@ -47,6 +41,7 @@ public class User {
         this.password = dto.getPassword();
         this.approval = dto.getApproval();
     }
+    
     // @Enumerated(EnumType.STRING)
     // private UserRole role;
 
