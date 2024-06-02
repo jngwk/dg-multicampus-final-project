@@ -1,6 +1,6 @@
 package com.dg.deukgeun.entity;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,9 +22,10 @@ public class WorkoutSession {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer workoutSessionId;
+    private String summary;
     private Integer userId;
     private Integer ptSessionId;
-    private Date workoutDate;
+    private LocalDate workoutDate;
     private String content;
     private Double bodyWeight;
     private String memo;
