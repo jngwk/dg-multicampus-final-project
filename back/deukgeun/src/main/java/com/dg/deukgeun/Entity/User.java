@@ -18,13 +18,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEntity {
+public class User {
 
-    //@id는 이 필드가 엔티티의 기본 키(primary key)임을 나타냅니다.
+    // @id는 이 필드가 엔티티의 기본 키(primary key)임을 나타냅니다.
     // 고유성: id는 데이터베이스 내에서 해당 엔티티의 유일한 값으로 작동하여, 다른 모든 엔티티와 구별되게 함
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Integer userId;
     private String userName;
     private String email;
@@ -33,8 +32,7 @@ public class UserEntity {
     private String password;
     private Integer approval;
 
-
-    public UserEntity(SignUpDTO dto){
+    public User(SignUpDTO dto) {
         this.userId = dto.getUserId();
         this.userName = dto.getUserName();
         this.email = dto.getEmail();
@@ -47,15 +45,15 @@ public class UserEntity {
     // private UserRole role;
 
     // public static UserEntity toUserEntity(UserDTO userDTO) {
-    //     UserEntity userEntity = new UserEntity();
-    //     userEntity.setUserId(userDTO.getUserId());
-    //     userEntity.setUserName(userDTO.getUserName());
-    //     userEntity.setEmail(userDTO.getEmail());
-    //     userEntity.setAddress(userDTO.getAddress());
-    //     userEntity.setCategory(userDTO.getCategory());
-    //     userEntity.setPassword(userDTO.getPassword());
-    //     userEntity.setApproval(userDTO.getApproval());
-        
-    //     return userEntity;
+    // UserEntity userEntity = new UserEntity();
+    // userEntity.setUserId(userDTO.getUserId());
+    // userEntity.setUserName(userDTO.getUserName());
+    // userEntity.setEmail(userDTO.getEmail());
+    // userEntity.setAddress(userDTO.getAddress());
+    // userEntity.setCategory(userDTO.getCategory());
+    // userEntity.setPassword(userDTO.getPassword());
+    // userEntity.setApproval(userDTO.getApproval());
+
+    // return userEntity;
     // }
 }
