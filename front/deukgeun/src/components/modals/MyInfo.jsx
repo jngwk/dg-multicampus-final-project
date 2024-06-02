@@ -3,10 +3,26 @@ import ModalLayout from "./ModalLayout";
 import Button from "../shared/Button";
 import Bprofile from "../../assets/blank_profile.png";
 import { Link } from "react-router-dom";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
 
 
 const MyInfo = ({ toggleModal }) => {
+
+        const [passwordType, setPasswordType] = useState({
+            type: 'password',
+            visible: false
+        });
+        
+        //password type 변경하는 함수
+        const handlePasswordType = (e) => {
+            setPasswordType(() => {
+                if (!passwordType.visible) {
+                    return { type: 'text', visible: true };
+                }
+                return { type: 'password', visible: false };
+            })
+        }
 
     return (
         <ModalLayout toggleModal={toggleModal}>
@@ -44,13 +60,12 @@ const MyInfo = ({ toggleModal }) => {
                             <dt className="text-sm font-medium text-gray-500">
                             비밀번호
                             </dt>
-                            <dd className="text-gray-900 sm:mt-0 sm:col-span-2">
-                                <input  id="hs-toggle-password" className="w-full text-sm focus:outline-none border-b-2 " type="password"></input>
+                            <dd className="flex text-gray-900 sm:mt-0 sm:col-span-2">
+                                <input  id="hs-toggle-password" className="w-full text-sm focus:outline-none border-b-2 " type={passwordType.type}></input>
                                 <div>
-                                    {/* <box-icons name='show-alt'></box-icon>
-                                    <box-icon name='low-vision'></box-icon> */}
-                                    {/* <FaRegEye/>
-                                    <FaRegEyeSlash/> */}
+                                    <span onClick={handlePasswordType}>
+                                        {  passwordType.visible ? <FaRegEye /> : <FaRegEyeSlash /> }
+                                    </span>
                                 </div>
                             </dd>
                         </div>
