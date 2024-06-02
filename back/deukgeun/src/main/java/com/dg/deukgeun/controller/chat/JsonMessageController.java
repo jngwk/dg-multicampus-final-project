@@ -10,7 +10,7 @@ import com.dg.deukgeun.Entity.UserEntity;
 import com.dg.deukgeun.service.chat.RabbitMQJsonProducer;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/chat/json")
 public class JsonMessageController {
     private RabbitMQJsonProducer jsonProducer;
 
