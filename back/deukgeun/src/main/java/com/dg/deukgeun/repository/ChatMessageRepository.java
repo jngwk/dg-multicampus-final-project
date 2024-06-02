@@ -8,6 +8,6 @@ import com.dg.deukgeun.Entity.ChatMessage;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
 
-    List<ChatMessage> findByChatId(Integer chatId);
+    List<ChatMessage> findByChatRoomIdOrderByTimestampAsc(Integer chatId);
 
 }
