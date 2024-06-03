@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dg.deukgeun.entity.ChatMessage;
+import com.dg.deukgeun.entity.ChatRoom;
 import com.dg.deukgeun.service.ChatService;
 
 import lombok.extern.log4j.Log4j2;
@@ -35,6 +36,15 @@ public class ChatController {
     public List<ChatMessage> getChatHistory(@PathVariable Integer chatRoomId) {
         log.info("=============chat controller: getChatHistory=============");
         return chatService.getChatHistory(chatRoomId);
+    }
+
+    // 대화상대 선택시 실행
+    @PostMapping("/findOrCreateChatRoom")
+    public ChatRoom findOrCreateChatRoom(@RequestBody List<Integer> userIds) {
+        if (userIds.size() != 2) {
+            throw new IllegalArgumentException("@@@@@@@@@ findOrCreateChatRoom에서 오류: userId 2개가 필요합니다");
+        }
+        return chatService.findOrCreateChatRoom(userIds.get(0), userIds.get(1));
     }
 
     // 여기부터 아래는 postman 테스팅용
