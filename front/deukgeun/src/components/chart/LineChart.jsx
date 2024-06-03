@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Line } from 'react-chartjs-2';
 import { getChart } from '../../api/chartApi';
-import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
 
-ChartJS.register(CategoryScale, LinearScale, LineElement, Title, Tooltip, Legend);
+// Chart.js 요소 등록
+ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend);
 
 function LineChart() {
-  const chartRef = useRef(null);
+  const chartRef = useRef(null); // chartRef를 통해 차트 인스턴스 참조
   const [chartData, setChartData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -42,9 +43,9 @@ function LineChart() {
 
     return () => {
       if (chartRef.current) {
-        let chartStatus = ChartJS.getChart(chartRef.current); // Get chart instance by reference
+        let chartStatus = ChartJS.getChart(chartRef.current); // 차트 인스턴스 가져오기
         if (chartStatus !== undefined) {
-          chartStatus.destroy(); // Destroy chart instance
+          chartStatus.destroy(); // 차트 인스턴스 파괴
         }
       }
     };
@@ -59,9 +60,9 @@ function LineChart() {
   }
 
   return (
-    <div className="ChartPage">
-      <h1>LineChart</h1>
-      <Line ref={chartRef} data={chartData} />
+    <div className="bg-white p-4 rounded shadow">
+      <h1 className="text-xl font-bold mb-4">LineChart</h1>
+      <Line ref={chartRef} data={chartData} /> {/* 라인 차트 렌더링 */}
     </div>
   );
 }

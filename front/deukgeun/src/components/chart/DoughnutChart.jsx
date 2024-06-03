@@ -1,15 +1,16 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { getChart } from '../../api/chartApi';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, ArcElement, Title, Tooltip, Legend, DoughnutController } from 'chart.js';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+// Chart.js 요소 등록
+ChartJS.register(CategoryScale, LinearScale, ArcElement, Title, Tooltip, Legend, DoughnutController);
 
 function DoughnutChart() {
-  const chartRef = useRef(null);
+  const chartRef = useRef(null);  // chartRef를 통해 차트 인스턴스 참조
   const [chartData, setChartData] = useState({});
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] =useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,8 +26,15 @@ function DoughnutChart() {
               label: 'Sample Data',
               data: values,
               borderColor: 'rgba(75,192,192,1)',
-              backgroundColor: 'rgba(75,192,192,0.2)',
-              fill: true,
+              backgroundColor: [
+                'rgba(255,99,132,0.2)',
+                'rgba(54,162,235,0.2)',
+                'rgba(255,206,86,0.2)',
+                'rgba(75,192,192,0.2)',
+                'rgba(153,102,255,0.2)',
+                'rgba(255,159,64,0.2)'
+              ],
+              borderWidth: 1,
             },
           ],
         });
@@ -42,9 +50,9 @@ function DoughnutChart() {
 
     return () => {
       if (chartRef.current) {
-        let chartStatus = ChartJS.getChart(chartRef.current); // Get chart instance by reference
+        let chartStatus = ChartJS.getChart(chartRef.current); // 차트 인스턴스 가져오기
         if (chartStatus !== undefined) {
-          chartStatus.destroy(); // Destroy chart instance
+          chartStatus.destroy(); // 차트 인스턴스 파괴
         }
       }
     };
@@ -59,9 +67,9 @@ function DoughnutChart() {
   }
 
   return (
-    <div className="ChartPage">
-      <h1>DoughnutChart</h1>
-      <Doughnut ref={chartRef} data={chartData} />
+    <div className="bg-white p-4 rounded shadow">
+      <h1 className="text-xl font-bold mb-4">DoughnutChart</h1>
+      <Doughnut ref={chartRef} data={chartData} />  {/* 라인 차트 렌더링 */}
     </div>
   );
 }
