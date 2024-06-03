@@ -30,21 +30,18 @@ public class ChatRoomUserTest {
 
     @Test
     public void testCreateChatRoomUser() {
-        // Fetch existing users from the database
+        // DB에 임의의 회원 1, 2를 삽입 후 실행
         Optional<User> user1Opt = userRepository.findById(1);
         Optional<User> user2Opt = userRepository.findById(2);
-
-        // assertThat(user1Opt.isPresent()).isTrue();
-        // assertThat(user2Opt.isPresent()).isTrue();
 
         User user1 = user1Opt.get();
         User user2 = user2Opt.get();
 
-        // Create a new ChatRoom
+        // 대화방 생성
         ChatRoom chatRoom = ChatRoom.builder().build();
         chatRoom = chatRoomRepository.save(chatRoom);
 
-        // Add users to the ChatRoom
+        // 대화방에 회원 삽입
         ChatRoomUser chatRoomUser1 = ChatRoomUser.builder()
                 .chatRoom(chatRoom)
                 .user(user1)

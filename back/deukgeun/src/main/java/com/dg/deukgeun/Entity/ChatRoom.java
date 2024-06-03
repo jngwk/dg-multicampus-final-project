@@ -32,7 +32,7 @@ public class ChatRoom {
     private Long id;
 
     @ManyToMany
-    @JoinTable(name = "chat_room_user", joinColumns = @JoinColumn(name = "chat_room_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @JoinTable(name = "chat_room_user", joinColumns = @JoinColumn(name = "chat_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> users;
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
