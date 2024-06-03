@@ -1,5 +1,7 @@
 package com.dg.deukgeun.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -32,6 +34,15 @@ public class WorkoutService {
         Workout workout = result.orElseThrow();
         WorkoutDTO dto = modelMapper.map(workout,WorkoutDTO.class);
         return dto;
+    }
+
+    public List<WorkoutDTO> getByWorkoutSessionId(Integer workoutSessionId){
+        List<Workout> result = workoutRepository.findByWorkoutSessionId(workoutSessionId);
+        List<WorkoutDTO> dtoList = new ArrayList<WorkoutDTO>();
+        for(int i=0;i<result.size();i++){
+            dtoList.add(modelMapper.map(result.get(i),WorkoutDTO.class));
+        }
+        return dtoList;
     }
 
     public void modify(WorkoutDTO workoutDTO){ //workoutId를 기준으로 update

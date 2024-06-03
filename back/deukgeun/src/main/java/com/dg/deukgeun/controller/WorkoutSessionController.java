@@ -35,4 +35,6 @@ public class WorkoutSessionController {
         
         return service.get(startDate, endDate);
     }
+    // @GetMapping("/{yearMonth}/{workoutSessionId}")
+
 }
