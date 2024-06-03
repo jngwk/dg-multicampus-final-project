@@ -1,4 +1,4 @@
-package com.dg.deukgeun.controller.chat;
+package com.dg.deukgeun.controller;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dg.deukgeun.Entity.ChatMessage;
-import com.dg.deukgeun.service.chat.ChatService;
+import com.dg.deukgeun.service.ChatService;
 
 import lombok.extern.log4j.Log4j2;
 
