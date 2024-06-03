@@ -1,5 +1,8 @@
 package com.dg.deukgeun.service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -33,6 +36,15 @@ public class WorkoutSessionService {
         WorkoutSession workoutSession = result.orElseThrow();
         WorkoutSessionDTO dto = modelMapper.map(workoutSession, WorkoutSessionDTO.class);
         return dto;
+    }
+
+    public List<WorkoutSessionDTO> get(String startDate, String endDate){
+        List<WorkoutSession> result = workoutSessionRepository.findByWorkoutDateBetween(LocalDate.parse(startDate), LocalDate.parse(endDate));
+        List<WorkoutSessionDTO> dtoList = new ArrayList<WorkoutSessionDTO>();
+        for(int i=0;i<result.size();i++){
+            dtoList.add(modelMapper.map(result.get(i),WorkoutSessionDTO.class));
+        }
+        return dtoList;
     }
 
     public void modify(WorkoutSessionDTO workoutSessionDTO){
