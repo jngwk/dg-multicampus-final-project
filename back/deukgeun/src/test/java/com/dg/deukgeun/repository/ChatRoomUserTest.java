@@ -28,6 +28,7 @@ public class ChatRoomUserTest {
     @Autowired
     private UserRepository userRepository;
 
+    // Postman으로 두 번 signup 후 테스트
     @Test
     public void testCreateChatRoomUser() {
         // DB에 임의의 회원 1, 2를 삽입 후 실행
