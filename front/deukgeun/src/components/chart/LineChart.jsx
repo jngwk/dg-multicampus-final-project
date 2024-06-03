@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Line } from 'react-chartjs-2';
 import { getChart } from '../../api/chartApi';
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, Title, Tooltip, Legend } from 'chart.js';
-import { Chart } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, LineElement, Title, Tooltip, Legend);
 
@@ -40,6 +39,15 @@ function LineChart() {
     };
 
     fetchData();
+
+    return () => {
+      if (chartRef.current) {
+        let chartStatus = ChartJS.getChart(chartRef.current); // Get chart instance by reference
+        if (chartStatus !== undefined) {
+          chartStatus.destroy(); // Destroy chart instance
+        }
+      }
+    };
   }, []);
 
   if (loading) {

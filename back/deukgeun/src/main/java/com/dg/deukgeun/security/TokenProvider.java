@@ -1,11 +1,9 @@
 package com.dg.deukgeun.security;
 
 import org.springframework.stereotype.Service;
-
 import com.nimbusds.jose.*;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 
@@ -14,61 +12,52 @@ import java.util.Date;
 
 @Service
 public class TokenProvider {
-    private static final String SECURITY_KEY = "inputYourSecurityKey";
+    private static final String SECURITY_KEY = "inputYourSecurityKey"; // 보안 키
 
     // JWT 생성 메서드
     public String createJwt(String email, int duration) {
         try {
-            // 현재 시간 기준 1시간 뒤로 만료시간 설정
-            Instant now = Instant.now();
-            Instant exprTime = now.plusSeconds(duration);
+            // 현재 시간과 만료 시간 설정
+            Instant now = Instant.now(); // 현재 시간
+            Instant exprTime = now.plusSeconds(duration); // 만료 시간 (현재 시간 + duration 초)
 
-            // JWT Claim 설정
-            
-            // iss(issuer; 발행자),
-            // exp(expireation time; 만료 시간),
-            // sub(subject; 제목),
-            // iat(issued At; 발행 시간),
-            // jti(JWI ID)
-            
-            // *Claim 집합 << 내용 설정 (페이로드 설정)
-            // subject << "sub", issuer << "iss", expiration time << "exp" ....
+            // JWT 클레임(Claims) 설정
             JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                    .subject(email)
-                    .issueTime(Date.from(now))
-                    .expirationTime(Date.from(exprTime))
+                    .subject(email) // sub: 이메일 (토큰의 주제)
+                    .issueTime(Date.from(now)) // iat: 발행 시간
+                    .expirationTime(Date.from(exprTime)) // exp: 만료 시간
                     .build();
 
-            // JWT 서명
+            // JWT 서명 객체 생성
             SignedJWT signedJWT = new SignedJWT(
-                    new JWSHeader(JWSAlgorithm.HS256),	// *헤더 설정
-                    claimsSet
+                    new JWSHeader(JWSAlgorithm.HS256), // 헤더 설정 
+                    claimsSet // 클레임 설정
             );
 
-            // HMAC 서명을 사용하여 JWT 서명
-            JWSSigner signer = new MACSigner(SECURITY_KEY.getBytes());	// *서명 설정
-            signedJWT.sign(signer);
+            // 서명 생성기 설정 
+            JWSSigner signer = new MACSigner(SECURITY_KEY.getBytes());
+            signedJWT.sign(signer); // JWT 서명
 
-            return signedJWT.serialize();
+            return signedJWT.serialize(); // JWT 문자열 반환
         } catch (JOSEException e) {
-            return null;
+            return null; // 예외 발생 시 null 반환
         }
     }
 
     // JWT 검증 메서드
     public String validateJwt(String token) {
         try {
-            // 서명 확인을 통한 JWT 검증
-            SignedJWT signedJWT = SignedJWT.parse(token);
-            JWSVerifier verifier = new MACVerifier(SECURITY_KEY.getBytes());
+            // JWT 파싱 및 서명 검증
+            SignedJWT signedJWT = SignedJWT.parse(token); // JWT 파싱
+            JWSVerifier verifier = new MACVerifier(SECURITY_KEY.getBytes()); // 서명 검증기 설정 
             if (signedJWT.verify(verifier)) {
-                return signedJWT.getJWTClaimsSet().getSubject();
+                return signedJWT.getJWTClaimsSet().getSubject(); // 서명 검증 성공 시 토큰의 주제(subject) 반환
             } else {
                 // 서명이 유효하지 않은 경우
-                return null;
+                return null; // 서명 검증 실패 시 null 반환
             }
         } catch (Exception e) {
-            return null;
+            return null; // 예외 발생 시 null 반환
         }
     }
 }
