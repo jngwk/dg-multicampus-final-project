@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import { getChart } from '../../api/chartApi';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart } from 'chart.js';
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 function DoughnutChart() {
+  const chartRef = useRef(null);
   const [chartData, setChartData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -35,6 +40,15 @@ function DoughnutChart() {
     };
 
     fetchData();
+
+    return () => {
+      if (chartRef.current) {
+        let chartStatus = Chart.getChart(chartRef.current); // Get chart instance by reference
+        if (chartStatus !== undefined) {
+          chartStatus.destroy(); // Destroy chart instance
+        }
+      }
+    };
   }, []);
 
   if (loading) {
@@ -48,7 +62,7 @@ function DoughnutChart() {
   return (
     <div className="ChartPage">
       <h1>DoughnutChart</h1>
-      <Doughnut data={chartData} />
+      <Doughnut ref={chartRef} data={chartData} />
     </div>
   );
 }
