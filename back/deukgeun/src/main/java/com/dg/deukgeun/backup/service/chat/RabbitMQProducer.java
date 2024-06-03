@@ -1,4 +1,4 @@
-package com.dg.deukgeun.service.chat;
+package com.dg.deukgeun.backup.service.chat;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
