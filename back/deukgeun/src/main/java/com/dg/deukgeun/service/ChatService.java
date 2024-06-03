@@ -1,4 +1,4 @@
-package com.dg.deukgeun.service.chat;
+package com.dg.deukgeun.service;
 
 import java.util.List;
 
