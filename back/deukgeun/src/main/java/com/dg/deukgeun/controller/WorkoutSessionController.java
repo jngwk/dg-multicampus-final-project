@@ -1,14 +1,22 @@
 package com.dg.deukgeun.controller;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dg.deukgeun.dto.WorkoutDTO;
 import com.dg.deukgeun.dto.WorkoutSessionDTO;
+import com.dg.deukgeun.entity.WorkoutSessionRequest;
+import com.dg.deukgeun.service.WorkoutService;
 import com.dg.deukgeun.service.WorkoutSessionService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +28,7 @@ import lombok.extern.log4j.Log4j2;
 @RequestMapping("/api/workoutSession")
 public class WorkoutSessionController {
     private final WorkoutSessionService service;
+    private final WorkoutService workoutService;
 
     // @GetMapping("/{workoutSessionId}")
     // public WorkoutSessionDTO get(@PathVariable(name="workoutSessionId") Integer workoutSessionId){
@@ -35,6 +44,44 @@ public class WorkoutSessionController {
         
         return service.get(startDate, endDate);
     }
-    // @GetMapping("/{yearMonth}/{workoutSessionId}")
+    
+    /*데이터를 다음과 같이 받았다고 가정
+     * 
+     * {
+     *  //... workout_session에 들어갈 추가 정보
+     *      "workoutDate" : "2024-05-29",
+     *      "content" : "3대 운동",
+     *  //workout_session에 들어갈 추가 정보...
+     *      "workout" : [
+     *         {"workoutName" : "벤치프레스", "workoutSet" : "5", "workoutRep" : "5"},
+     *          {"workoutName" : "데드리프트", "workoutSet" : "5", "workoutRep" : "5"},
+     *          {"workoutName" : "스쿼트", "workoutSet" : "5", "workoutRep" : "5"}
+     *      ]
+     *  }
+     *  아래 메서드는 위와 같은 형태의 Json 파일을 WorkoutSessionRequest로 받는다.
+     *  WorkoutSessionRequest에서 WorkoutSessionDTO, WorkoutDTO로 정보를 나눠준다.
+     *  나눠받은 정보는 WorkoutSessionService, WorkoutService를 거쳐서 db로 저장된다.
+     */
+    @PostMapping("/{yearMonth}/")
+    public Map<String,Integer> register(@RequestBody WorkoutSessionRequest workoutSessionRequest){
+        log.info(workoutSessionRequest);
+        WorkoutSessionDTO workoutSessionDTO = new WorkoutSessionDTO();
+        workoutSessionDTO.setBodyWeight(workoutSessionRequest.getBodyWeight());
+        workoutSessionDTO.setContent(workoutSessionRequest.getContent());
+        workoutSessionDTO.setMemo(workoutSessionRequest.getMemo());
+        workoutSessionDTO.setPtSessionId(workoutSessionRequest.getPtSessionId());
+        workoutSessionDTO.setUserId(workoutSessionRequest.getUserId());
+        workoutSessionDTO.setWorkoutDate(workoutSessionRequest.getWorkoutDate());
+        workoutSessionDTO.setPtSessionId(workoutSessionRequest.getPtSessionId());
+        
+        Integer workoutSessionId = service.register(workoutSessionDTO);
 
+        List<WorkoutDTO> workoutList = workoutSessionRequest.getWorkout();
+        for(int i=0;i<workoutList.size();i++){
+            workoutList.get(i).setWorkoutSessionId(workoutSessionId);
+        }
+        workoutService.insertList(workoutList);
+
+        return Map.of("workoutSessionId",workoutSessionId);
+    }
 }

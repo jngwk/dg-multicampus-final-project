@@ -29,6 +29,15 @@ public class WorkoutService {
         Workout savedWorkout = workoutRepository.save(workout);
         return savedWorkout.getWorkoutId();
     }
+
+    public void insertList(List<WorkoutDTO> dtoList){
+        List<Workout> workoutList = new ArrayList<Workout>();
+        for(int i=0;i<dtoList.size();i++){
+            workoutList.add(modelMapper.map(dtoList.get(i),Workout.class));
+        }
+        workoutRepository.saveAll(workoutList);
+    }
+
     public WorkoutDTO get(Integer workoutId){ //workoutId를 기준으로 read
         Optional<Workout> result = workoutRepository.findById(workoutId);
         Workout workout = result.orElseThrow();
