@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import com.dg.deukgeun.Entity.ChatMessage;
+import com.dg.deukgeun.entity.ChatMessage;
 import com.dg.deukgeun.repository.ChatMessageRepository;
 
 import lombok.extern.log4j.Log4j2;
@@ -36,21 +36,25 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
         log.info("Sending message using chatService:" + chatMessage);
         log.info("Routing Key: " + routingKey);
         log.info("Exchange: " + exchange);
-        rabbitTemplate.convertAndSend(exchange, routingKey, chatMessage); // rabbitMQ 로 메시지를 보낼 때 rabbitTemplate 사용
+        // chatMessageRepository.save(chatMessage); // db에 저장
+
+        // rabbitMQ 로 메시지를 보낼 때 rabbitTemplate 사용
+        rabbitTemplate.convertAndSend(exchange, "chat." + chatMessage.getChatRoom().getId(), chatMessage);
     }
 
     // 메시지 구독
     @RabbitListener(queues = { "${rabbitmq.queue.name}" }) // 특정 queue로 메시지를 보냄
     public void receiveMessage(ChatMessage chatMessage) {
         log.info("Received message using chatService: " + chatMessage);
-        // chatMessageRepository.save(chatMessage); // db에 저장
+
+        // 테스팅용 delay
         try {
             Thread.sleep(5000); // 5 seconds delay
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
         // websocket을 사용해 broadcast 할 때 SimpMessagingTemplate을 사용
-        messagingTemplate.convertAndSend("/topic/" + chatMessage.getChatRoomId(), chatMessage);
+        messagingTemplate.convertAndSend("/topic/" + chatMessage.getChatRoom().getId(), chatMessage);
     }
 
     // 메시지 기록 불러오기

@@ -4,19 +4,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.dg.deukgeun.Entity.User;
 import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.LoginResponseDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.dto.user.SignUpDTO;
+import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.UserRepository;
 import com.dg.deukgeun.security.TokenProvider;
 
 @Service
 public class UserService {
 
-    @Autowired UserRepository userRepository;
-    @Autowired TokenProvider tokenProvider;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    TokenProvider tokenProvider;
 
     public ResponseDTO<?> signUp(SignUpDTO dto) {
         String email = dto.getEmail();
@@ -37,7 +39,6 @@ public class UserService {
         if (!password.equals(dto.getPassword())) {
             return ResponseDTO.setFailed("비밀번호가 일치하지 않습니다.");
         }
-
 
         // UserEntity 생성
         User user = new User(dto);
@@ -85,7 +86,7 @@ public class UserService {
 
         // Client에 비밀번호 제공 방지
         user.setPassword("");
- 
+
         int exprTime = 3600; // 1h
         String token;
 

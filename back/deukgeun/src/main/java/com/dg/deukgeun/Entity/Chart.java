@@ -1,4 +1,4 @@
-package com.dg.deukgeun.Entity;
+package com.dg.deukgeun.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,7 +20,7 @@ import lombok.Setter;
 @NoArgsConstructor
 
 public class Chart {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
