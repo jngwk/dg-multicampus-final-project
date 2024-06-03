@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class WorkoutSessionDTO {
     private Integer workoutSessionId;
-    private String summary;
     private Integer userId;
     private Integer ptSessionId;
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")

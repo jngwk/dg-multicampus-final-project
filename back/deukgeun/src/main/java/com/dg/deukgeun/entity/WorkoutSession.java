@@ -22,7 +22,6 @@ public class WorkoutSession {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer workoutSessionId;
-    private String summary;
     private Integer userId;
     private Integer ptSessionId;
     private LocalDate workoutDate;
