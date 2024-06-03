@@ -41,6 +41,7 @@ public class User {
         this.password = dto.getPassword();
         this.approval = dto.getApproval();
     }
+    
     // @Enumerated(EnumType.STRING)
     // private UserRole role;
 

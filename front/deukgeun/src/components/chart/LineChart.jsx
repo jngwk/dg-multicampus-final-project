@@ -1,22 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Bar } from 'react-chartjs-2';
-import 'chart.js/auto';
+import { Line } from 'react-chartjs-2';
+import { getChart } from '../../api/chartApi';
 
-function BarChart() {
+function LineChart() {
   const [chartData, setChartData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:8282/charts/data')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Fetched data:', data);
+    const fetchData = async () => {
+      try {
+        const data = await getChart();
         const labels = data.map(point => point.label);
         const values = data.map(point => point.value);
 
@@ -33,12 +27,14 @@ function BarChart() {
           ],
         });
         setLoading(false);
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error fetching data:', error);
         setError(error);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
   if (loading) {
@@ -51,10 +47,10 @@ function BarChart() {
 
   return (
     <div className="ChartPage">
-      <h1>BarChart</h1>
-      <Bar data={chartData} />
+      <h1>LineChart</h1>
+      <Line data={chartData} />
     </div>
   );
 }
 
-export default BarChart;
+export default LineChart;

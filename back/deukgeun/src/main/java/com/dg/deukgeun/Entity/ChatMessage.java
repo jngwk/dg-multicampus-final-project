@@ -24,7 +24,8 @@ import lombok.NoArgsConstructor;
 public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer messageId;
+    @Column(name = "message_id")
+    private Long id;
     @Column(name = "chat_id")
     private Integer chatRoomId;
     private Integer senderId;

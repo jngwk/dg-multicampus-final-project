@@ -1,23 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2';
-import 'chart.js/auto';
+import { Doughnut } from 'react-chartjs-2';
+import { getChart } from '../../api/chartApi';
 
-
-function LineChart() {
+function DoughnutChart() {
   const [chartData, setChartData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:8282/charts/data`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Fetched data:', data);
+    const fetchData = async () => {
+      try {
+        const data = await getChart();
         const labels = data.map(point => point.label);
         const values = data.map(point => point.value);
 
@@ -34,12 +27,14 @@ function LineChart() {
           ],
         });
         setLoading(false);
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error fetching data:', error);
         setError(error);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
   if (loading) {
@@ -52,10 +47,10 @@ function LineChart() {
 
   return (
     <div className="ChartPage">
-      <h1>LineChart</h1>
-      <Line data={chartData} />
+      <h1>DoughnutChart</h1>
+      <Doughnut data={chartData} />
     </div>
   );
 }
 
-export default LineChart;
+export default DoughnutChart;
