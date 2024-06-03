@@ -1,5 +1,6 @@
 package com.dg.deukgeun.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,7 @@ public class WorkoutSessionServiceTest {
 
     @Test
     public void testGet(){
-        List<WorkoutSessionDTO> dtoList = workoutSessionService.get("2024-06-01","2024-07-01");
+        List<WorkoutSessionDTO> dtoList = workoutSessionService.get(LocalDate.parse("2024-06-01"), LocalDate.parse("2024-07-01"));
         log.info(dtoList);
     }
 }
