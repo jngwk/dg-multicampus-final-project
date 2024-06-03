@@ -50,6 +50,6 @@ rabbitmq:
   exchange:
     name: dgExchange
   routing:
-    key: dgRoutingKey
+    key: chat.#
     json:
       key: dgRoutingJsonKey
