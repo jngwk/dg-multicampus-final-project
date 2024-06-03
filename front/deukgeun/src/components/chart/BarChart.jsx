@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { getChart } from '../../api/chartApi';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart } from 'react-chartjs-2';
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 function BarChart() {
+  const chartRef = useRef(null);
   const [chartData, setChartData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -48,7 +53,7 @@ function BarChart() {
   return (
     <div className="ChartPage">
       <h1>BarChart</h1>
-      <Bar data={chartData} />
+      <Bar ref={chartRef} data={chartData} />
     </div>
   );
 }
