@@ -1,4 +1,4 @@
-package com.dg.deukgeun.service.chat;
+package com.dg.deukgeun.service;
 
 import java.util.List;
 
@@ -31,19 +31,29 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
     @Autowired
     private ChatMessageRepository chatMessageRepository;
 
+    // 메시지 발행
     public void sendMessage(ChatMessage chatMessage) {
         log.info("Sending message using chatService:" + chatMessage);
-        rabbitTemplate.convertAndSend(exchange, routingKey, chatMessage);
+        log.info("Routing Key: " + routingKey);
+        log.info("Exchange: " + exchange);
+        rabbitTemplate.convertAndSend(exchange, routingKey, chatMessage); // rabbitMQ 로 메시지를 보낼 때 rabbitTemplate 사용
     }
 
-    @RabbitListener(queues = "${rabbitmq.queue.name}") // 특정 queue로 메시지를 보냄
-
+    // 메시지 구독
+    @RabbitListener(queues = { "${rabbitmq.queue.name}" }) // 특정 queue로 메시지를 보냄
     public void receiveMessage(ChatMessage chatMessage) {
         log.info("Received message using chatService: " + chatMessage);
-        chatMessageRepository.save(chatMessage); // db에 저장
+        // chatMessageRepository.save(chatMessage); // db에 저장
+        try {
+            Thread.sleep(5000); // 5 seconds delay
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        // websocket을 사용해 broadcast 할 때 SimpMessagingTemplate을 사용
         messagingTemplate.convertAndSend("/topic/" + chatMessage.getChatRoomId(), chatMessage);
     }
 
+    // 메시지 기록 불러오기
     public List<ChatMessage> getChatHistory(Integer chatId) {
         return chatMessageRepository.findByChatRoomIdOrderByTimestampAsc(chatId);
     }
