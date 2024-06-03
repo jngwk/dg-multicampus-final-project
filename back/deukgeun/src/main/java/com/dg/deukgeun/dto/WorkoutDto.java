@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class WorkoutDto {
+public class WorkoutDTO {
     private Integer workoutId;
     private Integer workoutSessionId;
     private String workoutName;

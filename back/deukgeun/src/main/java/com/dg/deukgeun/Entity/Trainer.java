@@ -23,7 +23,7 @@ public class Trainer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int tarinerId;
 
-    private String gymId;
+    //private String gymId;
     private String trainerCarrer;
     private String trainerAbout;
     private String trainerImage;
