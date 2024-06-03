@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dg.deukgeun.Entity.UserEntity;
+import com.dg.deukgeun.Entity.User;
 import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.dto.user.SignUpDTO;
@@ -37,8 +37,8 @@ public class UserController {
     }
 
     @GetMapping("/userInfo")
-    public ResponseDTO<UserEntity> getUserInfo(@RequestParam String email) {
-        ResponseDTO<UserEntity> result = userService.getUserInfo(email);
+    public ResponseDTO<?> getUserInfo(@RequestParam String email) {
+        ResponseDTO<?> result = userService.getUserInfo(email);
         return result;
     }
 }

@@ -5,11 +5,13 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.dg.deukgeun.Entity.Trainer;
 import com.dg.deukgeun.Entity.User;
 import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.LoginResponseDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.dto.user.SignUpDTO;
+import com.dg.deukgeun.repository.TrainerRepository;
 import com.dg.deukgeun.repository.UserRepository;
 
 @Service
@@ -17,6 +19,9 @@ public class UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    TrainerRepository trainerRepository;
 
     public ResponseDTO<?> signUp(SignUpDTO dto) {
         String email = dto.getEmail();
@@ -83,13 +88,22 @@ public class UserService {
         return ResponseDTO.setSuccessData("로그인에 성공하였습니다.", loginResponseDto);
     }
 
-    public ResponseDTO<User> getUserInfo(String email) {
+    public ResponseDTO<?> getUserInfo(String email) {
         try {
             Optional<User> userOptional = userRepository.findByEmail(email);
             if (userOptional.isPresent()) {
                 User userEntity = userOptional.get();
                 // 사용자 비밀번호 필드를 빈 문자열로 설정하여 보안성을 유지합니다.
                 userEntity.setPassword("");
+                if("trainer".equals(userEntity.getCategory())){
+                    Optional<Trainer> trainerOptional = trainerRepository.findByEmail(email);
+                    if (trainerOptional.isPresent()) {
+                        Trainer trainerEntity = trainerOptional.get();
+                        return ResponseDTO.setSuccessData("사용자 정보를 조회했습니다.", trainerEntity);
+                    } else {
+                        return ResponseDTO.setFailed("해당 이메일로 가입된 트레이너를 찾을 수 없습니다.");
+                    }
+                }
                 return ResponseDTO.setSuccessData("사용자 정보를 조회했습니다.", userEntity);
             } else {
                 return ResponseDTO.setFailed("해당 이메일로 가입된 사용자를 찾을 수 없습니다.");
