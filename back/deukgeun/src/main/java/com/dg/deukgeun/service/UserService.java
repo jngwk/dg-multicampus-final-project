@@ -118,6 +118,8 @@ public class UserService {
                     Optional<Trainer> trainerOptional = trainerRepository.findByUser_UserId(userEntity.getUserId());
                     if (trainerOptional.isPresent()) {
                         Trainer trainerEntity = trainerOptional.get();
+                        // 트레이너 정보를 반환하기 전에 사용자 정보를 포함하도록 설정할 수 있습니다.
+                        trainerEntity.setUser(userEntity);
                         return ResponseDTO.setSuccessData("사용자 정보를 조회했습니다.", trainerEntity);
                     } else {
                         return ResponseDTO.setFailed("해당 이메일로 가입된 트레이너를 찾을 수 없습니다.");

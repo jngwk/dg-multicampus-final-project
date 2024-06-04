@@ -23,12 +23,12 @@ public class Trainer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int trainerId;
 
-    //private String gymId;
     private String trainerCarrer;
     private String trainerAbout;
     private String trainerImage;
 
     @OneToOne
-    @JoinColumn(name = "trainerId", referencedColumnName = "userId")
+    @JoinColumn(name = "userId")
     private User user;
+
 }
