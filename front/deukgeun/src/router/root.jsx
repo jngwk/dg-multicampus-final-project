@@ -5,6 +5,7 @@ const Loading = <div>Loading...</div>;
 
 const Main = lazy(() => import("../pages/Main"));
 const ChartPage = lazy(() => import("../pages/ChartPage"));
+const ChatRoom = lazy(() => import("../pages/ChatRoom"));
 
 const root = createBrowserRouter([
   {
@@ -20,6 +21,14 @@ const root = createBrowserRouter([
     element: (
       <Suspense fallback={Loading}>
         <ChartPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/chat",
+    element: (
+      <Suspense fallback={Loading}>
+        <ChatRoom />
       </Suspense>
     ),
   },

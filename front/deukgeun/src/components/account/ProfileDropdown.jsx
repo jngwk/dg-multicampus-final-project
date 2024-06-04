@@ -2,12 +2,14 @@ import React from "react";
 import useCustomNavigate from "../../hooks/useCustomNavigate";
 import { useAuth } from "../../context/AuthContext";
 import { useModal } from "../../hooks/useModal";
+import { useNavigate } from "react-router-dom";
 import MyInfo from "../modals/MyInfo";
 
 const ProfileDropdown = ({ type }) => {
   // user type 별로 badge 내용을 다르게 표시
   const userEmail = sessionStorage.getItem("user").replace(/"/g, "");
   const { customNavigate } = useCustomNavigate;
+  const navigate = useNavigate();
   const { removeUserFromSession } = useAuth();
   const { isModalVisible, toggleModal } = useModal();
 
@@ -31,7 +33,7 @@ const ProfileDropdown = ({ type }) => {
           </li>
           <li className="profile-dropdown-list">
             <img className="inline-block peer w-7 mx-3" src="" alt="icon" />
-            <span>대화방</span>
+            <span onClick={() => navigate("/chat")} >대화방</span>
           </li>
           <li className="profile-dropdown-list">
             <img className="inline-block peer w-7 mx-3" src="" alt="icon" />
