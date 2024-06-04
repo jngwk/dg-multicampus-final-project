@@ -1,14 +1,14 @@
 package com.dg.deukgeun.controller;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -83,5 +83,22 @@ public class WorkoutSessionController {
         workoutService.insertList(workoutList);
 
         return Map.of("workoutSessionId",workoutSessionId);
+    }
+
+    //workoutSession 수정
+    @PutMapping("/{yearMonth}/{workoutSessionId}/put")
+    public Map<String,String> modify(@PathVariable(name="workoutSessionId") Integer workoutSessionId, WorkoutSessionDTO workoutSessionDTO){
+        workoutSessionDTO.setWorkoutSessionId(workoutSessionId);
+        log.info("Modify: "+workoutSessionDTO);
+        service.modify(workoutSessionDTO);
+        return Map.of("RESULT","SUCCESS");
+    }
+
+    //workoutSession 삭제
+    @DeleteMapping("/{yearMonth}/{workoutSessionId}/delete")
+    public Map<String,String> remove(@PathVariable(name="workoutSessionId")Integer workoutSessionId){
+        log.info("Remove: "+workoutSessionId);
+        service.remove(workoutSessionId);
+        return Map.of("RESULT","SUCCESS");
     }
 }
