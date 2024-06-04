@@ -12,6 +12,7 @@ import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.LoginResponseDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.dto.user.SignUpDTO;
+import com.dg.deukgeun.dto.user.UpdateUserDTO;
 import com.dg.deukgeun.repository.TrainerRepository;
 import com.dg.deukgeun.repository.UserRepository;
 import com.dg.deukgeun.security.TokenProvider;
@@ -126,6 +127,32 @@ public class UserService {
                     }
                 }
                 return ResponseDTO.setSuccessData("사용자 정보를 조회했습니다.", userEntity);
+            } else {
+                return ResponseDTO.setFailed("해당 이메일로 가입된 사용자를 찾을 수 없습니다.");
+            }
+        } catch (Exception e) {
+            return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
+        }
+    }
+
+    public ResponseDTO<?> updateUser(String email, UpdateUserDTO dto) {
+        try {
+            Optional<User> userOptional = userRepository.findByEmail(email);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+
+                // Update fields
+                if (dto.getUserName() != null) user.setUserName(dto.getUserName());
+                if (dto.getEmail() != null) user.setEmail(dto.getEmail());
+                if (dto.getAddress() != null) user.setAddress(dto.getAddress());
+
+                // Save updated user
+                userRepository.save(user);
+
+                // Hide password before returning user data
+                user.setPassword("");
+
+                return ResponseDTO.setSuccessData("사용자 정보가 성공적으로 업데이트되었습니다.", user);
             } else {
                 return ResponseDTO.setFailed("해당 이메일로 가입된 사용자를 찾을 수 없습니다.");
             }
