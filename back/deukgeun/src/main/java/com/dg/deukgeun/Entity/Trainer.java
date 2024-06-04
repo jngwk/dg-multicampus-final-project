@@ -1,4 +1,4 @@
-package com.dg.deukgeun.Entity;
+package com.dg.deukgeun.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

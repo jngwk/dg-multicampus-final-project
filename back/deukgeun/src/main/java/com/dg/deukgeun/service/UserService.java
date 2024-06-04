@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.dg.deukgeun.Entity.Trainer;
-import com.dg.deukgeun.Entity.User;
+import com.dg.deukgeun.entity.Trainer;
+import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.LoginResponseDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
@@ -112,13 +112,13 @@ public class UserService {
             Optional<User> userOptional = userRepository.findByEmail(email);
             if (userOptional.isPresent()) {
                 User userEntity = userOptional.get();
-                // 사용자 비밀번호 필드를 빈 문자열로 설정하여 보안성을 유지합니다.
+                // 사용자 비밀번호 필드를 빈 문자열로 설정하여 보안성을 유지
                 userEntity.setPassword("");
                 if("trainer".equals(userEntity.getCategory())){
                     Optional<Trainer> trainerOptional = trainerRepository.findByUser_UserId(userEntity.getUserId());
                     if (trainerOptional.isPresent()) {
                         Trainer trainerEntity = trainerOptional.get();
-                        // 트레이너 정보를 반환하기 전에 사용자 정보를 포함하도록 설정할 수 있습니다.
+                        // 트레이너 정보를 반환하기 전에 사용자 정보를 포함하도록 설정
                         trainerEntity.setUser(userEntity);
                         return ResponseDTO.setSuccessData("사용자 정보를 조회했습니다.", trainerEntity);
                     } else {

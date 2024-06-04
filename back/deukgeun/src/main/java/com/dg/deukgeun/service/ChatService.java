@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import com.dg.deukgeun.Entity.ChatMessage;
+import com.dg.deukgeun.entity.ChatMessage;
 import com.dg.deukgeun.repository.ChatMessageRepository;
 
 import lombok.extern.log4j.Log4j2;

@@ -1,6 +1,6 @@
 package com.dg.deukgeun.dto.user;
 
-import com.dg.deukgeun.Entity.User;
+import com.dg.deukgeun.entity.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

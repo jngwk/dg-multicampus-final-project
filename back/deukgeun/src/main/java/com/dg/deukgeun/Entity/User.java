@@ -1,4 +1,4 @@
-package com.dg.deukgeun.Entity;
+package com.dg.deukgeun.entity;
 
 import com.dg.deukgeun.dto.user.SignUpDTO;
 
