@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class Trainer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int tarinerId;
+    private int trainerId;
 
     //private String gymId;
     private String trainerCarrer;

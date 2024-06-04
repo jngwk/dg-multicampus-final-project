@@ -115,7 +115,7 @@ public class UserService {
                 // 사용자 비밀번호 필드를 빈 문자열로 설정하여 보안성을 유지합니다.
                 userEntity.setPassword("");
                 if("trainer".equals(userEntity.getCategory())){
-                    Optional<Trainer> trainerOptional = trainerRepository.findByEmail(email);
+                    Optional<Trainer> trainerOptional = trainerRepository.findByUser_UserId(userEntity.getUserId());
                     if (trainerOptional.isPresent()) {
                         Trainer trainerEntity = trainerOptional.get();
                         return ResponseDTO.setSuccessData("사용자 정보를 조회했습니다.", trainerEntity);
