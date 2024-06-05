@@ -6,32 +6,29 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
-import com.dg.deukgeun.dto.user.UserSignUpDTO;
-import com.dg.deukgeun.repository.UserRepository;
-import com.dg.deukgeun.service.UserService;
-
+import com.dg.deukgeun.service.GymService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/gym")
+public class GymController {
 
-public class UserController {
+    @Autowired
+    private GymService gymService;
 
-    @Autowired UserService userService;
-    @Autowired UserRepository userRepository;
-
-    //회원가입
+    // GYM 회원가입
     @PostMapping("/signUp")
-    public ResponseDTO<?> signUp(@RequestBody UserSignUpDTO requestBody) {
-        ResponseDTO<?> result = userService.signUp(requestBody);
+    public ResponseDTO<?> registerGym(@RequestBody GymSignUpDTO requestBody) {
+        ResponseDTO<?> result = gymService.signUp(requestBody);
         return result;
     }
 
-    //로그인
+    // GYM 로그인
     @PostMapping("/login")
     public ResponseDTO<?> login(@RequestBody LoginDTO requestBody) {
-        ResponseDTO<?> result = userService.login(requestBody);
+        ResponseDTO<?> result = gymService.login(requestBody);
         return result;
     }
 }

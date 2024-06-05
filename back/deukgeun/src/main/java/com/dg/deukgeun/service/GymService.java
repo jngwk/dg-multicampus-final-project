@@ -4,28 +4,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.dg.deukgeun.Entity.Gym;
 import com.dg.deukgeun.Entity.User;
+import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.LoginResponseDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
-import com.dg.deukgeun.dto.user.UserSignUpDTO;
+import com.dg.deukgeun.repository.GymRepository;
 import com.dg.deukgeun.repository.UserRepository;
 import com.dg.deukgeun.security.TokenProvider;
 
 @Service
-public class UserService {
+public class GymService {
 
-    @Autowired UserRepository userRepository;
-    @Autowired TokenProvider tokenProvider;
+    @Autowired
+    private GymRepository gymRepository;
 
-    public ResponseDTO<?> signUp(UserSignUpDTO dto) {
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private TokenProvider tokenProvider;
+
+    public ResponseDTO<?> signUp(GymSignUpDTO dto) {
         String email = dto.getEmail();
         String password = dto.getPassword();
-        // String confirmPassword = dto.getConfirmPassword();
 
-        // email 중복 확인
+        // 이메일 중복 확인
         try {
-            // 존재하는 경우 : true / 존재하지 않는 경우 : false
             if (userRepository.existsByEmail(email)) {
                 return ResponseDTO.setFailed("중복된 Email 입니다.");
             }
@@ -33,29 +39,61 @@ public class UserService {
             return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
         }
 
-        // password 중복 확인
+        // 비밀번호 중복 확인
         if (!password.equals(dto.getPassword())) {
             return ResponseDTO.setFailed("비밀번호가 일치하지 않습니다.");
         }
 
+        // User 엔티티 생성
+        User user = new User();
+        user.setUserName(dto.getUserName());
+        user.setEmail(dto.getEmail());
+        user.setAddress(dto.getAddress());
+        user.setDetailAddress(dto.getDetailAddress());
+        user.setCategory(dto.getCategory());
+        user.setApproval(dto.getApproval());
 
-        // UserEntity 생성
-        User user = new User(dto);
-
-        // UserRepository를 이용하여 DB에 Entity 저장 (데이터 적재)
         // 비밀번호 암호화
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String hashedPassword = passwordEncoder.encode(password);
         user.setPassword(hashedPassword);
 
-        // UserRepository를 이용하여 DB에 Entity 저장
+        // User 엔티티를 데이터베이스에 저장
         try {
             userRepository.save(user);
         } catch (Exception e) {
             return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
         }
 
-        return ResponseDTO.setSuccess("회원 생성에 성공했습니다.");
+        // Gym 엔티티 생성
+        Gym gym = new Gym();
+        gym.setUserId(user.getUserId());
+        gym.setGymName(dto.getGymName());
+        gym.setCrNumber(dto.getCrNumber());
+        gym.setPhoneNumber(dto.getPhoneNumber());
+        gym.setAddress(dto.getAddress());
+        gym.setDetailAddress(dto.getDetailAddress());
+        gym.setOperatingHours(dto.getOperatingHours());
+        gym.setPrices(dto.getPrices());
+        gym.setIntroduce(dto.getIntroduce());
+
+        // Gym 엔티티를 데이터베이스에 저장
+        try {
+            gymRepository.save(gym);
+        } catch (Exception e) {
+            return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
+        }
+
+        // 새로운 헬스장 사용자에 대한 토큰 생성
+        String token;
+        try {
+            token = tokenProvider.createJwt(email, 3600); // 1시간 지속 시간
+        } catch (Exception e) {
+            return ResponseDTO.setFailed("토큰 생성에 실패하였습니다.");
+        }
+
+        // 토큰과 사용자 정보를 포함하는 응답 DTO 생성
+        return ResponseDTO.setSuccessData("Gym 회원 생성에 성공했습니다.", token);
     }
 
     public ResponseDTO<LoginResponseDTO> login(LoginDTO dto) {
@@ -83,10 +121,10 @@ public class UserService {
             return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
         }
 
-        // Client에 비밀번호 제공 방지
+        // 클라이언트에 비밀번호 제공 방지
         user.setPassword("");
- 
-        int exprTime = 3600; // 1h
+
+        int exprTime = 3600; // 1시간
         String token;
 
         try {

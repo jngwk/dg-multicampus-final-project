@@ -1,6 +1,6 @@
 package com.dg.deukgeun.Entity;
 
-import com.dg.deukgeun.dto.user.SignUpDTO;
+import com.dg.deukgeun.dto.user.UserSignUpDTO;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,18 +28,22 @@ public class User {
     private String userName;
     private String email;
     private String address;
+    private String detailAddress;
     private String category;
     private String password;
     private Integer approval;
+    private String token;
 
-    public User(SignUpDTO dto) {
+    public User(UserSignUpDTO dto) {
         this.userId = dto.getUserId();
         this.userName = dto.getUserName();
         this.email = dto.getEmail();
         this.address = dto.getAddress();
+        this.detailAddress = dto.getDetailAddress();
         this.category = dto.getCategory();
         this.password = dto.getPassword();
         this.approval = dto.getApproval();
+        this.token = "";
     }
     
     // @Enumerated(EnumType.STRING)
