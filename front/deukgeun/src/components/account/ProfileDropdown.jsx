@@ -12,7 +12,7 @@ const ProfileDropdown = ({ type }) => {
   const { isModalVisible, toggleModal } = useModal();
 
   return (
-    <div className="absolute border border-gray-400 w-64 h-fit right-5 top-20 rounded-lg p-3 bg-white shadow-sm">
+    <div className="absolute border border-gray-400 w-64 h-fit right-5 top-20 rounded-lg p-3 bg-white shadow-sm z-40">
       <div className="border-b-[0.5px] border-gray-400 p-2">
         {/* 받아온 이름 넣기 */}
         <span className="block">이름</span>
