@@ -62,23 +62,23 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
 
     // TODO RabbitListener 오류해결
     // 메시지 구독
-    @RabbitListener(queues = { "${rabbitmq.queue.name}" }, messageConverter = "jsonMessageConverter") // 특정 queue로 메시지를
-                                                                                                      // 보냄
+    @RabbitListener(queues = { "${rabbitmq.queue.name}" }) // 특정 queue로 메시지를
+                                                           // 보냄
     public void receiveMessage(ChatMessage chatMessage) {
+        // 테스팅용 delay
+        try {
+            Thread.sleep(5000); // 5 seconds delay
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
         log.info("Received message using chatService: " + chatMessage);
 
         ChatMessage savedMessage = chatMessageRepository.save(chatMessage); // db에 저장
         log.info("Message saved in DB: " + savedMessage);
 
-        // 테스팅용 delay
-        // try {
-        // Thread.sleep(5000); // 5 seconds delay
-        // } catch (InterruptedException e) {
-        // Thread.currentThread().interrupt();
-        // }
-
         // websocket을 사용해 broadcast 할 때 SimpMessagingTemplate을 사용
-        messagingTemplate.convertAndSend("/topic/" + chatMessage.getChatRoom().getId(), savedMessage);
+        messagingTemplate.convertAndSend("/topic/" + savedMessage.getChatRoom().getId(), savedMessage);
     }
 
     // 메시지 기록 불러오기
@@ -86,6 +86,7 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
         return chatMessageRepository.findByChatRoomIdOrderByTimestampAsc(chatId);
     }
 
+    // 대화방 존재하는지 확인하기
     public ChatRoom findOrCreateChatRoom(Integer userId1, Integer userId2) {
         // userId로 user 객체 받기
         User user1 = userRepository.findById(userId1)
