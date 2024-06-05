@@ -48,9 +48,8 @@ public class UserController {
         return result;
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<ResponseDTO<?>> updateUser(@RequestParam String email, @RequestBody UpdateUserDTO dto) {
-        ResponseDTO<?> response = userService.updateUser(email, dto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    @PutMapping("/update/{email}")
+    public ResponseDTO<?> updateUser(@RequestBody UpdateUserDTO updateUserDTO) {
+        return userService.updateUser(updateUserDTO);
     }
 }

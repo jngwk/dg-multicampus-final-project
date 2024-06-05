@@ -1,6 +1,7 @@
 package com.dg.deukgeun.service;
 
 import java.util.Optional;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,6 +17,7 @@ import com.dg.deukgeun.dto.user.UpdateUserDTO;
 import com.dg.deukgeun.repository.TrainerRepository;
 import com.dg.deukgeun.repository.UserRepository;
 import com.dg.deukgeun.security.TokenProvider;
+import com.dg.deukgeun.dto.user.UserWithTrainerDTO;
 
 @Service
 public class UserService {
@@ -108,25 +110,29 @@ public class UserService {
         return ResponseDTO.setSuccessData("로그인에 성공하였습니다.", loginResponseDto);
     }
 
-    public ResponseDTO<?> getUserInfo(String email) {
+    public ResponseDTO<UserWithTrainerDTO> getUserInfo(String email) {
         try {
             Optional<User> userOptional = userRepository.findByEmail(email);
             if (userOptional.isPresent()) {
                 User userEntity = userOptional.get();
                 // 사용자 비밀번호 필드를 빈 문자열로 설정하여 보안성을 유지
                 userEntity.setPassword("");
-                if("trainer".equals(userEntity.getCategory())){
+                
+                // 사용자가 트레이너인 경우
+                if ("trainer".equals(userEntity.getCategory())) {
                     Optional<Trainer> trainerOptional = trainerRepository.findByUser_UserId(userEntity.getUserId());
                     if (trainerOptional.isPresent()) {
                         Trainer trainerEntity = trainerOptional.get();
-                        // 트레이너 정보를 반환하기 전에 사용자 정보를 포함하도록 설정
-                        trainerEntity.setUser(userEntity);
-                        return ResponseDTO.setSuccessData("사용자 정보를 조회했습니다.", trainerEntity);
+                        // 사용자와 트레이너 정보를 모두 포함하는 DTO 생성
+                        UserWithTrainerDTO userWithTrainerDTO = new UserWithTrainerDTO(userEntity, trainerEntity);
+                        return ResponseDTO.setSuccessData("사용자 정보를 조회했습니다.", userWithTrainerDTO);
                     } else {
                         return ResponseDTO.setFailed("해당 이메일로 가입된 트레이너를 찾을 수 없습니다.");
                     }
                 }
-                return ResponseDTO.setSuccessData("사용자 정보를 조회했습니다.", userEntity);
+                
+                // 사용자가 일반 사용자인 경우
+                return ResponseDTO.setSuccessData("사용자 정보를 조회했습니다.", new UserWithTrainerDTO(userEntity, null));
             } else {
                 return ResponseDTO.setFailed("해당 이메일로 가입된 사용자를 찾을 수 없습니다.");
             }
@@ -135,24 +141,24 @@ public class UserService {
         }
     }
 
-    public ResponseDTO<?> updateUser(String email, UpdateUserDTO dto) {
+    public ResponseDTO<?> updateUser(UpdateUserDTO dto) {
+        String email = dto.getEmail();
+    
         try {
+            // Find user by email
             Optional<User> userOptional = userRepository.findByEmail(email);
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
-
-                // Update fields
-                if (dto.getUserName() != null) user.setUserName(dto.getUserName());
-                if (dto.getEmail() != null) user.setEmail(dto.getEmail());
-                if (dto.getAddress() != null) user.setAddress(dto.getAddress());
-
-                // Save updated user
+                
+                // Update the user information
+                user.setUserName(dto.getUserName());
+                user.setEmail(dto.getEmail());
+                user.setAddress(dto.getAddress());
+                
+                // Save the updated user entity
                 userRepository.save(user);
-
-                // Hide password before returning user data
-                user.setPassword("");
-
-                return ResponseDTO.setSuccessData("사용자 정보가 성공적으로 업데이트되었습니다.", user);
+    
+                return ResponseDTO.setSuccess("사용자 정보가 성공적으로 업데이트되었습니다.");
             } else {
                 return ResponseDTO.setFailed("해당 이메일로 가입된 사용자를 찾을 수 없습니다.");
             }
