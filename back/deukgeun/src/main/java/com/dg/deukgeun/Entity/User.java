@@ -1,4 +1,4 @@
-package com.dg.deukgeun.Entity;
+package com.dg.deukgeun.entity;
 
 import com.dg.deukgeun.dto.user.SignUpDTO;
 
@@ -41,7 +41,7 @@ public class User {
         this.password = dto.getPassword();
         this.approval = dto.getApproval();
     }
-    
+
     // @Enumerated(EnumType.STRING)
     // private UserRole role;
 

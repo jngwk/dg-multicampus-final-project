@@ -1,6 +1,9 @@
 package com.dg.deukgeun.service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -9,11 +12,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import com.dg.deukgeun.Entity.ChatMessage;
+import com.dg.deukgeun.entity.ChatMessage;
+import com.dg.deukgeun.entity.ChatRoom;
+import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.ChatMessageRepository;
+import com.dg.deukgeun.repository.ChatRoomRepository;
+import com.dg.deukgeun.repository.UserRepository;
 
 import lombok.extern.log4j.Log4j2;
 
+/* TODO 메시지 브로드 캐스팅하는 메소드 추가하기 */
 @Log4j2
 @Service
 public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하는 서비스
@@ -31,31 +39,71 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
     @Autowired
     private ChatMessageRepository chatMessageRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ChatRoomRepository chatRoomRepository;
+
     // 메시지 발행
     public void sendMessage(ChatMessage chatMessage) {
         log.info("Sending message using chatService:" + chatMessage);
         log.info("Routing Key: " + routingKey);
         log.info("Exchange: " + exchange);
-        rabbitTemplate.convertAndSend(exchange, routingKey, chatMessage); // rabbitMQ 로 메시지를 보낼 때 rabbitTemplate 사용
+
+        String dynamicRoutingKey = "chat." + chatMessage.getChatRoom().getId();
+        log.info("Dynamic Routing Key: " + dynamicRoutingKey);
+
+        ChatMessage savedMessage = chatMessageRepository.save(chatMessage); // db에 저장
+        log.info("Message saved in DB: " + savedMessage);
+
+        // rabbitMQ 로 메시지를 보낼 때 rabbitTemplate 사용
+        rabbitTemplate.convertAndSend(exchange, dynamicRoutingKey, savedMessage);
+        log.info("Message sent through rabbitMQ");
+
     }
 
     // 메시지 구독
-    @RabbitListener(queues = { "${rabbitmq.queue.name}" }) // 특정 queue로 메시지를 보냄
+    @RabbitListener(queues = { "${rabbitmq.queue.name}" }, messageConverter = "converter") // 특정 queue로 메시지를 보냄
     public void receiveMessage(ChatMessage chatMessage) {
         log.info("Received message using chatService: " + chatMessage);
-        // chatMessageRepository.save(chatMessage); // db에 저장
-        try {
-            Thread.sleep(5000); // 5 seconds delay
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+
+        // 테스팅용 delay
+        // try {
+        // Thread.sleep(5000); // 5 seconds delay
+        // } catch (InterruptedException e) {
+        // Thread.currentThread().interrupt();
+        // }
+
         // websocket을 사용해 broadcast 할 때 SimpMessagingTemplate을 사용
-        messagingTemplate.convertAndSend("/topic/" + chatMessage.getChatRoomId(), chatMessage);
+        messagingTemplate.convertAndSend("/topic/" + chatMessage.getChatRoom().getId(), chatMessage);
     }
 
     // 메시지 기록 불러오기
     public List<ChatMessage> getChatHistory(Integer chatId) {
         return chatMessageRepository.findByChatRoomIdOrderByTimestampAsc(chatId);
+    }
+
+    public ChatRoom findOrCreateChatRoom(Integer userId1, Integer userId2) {
+        // userId로 user 객체 받기
+        User user1 = userRepository.findById(userId1)
+                .orElseThrow(() -> new IllegalArgumentException("존재하는 회원이 없습니다" + userId1));
+        User user2 = userRepository.findById(userId2)
+                .orElseThrow(() -> new IllegalArgumentException("존재하는 회원이 없습니다" + userId2));
+
+        // user 둘이 존재하는 채팅방이 있는지 확인
+        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findByUsersContainsAndUsersContains(user1, user2);
+        if (chatRoomOptional.isPresent()) { // 존재하면 채팅방을 반환
+            return chatRoomOptional.get();
+        } else { // 없으면 새로운 채팅방 생성
+            ChatRoom newChatRoom = new ChatRoom();
+            Set<User> users = new HashSet<>();
+            users.add(user1);
+            users.add(user2);
+
+            newChatRoom.setUsers(users);
+            return chatRoomRepository.save(newChatRoom);
+        }
     }
 
 }

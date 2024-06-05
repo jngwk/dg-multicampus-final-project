@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 // terminal에서 docker command를 사용해 rabbit mq 사용시 command:
 // docker run --rm -it -p 15672:15672 -p 5672:5672 rabbitmq:3.13.2-management
 // management 접속 URL : http://localhost:15672
@@ -71,7 +74,9 @@ public class RabbitMQConfig {
     // rabbit template을 위한 json 변환 converter bean 생성
     @Bean
     public MessageConverter converter() {
-        return new Jackson2JsonMessageConverter();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule()); // LocalDateTime 값을 받고 보내기 위한 설정
+        return new Jackson2JsonMessageConverter(objectMapper);
     }
 
     // json 메시지를 다루는 converter를 갖고있는 template bean 생성

@@ -7,7 +7,7 @@ const Chatting = () => {
 
     return (
         <div className=" relative w-3/6 h-[32rem] mx-10 border-2 rounded-lg">
-            <div>
+            <div className="flex">
                 <FaAngleLeft className="absolute left-4 top-4"/>
                 등록된 헬스장 이름 | 회원 이름
                 <IoClose/>

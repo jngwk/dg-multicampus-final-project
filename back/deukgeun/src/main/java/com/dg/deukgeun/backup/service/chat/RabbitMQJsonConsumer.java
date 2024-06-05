@@ -3,7 +3,7 @@ package com.dg.deukgeun.backup.service.chat;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
-import com.dg.deukgeun.Entity.User;
+import com.dg.deukgeun.entity.User;
 
 import lombok.extern.log4j.Log4j2;
 

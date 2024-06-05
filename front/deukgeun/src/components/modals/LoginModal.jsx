@@ -57,20 +57,17 @@ const LoginModal = ({ toggleModal }) => {
       return;
     }
     try {
-
       const data = await login(email, password);
 
       // 로그인 성공시 context에 로그인 여부 넣기
-      if(data.result){
+      if (data.result) {
         addUserToSession(email);
         console.log("로그인 성공", data);
         toggleModal(); // 로그인 성공시 팝업 닫음
-
-      }
-      else{
+      } else {
         setError("로그인 정보가 일치하지 않습니다.");
         setEmailValidationState("invalid");
-      setPasswordValidationState("invalid");
+        setPasswordValidationState("invalid");
       }
     } catch (error) {
       setError("로그인에 실패했습니다. 다시 시도하세요.");
@@ -113,7 +110,7 @@ const LoginModal = ({ toggleModal }) => {
         >
           비밀번호를 잊으셨나요?
         </Link>
-        
+
         <br />
         <Button onClick={handleLogin} color="peach-fuzz" label="로그인" />
         <Button onClick={moveToSignUp} color="bright-orange" label="회원가입" />

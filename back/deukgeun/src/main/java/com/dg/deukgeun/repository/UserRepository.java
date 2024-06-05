@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.dg.deukgeun.Entity.User;
+import com.dg.deukgeun.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 
@@ -14,7 +14,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     // 이메일 존재 여부를 확인하는 메서드
     boolean existsByEmail(String email);
-    
-     //email과 password의 존재 여부 확인 메서드
-     public boolean existsByEmailAndPassword(String email, String password);
+
+    // email과 password의 존재 여부 확인 메서드
+    public boolean existsByEmailAndPassword(String email, String password);
 }
