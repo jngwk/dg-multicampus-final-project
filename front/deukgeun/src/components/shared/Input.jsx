@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 export default function Input({
   label,
+  placeholder = "",
   type = "text",
   className,
   height = "44px",
@@ -27,6 +28,12 @@ export default function Input({
     return focus ? "text-peach-fuzz" : "text-gray-400";
   };
 
+  const getLabelPosition = () => {
+    if (type === "time" || type === "date" || focus || value)
+      return "left-2 -top-2 text-xs";
+    return "left-4 top-3 text-sm";
+  };
+
   return (
     <div className={`relative my-2`} style={{ width }}>
       <input
@@ -41,9 +48,7 @@ export default function Input({
         {...props}
       />
       <label
-        className={`bg-white absolute transition-all duration-200 ease-in-out pointer-events-none ${
-          focus || value ? "left-2 -top-2 text-xs" : "left-4 top-3 text-sm"
-        }  ${getLabelColor()} `}
+        className={`bg-white absolute transition-all duration-200 ease-in-out pointer-events-none  ${getLabelPosition()} ${getLabelColor()} `}
       >
         {label}
       </label>
@@ -51,3 +56,6 @@ export default function Input({
     </div>
   );
 }
+// ${
+//   focus || value ? "left-2 -top-2 text-xs" : "left-4 top-3 text-sm"
+// }
