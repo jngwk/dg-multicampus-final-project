@@ -73,9 +73,9 @@ public class RabbitMQConfig {
 
     // rabbit template을 위한 json 변환 converter bean 생성
     @Bean
-    public MessageConverter converter() {
+    public MessageConverter jsonMessageConverter() {
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule()); // LocalDateTime 값을 받고 보내기 위한 설정
+        objectMapper.registerModule(new JavaTimeModule()); // Handle Java 8 date/time types
         return new Jackson2JsonMessageConverter(objectMapper);
     }
 
@@ -83,9 +83,8 @@ public class RabbitMQConfig {
     @Bean
     public AmqpTemplate amqpTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(converter());
+        rabbitTemplate.setMessageConverter(jsonMessageConverter());
         return rabbitTemplate;
-
     }
 
     // ConnectionFactory, RabbitTemplate, RabbitAdmin은
