@@ -13,7 +13,7 @@ const CalendarInputForm = ({
   isInputFormVisible,
   toggleInputForm,
 }) => {
-  const { getTime } = useCustomDate();
+  const { computeTime, getTime } = useCustomDate();
 
   const [formValues, setFormValues] = useState({
     date: "",
@@ -29,26 +29,22 @@ const CalendarInputForm = ({
     memo: "",
   });
 
-  // 날짜 선택시 폼에 반영
+  // 날짜/이벤트 선택시 폼에 반영
   useEffect(() => {
     if (selectedEvent) {
       setFormValues(selectedEvent.extendedProps);
-      console.log("selectedEvent", selectedEvent.extendedProps);
+      console.log("selectedEvent", selectedEvent);
     } else if (selectedDate) {
+      const selectedTime = selectedDate.split("T")[1];
       setFormValues({
-        date: selectedDate,
-        startTime: getTime(),
-        endTime: getTime(1),
+        date: selectedDate.split("T")[0],
+        startTime: selectedTime ? computeTime(selectedTime) : getTime(),
+        endTime: selectedTime ? computeTime(selectedTime, 0.5) : getTime(1),
       });
-      console.log("selectedDate", selectedDate);
-      console.log("Selected time: ", formValues.startTime);
+      // console.log("selectedDate: ", selectedDate);
+      console.log("selectedTime: ", formValues.startTime);
     }
   }, [selectedDate, selectedEvent]);
-
-  // 이벤트 선택시 폼에 반영
-  // useEffect(() => {
-  //   setFormValues(selectedEvent);
-  // }, [selectedEvent]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -60,9 +56,7 @@ const CalendarInputForm = ({
 
   const handleSubmit = (e) => {
     console.log("handleSubmit");
-    selectedEvent
-      ? updateEvent({ ...formValues, id: selectedEvent.id })
-      : addEvent(formValues);
+    selectedEvent ? updateEvent(formValues) : addEvent(formValues);
   };
 
   const handleDelete = () => {
@@ -88,6 +82,7 @@ const CalendarInputForm = ({
             label="시작 시간"
             name="startTime"
             type="time"
+            step="1800"
             value={formValues.startTime}
             onChange={handleChange}
           />
@@ -95,6 +90,7 @@ const CalendarInputForm = ({
             label="종료 시간"
             name="endTime"
             type="time"
+            step="1800"
             value={formValues.endTime}
             onChange={handleChange}
           />

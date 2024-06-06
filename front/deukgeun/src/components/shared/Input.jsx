@@ -8,6 +8,7 @@ export default function Input({
   height = "44px",
   width = "240px",
   value = "",
+  step,
   validationState = null, // 'valid', 'invalid', or null
   ...props
 }) {
@@ -45,6 +46,7 @@ export default function Input({
         onFocus={handleFocus}
         onBlur={handleBlur}
         value={value}
+        step={step}
         {...props}
       />
       <label
