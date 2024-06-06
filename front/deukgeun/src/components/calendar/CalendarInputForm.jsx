@@ -1,11 +1,10 @@
-import React, { useState } from "react";
-import Input from "../shared/Input";
+import React, { useState, useEffect } from "react";
 import Button from "../shared/Button";
-import DatePicker from "react-datepicker";
+import Input from "../shared/Input";
 
-const CalendarInputForm = ({ addEvent }) => {
+const CalendarInputForm = ({ addEvent, selectedDate }) => {
   const [formValues, setFormValues] = useState({
-    date: new Date().toISOString().split("T")[0],
+    date: "",
     startTime: "",
     endTime: "",
     client: "",
@@ -17,6 +16,14 @@ const CalendarInputForm = ({ addEvent }) => {
     bodyWeight: "",
     memo: "",
   });
+
+  // 날짜 선택시 폼에 반영
+  useEffect(() => {
+    setFormValues({
+      ...formValues,
+      date: selectedDate,
+    });
+  }, [selectedDate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
