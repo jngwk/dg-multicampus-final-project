@@ -1,8 +1,10 @@
 package com.dg.deukgeun.entity;
 
+import com.dg.deukgeun.dto.UserRole;
 import com.dg.deukgeun.dto.user.UserSignUpDTO;
-
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,9 +31,11 @@ public class User {
     private String email;
     private String address;
     private String detailAddress;
-    private String category;
     private String password;
-    private String token;
+    private Integer approval;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
     public User(UserSignUpDTO dto) {
         this.userId = dto.getUserId();
@@ -39,24 +43,21 @@ public class User {
         this.email = dto.getEmail();
         this.address = dto.getAddress();
         this.detailAddress = dto.getDetailAddress();
-        this.category = dto.getCategory();
         this.password = dto.getPassword();
-        this.token = "";
+        this.approval = dto.getApproval();
+        this.role = dto.getRole();  // 회원가입 시 role 설정
     }
-    
-    // @Enumerated(EnumType.STRING)
-    // private UserRole role;
 
-    // public static UserEntity toUserEntity(UserDTO userDTO) {
-    // UserEntity userEntity = new UserEntity();
-    // userEntity.setUserId(userDTO.getUserId());
-    // userEntity.setUserName(userDTO.getUserName());
-    // userEntity.setEmail(userDTO.getEmail());
-    // userEntity.setAddress(userDTO.getAddress());
-    // userEntity.setCategory(userDTO.getCategory());
-    // userEntity.setPassword(userDTO.getPassword());
-    // userEntity.setApproval(userDTO.getApproval());
-
-    // return userEntity;
-    // }
+    public static User toUserEntity(UserSignUpDTO userDTO) {
+        return User.builder()
+            .userId(userDTO.getUserId())
+            .userName(userDTO.getUserName())
+            .email(userDTO.getEmail())
+            .address(userDTO.getAddress())
+            .detailAddress(userDTO.getDetailAddress())
+            .password(userDTO.getPassword())
+            .approval(userDTO.getApproval())
+            .role(userDTO.getRole())
+            .build();
+    }
 }

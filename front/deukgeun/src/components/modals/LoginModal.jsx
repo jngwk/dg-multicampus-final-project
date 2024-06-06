@@ -9,7 +9,7 @@ import { login } from "../../api/loginApi";
 import { useAuth } from "../../context/AuthContext";
 
 const LoginModal = ({ toggleModal }) => {
-  const { moveToSignUp } = useCustomNavigate();
+  const moveToSignUp = useCustomNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailValidationState, setEmailValidationState] = useState(null);
@@ -61,7 +61,9 @@ const LoginModal = ({ toggleModal }) => {
 
       // 로그인 성공시 context에 로그인 여부 넣기
       if (data.result) {
-        addUserToSession(email);
+        console.log("Token:", data.data.token);
+        console.log("Role:", data.data.user.role);
+        addUserToSession({ token: data.data.token, role: data.data.user.role });
         console.log("로그인 성공", data);
         toggleModal(); // 로그인 성공시 팝업 닫음
       } else {

@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 
-console.log(logo);
+// console.log(logo);
 export default function Header() {
   const { user } = useAuth();
   const { isModalVisible, toggleModal } = useModal();

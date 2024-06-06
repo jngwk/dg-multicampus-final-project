@@ -4,14 +4,14 @@ import axios from "axios";
 const prefix = `/api`; // proxy 사용
 
 export const login = async (email, password) => {
-  try {
-    const response = await axios.post(`${prefix}/login`, {
-      email,
-      password,
-    });
+    try {
+        const response = await axios.post(`${prefix}/login`, {
+            email,
+            password,
+        });
 
-    return response.data;
-  } catch (error) {
-    throw new Error("Login failed");
-  }
+        return response.data;
+    } catch (error) {
+        throw new Error('로그인 실패: ' + error.message);
+    }
 };

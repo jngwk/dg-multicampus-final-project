@@ -16,6 +16,7 @@ public class CustomSerlvetConfig implements WebMvcConfigurer {
                 .allowedOrigins("*")
                 .allowedMethods("HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .maxAge(300)
-                .allowedHeaders("Authorization", "Cache-Control", "Content-Type");
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 }

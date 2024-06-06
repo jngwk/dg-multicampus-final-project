@@ -1,5 +1,6 @@
 package com.dg.deukgeun.dto.gym;
 
+import com.dg.deukgeun.dto.UserRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -44,4 +45,6 @@ public class GymSignUpDTO {
     private String operatingHours;
     private String prices;
     private String introduce;
+
+    private UserRole role;
 }

@@ -12,20 +12,16 @@ import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.GymRepository;
 import com.dg.deukgeun.repository.UserRepository;
-import com.dg.deukgeun.security.TokenProvider;
+import com.dg.deukgeun.security.JwtTokenProvider;
 
 @Service
 public class GymService {
 
-    @Autowired
-    private GymRepository gymRepository;
+    @Autowired GymRepository gymRepository;
+    @Autowired UserRepository userRepository;
+    @Autowired JwtTokenProvider tokenProvider;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private TokenProvider tokenProvider;
-
+    // 회원 가입 서비스 메서드
     public ResponseDTO<?> signUp(GymSignUpDTO dto) {
         String email = dto.getEmail();
         String password = dto.getPassword();
@@ -36,10 +32,11 @@ public class GymService {
                 return ResponseDTO.setFailed("중복된 Email 입니다.");
             }
         } catch (Exception e) {
+            System.out.println("데이터베이스 연결에 실패하였습니다. " + e.getMessage());
             return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
         }
 
-        // 비밀번호 중복 확인
+        // 비밀번호 확인
         if (!password.equals(dto.getPassword())) {
             return ResponseDTO.setFailed("비밀번호가 일치하지 않습니다.");
         }
@@ -50,7 +47,14 @@ public class GymService {
         user.setEmail(dto.getEmail());
         user.setAddress(dto.getAddress());
         user.setDetailAddress(dto.getDetailAddress());
-        user.setCategory(dto.getCategory());
+        user.setRole(dto.getRole());
+
+        // 역할 설정 확인
+        if (dto.getRole() == null) {
+            System.out.println("사용자 역할이 설정되지 않았습니다.");
+            return ResponseDTO.setFailed("사용자 역할이 설정되지 않았습니다.");
+        }
+        user.setRole(dto.getRole());
 
         // 비밀번호 암호화
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -61,6 +65,7 @@ public class GymService {
         try {
             userRepository.save(user);
         } catch (Exception e) {
+            System.out.println("데이터베이스 연결에 실패하였습니다. " + e.getMessage());
             return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
         }
 
@@ -75,20 +80,21 @@ public class GymService {
         gym.setOperatingHours(dto.getOperatingHours());
         gym.setPrices(dto.getPrices());
         gym.setIntroduce(dto.getIntroduce());
-        gym.setApproval(dto.getApproval());
 
         // Gym 엔티티를 데이터베이스에 저장
         try {
             gymRepository.save(gym);
         } catch (Exception e) {
+            System.out.println("데이터베이스 연결에 실패하였습니다. " + e.getMessage());
             return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
         }
 
         // 새로운 헬스장 사용자에 대한 토큰 생성
         String token;
         try {
-            token = tokenProvider.createJwt(email, 3600); // 1시간 지속 시간
+            token = tokenProvider.createToken(email, user.getRole().toString(), 3600); // 1시간 지속 시간
         } catch (Exception e) {
+            System.out.println("토큰 생성에 실패하였습니다. " + e.getMessage());
             return ResponseDTO.setFailed("토큰 생성에 실패하였습니다.");
         }
 
@@ -96,6 +102,7 @@ public class GymService {
         return ResponseDTO.setSuccessData("Gym 회원 생성에 성공했습니다.", token);
     }
 
+    // 로그인 서비스 메서드
     public ResponseDTO<LoginResponseDTO> login(LoginDTO dto) {
         String email = dto.getEmail();
         String password = dto.getPassword();
@@ -118,6 +125,7 @@ public class GymService {
                 return ResponseDTO.setFailed("비밀번호가 일치하지 않습니다.");
             }
         } catch (Exception e) {
+            System.out.println("데이터베이스 연결에 실패하였습니다. " + e.getMessage());
             return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
         }
 
@@ -128,8 +136,9 @@ public class GymService {
         String token;
 
         try {
-            token = tokenProvider.createJwt(email, exprTime);
+            token = tokenProvider.createToken(email, user.getRole().toString(), exprTime);
         } catch (Exception e) {
+            System.out.println("토큰 생성에 실패하였습니다. " + e.getMessage());
             return ResponseDTO.setFailed("토큰 생성에 실패하였습니다.");
         }
 

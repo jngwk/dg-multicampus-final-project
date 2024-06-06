@@ -14,27 +14,21 @@ import com.dg.deukgeun.entity.Trainer;
 import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.TrainerRepository;
 import com.dg.deukgeun.repository.UserRepository;
-import com.dg.deukgeun.security.TokenProvider;
+import com.dg.deukgeun.security.JwtTokenProvider;
 
 @Service
 public class UserService {
 
     @Autowired UserRepository userRepository;
-    @Autowired TokenProvider tokenProvider;
-
-
-    @Autowired
-    TrainerRepository trainerRepository;
+    @Autowired JwtTokenProvider tokenProvider;
+    @Autowired TrainerRepository trainerRepository;
 
     public ResponseDTO<?> signUp(UserSignUpDTO dto) {
-
         String email = dto.getEmail();
         String password = dto.getPassword();
-        // String confirmPassword = dto.getConfirmPassword();
 
         // email 중복 확인
         try {
-            // 존재하는 경우 : true / 존재하지 않는 경우 : false
             if (userRepository.existsByEmail(email)) {
                 return ResponseDTO.setFailed("중복된 Email 입니다.");
             }
@@ -47,11 +41,9 @@ public class UserService {
             return ResponseDTO.setFailed("비밀번호가 일치하지 않습니다.");
         }
 
-
         // UserEntity 생성
         User user = new User(dto);
 
-        // UserRepository를 이용하여 DB에 Entity 저장 (데이터 적재)
         // 비밀번호 암호화
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String hashedPassword = passwordEncoder.encode(password);
@@ -94,13 +86,15 @@ public class UserService {
 
         // Client에 비밀번호 제공 방지
         user.setPassword("");
- 
+
         int exprTime = 3600; // 1h
         String token;
 
         try {
-            token = tokenProvider.createJwt(email, exprTime);
+            token = tokenProvider.createToken(email, user.getRole().toString(), exprTime);
+            System.out.println("생성된 토큰: " + token); // 디버깅 로그
         } catch (Exception e) {
+            e.printStackTrace(); // 디버깅 로그
             return ResponseDTO.setFailed("토큰 생성에 실패하였습니다.");
         }
 
@@ -116,7 +110,7 @@ public class UserService {
                 User userEntity = userOptional.get();
                 // 사용자 비밀번호 필드를 빈 문자열로 설정하여 보안성을 유지합니다.
                 userEntity.setPassword("");
-                if("trainer".equals(userEntity.getCategory())){
+                if ("trainer".equals(userEntity.getRole())) {
                     Optional<Trainer> trainerOptional = trainerRepository.findByUser_UserId(userEntity.getUserId());
                     if (trainerOptional.isPresent()) {
                         Trainer trainerEntity = trainerOptional.get();

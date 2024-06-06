@@ -53,3 +53,8 @@ rabbitmq:
     key: chat.#
     json:
       key: dgRoutingJsonKey
+
+#시큐리티 보안키
+security:
+  jwt:
+    secret-key: your-very-secure-key
