@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from "react";
 import Button from "../shared/Button";
 import Input from "../shared/Input";
+import useCustomDate from "../../hooks/useCustomDate";
 
-const CalendarInputForm = ({ addEvent, selectedDate }) => {
+const CalendarInputForm = ({
+  addEvent,
+  selectedDate,
+  selectedEvent,
+  isInputFormVisible,
+  toggleInputForm,
+}) => {
+  const { getTime } = useCustomDate();
+
   const [formValues, setFormValues] = useState({
     date: "",
-    startTime: "",
-    endTime: "",
+    startTime: getTime(),
+    endTime: getTime(1),
     client: "",
     summary: "",
     workout: "",
@@ -19,11 +28,24 @@ const CalendarInputForm = ({ addEvent, selectedDate }) => {
 
   // 날짜 선택시 폼에 반영
   useEffect(() => {
-    setFormValues({
-      ...formValues,
-      date: selectedDate,
-    });
-  }, [selectedDate]);
+    if (selectedEvent) {
+      setFormValues(selectedEvent);
+      console.log("selectedEvent", selectedEvent);
+    } else if (selectedDate) {
+      setFormValues({
+        date: selectedDate,
+        startTime: getTime(),
+        endTime: getTime(1),
+      });
+      console.log("selectedDate", selectedDate);
+      console.log("Selected time: ", formValues.startTime);
+    }
+  }, [selectedDate, selectedEvent]);
+
+  // 이벤트 선택시 폼에 반영
+  // useEffect(() => {
+  //   setFormValues(selectedEvent);
+  // }, [selectedEvent]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,80 +62,87 @@ const CalendarInputForm = ({ addEvent, selectedDate }) => {
 
   return (
     <div className="xl:absolute xl:left-3/4 xl:top-56">
-      <Input
-        label="날짜"
-        name="date"
-        type="date"
-        value={formValues.date}
-        onChange={handleChange}
-      />
-      <Input
-        label="시작 시간"
-        name="startTime"
-        type="time"
-        value={formValues.startTime}
-        onChange={handleChange}
-      />
-      <Input
-        label="종료 시간"
-        name="endTime"
-        type="time"
-        value={formValues.endTime}
-        onChange={handleChange}
-      />
-      <Input
-        label="회원"
-        name="client"
-        value={formValues.client}
-        onChange={handleChange}
-      />
-      <Input
-        label="요약"
-        name="summary"
-        value={formValues.summary}
-        onChange={handleChange}
-      />
-      <Input
-        label="운동"
-        name="workout"
-        value={formValues.workout}
-        onChange={handleChange}
-      />
-      <Input
-        label="SET"
-        name="set"
-        type="number"
-        value={formValues.set}
-        onChange={handleChange}
-      />
-      <Input
-        label="REP"
-        name="rep"
-        type="number"
-        value={formValues.rep}
-        onChange={handleChange}
-      />
-      <Input
-        label="무게(KG)"
-        name="liftWeight"
-        type="number"
-        value={formValues.liftWeight}
-        onChange={handleChange}
-      />
-      <Input
-        label="몸무게(KG)"
-        name="bodyWeight"
-        type="number"
-        value={formValues.bodyWeight}
-        onChange={handleChange}
-      />
-      <Input
-        label="메모"
-        name="memo"
-        value={formValues.memo}
-        onChange={handleChange}
-      />
-      <Button label="작성" onClick={handleClick} />
+      <span label="보이기/숨기기" onClick={toggleInputForm}>
+        &lt;&lt;
+      </span>
+      {isInputFormVisible && (
+        <div>
+          <Input
+            label="날짜"
+            name="date"
+            type="date"
+            value={formValues.date}
+            onChange={handleChange}
+          />
+          <Input
+            label="시작 시간"
+            name="startTime"
+            type="time"
+            value={formValues.startTime}
+            onChange={handleChange}
+          />
+          <Input
+            label="종료 시간"
+            name="endTime"
+            type="time"
+            value={formValues.endTime}
+            onChange={handleChange}
+          />
+          <Input
+            label="회원"
+            name="client"
+            value={formValues.client}
+            onChange={handleChange}
+          />
+          <Input
+            label="요약"
+            name="summary"
+            value={formValues.summary}
+            onChange={handleChange}
+          />
+          <Input
+            label="운동"
+            name="workout"
+            value={formValues.workout}
+            onChange={handleChange}
+          />
+          <Input
+            label="SET"
+            name="set"
+            type="number"
+            value={formValues.set}
+            onChange={handleChange}
+          />
+          <Input
+            label="REP"
+            name="rep"
+            type="number"
+            value={formValues.rep}
+            onChange={handleChange}
+          />
+          <Input
+            label="무게(KG)"
+            name="liftWeight"
+            type="number"
+            value={formValues.liftWeight}
+            onChange={handleChange}
+          />
+          <Input
+            label="몸무게(KG)"
+            name="bodyWeight"
+            type="number"
+            value={formValues.bodyWeight}
+            onChange={handleChange}
+          />
+          <Input
+            label="메모"
+            name="memo"
+            value={formValues.memo}
+            onChange={handleChange}
+          />
+          <Button label="작성" onClick={handleClick} />
+        </div>
+      )}
     </div>
   );
 };

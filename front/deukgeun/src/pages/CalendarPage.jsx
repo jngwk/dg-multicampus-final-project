@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "../components/shared/Layout";
 import CalendarInputForm from "../components/calendar/CalendarInputForm";
 import FullCalendar from "@fullcalendar/react";
@@ -7,44 +7,62 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { v4 as uuidv4 } from "uuid";
 
-// TODO DB에 저장된 값들 불러와서 캘린더에 추가
 // TODO 트레이나/일반 구분하기
 const CalendarPage = () => {
-  const [events, setEvents] = useState("");
+  const [events, setEvents] = useState(() => {
+    // local storage에서 저장된 이벤트 받아오기
+    // TODO DB에 저장된 값들 불러와서 캘린더에 추가
+    const savedEvents = localStorage.getItem("events");
+    return savedEvents ? JSON.parse(savedEvents) : [];
+  });
   const [selectedDate, setSelectedDate] = useState(
     // default를 오늘 날짜로 설정
     new Date().toISOString().split("T")[0]
   );
+  const [selectedEvent, setSelectedEvent] = useState("");
+  const [isInputFormVisible, setIsInputFormVisible] = useState(false);
+
+  // addEvent로 event 추가 후 events 업데이트가 되면 localStorage에 저장
+  // TODO DB에 새로운 event 저장
+  useEffect(() => {
+    localStorage.setItem("events", JSON.stringify(events));
+  }, [events]);
 
   const addEvent = (formValues) => {
-    setEvents([
-      ...events,
-      {
-        // uuid 생성
-        id: uuidv4(),
-        title: formValues.summary,
-        start: new Date(`${formValues.date}T${formValues.startTime}`),
-        end: new Date(`${formValues.date}T${formValues.endTime}`),
-        color: "#ffbe98",
-        extendedProps: formValues, // 받아온 form value 넘겨주기
-      },
-    ]);
-    // TODO DB에 내용 저장하기
+    // 새로운 이벤트 생성
+    const newEvent = {
+      id: uuidv4(),
+      title: formValues.summary,
+      start: new Date(`${formValues.date}T${formValues.startTime}`),
+      end: new Date(`${formValues.date}T${formValues.endTime}`),
+      color: "#ffbe98",
+      extendedProps: formValues,
+    };
+
+    // events에 추가
+    setEvents((prevEvents) => [...prevEvents, newEvent]);
+    console.log("이벤트 추가: ", newEvent);
   };
 
   // 날짜 클릭시
   const handleDateClick = (info) => {
     setSelectedDate(info.dateStr);
-    console.log("Selected date: ", selectedDate);
-    // TODO 운동 추가 창 띄우기
+    // console.log("Selected date: ", selectedDate);
+    setSelectedEvent("");
+    // 운동 추가 창 띄우기
+    !isInputFormVisible && toggleInputForm();
   };
 
   // 이벤트 클릭시
-  // TODO event에 있는 값들 폼으로 옮기기
   const handleEventClick = (info) => {
     console.log("Event details:", info.event);
     console.log("Event extendedProps:", info.event.extendedProps);
-    // TODO 기록된 운동 창 띄우기
+    // event에 있는 값들 폼으로 옮기기
+    setSelectedEvent(info.event.extendedProps);
+    setSelectedDate("");
+
+    // 기록된 운동 창 띄우기
+    !isInputFormVisible && toggleInputForm();
   };
 
   // 이벤트 드래그 & 드롭시 날짜 및 시간 변경
@@ -54,18 +72,19 @@ const CalendarPage = () => {
       // console.log("Event ID", event.id);
       if (event.id === info.event.id) {
         const start = info.event.startStr;
-        // console.log("start", start);
         const startDate = start.split("T")[0];
+        const startTime = formatTime(start.split("T")[1]);
+
+        // console.log("start", start);
         // console.log("startDate", startDate);
-        const startTime = start.split("T")[1];
         // console.log("startTime", startTime);
 
         const end = info.event.endStr;
         const endDate = end.split("T")[0];
-        const endTime = end.split("T")[1];
+        const endTime = formatTime(end.split("T")[1]);
         const extendedProps = event.extendedProps;
 
-        return {
+        const updatedEvent = {
           ...event,
           start: start,
           end: info.event.end ? end : null,
@@ -77,6 +96,9 @@ const CalendarPage = () => {
             endTime: endTime,
           },
         };
+
+        setSelectedEvent(updatedEvent.extendedProps);
+        return updatedEvent;
       }
       return event;
     });
@@ -84,17 +106,28 @@ const CalendarPage = () => {
     setEvents(updatedEvents);
   };
 
-  // TODO 이벤트 드래그로 연장시 시간 변경
+  // Input form visibility를 toggle
+  // TODO 슬라이딩 effect 추가
+  const toggleInputForm = () => {
+    setIsInputFormVisible(!isInputFormVisible);
+  };
+
+  // TODO 이벤트 드래그로 시간 연장/단축시 폼 시간 변경
+
+  // 시간 포맷
+  const formatTime = (timeString) => {
+    return timeString.split("+")[0];
+  };
 
   return (
     <Layout>
-      <div className="xl:w-8/12 mt-4">
+      <div className="xl:w-8/12 p-8">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
           headerToolbar={{
-            start: "",
-            center: "title",
+            start: "title",
+            center: "",
             end: "dayGridMonth,timeGridWeek today prev,next",
           }}
           weekends={true}
@@ -107,7 +140,13 @@ const CalendarPage = () => {
         />
       </div>
       <div className="mt-4">
-        <CalendarInputForm addEvent={addEvent} selectedDate={selectedDate} />
+        <CalendarInputForm
+          addEvent={addEvent}
+          selectedDate={selectedDate}
+          selectedEvent={selectedEvent}
+          isInputFormVisible={isInputFormVisible}
+          toggleInputForm={toggleInputForm}
+        />
       </div>
     </Layout>
   );
