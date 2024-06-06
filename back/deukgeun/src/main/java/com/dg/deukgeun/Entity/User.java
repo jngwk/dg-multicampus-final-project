@@ -2,6 +2,7 @@ package com.dg.deukgeun.entity;
 
 import com.dg.deukgeun.dto.UserRole;
 import com.dg.deukgeun.dto.user.UserSignUpDTO;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -45,7 +46,6 @@ public class User {
         this.detailAddress = dto.getDetailAddress();
         this.password = dto.getPassword();
         this.approval = dto.getApproval();
-        this.role = dto.getRole();  // 회원가입 시 role 설정
     }
 
     public static User toUserEntity(UserSignUpDTO userDTO) {

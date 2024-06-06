@@ -1,28 +1,38 @@
 package com.dg.deukgeun.security;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import com.nimbusds.jose.*;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
-import com.nimbusds.jose.crypto.MACSigner;
-import com.nimbusds.jose.crypto.MACVerifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.time.Instant;
 import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.dg.deukgeun.dto.UserRole;
+import com.dg.deukgeun.entity.Gym;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.JWSSigner;
+import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 
 @Component
 public class JwtTokenProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
-
     @Value("${security.jwt.secret-key}")
     private String secretKey;
 
-    // JWT 토큰 생성 메서드
-    public String createToken(String email, String role, int duration) {
+    /**
+     * JWT 토큰을 생성하는 메서드
+     * 
+     * @param email    사용자 이메일
+     * @param role     사용자 역할
+     * @param duration 토큰 유효 기간(초)
+     * @return 생성된 JWT 토큰
+     */
+    public String createToken(String email, UserRole role, int duration) {
         try {
             Instant now = Instant.now();
             Instant expiryTime = now.plusSeconds(duration);
@@ -30,7 +40,7 @@ public class JwtTokenProvider {
             // JWT 클레임 설정
             JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                     .subject(email)
-                    .claim("role", role)
+                    .claim("role", role.name())
                     .issueTime(Date.from(now))
                     .expirationTime(Date.from(expiryTime))
                     .build();
@@ -42,12 +52,56 @@ public class JwtTokenProvider {
 
             return signedJWT.serialize();
         } catch (JOSEException e) {
-            logger.error("JWT 토큰 생성 중 오류 발생", e);
+            System.out.println("JWT 토큰 생성 중 오류 발생: " + e.getMessage());
             throw new RuntimeException("JWT 토큰 생성 중 오류 발생", e);
         }
     }
 
-    // JWT 토큰 검증 메서드
+    /**
+     * Gym 정보를 포함하여 JWT 토큰을 생성하는 메서드
+     * 
+     * @param email    사용자 이메일
+     * @param role     사용자 역할
+     * @param gym      Gym 정보
+     * @param duration 토큰 유효 기간(초)
+     * @return 생성된 JWT 토큰
+     */
+    public String createTokenWithGymInfo(String email, UserRole role, Gym gym, int duration) {
+        try {
+            Instant now = Instant.now();
+            Instant expiryTime = now.plusSeconds(duration);
+
+            JWTClaimsSet.Builder claimsBuilder = new JWTClaimsSet.Builder()
+                    .subject(email)
+                    .claim("role", role.name())
+                    .issueTime(Date.from(now))
+                    .expirationTime(Date.from(expiryTime));
+
+            if (gym != null) {
+                claimsBuilder.claim("gymId", gym.getGymId());
+                claimsBuilder.claim("gymName", gym.getGymName());
+                // 필요한 다른 gym 세부 정보를 추가
+            }
+
+            JWTClaimsSet claimsSet = claimsBuilder.build();
+
+            SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
+            JWSSigner signer = new MACSigner(secretKey.getBytes());
+            signedJWT.sign(signer);
+
+            return signedJWT.serialize();
+        } catch (JOSEException e) {
+            System.out.println("JWT 토큰 생성 중 오류 발생: " + e.getMessage());
+            throw new RuntimeException("JWT 토큰 생성 중 오류 발생", e);
+        }
+    }
+
+    /**
+     * JWT 토큰을 검증하는 메서드
+     * 
+     * @param token 검증할 JWT 토큰
+     * @return 토큰이 유효한지 여부
+     */
     public boolean validateToken(String token) {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
@@ -55,29 +109,40 @@ public class JwtTokenProvider {
 
             return signedJWT.verify(verifier) && new Date().before(signedJWT.getJWTClaimsSet().getExpirationTime());
         } catch (Exception e) {
-            logger.error("JWT 토큰 검증 중 오류 발생", e);
+            System.out.println("JWT 토큰 검증 중 오류 발생: " + e.getMessage());
             return false;
         }
     }
 
-    // 토큰에서 이메일 추출 메서드
+    /**
+     * JWT 토큰에서 이메일을 추출하는 메서드
+     * 
+     * @param token JWT 토큰
+     * @return 추출된 이메일
+     */
     public String getEmailFromToken(String token) {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
             return signedJWT.getJWTClaimsSet().getSubject();
         } catch (Exception e) {
-            logger.error("JWT 토큰에서 이메일 추출 중 오류 발생", e);
+            System.out.println("JWT 토큰에서 이메일 추출 중 오류 발생: " + e.getMessage());
             return null;
         }
     }
 
-    // 토큰에서 역할 추출 메서드
-    public String getRoleFromToken(String token) {
+    /**
+     * JWT 토큰에서 역할을 추출하는 메서드
+     * 
+     * @param token JWT 토큰
+     * @return 추출된 역할
+     */
+    public UserRole getRoleFromToken(String token) {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
-            return signedJWT.getJWTClaimsSet().getStringClaim("role");
+            String role = signedJWT.getJWTClaimsSet().getStringClaim("role");
+            return UserRole.valueOf(role);
         } catch (Exception e) {
-            logger.error("JWT 토큰에서 역할 추출 중 오류 발생", e);
+            System.out.println("JWT 토큰에서 역할 추출 중 오류 발생: " + e.getMessage());
             return null;
         }
     }

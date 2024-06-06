@@ -61,9 +61,10 @@ const LoginModal = ({ toggleModal }) => {
 
       // 로그인 성공시 context에 로그인 여부 넣기
       if (data.result) {
-        console.log("Token:", data.data.token);
-        console.log("Role:", data.data.user.role);
-        addUserToSession({ token: data.data.token, role: data.data.user.role });
+        addUserToSession({
+          token: data.data.token,
+          role: data.data.user.role,
+          gym: data.data.gym, });
         console.log("로그인 성공", data);
         toggleModal(); // 로그인 성공시 팝업 닫음
       } else {
@@ -112,7 +113,6 @@ const LoginModal = ({ toggleModal }) => {
         >
           비밀번호를 잊으셨나요?
         </Link>
-
         <br />
         <Button onClick={handleLogin} color="peach-fuzz" label="로그인" />
         <Button onClick={moveToSignUp} color="bright-orange" label="회원가입" />

@@ -57,4 +57,9 @@ rabbitmq:
 #시큐리티 보안키
 security:
   jwt:
-    secret-key: your-very-secure-key
+    secret-key: your-very-long-secret-key-of-at-least-32-characters
+
+#로깅 디버그
+logging:
+  level:
+    org.springframework.security: DEBUG

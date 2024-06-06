@@ -6,12 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.dg.deukgeun.dto.UserRole;
+import com.dg.deukgeun.dto.user.GymLoginResponseDTO;
 import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.LoginResponseDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.dto.user.UserSignUpDTO;
+import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.entity.Trainer;
 import com.dg.deukgeun.entity.User;
+import com.dg.deukgeun.repository.GymRepository;
 import com.dg.deukgeun.repository.TrainerRepository;
 import com.dg.deukgeun.repository.UserRepository;
 import com.dg.deukgeun.security.JwtTokenProvider;
@@ -21,6 +25,7 @@ public class UserService {
 
     @Autowired UserRepository userRepository;
     @Autowired JwtTokenProvider tokenProvider;
+    @Autowired GymRepository gymRepository;
     @Autowired TrainerRepository trainerRepository;
 
     public ResponseDTO<?> signUp(UserSignUpDTO dto) {
@@ -43,6 +48,7 @@ public class UserService {
 
         // UserEntity 생성
         User user = new User(dto);
+        user.setRole(UserRole.ROLE_GENERAL);
 
         // 비밀번호 암호화
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -59,12 +65,11 @@ public class UserService {
         return ResponseDTO.setSuccess("회원 생성에 성공했습니다.");
     }
 
-    public ResponseDTO<LoginResponseDTO> login(LoginDTO dto) {
+    public ResponseDTO<?> login(LoginDTO dto) {
         String email = dto.getEmail();
         String password = dto.getPassword();
 
         User user;
-
         try {
             // 이메일로 사용자 정보 가져오기
             user = userRepository.findByEmail(email).orElse(null);
@@ -91,16 +96,22 @@ public class UserService {
         String token;
 
         try {
-            token = tokenProvider.createToken(email, user.getRole().toString(), exprTime);
-            System.out.println("생성된 토큰: " + token); // 디버깅 로그
+            token = tokenProvider.createToken(email, user.getRole(), exprTime);
+            if (token == null || token.isEmpty()) {
+                throw new Exception("토큰 생성에 실패하였습니다.");
+            }
         } catch (Exception e) {
-            e.printStackTrace(); // 디버깅 로그
             return ResponseDTO.setFailed("토큰 생성에 실패하였습니다.");
         }
 
-        LoginResponseDTO loginResponseDto = new LoginResponseDTO(token, exprTime, user);
-
-        return ResponseDTO.setSuccessData("로그인에 성공하였습니다.", loginResponseDto);
+        if (user.getRole() == UserRole.ROLE_GYM) {
+            Gym gym = gymRepository.findByUser(user).orElse(null);
+            GymLoginResponseDTO gymLoginResponseDto = new GymLoginResponseDTO(token, exprTime, user, gym);
+            return ResponseDTO.setSuccessData("로그인에 성공하였습니다.", gymLoginResponseDto);
+        } else {
+            LoginResponseDTO loginResponseDto = new LoginResponseDTO(token, exprTime, user);
+            return ResponseDTO.setSuccessData("로그인에 성공하였습니다.", loginResponseDto);
+        }
     }
 
     public ResponseDTO<?> getUserInfo(String email) {

@@ -21,25 +21,21 @@ import com.dg.deukgeun.service.UserService;
 public class UserController {
 
     @Autowired UserService userService;
-    @Autowired UserRepository userRepository;
-
+    
     //회원가입
     @PostMapping("/signUp")
-    public ResponseDTO<?> signUp(@RequestBody UserSignUpDTO requestBody) {
-        ResponseDTO<?> result = userService.signUp(requestBody);
-        return result;
+    public ResponseDTO<?> signUp(@RequestBody UserSignUpDTO userSignUpDTO) {
+        return userService.signUp(userSignUpDTO);
     }
 
     //로그인
     @PostMapping("/login")
-    public ResponseDTO<?> login(@RequestBody LoginDTO requestBody) {
-        ResponseDTO<?> result = userService.login(requestBody);
-        return result;
+    public ResponseDTO<?> login(@RequestBody LoginDTO loginDTO) {
+        return userService.login(loginDTO);
     }
 
     @GetMapping("/userInfo")
     public ResponseDTO<?> getUserInfo(@RequestParam String email) {
-        ResponseDTO<?> result = userService.getUserInfo(email);
-        return result;
+        return userService.getUserInfo(email);
     }
 }

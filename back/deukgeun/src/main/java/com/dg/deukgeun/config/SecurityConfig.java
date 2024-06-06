@@ -1,9 +1,11 @@
 package com.dg.deukgeun.config;
 
+import java.io.IOException;
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -12,48 +14,61 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.dg.deukgeun.dto.UserRole;
 import com.dg.deukgeun.security.JwtTokenProvider;
-
-import java.io.IOException;
-import java.util.Collections;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.web.filter.OncePerRequestFilter;
 
-@Configuration
-@EnableWebSecurity
+@Configuration // Spring 설정 클래스임을 나타냅니다.
+@EnableWebSecurity // Spring Security를 활성화합니다.
 public class SecurityConfig {
 
     @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtTokenProvider jwtTokenProvider; // JWT 토큰을 제공하는 클래스입니다.
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/login").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/signup").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/gym/signup").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/GENERAL/**").hasRole("GENERAL")
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+                .csrf(csrf -> csrf.disable()) // CSRF 보호를 비활성화합니다.
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리를 Stateless로 설정합니다.
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/api/login", "/api/signUp", "/api/gym/signUp").permitAll() // 로그인과 회원가입 API는 인증 없이 접근 가능하도록 설정합니다.
+                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN") // ADMIN 역할만 접근할 수 있도록 설정합니다.
+                        .requestMatchers("/api/user/**").hasAuthority("ROLE_GENERAL") // GENERAL 역할만 접근할 수 있도록 설정합니다.
+                        .anyRequest().authenticated()) // 그 외 모든 요청은 인증이 필요합니다.
+                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // JWT 토큰 필터를 추가합니다.
 
         return http.build();
     }
 
     @Bean
-    public JwtTokenFilter jwtTokenFilter() {
-        return new JwtTokenFilter(jwtTokenProvider);
+    public CorsFilter corsFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOriginPattern("*"); // 모든 출처를 허용합니다.
+        config.addAllowedHeader("*"); // 모든 헤더를 허용합니다.
+        config.addAllowedMethod("*"); // 모든 HTTP 메소드를 허용합니다.
+        config.setAllowCredentials(true); // 자격 증명을 허용합니다.
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config); // 모든 경로에 대해 CORS 설정을 적용합니다.
+
+        return new CorsFilter(source);
     }
 
+    @Bean
+    public JwtTokenFilter jwtTokenFilter() {
+        return new JwtTokenFilter(jwtTokenProvider); // JWT 토큰 필터 빈을 생성합니다.
+    }
+
+    // JWT 토큰 필터 클래스입니다.
     public static class JwtTokenFilter extends OncePerRequestFilter {
 
         private final JwtTokenProvider jwtTokenProvider;
@@ -63,25 +78,27 @@ public class SecurityConfig {
         }
 
         @Override
-        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-            String token = resolveToken(request);
+        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+                FilterChain filterChain) throws ServletException, IOException {
+            String token = resolveToken(request); // 요청에서 JWT 토큰을 추출합니다.
 
-            if (token != null && jwtTokenProvider.validateToken(token)) {
-                String email = jwtTokenProvider.getEmailFromToken(token);
-                String role = jwtTokenProvider.getRoleFromToken(token);
+            if (token != null && jwtTokenProvider.validateToken(token)) { // 토큰이 유효한 경우
+                String email = jwtTokenProvider.getEmailFromToken(token); // 토큰에서 이메일을 추출합니다.
+                UserRole role = jwtTokenProvider.getRoleFromToken(token); // 토큰에서 역할을 추출합니다.
 
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(email, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role)));
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(email, null,
+                        Collections.singletonList(new SimpleGrantedAuthority(role.toString()))); // 인증 객체를 생성합니다.
+                SecurityContextHolder.getContext().setAuthentication(auth); // 인증 객체를 설정합니다.
             }
 
-            filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response); // 다음 필터를 호출합니다.
         }
 
         private String resolveToken(HttpServletRequest request) {
-            String bearerToken = request.getHeader("Authorization");
+            String bearerToken = request.getHeader("Authorization"); // Authorization 헤더에서 토큰을 가져옵니다.
 
             if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-                return bearerToken.substring(7);
+                return bearerToken.substring(7); // "Bearer " 부분을 제거하고 토큰을 반환합니다.
             }
 
             return null;
