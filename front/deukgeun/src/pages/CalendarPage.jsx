@@ -16,7 +16,7 @@ const CalendarPage = () => {
     return savedEvents ? JSON.parse(savedEvents) : [];
   });
   const [selectedDate, setSelectedDate] = useState(
-    // default를 오늘 날짜로 설정
+    // default를 오늘 날짜로 설정 (custom hook으로 사용할지 고민)
     new Date().toISOString().split("T")[0]
   );
   const [selectedEvent, setSelectedEvent] = useState("");
@@ -44,22 +44,42 @@ const CalendarPage = () => {
     console.log("이벤트 추가: ", newEvent);
   };
 
+  // TODO 인풋폼 데이터 형태를 캘린더 JSON과 동일하게 변경 후 코드 전체적으로 수정
+  // TODO 선택된 이벤트 업데이트
+  const updateEvent = (formValues) => {
+    const updatedEvents = events.map((event) =>
+      event.id === selectedEvent.id
+        ? { ...event, extendedProps: formValues }
+        : event
+    );
+    setEvents(updatedEvents);
+  };
+
+  // 선택된 이벤트 삭제
+  const deleteEvent = () => {
+    const updatedEvents = events.filter(
+      (event) => event.id !== selectedEvent.id
+    );
+    setEvents(updatedEvents);
+  };
+
   // 날짜 클릭시
   const handleDateClick = (info) => {
     setSelectedDate(info.dateStr);
     // console.log("Selected date: ", selectedDate);
-    setSelectedEvent("");
+    setSelectedEvent(null);
     // 운동 추가 창 띄우기
     !isInputFormVisible && toggleInputForm();
   };
 
   // 이벤트 클릭시
+  // TODO 내용 수정 및 삭제 가능하게 하기
   const handleEventClick = (info) => {
     console.log("Event details:", info.event);
     console.log("Event extendedProps:", info.event.extendedProps);
     // event에 있는 값들 폼으로 옮기기
-    setSelectedEvent(info.event.extendedProps);
-    setSelectedDate("");
+    setSelectedEvent(info.event);
+    setSelectedDate(null);
 
     // 기록된 운동 창 띄우기
     !isInputFormVisible && toggleInputForm();
@@ -97,7 +117,7 @@ const CalendarPage = () => {
           },
         };
 
-        setSelectedEvent(updatedEvent.extendedProps);
+        setSelectedEvent(updatedEvent);
         return updatedEvent;
       }
       return event;
@@ -142,6 +162,8 @@ const CalendarPage = () => {
       <div className="mt-4">
         <CalendarInputForm
           addEvent={addEvent}
+          updateEvent={updateEvent}
+          deleteEvent={deleteEvent}
           selectedDate={selectedDate}
           selectedEvent={selectedEvent}
           isInputFormVisible={isInputFormVisible}

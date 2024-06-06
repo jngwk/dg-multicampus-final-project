@@ -3,8 +3,11 @@ import Button from "../shared/Button";
 import Input from "../shared/Input";
 import useCustomDate from "../../hooks/useCustomDate";
 
+// 캘린더 포맷이랑 일치하게 수정하기
 const CalendarInputForm = ({
   addEvent,
+  updateEvent,
+  deleteEvent,
   selectedDate,
   selectedEvent,
   isInputFormVisible,
@@ -14,8 +17,8 @@ const CalendarInputForm = ({
 
   const [formValues, setFormValues] = useState({
     date: "",
-    startTime: getTime(),
-    endTime: getTime(1),
+    startTime: "",
+    endTime: "",
     client: "",
     summary: "",
     workout: "",
@@ -29,8 +32,8 @@ const CalendarInputForm = ({
   // 날짜 선택시 폼에 반영
   useEffect(() => {
     if (selectedEvent) {
-      setFormValues(selectedEvent);
-      console.log("selectedEvent", selectedEvent);
+      setFormValues(selectedEvent.extendedProps);
+      console.log("selectedEvent", selectedEvent.extendedProps);
     } else if (selectedDate) {
       setFormValues({
         date: selectedDate,
@@ -55,15 +58,22 @@ const CalendarInputForm = ({
     });
   };
 
-  const handleClick = () => {
-    console.log("Form values : ", formValues);
-    addEvent(formValues);
+  const handleSubmit = (e) => {
+    console.log("handleSubmit");
+    selectedEvent
+      ? updateEvent({ ...formValues, id: selectedEvent.id })
+      : addEvent(formValues);
+  };
+
+  const handleDelete = () => {
+    console.log("handleDelete");
+    deleteEvent();
   };
 
   return (
     <div className="xl:absolute xl:left-3/4 xl:top-56">
-      <span label="보이기/숨기기" onClick={toggleInputForm}>
-        &lt;&lt;
+      <span className="hover:cursor-pointer" onClick={toggleInputForm}>
+        보이기/숨기기
       </span>
       {isInputFormVisible && (
         <div>
@@ -140,7 +150,11 @@ const CalendarInputForm = ({
             value={formValues.memo}
             onChange={handleChange}
           />
-          <Button label="작성" onClick={handleClick} />
+          <Button
+            label={selectedEvent ? "수정" : "작성"}
+            onClick={handleSubmit}
+          />
+          {selectedEvent ? <Button label="삭제" onClick={handleDelete} /> : ""}
         </div>
       )}
     </div>
