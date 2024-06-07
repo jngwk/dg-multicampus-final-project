@@ -27,14 +27,11 @@ public class Trainer {
     @JoinColumn(name= "trainerId", referencedColumnName = "userId")
     private User user;
 
-<<<<<<< HEAD
     private String trainerCareer;
     private String trainerAbout;
     private String trainerImage;
-=======
     @ManyToOne
     @JoinColumn(name = "gymId")
     private Gym gym;
 
->>>>>>> ba3362b52931517825a6da50ce944c0a8feb3fb5
 }
