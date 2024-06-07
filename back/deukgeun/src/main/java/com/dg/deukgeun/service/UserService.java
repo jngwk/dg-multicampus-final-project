@@ -157,6 +157,20 @@ public class UserService {
                 
                 // Save the updated user entity
                 userRepository.save(user);
+                
+                // If user is a trainer, update trainer information as well
+                if ("trainer".equals(user.getCategory())) {
+                    Optional<Trainer> trainerOptional = trainerRepository.findByUser_UserId(user.getUserId());
+                    if (trainerOptional.isPresent()) {
+                        Trainer trainer = trainerOptional.get();
+                        trainer.setTrainerCareer(dto.getTrainerCareer());
+                        trainer.setTrainerAbout(dto.getTrainerAbout());
+                        trainer.setTrainerImage(dto.getTrainerImage());
+                        trainerRepository.save(trainer);
+                    } else {
+                        return ResponseDTO.setFailed("해당 사용자의 트레이너 정보를 찾을 수 없습니다.");
+                    }
+                }
     
                 return ResponseDTO.setSuccess("사용자 정보가 성공적으로 업데이트되었습니다.");
             } else {

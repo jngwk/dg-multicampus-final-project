@@ -26,7 +26,7 @@ public class Trainer {
     @JoinColumn(name= "trainerId", referencedColumnName = "userId")
     private User user;
 
-    private String trainerCarrer;
+    private String trainerCareer;
     private String trainerAbout;
     private String trainerImage;
 }
