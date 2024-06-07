@@ -1,7 +1,11 @@
 spring:
   application:
     name: deukgeun
+<<<<<<< HEAD
   datasource: # DB 내용 수정
+=======
+  datasource:
+>>>>>>> ba3362b52931517825a6da50ce944c0a8feb3fb5
     url: jdbc:mysql://localhost:3306/dgdb
     username: scott
     password: tiger
@@ -17,9 +21,39 @@ spring:
     multipart:
       max-request-size: 30MB
       max-file-size: 10MB
+  rabbitmq:
+    host: localhost
+    port: 5672
+  mvc:
+    cors:
+      allowed-origins: "*"
+    # view:
+    #   prefix: "/WEB-INF/views/"
+    #   suffix: ".jsp"
+    #   # jsp를 구동하기위해 추가
+
+  thymeleaf:
+    prefix: "classpath:/templates/"
+    suffix: ".html"
+    # html구동하기위해 추가
+
 com:
   conan:
     upload:
       path: upload
+
 server:
   port: 8282
+
+# rabbitmq 값을 dynamic하게 사용하기 위한 값
+rabbitmq:
+  queue:
+    name: dgQueue
+    json:
+      name: dqJsonQueue
+  exchange:
+    name: dgExchange
+  routing:
+    key: chat.#
+    json:
+      key: dgRoutingJsonKey
