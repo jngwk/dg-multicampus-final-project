@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from "react";
 import { createBrowserRouter } from "react-router-dom";
-
+import signUp from "./signUp";
 const Loading = <div>Loading...</div>;
 
 const Main = lazy(() => import("../pages/Main"));
@@ -32,6 +32,7 @@ const root = createBrowserRouter([
       </Suspense>
     ),
   },
+  ...signUp.routes,
 ]);
 
 export default root;
