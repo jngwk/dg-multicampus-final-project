@@ -9,10 +9,16 @@ import { v4 as uuidv4 } from "uuid";
 import Button from "../components/shared/Button";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
-import { registerWorkoutSession } from "../api/workoutSessionApi";
+import {
+  registerWorkoutSession,
+  modifyWorkoutSession,
+  deleteWorkoutSession,
+} from "../api/workoutSessionApi";
 
 // TODO 트레이나/일반 구분하기
 const CalendarPage = () => {
+  // TODO TOKEN 에서 받아오기
+  const userId = 1;
   const [events, setEvents] = useState(() => {
     // TODO DB에 저장된 값들 불러와서 캘린더에 추가
     // local storage에서 저장된 이벤트 받아오기
@@ -24,7 +30,7 @@ const CalendarPage = () => {
     new Date().toISOString().split("T")[0]
     // TODO custom hook으로 사용할지 고민
   );
-  const [selectedEvent, setSelectedEvent] = useState("");
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [isInputFormVisible, setIsInputFormVisible] = useState(false);
   const [error, setError] = useState("");
 
@@ -32,80 +38,89 @@ const CalendarPage = () => {
   // addEvent로 event 추가 후 events 업데이트가 되면 localStorage에 저장
   useEffect(() => {
     localStorage.setItem("events", JSON.stringify(events));
+    // console.log("Events updated: ", events);
   }, [events]);
 
   const addEvent = async (formValues) => {
     // events에 추가
     try {
       // userId 1인 회원 만들고 테스트
-      const result = await registerWorkoutSession(1, formValues);
+      const result = await registerWorkoutSession(userId, formValues);
       console.log(result);
+      const newEvent = formatFormValues(formValues, result.workoutSessionId);
+      setEvents((prevEvents) => [...prevEvents, newEvent]);
+      setSelectedEvent(newEvent);
+      // console.log("이벤트 추가: ", newEvent);
     } catch (error) {
       setError("데이터 베이스에 저장하는데 실패했습니다.");
-      alert(error);
+      console.log("Register post mapping error: ", error);
     }
-    const newEvent = formatFormValues(formValues);
-    setEvents((prevEvents) => [...prevEvents, newEvent]);
-    setSelectedEvent(newEvent);
-    console.log("이벤트 추가: ", newEvent);
   };
 
-  // TODO 인풋폼 데이터 형태를 캘린더 JSON과 동일하게 변경 후 코드 전체적으로 수정
-  // TODO 선택된 이벤트 업데이트
-  const updateEvent = (formValues) => {
-    const updatedEvent = formatFormValues(formValues, selectedEvent.id);
-    const updatedEvents = events.map((event) =>
-      event.id === selectedEvent.id ? updatedEvent : event
-    );
-    setEvents(updatedEvents);
+  const updateEvent = async (formValues) => {
+    try {
+      // userId 1인 회원 만들고 테스트
+      const result = await modifyWorkoutSession(
+        userId,
+        formValues,
+        selectedEvent.id
+      );
+      console.log(result);
+      const updatedEvent = formatFormValues(formValues, selectedEvent.id);
+      const updatedEvents = events.map((event) =>
+        event.id == selectedEvent.id ? updatedEvent : event
+      );
+      setEvents(updatedEvents);
+      // console.log("이벤트 업데이트: ", updatedEvent);
+    } catch (error) {
+      setError("데이터 베이스에 업데이트하는데 실패했습니다.");
+      console.log("Modify put mapping error: ", error);
+    }
   };
 
   // 선택된 이벤트 삭제
-  const deleteEvent = () => {
-    const updatedEvents = events.filter(
-      (event) => event.id !== selectedEvent.id
-    );
-    setEvents(updatedEvents);
-    setIsInputFormVisible(false);
+  const deleteEvent = async () => {
+    try {
+      const result = await deleteWorkoutSession(selectedEvent.id);
+      console.log(result);
+      const updatedEvents = events.filter(
+        (event) => event.id != selectedEvent.id
+      );
+      setSelectedEvent(null);
+      setEvents(updatedEvents);
+      setIsInputFormVisible(false);
+    } catch (error) {
+      setError("데이터 베이스에서 삭제하는데 실패했습니다.");
+      console.log("Delete mapping error: ", error);
+    }
   };
 
   // 날짜 클릭시
   const handleDateClick = (info) => {
-    console.log(info);
     setSelectedDate(info.dateStr);
-    console.log("Selected date: ", selectedDate);
     setSelectedEvent(null);
     // 운동 추가 창 띄우기
-    !isInputFormVisible && toggleInputForm();
+    setIsInputFormVisible(true);
   };
 
   // 이벤트 클릭시
   // TODO 내용 수정 및 삭제 가능하게 하기
   const handleEventClick = (info) => {
-    console.log("Event details:", info.event);
-    console.log("Event extendedProps:", info.event.extendedProps);
-    // event에 있는 값들 폼으로 옮기기
     setSelectedEvent(info.event);
     setSelectedDate(null);
-
     // 기록된 운동 창 띄우기
     setIsInputFormVisible(true);
   };
 
   // 이벤트 드래그 & 드롭시 날짜 및 시간 변경
   const handleEventDrop = (info) => {
-    // console.log("Info ID", info.event.id);
     const updatedEvents = events.map((event) => {
-      // console.log("Event ID", event.id);
-      if (event.id === info.event.id) {
-        console.log(info.event.startStr);
-        console.log(info.event.endStr);
-
+      if (event.id == info.event.id) {
+        console.log(info.event);
         const start = info.event.startStr;
         const startDate = start.split("T")[0];
         const startTime = formatTime(start.split("T")[1]);
 
-        // TODO end가 null인 것 확인 필요
         const end = info.event.endStr;
         const endDate = end.split("T")[0];
         const endTime = end ? formatTime(end.split("T")[1]) : "";
@@ -118,9 +133,11 @@ const CalendarPage = () => {
           endTime: endTime,
         };
 
-        const updatedEvent = formatFormValues(updatedFormValues);
-        setSelectedEvent(updatedEvent);
-        return updatedEvent;
+        setSelectedEvent(info.event);
+
+        updateEvent(updatedFormValues);
+
+        return formatFormValues(updatedFormValues, event.id);
       }
       return event;
     });
@@ -129,7 +146,7 @@ const CalendarPage = () => {
   };
 
   const handleDeleteAll = () => {
-    setEvents("");
+    setEvents([]);
     setIsInputFormVisible(false);
   };
 
@@ -143,17 +160,18 @@ const CalendarPage = () => {
 
   // 시간 포맷
   const formatTime = (timeString) => {
-    return timeString.split("+")[0];
+    const time = timeString.split("+")[0];
+    const formattedTime = time.split(":")[0] + ":" + time.split(":")[1];
+    console.log(formattedTime);
+    return formattedTime;
   };
 
   const customTitleFormat = ({ date }) => {
-    // console.log(date);
     return format(date.marker, "yyyy년 M월", { locale: ko });
   };
 
   // formValue를 event 객체의 포맷과 동일하게 수정
   const formatFormValues = (formValues, selectedEventId) => {
-    // 선택된 event가 있으면 해당 아이디 사용
     const id = selectedEventId ? selectedEventId : uuidv4();
     return {
       id: id,
@@ -208,4 +226,5 @@ const CalendarPage = () => {
     </Layout>
   );
 };
+
 export default CalendarPage;
