@@ -24,7 +24,7 @@ export const registerWorkoutSession = async (userId, event) => {
 export const modifyWorkoutSession = async (userId, event, eventId) => {
   console.log("Updating event: ", event);
   try {
-    const response = await axios.put(`${prefix}/${eventId}`, {
+    const response = await axios.put(`${prefix}/modify/${eventId}`, {
       workoutSessionId: eventId,
       userId: userId,
       workoutDate: event.date,
@@ -43,17 +43,18 @@ export const modifyWorkoutSession = async (userId, event, eventId) => {
 
 export const deleteWorkoutSession = async (eventId) => {
   try {
-    const response = await axios.delete(`${prefix}/${eventId}`);
+    const response = await axios.delete(`${prefix}/delete/${eventId}`);
     return response.data;
   } catch (error) {
     throw new Error("Delete workout session failed...");
   }
 };
 
-export const getWorkoutSessions = async (userId, yearMonth) => {
+export const getWorkoutSessions = async (startDate, endDate, userId) => {
   try {
-    const response = await axios.post(`${prefix}/${yearMonth}/${userId}`);
-
+    const response = await axios.get(
+      `${prefix}/get/${startDate}/${endDate}/${userId}`
+    );
     return response.data;
   } catch (error) {
     throw new Error("Get workout sessions failed...");

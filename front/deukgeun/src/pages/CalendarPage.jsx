@@ -13,6 +13,7 @@ import {
   registerWorkoutSession,
   modifyWorkoutSession,
   deleteWorkoutSession,
+  getWorkoutSessions,
 } from "../api/workoutSessionApi";
 
 // TODO 트레이나/일반 구분하기
@@ -38,7 +39,7 @@ const CalendarPage = () => {
   // addEvent로 event 추가 후 events 업데이트가 되면 localStorage에 저장
   useEffect(() => {
     localStorage.setItem("events", JSON.stringify(events));
-    // console.log("Events updated: ", events);
+    console.log("Events updated: ", events);
   }, [events]);
 
   const addEvent = async (formValues) => {
@@ -92,6 +93,23 @@ const CalendarPage = () => {
     } catch (error) {
       setError("데이터 베이스에서 삭제하는데 실패했습니다.");
       console.log("Delete mapping error: ", error);
+    }
+  };
+
+  // 날짜 range 변경시
+  const handleDatesSet = async (info) => {
+    const startDate = info.startStr.split("T")[0];
+    const endDate = info.endStr.split("T")[0];
+
+    console.log(startDate);
+    try {
+      const result = await getWorkoutSessions(startDate, endDate, userId);
+      console.log("Get result: ", result);
+      const newEvents = result.map((session) => formatSessionToEvent(session));
+      setEvents(newEvents);
+    } catch (error) {
+      setError("데이터 베이스에서 불러오는데 실패했습니다.");
+      console.log("Get mapping error: ", error);
     }
   };
 
@@ -170,6 +188,18 @@ const CalendarPage = () => {
     return format(date.marker, "yyyy년 M월", { locale: ko });
   };
 
+  // DB에서 받아온 data를 format
+  const formatSessionToEvent = (session) => {
+    return {
+      id: session.workoutSessionId,
+      title: session.content,
+      start: new Date(`${session.workoutDate}T${session.startTime}`),
+      end: new Date(`${session.workoutDate}T${session.endTime}`),
+      color: "#ffbe98",
+      extendedProps: session,
+    };
+  };
+
   // formValue를 event 객체의 포맷과 동일하게 수정
   const formatFormValues = (formValues, selectedEventId) => {
     const id = selectedEventId ? selectedEventId : uuidv4();
@@ -190,6 +220,7 @@ const CalendarPage = () => {
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
           titleFormat={(date) => customTitleFormat(date)}
+          datesSet={handleDatesSet}
           headerToolbar={{
             start: "",
             center: "title",

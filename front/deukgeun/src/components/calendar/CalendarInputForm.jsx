@@ -123,7 +123,7 @@ const CalendarInputForm = ({
             label="날짜"
             name="date"
             type="date"
-            value={formValues.date}
+            value={formValues.date || ""}
             onChange={handleChange}
           />
           <Input
@@ -131,7 +131,7 @@ const CalendarInputForm = ({
             name="startTime"
             type="time"
             step="1800"
-            value={formValues.startTime}
+            value={formValues.startTime || ""}
             onChange={handleChange}
           />
           <Input
@@ -139,7 +139,7 @@ const CalendarInputForm = ({
             name="endTime"
             type="time"
             step="1800"
-            value={formValues.endTime}
+            value={formValues.endTime || ""}
             onChange={handleChange}
           />
           <hr />
@@ -152,7 +152,7 @@ const CalendarInputForm = ({
           <Input
             label="제목"
             name="content"
-            value={formValues.content}
+            value={formValues.content || ""}
             onChange={handleChange}
           />
 
@@ -162,28 +162,28 @@ const CalendarInputForm = ({
               <Input
                 label="운동"
                 name="workoutName"
-                value={workout.workoutName}
+                value={workout.workoutName || ""}
                 onChange={(e) => handleWorkoutChange(index, e)}
               />
               <Input
                 label="SET"
                 name="workoutSet"
                 type="number"
-                value={workout.workoutSet}
+                value={workout.workoutSet || ""}
                 onChange={(e) => handleWorkoutChange(index, e)}
               />
               <Input
                 label="REP"
                 name="workoutRep"
                 type="number"
-                value={workout.workoutRep}
+                value={workout.workoutRep || ""}
                 onChange={(e) => handleWorkoutChange(index, e)}
               />
               <Input
                 label="무게(KG)"
                 name="workoutWeight"
                 type="number"
-                value={workout.workoutWeight}
+                value={workout.workoutWeight || ""}
                 onChange={(e) => handleWorkoutChange(index, e)}
               />
             </div>
@@ -194,13 +194,13 @@ const CalendarInputForm = ({
             label="몸무게(KG)"
             name="bodyWeight"
             type="number"
-            value={formValues.bodyWeight}
+            value={formValues.bodyWeight || ""}
             onChange={handleChange}
           />
           <Input
             label="메모"
             name="memo"
-            value={formValues.memo}
+            value={formValues.memo || ""}
             onChange={handleChange}
           />
           <Button
