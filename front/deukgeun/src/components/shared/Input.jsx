@@ -9,6 +9,9 @@ export default function Input({
   width = "240px",
   value = "",
   step,
+  required = false,
+  error = "",
+  message = "",
   validationState = null, // 'valid', 'invalid', or null
   ...props
 }) {
@@ -18,14 +21,14 @@ export default function Input({
   const handleBlur = () => setFocus(false);
 
   const getBorderColor = () => {
-    if (validationState === "invalid") return "border-red-500";
-    if (validationState === "valid") return "border-green-400";
+    if (error) return "border-red-500";
+    if (message) return "border-green-400";
     return focus ? "border-peach-fuzz" : "border-gray-400";
   };
 
   const getLabelColor = () => {
-    if (validationState === "invalid") return "text-red-500";
-    if (validationState === "valid") return "text-green-400";
+    if (error) return "text-red-500";
+    if (message) return "text-green-400";
     return focus ? "text-peach-fuzz" : "text-gray-400";
   };
 
@@ -35,14 +38,20 @@ export default function Input({
     return "left-4 top-3 text-sm";
   };
 
+  const getLabelAfter = () => {
+    if (required) {
+      return "after:content-['*'] after:ml-0.5 after:text-red-500";
+    }
+    return;
+  };
+
   return (
-    <div className={`relative my-2`} style={{ width }}>
+    <div className={`relative my-2 `} style={{ width }}>
       <input
-        style={{ height }}
+        style={{ height, width }}
         type={type}
-        height={height}
-        className={`py-3 px-4 block w-full appearance-none bg-transparent border rounded-lg 
-        ${getBorderColor()} focus:border-2 focus:outline-none focus:ring-0 text-sm peer ${className}`}
+        className={` py-3 px-4 block w-full appearance-none bg-transparent border rounded-lg
+        ${getBorderColor()} focus:border-2 focus:outline-none focus:ring-0 text-sm peer ${className} `}
         onFocus={handleFocus}
         onBlur={handleBlur}
         value={value}
@@ -50,10 +59,12 @@ export default function Input({
         {...props}
       />
       <label
-        className={`bg-white absolute transition-all duration-200 ease-in-out pointer-events-none  ${getLabelPosition()} ${getLabelColor()} `}
+        className={`bg-white absolute transition-all duration-200 ease-in-out pointer-events-none  ${getLabelPosition()} ${getLabelColor()} ${getLabelAfter()}`}
       >
         {label}
       </label>
+      {error && <p className="px-2 text-xs text-red-500 mt-1">{error}</p>}
+      {message && <p className="px-2 text-xs text-green-500 mt-1">{message}</p>}
       {/* input 우측 끝에 icon 혹은 버튼 넣기 */}
     </div>
   );

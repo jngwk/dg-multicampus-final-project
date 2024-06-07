@@ -1,29 +1,30 @@
 package com.dg.deukgeun.service;
 
 import java.util.Optional;
-import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.dg.deukgeun.entity.Trainer;
-import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.LoginResponseDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
-import com.dg.deukgeun.dto.user.UserSignUpDTO;
 import com.dg.deukgeun.dto.user.UpdateUserDTO;
+import com.dg.deukgeun.dto.user.UserSignUpDTO;
+import com.dg.deukgeun.dto.user.UserWithTrainerDTO;
+import com.dg.deukgeun.entity.Trainer;
+import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.TrainerRepository;
 import com.dg.deukgeun.repository.UserRepository;
 import com.dg.deukgeun.security.TokenProvider;
-import com.dg.deukgeun.dto.user.UserWithTrainerDTO;
 
 @Service
 public class UserService {
 
-    @Autowired UserRepository userRepository;
-    @Autowired TokenProvider tokenProvider;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    TokenProvider tokenProvider;
 
     @Autowired
     TrainerRepository trainerRepository;
@@ -47,7 +48,6 @@ public class UserService {
         if (!password.equals(dto.getPassword())) {
             return ResponseDTO.setFailed("비밀번호가 일치하지 않습니다.");
         }
-
 
         // UserEntity 생성
         User user = new User(dto);
@@ -95,7 +95,7 @@ public class UserService {
 
         // Client에 비밀번호 제공 방지
         user.setPassword("");
- 
+
         int exprTime = 3600; // 1h
         String token;
 
@@ -117,7 +117,7 @@ public class UserService {
                 User userEntity = userOptional.get();
                 // 사용자 비밀번호 필드를 빈 문자열로 설정하여 보안성을 유지
                 userEntity.setPassword("");
-                
+
                 // 사용자가 트레이너인 경우
                 if ("trainer".equals(userEntity.getCategory())) {
                     Optional<Trainer> trainerOptional = trainerRepository.findByUser_UserId(userEntity.getUserId());
@@ -130,7 +130,7 @@ public class UserService {
                         return ResponseDTO.setFailed("해당 이메일로 가입된 트레이너를 찾을 수 없습니다.");
                     }
                 }
-                
+
                 // 사용자가 일반 사용자인 경우
                 return ResponseDTO.setSuccessData("사용자 정보를 조회했습니다.", new UserWithTrainerDTO(userEntity, null));
             } else {
@@ -143,21 +143,21 @@ public class UserService {
 
     public ResponseDTO<?> updateUser(UpdateUserDTO dto) {
         String email = dto.getEmail();
-    
+
         try {
             // Find user by email
             Optional<User> userOptional = userRepository.findByEmail(email);
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
-                
+
                 // Update the user information
                 user.setUserName(dto.getUserName());
                 user.setEmail(dto.getEmail());
                 user.setAddress(dto.getAddress());
-                
+
                 // Save the updated user entity
                 userRepository.save(user);
-                
+
                 // If user is a trainer, update trainer information as well
                 if ("trainer".equals(user.getCategory())) {
                     Optional<Trainer> trainerOptional = trainerRepository.findByUser_UserId(user.getUserId());
@@ -171,7 +171,7 @@ public class UserService {
                         return ResponseDTO.setFailed("해당 사용자의 트레이너 정보를 찾을 수 없습니다.");
                     }
                 }
-    
+
                 return ResponseDTO.setSuccess("사용자 정보가 성공적으로 업데이트되었습니다.");
             } else {
                 return ResponseDTO.setFailed("해당 이메일로 가입된 사용자를 찾을 수 없습니다.");
