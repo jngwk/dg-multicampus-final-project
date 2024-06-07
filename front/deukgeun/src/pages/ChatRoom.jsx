@@ -9,7 +9,7 @@ import { IoChatbubbles, IoAddCircle  } from "react-icons/io5";
 export default function ChatRoom() {
     return (
         <Layout>
-        <div className="absolute top-[15%] left-[7%] w-5/6 py-7">
+        <div className="absolute top-[15%] left-[7%] w-5/6 py-5">
         <div className="flex items-center w-[920px] px-10 pb-2 ">
           <IoChatbubbles color="#ffbe98" size="56"/> 
           <span className="font-semibold text-2xl mx-3 "> 득-근 CHAT </span>
