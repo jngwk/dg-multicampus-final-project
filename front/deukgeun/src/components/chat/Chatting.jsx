@@ -91,13 +91,13 @@ function ShowChatList({ chatList }) {
     return (
       <div key={i}>
         <article>
-          <div className="flex space-y-1 items-end justify-end">
+          <div className="flex items-end justify-end p-1 ">
             {showTime && (
               <span>
                 <Clock className="current_time text-xs" format={"A HH:mm"} ticking={false} timezone={"Asia/Seoul"} />
               </span>
             )}
-            <p className="m-3 px-10 py-2 rounded-xl bg-grayish-red bg-opacity-20 max-w-xs max-h-fit text-xs">
+            <p className="ml-3 px-10 py-2 rounded-xl bg-grayish-red bg-opacity-20 max-w-xs max-h-fit text-xs">
               {chat.text}
             </p>
           </div>

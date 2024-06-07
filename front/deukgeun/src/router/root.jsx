@@ -1,11 +1,13 @@
 import React, { Suspense, lazy } from "react";
 import { createBrowserRouter } from "react-router-dom";
-
+import signUp from "./signUp";
 const Loading = <div>Loading...</div>;
 
 const Main = lazy(() => import("../pages/Main"));
 const ChartPage = lazy(() => import("../pages/ChartPage"));
 const ChatRoom = lazy(() => import("../pages/ChatRoom"));
+const CalendarPage = lazy(() => import("../pages/CalendarPage"));
+const UserInfoPage = lazy(() => import("../components/modals/MyInfo"));
 
 const root = createBrowserRouter([
   {
@@ -32,6 +34,22 @@ const root = createBrowserRouter([
       </Suspense>
     ),
   },
+  {  path: "/calender",
+    element: (
+      <Suspense fallback={Loading}>
+        <CalendarPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/myInfo",
+    element: (
+      <Suspense fallback={Loading}>
+        <UserInfoPage />
+      </Suspense>
+    ),
+  },
+  ...signUp.routes,
 ]);
 
 export default root;

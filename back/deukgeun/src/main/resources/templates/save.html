@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -7,9 +7,9 @@
 </head>
 
 <body>
-    <!-- action : form에 작성한 데이터를 어디로 보낼지 지정 -->
+    action : form에 작성한 데이터를 어디로 보낼지 지정
     <form action="/save" method="post">
-        <!-- name : 서버로 전송 할 때 변수이름의 역할 -->
+        name : 서버로 전송 할 때 변수이름의 역할
         이름 : <input type="text" name="userName"> <br>
         이메일 : <input type="email" name="email"> <br>
         비밀번호 : <input type="password" name="password"> <br>
@@ -24,7 +24,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const urlParams = new URLSearchParams(window.location.search);
+            const urlParams = new URLSearchParams(window.location.search);s
             const errorMessage = urlParams.get('error');
             const userName = urlParams.get('userName');
             const email = urlParams.get('email');
@@ -55,4 +55,4 @@
     </script>
 </body>
 
-</html>
+</html> -->

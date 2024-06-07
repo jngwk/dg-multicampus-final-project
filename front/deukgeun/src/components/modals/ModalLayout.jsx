@@ -3,7 +3,7 @@ import React from "react";
 const ModalLayout = ({ children, toggleModal }) => {
   return (
     <div
-      className="fixed top-0 left-0 w-full h-full bg-black/60 flex justify-center items-center z-10"
+      className="fixed top-0 left-0 w-full h-full bg-black/60 flex justify-center items-center z-50"
       onClick={toggleModal}
     >
       <div
