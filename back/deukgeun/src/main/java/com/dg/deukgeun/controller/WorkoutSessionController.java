@@ -91,9 +91,9 @@ public class WorkoutSessionController {
     }
 
     // workoutSession 수정
-    @PutMapping("/{yearMonth}/{workoutSessionId}")
+    @PutMapping("/{workoutSessionId}")
     public Map<String, String> modify(@PathVariable(name = "workoutSessionId") Integer workoutSessionId,
-            WorkoutSessionDTO workoutSessionDTO) {
+            @RequestBody WorkoutSessionDTO workoutSessionDTO) {
         workoutSessionDTO.setWorkoutSessionId(workoutSessionId);
         log.info("Modify: " + workoutSessionDTO);
         service.modify(workoutSessionDTO);
@@ -101,7 +101,7 @@ public class WorkoutSessionController {
     }
 
     // workoutSession 삭제
-    @DeleteMapping("/{yearMonth}/{workoutSessionId}")
+    @DeleteMapping("/{workoutSessionId}")
     public Map<String, String> remove(@PathVariable(name = "workoutSessionId") Integer workoutSessionId) {
         log.info("Remove: " + workoutSessionId);
         service.remove(workoutSessionId);

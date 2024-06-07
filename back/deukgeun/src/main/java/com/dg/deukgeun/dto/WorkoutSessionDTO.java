@@ -23,8 +23,8 @@ public class WorkoutSessionDTO {
     private String content;
     private Double bodyWeight;
     private String memo;
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="hh:mm")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="HH:mm")
     private LocalTime startTime;
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="hh:mm")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="HH:mm")
     private LocalTime endTime;
 }
