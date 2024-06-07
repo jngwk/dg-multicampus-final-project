@@ -40,7 +40,8 @@ public class WorkoutSessionController {
     @GetMapping("/{yearMonth}")
     public List<WorkoutSessionDTO> get(@PathVariable(name="yearMonth") String yearMonth){
         LocalDate startDate = LocalDate.parse(yearMonth+"-01");
-        LocalDate endDate = startDate.plusMonths(1);
+        LocalDate endDate = startDate.plusMonths(2);
+        startDate = startDate.minusMonths(1);
         
         return service.get(startDate, endDate);
     }
