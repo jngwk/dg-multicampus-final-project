@@ -24,5 +24,5 @@ public class Workout {
     private String workoutName;
     private int workoutSet;
     private int workoutRep;
-    private int weight;
+    private int workoutWeight;
 }
