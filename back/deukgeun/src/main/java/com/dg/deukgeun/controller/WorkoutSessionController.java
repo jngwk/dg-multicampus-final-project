@@ -41,7 +41,11 @@ public class WorkoutSessionController {
     @GetMapping("/{yearMonth}/{userId}")
     public List<WorkoutSessionDTO> get(@PathVariable(name = "yearMonth") String yearMonth,
             @PathVariable(name = "userId") Integer userId) {
-        LocalDate startDate = LocalDate.parse(yearMonth + "-01");
+        String[] days = yearMonth.split("-");
+        Integer year = Integer.parseInt(days[0]);
+        Integer month = Integer.parseInt(days[1]);
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        // LocalDate startDate = LocalDate.parse(yearMonth + "-01");
         LocalDate endDate = startDate.plusMonths(2);
         startDate = startDate.minusMonths(1);
 
@@ -76,7 +80,6 @@ public class WorkoutSessionController {
         workoutSessionDTO.setPtSessionId(workoutSessionRequest.getPtSessionId());
         workoutSessionDTO.setUserId(workoutSessionRequest.getUserId());
         workoutSessionDTO.setWorkoutDate(workoutSessionRequest.getWorkoutDate());
-        workoutSessionDTO.setPtSessionId(workoutSessionRequest.getPtSessionId());
         workoutSessionDTO.setStartTime(workoutSessionRequest.getStartTime());
         workoutSessionDTO.setEndTime(workoutSessionRequest.getEndTime());
 
