@@ -1,6 +1,7 @@
 package com.dg.deukgeun.entity;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,4 +29,6 @@ public class WorkoutSession {
     private String content;
     private Double bodyWeight;
     private String memo;
+    private LocalTime startTime;
+    private LocalTime endTime;
 }

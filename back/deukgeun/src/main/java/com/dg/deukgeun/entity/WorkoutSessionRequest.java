@@ -1,6 +1,7 @@
 package com.dg.deukgeun.entity;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import com.dg.deukgeun.dto.WorkoutDTO;
@@ -15,5 +16,7 @@ public class WorkoutSessionRequest {
     private String content;
     private Double bodyWeight;
     private String memo;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private List<WorkoutDTO> workout;
 }

@@ -3,6 +3,8 @@ package com.dg.deukgeun.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,4 +23,8 @@ public class WorkoutSessionDTO {
     private String content;
     private Double bodyWeight;
     private String memo;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="hh:mm")
+    private LocalTime startTime;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="hh:mm")
+    private LocalTime endTime;
 }
