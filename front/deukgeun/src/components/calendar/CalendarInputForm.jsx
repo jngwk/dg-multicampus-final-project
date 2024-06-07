@@ -19,20 +19,29 @@ const CalendarInputForm = ({
     date: "",
     startTime: "",
     endTime: "",
-    client: "",
-    summary: "",
-    workout: "",
-    set: "",
-    rep: "",
-    liftWeight: "",
+    // client: "",
+    content: "",
     bodyWeight: "",
     memo: "",
+    workouts: [
+      { workoutName: "", workoutSet: "", workoutRep: "", workoutWeight: "" },
+    ],
   });
 
   // 날짜/이벤트 선택시 폼에 반영
   useEffect(() => {
     if (selectedEvent) {
-      setFormValues(selectedEvent.extendedProps);
+      setFormValues({
+        ...selectedEvent.extendedProps,
+        workouts: selectedEvent.extendedProps.workouts || [
+          {
+            workoutName: "",
+            workoutSet: "",
+            workoutRep: "",
+            workoutWeight: "",
+          },
+        ],
+      });
       console.log("selectedEvent", selectedEvent);
     } else if (selectedDate) {
       const selectedTime = selectedDate.split("T")[1];
@@ -40,17 +49,56 @@ const CalendarInputForm = ({
         date: selectedDate.split("T")[0],
         startTime: selectedTime ? computeTime(selectedTime) : getTime(),
         endTime: selectedTime ? computeTime(selectedTime, 0.5) : getTime(1),
+        workouts: [
+          {
+            workoutName: "",
+            workoutSet: "",
+            workoutRep: "",
+            workoutWeight: "",
+          },
+        ],
       });
-      // console.log("selectedDate: ", selectedDate);
       console.log("selectedTime: ", formValues.startTime);
     }
   }, [selectedDate, selectedEvent]);
 
+  // workout 제외 나머지 input 수정시
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues({
       ...formValues, // 기존 state 가져오기
       [name]: value, // state에서 name과 일치하는 value 수정
+    });
+  };
+
+  // workout 수정시
+  const handleWorkoutChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedWorkouts = [...formValues.workouts];
+    updatedWorkouts[index] = {
+      ...updatedWorkouts[index],
+      [name]: value,
+    };
+    setFormValues({
+      ...formValues,
+      workouts: updatedWorkouts,
+    });
+  };
+
+  // 새로운 workout input 추가
+  // TODO 빈 workout 예외 처리 필요
+  const handleAddWorkout = () => {
+    setFormValues({
+      ...formValues,
+      workouts: [
+        ...formValues.workouts,
+        {
+          workoutName: "",
+          workoutSet: "",
+          workoutRep: "",
+          workoutWeight: "",
+        },
+      ],
     });
   };
 
@@ -65,17 +113,17 @@ const CalendarInputForm = ({
   };
 
   return (
-    <div className="xl:absolute xl:left-3/4 xl:top-56">
+    <div className="xl:absolute xl:left-3/4 xl:top-56 h-4/6 w-72">
       <span className="hover:cursor-pointer" onClick={toggleInputForm}>
         보이기/숨기기
       </span>
       {isInputFormVisible && (
-        <div>
+        <div className="h-5/6 overflow-scroll overflow-x-hidden">
           <Input
             label="날짜"
             name="date"
             type="date"
-            value={formValues.date}
+            value={formValues.date || ""}
             onChange={handleChange}
           />
           <Input
@@ -83,7 +131,7 @@ const CalendarInputForm = ({
             name="startTime"
             type="time"
             step="1800"
-            value={formValues.startTime}
+            value={formValues.startTime || ""}
             onChange={handleChange}
           />
           <Input
@@ -91,59 +139,68 @@ const CalendarInputForm = ({
             name="endTime"
             type="time"
             step="1800"
-            value={formValues.endTime}
+            value={formValues.endTime || ""}
             onChange={handleChange}
           />
-          <Input
+          <hr />
+          {/* <Input
             label="회원"
             name="client"
             value={formValues.client}
             onChange={handleChange}
-          />
+          /> */}
           <Input
-            label="요약"
-            name="summary"
-            value={formValues.summary}
+            label="제목"
+            name="content"
+            value={formValues.content || ""}
             onChange={handleChange}
           />
-          <Input
-            label="운동"
-            name="workout"
-            value={formValues.workout}
-            onChange={handleChange}
-          />
-          <Input
-            label="SET"
-            name="set"
-            type="number"
-            value={formValues.set}
-            onChange={handleChange}
-          />
-          <Input
-            label="REP"
-            name="rep"
-            type="number"
-            value={formValues.rep}
-            onChange={handleChange}
-          />
-          <Input
-            label="무게(KG)"
-            name="liftWeight"
-            type="number"
-            value={formValues.liftWeight}
-            onChange={handleChange}
-          />
+
+          {formValues.workouts.map((workout, index) => (
+            <div key={index}>
+              <hr />
+              <Input
+                label="운동"
+                name="workoutName"
+                value={workout.workoutName || ""}
+                onChange={(e) => handleWorkoutChange(index, e)}
+              />
+              <Input
+                label="SET"
+                name="workoutSet"
+                type="number"
+                value={workout.workoutSet || ""}
+                onChange={(e) => handleWorkoutChange(index, e)}
+              />
+              <Input
+                label="REP"
+                name="workoutRep"
+                type="number"
+                value={workout.workoutRep || ""}
+                onChange={(e) => handleWorkoutChange(index, e)}
+              />
+              <Input
+                label="무게(KG)"
+                name="workoutWeight"
+                type="number"
+                value={workout.workoutWeight || ""}
+                onChange={(e) => handleWorkoutChange(index, e)}
+              />
+            </div>
+          ))}
+          <Button label="+" onClick={handleAddWorkout} />
+          <hr />
           <Input
             label="몸무게(KG)"
             name="bodyWeight"
             type="number"
-            value={formValues.bodyWeight}
+            value={formValues.bodyWeight || ""}
             onChange={handleChange}
           />
           <Input
             label="메모"
             name="memo"
-            value={formValues.memo}
+            value={formValues.memo || ""}
             onChange={handleChange}
           />
           <Button

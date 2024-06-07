@@ -43,7 +43,7 @@ public class User {
         this.password = dto.getPassword();
         this.token = "";
     }
-    
+
     // @Enumerated(EnumType.STRING)
     // private UserRole role;
 
