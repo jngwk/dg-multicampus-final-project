@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDateConverter;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,7 +41,11 @@ public class WorkoutSessionController {
     // arrayList 형태로 출력한다.
     @GetMapping("/{yearMonth}/{userId}")
     public List<WorkoutSessionDTO> get(@PathVariable(name = "yearMonth") String yearMonth, @PathVariable(name="userId") Integer userId) {
-        LocalDate startDate = LocalDate.parse(yearMonth + "-01");
+        String[] days = yearMonth.split("-");
+        Integer year = Integer.parseInt(days[0]);
+        Integer month = Integer.parseInt(days[1]);
+        LocalDate startDate = LocalDate.of(year,month,1);
+        // LocalDate startDate = LocalDate.parse(yearMonth + "-01");
         LocalDate endDate = startDate.plusMonths(2);
         startDate = startDate.minusMonths(1);
 
