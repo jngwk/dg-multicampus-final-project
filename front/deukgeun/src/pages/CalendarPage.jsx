@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import Button from "../components/shared/Button";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
+import { registerWorkoutSession } from "../api/workoutSessionApi";
 
 // TODO 트레이나/일반 구분하기
 const CalendarPage = () => {
@@ -25,6 +26,7 @@ const CalendarPage = () => {
   );
   const [selectedEvent, setSelectedEvent] = useState("");
   const [isInputFormVisible, setIsInputFormVisible] = useState(false);
+  const [error, setError] = useState("");
 
   // TODO DB에 새로운 event 저장
   // addEvent로 event 추가 후 events 업데이트가 되면 localStorage에 저장
@@ -32,8 +34,16 @@ const CalendarPage = () => {
     localStorage.setItem("events", JSON.stringify(events));
   }, [events]);
 
-  const addEvent = (formValues) => {
+  const addEvent = async (formValues) => {
     // events에 추가
+    try {
+      // userId 1인 회원 만들고 테스트
+      const result = await registerWorkoutSession(1, formValues);
+      console.log(result);
+    } catch (error) {
+      setError("데이터 베이스에 저장하는데 실패했습니다.");
+      alert(error);
+    }
     const newEvent = formatFormValues(formValues);
     setEvents((prevEvents) => [...prevEvents, newEvent]);
     setSelectedEvent(newEvent);
@@ -137,6 +147,7 @@ const CalendarPage = () => {
   };
 
   const customTitleFormat = ({ date }) => {
+    // console.log(date);
     return format(date.marker, "yyyy년 M월", { locale: ko });
   };
 
@@ -146,7 +157,7 @@ const CalendarPage = () => {
     const id = selectedEventId ? selectedEventId : uuidv4();
     return {
       id: id,
-      title: formValues.summary,
+      title: formValues.content,
       start: new Date(`${formValues.date}T${formValues.startTime}`),
       end: new Date(`${formValues.date}T${formValues.endTime}`),
       color: "#ffbe98",
