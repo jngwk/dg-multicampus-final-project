@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -26,7 +27,14 @@ public class Trainer {
     @JoinColumn(name= "trainerId", referencedColumnName = "userId")
     private User user;
 
+<<<<<<< HEAD
     private String trainerCareer;
     private String trainerAbout;
     private String trainerImage;
+=======
+    @ManyToOne
+    @JoinColumn(name = "gymId")
+    private Gym gym;
+
+>>>>>>> ba3362b52931517825a6da50ce944c0a8feb3fb5
 }

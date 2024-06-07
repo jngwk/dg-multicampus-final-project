@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
-import com.dg.deukgeun.dto.user.SignUpDTO;
+import com.dg.deukgeun.dto.user.UserSignUpDTO;
 import com.dg.deukgeun.repository.UserRepository;
 import com.dg.deukgeun.service.UserService;
 
@@ -25,7 +25,7 @@ public class UserController {
 
     //회원가입
     @PostMapping("/signUp")
-    public ResponseDTO<?> signUp(@RequestBody SignUpDTO requestBody) {
+    public ResponseDTO<?> signUp(@RequestBody UserSignUpDTO requestBody) {
         ResponseDTO<?> result = userService.signUp(requestBody);
         return result;
     }
