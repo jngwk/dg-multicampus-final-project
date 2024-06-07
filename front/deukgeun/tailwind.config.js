@@ -6,6 +6,8 @@ module.exports = {
     colors: {
       "peach-fuzz": "#ffbe98",
       "bright-orange": "#fe8742",
+      "grayish-red":"#9f8d8d",
+      "light-gray":"#E6E6E6",
       ...colors,
     },
     fontFamily: {
@@ -13,5 +15,5 @@ module.exports = {
     },
     extend: {},
   },
-  plugins: [],
+  plugins: [require('tailwind-scrollbar-hide')],
 };
