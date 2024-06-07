@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ModalLayout from "./ModalLayout";
 import logo from "../../assets/dg_logo_small.png";
 import Input from "../shared/Input";
@@ -8,52 +8,60 @@ import useCustomNavigate from "../../hooks/useCustomNavigate";
 import { login } from "../../api/loginApi";
 import { useAuth } from "../../context/AuthContext";
 
+const initErrors = { email: "", password: "", login: "" };
+
 const LoginModal = ({ toggleModal }) => {
-  const { moveToSignUp } = useCustomNavigate();
+  const customNavigate = useCustomNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [emailValidationState, setEmailValidationState] = useState(null);
-  const [passwordValidationState, setPasswordValidationState] = useState(null);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState(initErrors);
   const { addUserToSession } = useAuth();
+
+  useEffect(() => {
+    console.log("Updated Errors: ", errors);
+  }, [errors]);
 
   const handleEmailChange = (e) => {
     const value = e.target.value;
     setEmail(value);
-    setEmailValidationState(null);
+    setErrors((prevErrors) => {
+      const { email: removedError, ...restErrors } = prevErrors;
+      return restErrors;
+    });
   };
 
   const handlePasswordChange = (e) => {
     const value = e.target.value;
     setPassword(value);
-    setPasswordValidationState(null);
+    setErrors((prevErrors) => {
+      const { password: removedError, ...restErrors } = prevErrors;
+      return restErrors;
+    });
   };
 
   const validateInput = () => {
     let isInputValid = true;
+    const newErrors = { ...initErrors };
 
     if (!email) {
-      console.log("no-email");
       isInputValid = false;
-      setEmailValidationState("invalid");
-      // console.log("email validity", emailValidationState);
+      newErrors.email = "이메일을 입력해주세요";
     }
+
     if (!password) {
       isInputValid = false;
-      setPasswordValidationState("invalid");
-      // console.log("password validity", passwordValidationState);
+      newErrors.password = "비밀번호를 입력해주세요";
     }
+
+    setErrors(newErrors);
     return isInputValid;
   };
 
   const handleLogin = async () => {
     console.log("login clicked");
-    setError("");
-    setEmailValidationState(null);
-    setPasswordValidationState(null);
     if (!validateInput()) {
       console.log("Input validation failed");
-      setError("이메일과 비밀번호를 입력해주세요.");
+      console.log(errors);
       return;
     }
     try {
@@ -65,14 +73,10 @@ const LoginModal = ({ toggleModal }) => {
         console.log("로그인 성공", data);
         toggleModal(); // 로그인 성공시 팝업 닫음
       } else {
-        setError("로그인 정보가 일치하지 않습니다.");
-        setEmailValidationState("invalid");
-        setPasswordValidationState("invalid");
+        setErrors({ ...initErrors, login: "로그인 정보가 일치하지 않습니다." });
       }
-    } catch (error) {
-      setError("로그인에 실패했습니다. 다시 시도하세요.");
-      setEmailValidationState("invalid");
-      setPasswordValidationState("invalid");
+    } catch (errors) {
+      setErrors({ ...initErrors, login: "로그인에 실패했습니다." });
     }
   };
 
@@ -91,7 +95,7 @@ const LoginModal = ({ toggleModal }) => {
           value={email}
           onChange={handleEmailChange}
           onKeyPress={handleKeyPress}
-          validationState={emailValidationState}
+          error={errors.email}
         />
         <Input
           label="비밀번호"
@@ -99,9 +103,11 @@ const LoginModal = ({ toggleModal }) => {
           value={password}
           onChange={handlePasswordChange}
           onKeyPress={handleKeyPress}
-          validationState={passwordValidationState}
+          error={errors.password}
         />
-        {error && <div className="text-red-500 text-xs">{error}</div>}
+        {errors.login && (
+          <div className="text-red-500 text-xs">{errors.login}</div>
+        )}
 
         {/* find-password 모달띄우기 */}
         <Link
@@ -113,7 +119,11 @@ const LoginModal = ({ toggleModal }) => {
 
         <br />
         <Button onClick={handleLogin} color="peach-fuzz" label="로그인" />
-        <Button onClick={moveToSignUp} color="bright-orange" label="회원가입" />
+        <Button
+          onClick={() => customNavigate("/signUp/choose")}
+          color="bright-orange"
+          label="회원가입"
+        />
       </div>
     </ModalLayout>
   );
