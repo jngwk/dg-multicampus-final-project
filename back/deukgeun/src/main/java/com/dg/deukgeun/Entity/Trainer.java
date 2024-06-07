@@ -21,17 +21,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Trainer {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int trainerId;
 
-    private String trainerCarrer;
-    private String trainerAbout;
-    private String trainerImage;
-
     @OneToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name= "trainerId", referencedColumnName = "userId")
     private User user;
 
+    private String trainerCareer;
+    private String trainerAbout;
+    private String trainerImage;
     @ManyToOne
     @JoinColumn(name = "gymId")
     private Gym gym;
