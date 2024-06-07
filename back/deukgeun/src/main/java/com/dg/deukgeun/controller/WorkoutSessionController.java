@@ -79,7 +79,6 @@ public class WorkoutSessionController {
         workoutSessionDTO.setPtSessionId(workoutSessionRequest.getPtSessionId());
         workoutSessionDTO.setUserId(workoutSessionRequest.getUserId());
         workoutSessionDTO.setWorkoutDate(workoutSessionRequest.getWorkoutDate());
-        workoutSessionDTO.setPtSessionId(workoutSessionRequest.getPtSessionId());
         workoutSessionDTO.setStartTime(workoutSessionRequest.getStartTime());
         workoutSessionDTO.setEndTime(workoutSessionRequest.getEndTime());
 
