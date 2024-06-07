@@ -38,8 +38,8 @@ public class WorkoutSessionService {
         return dto;
     }
 
-    public List<WorkoutSessionDTO> get(LocalDate startDate, LocalDate endDate){
-        List<WorkoutSession> result = workoutSessionRepository.findByWorkoutDateBetween(startDate, endDate);
+    public List<WorkoutSessionDTO> get(Integer userId,LocalDate startDate, LocalDate endDate){
+        List<WorkoutSession> result = workoutSessionRepository.findByUserIdAndWorkoutDateBetween(userId,startDate, endDate);
         List<WorkoutSessionDTO> dtoList = new ArrayList<WorkoutSessionDTO>();
         for(int i=0;i<result.size();i++){
             dtoList.add(modelMapper.map(result.get(i),WorkoutSessionDTO.class));

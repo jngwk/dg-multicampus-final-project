@@ -57,7 +57,7 @@ public class WorkoutService {
     public void modify(WorkoutDTO workoutDTO){ //workoutId를 기준으로 update
         Optional<Workout> result = workoutRepository.findById(workoutDTO.getWorkoutId());
         Workout workout = result.orElseThrow();
-        workout.setWeight(workoutDTO.getWeight());
+        workout.setWorkoutWeight(workoutDTO.getWorkoutWeight());
         workout.setWorkoutName(workoutDTO.getWorkoutName());
         workout.setWorkoutRep(workoutDTO.getWorkoutRep());
         workout.setWorkoutSet(workoutDTO.getWorkoutSet());

@@ -19,7 +19,7 @@ public class WorkoutSessionRepositoryTest {
 
     @Test
     public void findByworkoutDate(){
-        List<WorkoutSession> wsList = workoutSessionRepository.findByWorkoutDateBetween(LocalDate.parse("2024-06-01"), LocalDate.parse("2024-07-01"));
+        List<WorkoutSession> wsList = workoutSessionRepository.findByUserIdAndWorkoutDateBetween(1,LocalDate.parse("2024-06-01"), LocalDate.parse("2024-07-01"));
         log.info(wsList);
     }
 }

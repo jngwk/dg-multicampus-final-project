@@ -19,7 +19,7 @@ public class WorkoutSessionServiceTest {
 
     @Test
     public void testGet(){
-        List<WorkoutSessionDTO> dtoList = workoutSessionService.get(LocalDate.parse("2024-06-01"), LocalDate.parse("2024-07-01"));
+        List<WorkoutSessionDTO> dtoList = workoutSessionService.get(1,LocalDate.parse("2024-06-01"), LocalDate.parse("2024-07-01"));
         log.info(dtoList);
     }
 }
