@@ -18,5 +18,5 @@ public class WorkoutSessionRequest {
     private String memo;
     private LocalTime startTime;
     private LocalTime endTime;
-    private List<WorkoutDTO> workout;
+    private List<WorkoutDTO> workouts;
 }

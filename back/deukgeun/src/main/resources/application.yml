@@ -1,11 +1,7 @@
 spring:
   application:
     name: deukgeun
-<<<<<<< HEAD
-  datasource: # DB 내용 수정
-=======
   datasource:
->>>>>>> ba3362b52931517825a6da50ce944c0a8feb3fb5
     url: jdbc:mysql://localhost:3306/dgdb
     username: scott
     password: tiger

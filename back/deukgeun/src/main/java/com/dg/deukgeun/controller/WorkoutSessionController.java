@@ -31,40 +31,42 @@ public class WorkoutSessionController {
     private final WorkoutService workoutService;
 
     // @GetMapping("/{workoutSessionId}")
-    // public WorkoutSessionDTO get(@PathVariable(name="workoutSessionId") Integer workoutSessionId){
-    //     return service.get(workoutSessionId);
+    // public WorkoutSessionDTO get(@PathVariable(name="workoutSessionId") Integer
+    // workoutSessionId){
+    // return service.get(workoutSessionId);
     // }
-    
 
-    // 운동일지 페이지에서 yyyy-mm 문자열 형태로 입력을 받으면, 그달 1일 부터 말일까지 workout_session 테이블 정보를 arrayList 형태로 출력한다.
+    // 운동일지 페이지에서 yyyy-mm 문자열 형태로 입력을 받으면, 그달 1일 부터 말일까지 workout_session 테이블 정보를
+    // arrayList 형태로 출력한다.
     @GetMapping("/{yearMonth}")
-    public List<WorkoutSessionDTO> get(@PathVariable(name="yearMonth") String yearMonth){
-        LocalDate startDate = LocalDate.parse(yearMonth+"-01");
+    public List<WorkoutSessionDTO> get(@PathVariable(name = "yearMonth") String yearMonth) {
+        LocalDate startDate = LocalDate.parse(yearMonth + "-01");
         LocalDate endDate = startDate.plusMonths(2);
         startDate = startDate.minusMonths(1);
-        
+
         return service.get(startDate, endDate);
     }
-    
-    /*데이터를 다음과 같이 받았다고 가정
+
+    /*
+     * 데이터를 다음과 같이 받았다고 가정
      * 
      * {
-     *  //... workout_session에 들어갈 추가 정보
-     *      "workoutDate" : "2024-05-29",
-     *      "content" : "3대 운동",
-     *  //workout_session에 들어갈 추가 정보...
-     *      "workout" : [
-     *         {"workoutName" : "벤치프레스", "workoutSet" : "5", "workoutRep" : "5"},
-     *          {"workoutName" : "데드리프트", "workoutSet" : "5", "workoutRep" : "5"},
-     *          {"workoutName" : "스쿼트", "workoutSet" : "5", "workoutRep" : "5"}
-     *      ]
-     *  }
-     *  아래 메서드는 위와 같은 형태의 Json 파일을 WorkoutSessionRequest로 받는다.
-     *  WorkoutSessionRequest에서 WorkoutSessionDTO, WorkoutDTO로 정보를 나눠준다.
-     *  나눠받은 정보는 WorkoutSessionService, WorkoutService를 거쳐서 db로 저장된다.
+     * //... workout_session에 들어갈 추가 정보
+     * "workoutDate" : "2024-05-29",
+     * "content" : "3대 운동",
+     * //workout_session에 들어갈 추가 정보...
+     * "workout" : [
+     * {"workoutName" : "벤치프레스", "workoutSet" : "5", "workoutRep" : "5"},
+     * {"workoutName" : "데드리프트", "workoutSet" : "5", "workoutRep" : "5"},
+     * {"workoutName" : "스쿼트", "workoutSet" : "5", "workoutRep" : "5"}
+     * ]
+     * }
+     * 아래 메서드는 위와 같은 형태의 Json 파일을 WorkoutSessionRequest로 받는다.
+     * WorkoutSessionRequest에서 WorkoutSessionDTO, WorkoutDTO로 정보를 나눠준다.
+     * 나눠받은 정보는 WorkoutSessionService, WorkoutService를 거쳐서 db로 저장된다.
      */
-    @PostMapping("/{yearMonth}/")
-    public Map<String,Integer> register(@RequestBody WorkoutSessionRequest workoutSessionRequest){
+    @PostMapping("/register")
+    public Map<String, Integer> register(@RequestBody WorkoutSessionRequest workoutSessionRequest) {
         log.info(workoutSessionRequest);
         WorkoutSessionDTO workoutSessionDTO = new WorkoutSessionDTO();
         workoutSessionDTO.setBodyWeight(workoutSessionRequest.getBodyWeight());
@@ -76,32 +78,33 @@ public class WorkoutSessionController {
         workoutSessionDTO.setPtSessionId(workoutSessionRequest.getPtSessionId());
         workoutSessionDTO.setStartTime(workoutSessionRequest.getStartTime());
         workoutSessionDTO.setEndTime(workoutSessionRequest.getEndTime());
-        
+
         Integer workoutSessionId = service.register(workoutSessionDTO);
 
-        List<WorkoutDTO> workoutList = workoutSessionRequest.getWorkout();
-        for(int i=0;i<workoutList.size();i++){
+        List<WorkoutDTO> workoutList = workoutSessionRequest.getWorkouts();
+        for (int i = 0; i < workoutList.size(); i++) {
             workoutList.get(i).setWorkoutSessionId(workoutSessionId);
         }
         workoutService.insertList(workoutList);
 
-        return Map.of("workoutSessionId",workoutSessionId);
+        return Map.of("workoutSessionId", workoutSessionId);
     }
 
-    //workoutSession 수정
+    // workoutSession 수정
     @PutMapping("/{yearMonth}/{workoutSessionId}/put")
-    public Map<String,String> modify(@PathVariable(name="workoutSessionId") Integer workoutSessionId, WorkoutSessionDTO workoutSessionDTO){
+    public Map<String, String> modify(@PathVariable(name = "workoutSessionId") Integer workoutSessionId,
+            WorkoutSessionDTO workoutSessionDTO) {
         workoutSessionDTO.setWorkoutSessionId(workoutSessionId);
-        log.info("Modify: "+workoutSessionDTO);
+        log.info("Modify: " + workoutSessionDTO);
         service.modify(workoutSessionDTO);
-        return Map.of("RESULT","SUCCESS");
+        return Map.of("RESULT", "SUCCESS");
     }
 
-    //workoutSession 삭제
+    // workoutSession 삭제
     @DeleteMapping("/{yearMonth}/{workoutSessionId}/delete")
-    public Map<String,String> remove(@PathVariable(name="workoutSessionId")Integer workoutSessionId){
-        log.info("Remove: "+workoutSessionId);
+    public Map<String, String> remove(@PathVariable(name = "workoutSessionId") Integer workoutSessionId) {
+        log.info("Remove: " + workoutSessionId);
         service.remove(workoutSessionId);
-        return Map.of("RESULT","SUCCESS");
+        return Map.of("RESULT", "SUCCESS");
     }
 }
