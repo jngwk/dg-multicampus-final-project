@@ -46,11 +46,16 @@ export default function Input({
   };
 
   return (
-    <div className={`relative my-2 `} style={{ width }}>
+    <div
+      className={`relative my-2 ${
+        error ? "h-[3.75rem]" : "h-11"
+      } transition-all ease-out duration-300`}
+      style={{ width }}
+    >
       <input
         style={{ height, width }}
         type={type}
-        className={` py-3 px-4 block w-full appearance-none bg-transparent border rounded-lg
+        className={`py-3 px-4 block w-full appearance-none bg-transparent border rounded-lg
         ${getBorderColor()} focus:border-2 focus:outline-none focus:ring-0 text-sm peer ${className} `}
         onFocus={handleFocus}
         onBlur={handleBlur}
@@ -63,8 +68,15 @@ export default function Input({
       >
         {label}
       </label>
-      {error && <p className="px-2 text-xs text-red-500 mt-1">{error}</p>}
-      {message && <p className="px-2 text-xs text-green-500 mt-1">{message}</p>}
+      <p
+        className={`${
+          error ? " translate-y-0" : " -translate-y-2"
+        } absolute transition duration-200 px-2 text-xs text-red-500 mt-1`}
+      >
+        {error}
+      </p>
+      {/* {error && <p className="px-2 text-xs text-red-500 mt-1">{error}</p>} */}
+      {/* {message && <p className="px-2 text-xs text-green-500 mt-1">{message}</p>} */}
       {/* input 우측 끝에 icon 혹은 버튼 넣기 */}
     </div>
   );
