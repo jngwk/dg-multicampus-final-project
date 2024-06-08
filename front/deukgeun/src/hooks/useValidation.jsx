@@ -69,7 +69,6 @@ const useValidation = () => {
       case "confirmPassword":
         console.log(password, field, value);
         validateConfirmPassword(password, value, tempErrors);
-
         break;
       default:
         validateNotEmpty(field, value, tempErrors);
@@ -98,8 +97,12 @@ const useValidation = () => {
     return Object.keys(tempErrors).length === 0;
   };
 
+  const resetErrors = () => {
+    setErrors({});
+  };
   return {
     errors,
+    resetErrors,
     validateUserName,
     validateEmail,
     validatePassword,
