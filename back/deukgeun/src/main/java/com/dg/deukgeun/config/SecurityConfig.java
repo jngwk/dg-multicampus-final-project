@@ -37,16 +37,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // CSRF 보호를 비활성화합니다.
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리를 Stateless로 설정합니다.
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/login", "/api/signUp", "/api/gym/signUp").permitAll() // 로그인과 회원가입 API는 인증 없이 접근 가능하도록 설정합니다.
-                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN") // ADMIN 역할만 접근할 수 있도록 설정합니다.
-                        .requestMatchers("/api/user/**").hasAuthority("ROLE_GENERAL") // GENERAL 역할만 접근할 수 있도록 설정합니다.
-                        .anyRequest().authenticated()) // 그 외 모든 요청은 인증이 필요합니다.
-                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // JWT 토큰 필터를 추가합니다.
-
-        return http.build();
+        .csrf(csrf -> csrf.disable()) // CSRF 보호를 비활성화합니다.
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리를 Stateless로 설정합니다.
+        .authorizeHttpRequests(authorize -> authorize
+            .requestMatchers("/api/login", "/api/signUp", "/api/gym/signUp").permitAll() // 로그인과 회원가입 API는 인증 없이 접근 가능하도록 설정합니다.
+            .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN") // ADMIN 역할만 접근할 수 있도록 설정합니다.
+            .requestMatchers("/api/user/**").hasAuthority("ROLE_GENERAL") // GENERAL 역할만 접근할 수 있도록 설정합니다.
+            .requestMatchers("/api/membership/stats").hasAuthority("ROLE_GYM")
+            .anyRequest().authenticated()) // 그 외 모든 요청은 인증이 필요합니다.
+        .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // JWT 토큰 필터를 추가합니다.
+    
+    return http.build();
     }
 
     @Bean
@@ -63,12 +64,6 @@ public class SecurityConfig {
         return new CorsFilter(source);
     }
 
-    @Bean
-    public JwtTokenFilter jwtTokenFilter() {
-        return new JwtTokenFilter(jwtTokenProvider); // JWT 토큰 필터 빈을 생성합니다.
-    }
-
-    // JWT 토큰 필터 클래스입니다.
     public static class JwtTokenFilter extends OncePerRequestFilter {
 
         private final JwtTokenProvider jwtTokenProvider;
@@ -79,7 +74,7 @@ public class SecurityConfig {
 
         @Override
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                FilterChain filterChain) throws ServletException, IOException {
+                                        FilterChain filterChain) throws ServletException, IOException {
             String token = resolveToken(request); // 요청에서 JWT 토큰을 추출합니다.
 
             if (token != null && jwtTokenProvider.validateToken(token)) { // 토큰이 유효한 경우
@@ -91,14 +86,14 @@ public class SecurityConfig {
                 SecurityContextHolder.getContext().setAuthentication(auth); // 인증 객체를 설정합니다.
             }
 
-            filterChain.doFilter(request, response); // 다음 필터를 호출합니다.
+            filterChain.doFilter(request, response); // 다음 필터를 호출합니다. 요청당 한번만 실행되도록 필터 실행 제어.
         }
 
         private String resolveToken(HttpServletRequest request) {
-            String bearerToken = request.getHeader("Authorization"); // Authorization 헤더에서 토큰을 가져옵니다.
+            String jwtToken = request.getHeader("Authorization"); // Authorization 헤더에서 토큰을 가져옵니다.
 
-            if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-                return bearerToken.substring(7); // "Bearer " 부분을 제거하고 토큰을 반환합니다.
+            if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
+                return jwtToken.substring(7); // "Bearer " 부분을 제거하고 토큰을 반환합니다.
             }
 
             return null;

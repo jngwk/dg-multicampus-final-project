@@ -61,10 +61,17 @@ const LoginModal = ({ toggleModal }) => {
 
       // 로그인 성공시 context에 로그인 여부 넣기
       if (data.result) {
-        addUserToSession({
-          token: data.data.token,
-          role: data.data.user.role,
-          gym: data.data.gym, });
+        const userSessionData = {
+            token: data.data.token,
+            role: data.data.user.role,
+        };
+        
+        // Check if gym data exists
+        if (data.data.user.role === 'ROLE_GYM' && data.data.gym) {
+            userSessionData.gym = data.data.gym;
+        }
+
+        addUserToSession(userSessionData);
         console.log("로그인 성공", data);
         toggleModal(); // 로그인 성공시 팝업 닫음
       } else {

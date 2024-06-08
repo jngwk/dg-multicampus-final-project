@@ -5,7 +5,6 @@ const Loading = <div>Loading...</div>;
 
 const Main = lazy(() => import("../pages/Main"));
 const ChartPage = lazy(() => import("../pages/ChartPage"));
-const CalendarPage = lazy(() => import("../pages/CalendarPage"));
 
 const root = createBrowserRouter([
   {
@@ -17,18 +16,10 @@ const root = createBrowserRouter([
     ),
   },
   {
-    path: "/membership/stats",
+    path: "/stats",
     element: (
       <Suspense fallback={Loading}>
         <ChartPage />
-      </Suspense>
-    ),
-  },
-  {
-    path: "/calender",
-    element: (
-      <Suspense fallback={Loading}>
-        <CalendarPage />
       </Suspense>
     ),
   },
