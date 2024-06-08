@@ -8,7 +8,7 @@ const SignUpChoicePage = () => {
 
   return (
     <Layout>
-      <div className="w-full h-[80dvh] flex justify-center items-center">
+      <div className="w-full translate-y-1/4 flex justify-center items-center">
         <div className="w-96 h-auto flex flex-col justify-center items-center">
           <div className="mb-5 text-xl font-medium">
             운동하러 오셨나요? <span className="text-2xl ml-3">💪</span>

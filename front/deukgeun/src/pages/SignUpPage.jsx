@@ -7,7 +7,7 @@ import { signUpGeneral, signUpGym } from "../api/signUpApi";
 import AlertModal from "../components/modals/AlertModal";
 import useValidation from "../hooks/useValidation";
 
-const initState = {
+const initUserData = {
   userName: "",
   email: "",
   password: "",
@@ -15,16 +15,23 @@ const initState = {
   detailAddress: "",
 };
 
+const initGymData = {
+  gymName: "",
+  crNumber: "",
+  phoneNumber: "",
+};
+
 const SignUpPage = () => {
   const location = useLocation();
-  const initialRole = location.state.role || "general";
-  const [role, setRole] = useState(initialRole);
-  const [userData, setUserData] = useState(initState);
+  const initRole = location.state.role || "general";
+  const [role, setRole] = useState(initRole);
+  const [userData, setUserData] = useState(initUserData);
+  const [gymData, setGymData] = useState(initGymData);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const handleChange = (e) => {
+  const handleUserDataChange = (e) => {
     const { name, value } = e.target;
     setUserData({
       ...userData,
@@ -34,8 +41,16 @@ const SignUpPage = () => {
     validateInput(name, value);
   };
 
-  const { errors, validateConfirmPassword, validateForm, validateInput } =
-    useValidation();
+  const handleGymDataChange = (e) => {
+    const { name, value } = e.target;
+    setGymData({
+      ...gymData,
+      [name]: value,
+    });
+    validateInput(name, value);
+  };
+
+  const { errors, resetErrors, validateForm, validateInput } = useValidation();
 
   const handleConfirmPassword = (e) => {
     // 비밀번호 유효성 검사
@@ -44,17 +59,16 @@ const SignUpPage = () => {
   };
 
   const handleSubmit = async () => {
-    if (!validateForm(userData, confirmPassword)) {
+    const data = role === "general" ? userData : { ...userData, ...gymData };
+    if (!validateForm(data, confirmPassword)) {
       console.log("Validation failed", errors);
       return;
     }
 
     try {
-      console.log("User data: ", userData);
+      console.log("User data: ", data);
       const result =
-        role === "general"
-          ? await signUpGeneral(userData)
-          : await signUpGym(userData);
+        role === "general" ? await signUpGeneral(data) : await signUpGym(data);
       console.log("Sign up result: ", result);
       // 회원가입 완료 모달 토글
       setIsModalVisible(true);
@@ -68,7 +82,9 @@ const SignUpPage = () => {
     const { name } = e.target;
     console.log(name);
     if (name !== role) {
-      setUserData(initState);
+      setUserData(initUserData);
+      setGymData(initGymData);
+      resetErrors();
       setRole(name);
     }
   };
@@ -84,7 +100,7 @@ const SignUpPage = () => {
   return (
     <Layout>
       <div className="mx-auto w-fit mt-6">
-        <div className="flex gap-1">
+        <div className="flex gap-[1px]">
           <Button
             label="일반"
             width="170px"
@@ -106,20 +122,42 @@ const SignUpPage = () => {
         </div>
         <div className="flex flex-col items-center justify-center">
           <Input
-            label="이름"
+            label={role === "general" ? "이름" : "사업자명"}
             width="340px"
             name="userName"
             value={userData.userName}
-            onChange={handleChange}
+            onChange={handleUserDataChange}
             required={true}
             error={errors.userName}
           />
+          {role === "gym" && (
+            <>
+              <Input
+                label="헬스장 이름"
+                width="340px"
+                name="gymName"
+                value={gymData.gymName}
+                onChange={handleGymDataChange}
+                required={true}
+                error={errors.gymName}
+              />
+              <Input
+                label="사업자등록 번호"
+                width="340px"
+                name="crNumber"
+                value={gymData.crNumber}
+                onChange={handleGymDataChange}
+                required={true}
+                error={errors.crNumber}
+              />
+            </>
+          )}
           <Input
             label="이메일"
             width="340px"
             name="email"
             value={userData.email}
-            onChange={handleChange}
+            onChange={handleUserDataChange}
             required={true}
             error={errors.email}
           />
@@ -129,7 +167,7 @@ const SignUpPage = () => {
             width="340px"
             name="password"
             value={userData.password}
-            onChange={handleChange}
+            onChange={handleUserDataChange}
             required={true}
             error={errors.password}
           />
@@ -143,12 +181,25 @@ const SignUpPage = () => {
             required={true}
             error={errors.confirmPassword}
           />
+          {role === "gym" && (
+            <Input
+              label="전화번호"
+              type="phone"
+              width="340px"
+              name="crNumber"
+              value={gymData.phoneNumber}
+              onChange={handleGymDataChange}
+              required={true}
+              error={errors.phoneNumber}
+            />
+          )}
           <Input
             label="주소"
             width="340px"
             name="address"
             value={userData.address}
-            onChange={handleChange}
+            onChange={handleUserDataChange}
+            required={role === "gym" ? true : false}
             error={errors.address}
           />
           <Input
@@ -156,7 +207,8 @@ const SignUpPage = () => {
             width="340px"
             name="detailAddress"
             value={userData.detailAddress}
-            onChange={handleChange}
+            onChange={handleUserDataChange}
+            required={role === "gym" ? true : false}
             error={errors.detailAddress}
           />
         </div>
