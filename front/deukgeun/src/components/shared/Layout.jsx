@@ -5,7 +5,7 @@ const Layout = ({ children }) => {
   return (
     <>
       <Header />
-      <div>{children}</div>
+      <div className="relative min-h-[90dvh]">{children}</div>
     </>
   );
 };
