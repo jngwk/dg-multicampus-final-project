@@ -14,6 +14,7 @@ const AddressModal = ({ userData, setUserData, toggleModal }) => {
     <ModalLayout toggleModal={toggleModal}>
       <DaumPostcode
         // className="z-50 w-full h-full fixed left-0 top-0 bg-gray-500"
+        className="!h-[500px]"
         autoClose
         onComplete={handleComplete}
       />
