@@ -52,9 +52,9 @@ public class UserController {
 
     // 인증번호 확인
     @PostMapping("/checkCode")
-    public ResponseEntity<?> checkVerificationCode(@RequestParam("email") String email,
-            @RequestParam("code") String code) {
-        Optional<VerificationCode> codeOptional = Optional.ofNullable(codeService.getVerificationCode(email, code));
+    public ResponseEntity<?> checkVerificationCode(@RequestBody VerificationCode codeEntity) {
+        Optional<VerificationCode> codeOptional = Optional
+                .ofNullable(codeService.getVerificationCode(codeEntity.getEmail(), codeEntity.getCode()));
 
         // 이메일 + 코드가 db에 존재하면
         if (codeOptional.isPresent()) {
