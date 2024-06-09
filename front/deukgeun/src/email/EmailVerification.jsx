@@ -8,7 +8,7 @@ const EmailTemplate = ({ verificationCode }) => {
         <style>
           {`
           body {
-            font-family: Arial, sans-serif;
+            font-family: 'Noto Sans KR', sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f6f6f6;
@@ -16,10 +16,6 @@ const EmailTemplate = ({ verificationCode }) => {
           }
           `}
         </style>
-        <link
-          href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
-          rel="stylesheet"
-        />
       </head>
       <body>
         <div className="max-w-lg mx-auto p-4 bg-white border border-gray-200 rounded-lg shadow">
