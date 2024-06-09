@@ -178,7 +178,11 @@ const SignUpPage = () => {
 
   return (
     <Layout>
-      <div className="w-fit h-fit mx-auto mt-3 sm:translate-y-[20%] sm:mt-0">
+      {/* sm:translate-y-[20%] */}
+      <div className="w-fit h-fit mx-auto mt-3 sm:mt-0">
+        <span className="block text-center text-6xl my-10 hover:animate-wave cursor-grab">
+          👋
+        </span>
         <div className="flex gap-[1px]">
           <Button
             label="일반"
