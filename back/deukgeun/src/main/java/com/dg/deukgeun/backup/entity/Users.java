@@ -1,4 +1,4 @@
-// package com.dg.deukgeun.entity;
+// package com.dg.deukgeun.backup.entity;
 
 // import jakarta.persistence.Entity;
 // import jakarta.persistence.GeneratedValue;
@@ -17,14 +17,14 @@
 // @AllArgsConstructor
 // @NoArgsConstructor
 // public class Users {
-//     @Id
-//     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//     private Integer userId;
-//     private String userName;
-//     private String password;
-//     private String email;
-//     private String address;
-//     private String detail_address;
-//     private String category;
-//     private Integer approval;
+// @Id
+// @GeneratedValue(strategy = GenerationType.IDENTITY)
+// private Integer userId;
+// private String userName;
+// private String password;
+// private String email;
+// private String address;
+// private String detail_address;
+// private String category;
+// private Integer approval;
 // }

@@ -8,11 +8,11 @@ const AlertModal = ({ headerEmoji, line1, line2, button1, button2 }) => {
 
   return (
     <ModalLayout>
-      <div className="flex flex-col justify-center items-center">
+      <div className="flex flex-col justify-center items-center gap-9 md:gap-0">
         <div>
           <span className="text-5xl">{headerEmoji}</span>
         </div>
-        <div className="text-center flex flex-col justify-center gap-10 p-16 text-lg">
+        <div className="text-center flex flex-col justify-center gap-10 md:p-16 text-lg">
           <span>{line1}</span>
           {line2 && <span>{line2}</span>}
         </div>

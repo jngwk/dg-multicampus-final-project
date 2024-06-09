@@ -59,8 +59,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
-	// security dependency
-    // implementation 'org.springframework.boot:spring-boot-starter-security'
+	// email
+	// https://mvnrepository.com/artifact/com.sun.mail/jakarta.mail
+	implementation 'com.sun.mail:jakarta.mail:2.0.1'
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+
+
 }
 
 tasks.named('test') {

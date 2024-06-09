@@ -1,4 +1,4 @@
-// package com.dg.deukgeun.controller;
+// package com.dg.deukgeun.backup.controller;
 
 // import org.springframework.web.bind.annotation.GetMapping;
 // import org.springframework.web.bind.annotation.PathVariable;
@@ -16,10 +16,10 @@
 // @Log4j2
 // @RequestMapping("/api/users")
 // public class UsersController {
-//     private final UsersService service;
+// private final UsersService service;
 
-//     @GetMapping("/{usersId}")
-//     public UsersDTO get(@PathVariable(name="usersId") Integer usersId){
-//         return service.get(usersId);
-//     }
+// @GetMapping("/{usersId}")
+// public UsersDTO get(@PathVariable(name="usersId") Integer usersId){
+// return service.get(usersId);
+// }
 // }
