@@ -1,7 +1,6 @@
 import React from "react";
 import DaumPostcode from "react-daum-postcode";
 import ModalLayout from "./ModalLayout";
-import { BiGitCommit } from "react-icons/bi";
 
 // https://postcode.map.daum.net/guide#usage
 const AddressModal = ({ userData, setUserData, toggleModal }) => {
