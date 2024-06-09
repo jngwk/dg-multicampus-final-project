@@ -65,7 +65,7 @@ const SignUpPage = () => {
     setUserData({ ...userData, email: e.target.value });
     validateInput("email", e.target.value);
     (codeData.verified || codeData.sent) && setCodeData(initCodeData);
-    console.log("codeData", codeData);
+    // console.log("codeData", codeData);
   };
 
   const handleGymDataChange = (e) => {
@@ -91,7 +91,7 @@ const SignUpPage = () => {
     } else {
       setCodeData({ ...codeData, inputCode: e.target.value, verified: false });
     }
-    console.log(codeData);
+    // console.log(codeData);
   };
 
   const handleSubmit = async () => {
@@ -99,7 +99,7 @@ const SignUpPage = () => {
 
     if (!validateForm(data, confirmPassword, codeData.verified)) {
       console.log("Validation failed");
-      console.log(codeData.verified);
+      // console.log(codeData.verified);
       return;
     }
 
@@ -143,11 +143,11 @@ const SignUpPage = () => {
       console.log("RequestBody", userData.email, codeData.code);
       const response = sendVerificationEmail(userData.email, generatedCode);
       setCodeData({ ...codeData, sent: true, code: generatedCode });
-      console.log("codeData: ", codeData);
-      console.log("response: ", response);
+      // console.log("codeData: ", codeData);
+      // console.log("response: ", response);
     } catch (error) {
       setError("이메일 전송 오류");
-      console.log("Error while sending email: ", error);
+      // console.log("Error while sending email: ", error);
       setCodeData({ ...codeData, sent: false });
     }
   };
@@ -161,11 +161,6 @@ const SignUpPage = () => {
 
   const verifyGym = () => {
     console.log("사업자등록번호 조회 API 사용하기");
-  };
-
-  const toggleAddressModal = () => {
-    console.log("주소 검색 API 활용하기");
-    setIsAddressModalVisible(true);
   };
 
   const resetForm = () => {
