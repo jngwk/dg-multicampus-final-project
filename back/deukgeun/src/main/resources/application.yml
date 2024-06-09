@@ -53,3 +53,16 @@ rabbitmq:
     key: chat.#
     json:
       key: dgRoutingJsonKey
+
+# email 관련
+mail:
+  host: smtp.gmail.com
+  port: 587
+  username: jngwk.ch@gmail.com
+  password: lnzxrqgqsjqvdide
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
