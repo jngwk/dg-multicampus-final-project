@@ -181,24 +181,4 @@ public class UserService {
             return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
         }
     }
-
-    public ResponseDTO<List<User>> getAllUsers(String adminEmail) {
-        try {
-            // Check if the adminEmail belongs to an ADMIN user
-            Optional<User> adminOptional = userRepository.findByEmail(adminEmail);
-            if (adminOptional.isPresent() && "ADMIN".equals(adminOptional.get().getRole())) {
-                // Fetch all users with role USER
-                List<User> users = userRepository.findByRole("USER");
-                // For security reasons, set the password field to an empty string
-                for (User user : users) {
-                    user.setPassword("");
-                }
-                return ResponseDTO.setSuccessData("모든 사용자 목록을 가져왔습니다.", users);
-            } else {
-                return ResponseDTO.setFailed("권한이 없습니다.");
-            }
-        } catch (Exception e) {
-            return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
-        }
-    }
 }

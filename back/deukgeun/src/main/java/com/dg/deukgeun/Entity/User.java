@@ -2,6 +2,7 @@ package com.dg.deukgeun.entity;
 
 import com.dg.deukgeun.dto.user.UserSignUpDTO;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,6 +33,9 @@ public class User {
     private String category;
     private String password;
     private String token;
+
+    @Column(nullable = false)
+    private String role;
 
     public User(UserSignUpDTO dto) {
         this.userId = dto.getUserId();
