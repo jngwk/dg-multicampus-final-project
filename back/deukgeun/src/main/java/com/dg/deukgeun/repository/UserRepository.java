@@ -1,10 +1,11 @@
 package com.dg.deukgeun.repository;
 
 import java.util.Optional;
-
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.dg.deukgeun.entity.User;
+
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 
@@ -17,4 +18,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     
      //email과 password의 존재 여부 확인 메서드
      public boolean existsByEmailAndPassword(String email, String password);
+
+     //role에 따른 목록 조회를 위한 메서드
+     List<User> findByRole(String role);
 }
