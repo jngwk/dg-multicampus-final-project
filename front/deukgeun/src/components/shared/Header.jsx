@@ -6,7 +6,6 @@ import ProfileDropdown from "../account/ProfileDropdown";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 console.log(logo);
 export default function Header() {
   const { user } = useAuth();
@@ -30,22 +29,25 @@ export default function Header() {
           src={logo}
           alt="logo"
         />
-        {user ? (
-          <>
-            <button onClick={toggleProfileDropdown}>프로필 뱃지</button>
-            {isProfileDropdownVisible ? (
-              <ProfileDropdown type="user" /> // user type 지정해서 안에 메뉴 변경
-            ) : (
-              ""
-            )}
-          </>
-        ) : (
-          <>
-            <button onClick={toggleModal}>로그인</button>
-            {isModalVisible ? <LoginModal toggleModal={toggleModal} /> : ""}
-          </>
-        )}
-      </div>        
-    </div>  
+        <div className="flex gap-4 relative">
+          <button onClick={() => navigate("/contact")}>문의하기</button>
+          {user ? (
+            <>
+              <button onClick={toggleProfileDropdown}>프로필 뱃지</button>
+              {isProfileDropdownVisible ? (
+                <ProfileDropdown type="user" /> // user type 지정해서 안에 메뉴 변경
+              ) : (
+                ""
+              )}
+            </>
+          ) : (
+            <>
+              <button onClick={toggleModal}>로그인</button>
+              {isModalVisible ? <LoginModal toggleModal={toggleModal} /> : ""}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

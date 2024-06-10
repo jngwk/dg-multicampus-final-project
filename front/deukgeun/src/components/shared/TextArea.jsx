@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 
-export default function Input({
+export default function TextArea({
   label, // 이름
-  type = "text", // 타입
   className, // input element 추가 스타일
-  height = "44px", // 높이
-  width = "240px", // 너비
+  height = "240px", // 높이
+  width = "400px", // 너비
   value = "", // 값
-  step, // type=time에만 해당 (증가/감소치)
   required = false, // required
   error = "", // 에러 메세지 (빨간색으로 하단에 표시)
   message = "", // 메세지 (초록색으로 하단에 표시)
@@ -34,8 +32,7 @@ export default function Input({
   };
 
   const getLabelPosition = () => {
-    if (type === "time" || type === "date" || focus || value)
-      return "left-2 -top-2 text-xs";
+    if (focus || value) return "left-2 -top-2 text-xs";
     return "left-4 top-3 text-sm";
   };
 
@@ -49,19 +46,17 @@ export default function Input({
   return (
     <div
       className={`relative my-2 ${
-        error || message ? "h-[3.75rem]" : "h-11"
+        error || message ? "min-h-[3.75rem]" : "min-h-11"
       } transition-all ease-out duration-300`}
       style={{ width }}
     >
-      <input
+      <textarea
         style={{ height, width }}
-        type={type}
-        className={`py-3 px-4 block w-full appearance-none bg-transparent border rounded-lg
+        className={`resize-none py-3 px-4 block w-full appearance-none bg-transparent border rounded-lg
         ${getBorderColor()} focus:border-2 focus:outline-none focus:ring-0 text-sm peer ${className} `}
         onFocus={handleFocus}
         onBlur={handleBlur}
         value={value}
-        step={step}
         {...props}
       />
       <label
@@ -80,7 +75,7 @@ export default function Input({
       </p>
       {feature && (
         <span
-          className={`absolute underline underline-offset-2 text-[10px] right-2 top-[14px] text-gray-500 ${
+          className={`absolute underline underline-offset-2 text-[10px] right-2 bottom-[14px] text-gray-500 ${
             featureEnableOnLoad
               ? "cursor-pointer hover:text-peach-fuzz"
               : !error &&

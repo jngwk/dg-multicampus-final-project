@@ -1,9 +1,11 @@
 package com.dg.deukgeun.service;
 
+import org.modelmapper.internal.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.dg.deukgeun.api.CRNumberCheckApi;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.LoginResponseDTO;

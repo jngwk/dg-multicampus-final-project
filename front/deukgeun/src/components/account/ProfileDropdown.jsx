@@ -12,7 +12,7 @@ const ProfileDropdown = ({ type }) => {
   const { isModalVisible, toggleModal } = useModal();
 
   return (
-    <div className="absolute border border-gray-400 w-64 h-fit right-5 top-20 rounded-lg p-3 bg-white shadow-sm z-40">
+    <div className="absolute border border-gray-400 w-64 h-fit -right-2 top-10 rounded-lg p-3 bg-white shadow-sm z-40">
       <div className="border-b-[0.5px] border-gray-400 p-2">
         {/* 받아온 이름 넣기 */}
         <span className="block">이름</span>
@@ -20,9 +20,9 @@ const ProfileDropdown = ({ type }) => {
       </div>
       <div>
         <ul className="mt-4">
-          <li className="profile-dropdown-list">
+          <li className="profile-dropdown-list" onClick={toggleModal}>
             <img className="inline-block peer w-7 mx-3" src="" alt="icon" />
-            <button onClick={toggleModal}>내 정보</button>
+            <span>내 정보</span>
           </li>
           {isModalVisible ? <MyInfo toggleModal={toggleModal} /> : ""}
           <li
@@ -32,9 +32,10 @@ const ProfileDropdown = ({ type }) => {
             <img className="inline-block peer w-7 mx-3" src="" alt="icon" />
             <span>운동일지</span>
           </li>
-          <li className="profile-dropdown-list"
-              onClick={() => customNavigate("/chat")}
-              >
+          <li
+            className="profile-dropdown-list"
+            onClick={() => customNavigate("/chat")}
+          >
             <img className="inline-block peer w-7 mx-3" src="" alt="icon" />
             <span>대화방</span>
           </li>

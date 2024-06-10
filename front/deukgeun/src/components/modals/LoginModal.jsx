@@ -18,7 +18,7 @@ const LoginModal = ({ toggleModal }) => {
   const { addUserToSession } = useAuth();
 
   useEffect(() => {
-    console.log("Updated Errors: ", errors);
+    // console.log("Updated Errors: ", errors);
   }, [errors]);
 
   const handleEmailChange = (e) => {
@@ -58,10 +58,10 @@ const LoginModal = ({ toggleModal }) => {
   };
 
   const handleLogin = async () => {
-    console.log("login clicked");
+    // console.log("login clicked");
     if (!validateInput()) {
-      console.log("Input validation failed");
-      console.log(errors);
+      // console.log("Input validation failed");
+      // console.log(errors);
       return;
     }
     try {
@@ -70,8 +70,9 @@ const LoginModal = ({ toggleModal }) => {
       // 로그인 성공시 context에 로그인 여부 넣기
       if (data.result) {
         addUserToSession(email);
-        console.log("로그인 성공", data);
+        // console.log("로그인 성공", data);
         toggleModal(); // 로그인 성공시 팝업 닫음
+        customNavigate("/");
       } else {
         setErrors({ ...initErrors, login: "로그인 정보가 일치하지 않습니다." });
       }
@@ -86,6 +87,10 @@ const LoginModal = ({ toggleModal }) => {
     }
   };
 
+  const handleSignUpClick = () => {
+    toggleModal();
+    customNavigate("/signUp");
+  };
   return (
     <ModalLayout toggleModal={toggleModal}>
       <img src={logo} alt="logo" width={120} className="mb-14" />
@@ -120,7 +125,7 @@ const LoginModal = ({ toggleModal }) => {
         <br />
         <Button onClick={handleLogin} color="peach-fuzz" label="로그인" />
         <Button
-          onClick={() => customNavigate("/signUp/choose")}
+          onClick={handleSignUpClick}
           color="bright-orange"
           label="회원가입"
         />
