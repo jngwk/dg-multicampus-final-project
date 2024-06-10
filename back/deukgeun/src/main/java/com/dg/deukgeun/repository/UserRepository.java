@@ -5,6 +5,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.dg.deukgeun.entity.User;
+import java.util.List;
+import com.dg.deukgeun.dto.UserRole;
+
 
 public interface UserRepository extends JpaRepository<User, Integer> {
 
@@ -17,4 +20,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     // email과 password의 존재 여부 확인 메서드
     public boolean existsByEmailAndPassword(String email, String password);
+
+    List<User> findByRole(UserRole role);
 }
