@@ -10,7 +10,7 @@ const Chatlist = () => {
                 {/*선택한 회원 이름 가져오기*/}
                 <p className="flex align-middle text-center text-xs font-semibold "> 최OO 회원님</p> 
                 {/* 마지막 메시지 가져오기 */}
-                <p className="text-xs max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap"> 저 어제 피자 먹었어요 ㅎㅎㅎ 진짜 배 터질뻔!! </p> 
+                <p className="text-xs max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap"> 저 어제 피자 먹었어요 ㅎㅎㅎ 진짜 배 터질뻔!! </p> 
             </div>
         </div>
     );

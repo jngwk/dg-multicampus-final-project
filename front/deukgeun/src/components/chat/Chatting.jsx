@@ -2,6 +2,7 @@ import React, { useState ,useRef, useEffect } from "react";
 import Clock from "react-live-clock";
 import { FaAngleLeft, FaRegCalendarPlus } from "react-icons/fa";
 import { LuSend } from "react-icons/lu";
+import ChatUserInfo from "./ChatUserInfo";
 
 
 
@@ -46,10 +47,11 @@ const Chatting = () => {
     }, [chat]);
 
     return (
-        <div className=" relative w-4/6 h-[35rem] mx-1 border-2 rounded-lg border-grayish-red">
+        <div className=" relative w-full h-[35rem] mx-1 border-2 rounded-lg border-grayish-red">
             <div className="flex items-center mx-3 w-68 h-14 border-b-2 border-grayish-red">
-                <FaAngleLeft className="m-3"/>
+                <FaAngleLeft className="m-3" size="22"/>
                 <span className="text-sm font-medium"> 등록된 헬스장 이름 | 회원 이름 </span>
+                <ChatUserInfo/>
             </div>
 
             <article className="w-full h-[27rem] mx-3 overflow-y-scroll scrollbar-hide md:scrollbar-default" >
