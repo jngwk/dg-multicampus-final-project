@@ -1,9 +1,11 @@
 package com.dg.deukgeun.service;
 
+import org.modelmapper.internal.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.dg.deukgeun.api.CRNumberCheckApi;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.LoginResponseDTO;
@@ -29,6 +31,14 @@ public class GymService {
     public ResponseDTO<?> signUp(GymSignUpDTO dto) {
         String email = dto.getEmail();
         String password = dto.getPassword();
+
+        //사업자 등록 번호 확인
+        if(CRNumberCheckApi.check(dto.getCrNumber()) == null){
+            return ResponseDTO.setFailed("잘못된 사업자등록번호 입니다.");
+        } else if (!CRNumberCheckApi.check(dto.getCrNumber()).equals("01")){
+            return ResponseDTO.setFailed("잘못된 사업자등록번호 입니다.");
+        }
+
 
         // 이메일 중복 확인
         try {
