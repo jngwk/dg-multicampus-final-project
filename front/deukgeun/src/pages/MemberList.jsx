@@ -24,7 +24,7 @@ const MemberList = () => {
                 </div>
                 <table className="rounded-[20px] overflow-hidden min-w-full table-auto text-gray-800">
                     <thead className="justify-between">
-                        <tr className="bg-peach-fuzz">
+                        <tr className="bg-peach-fuzz bg-opacity-50">
                             <th className=" text-black px-4 py-3">회원번호</th> 
                             <th className="text-black px-4 py-3">이름</th>
                             <th className="text-black px-4 py-3">이메일</th>
