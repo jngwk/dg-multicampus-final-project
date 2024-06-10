@@ -21,6 +21,7 @@ import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.GymRepository;
 import com.dg.deukgeun.repository.TrainerRepository;
 import com.dg.deukgeun.repository.UserRepository;
+import com.dg.deukgeun.security.JwtTokenProvider;
 
 @Service
 public class UserService {
@@ -28,14 +29,9 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
     @Autowired
-<<<<<<< HEAD
     JwtTokenProvider tokenProvider;
     @Autowired
     GymRepository gymRepository;
-=======
-    TokenProvider tokenProvider;
-
->>>>>>> 0b06c2891e16cd245ee04699b2baf993dcbef9e1
     @Autowired
     TrainerRepository trainerRepository;
 
@@ -55,10 +51,7 @@ public class UserService {
             return ResponseDTO.setFailed("비밀번호가 일치하지 않습니다.");
         }
 
-<<<<<<< HEAD
-=======
         // UserEntity 생성
->>>>>>> 0b06c2891e16cd245ee04699b2baf993dcbef9e1
         User user = new User(dto);
         user.setRole(UserRole.ROLE_GENERAL);
 

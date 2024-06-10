@@ -1,8 +1,5 @@
 package com.dg.deukgeun.controller;
 
-import java.util.Date;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.dto.user.UpdateUserDTO;
@@ -21,6 +19,7 @@ import com.dg.deukgeun.dto.user.UserSignUpDTO;
 import com.dg.deukgeun.entity.VerificationCode;
 import com.dg.deukgeun.repository.UserRepository;
 import com.dg.deukgeun.service.EmailService;
+import com.dg.deukgeun.service.GymService;
 import com.dg.deukgeun.service.UserService;
 import com.dg.deukgeun.service.VerificationCodeService;
 

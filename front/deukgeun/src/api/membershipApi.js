@@ -1,6 +1,8 @@
 import axios from "axios";
-export const API_SERVER_HOST = "http://localhost:8282";
-const prefix = `${API_SERVER_HOST}/api`;
+
+// export const API_SERVER_HOST = "http://localhost:8282";
+// const prefix = `${API_SERVER_HOST}/api/user`;
+const prefix = `/api/user`; // proxy 사용
 
 export const registerMembership = async (membershipData, token) => {
   try {

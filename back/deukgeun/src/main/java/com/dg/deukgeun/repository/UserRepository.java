@@ -21,5 +21,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     // email과 password의 존재 여부 확인 메서드
     public boolean existsByEmailAndPassword(String email, String password);
 
-    List<User> findByRole(UserRole role);
+    List<User> findByRole(String role);
 }
