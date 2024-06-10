@@ -38,17 +38,23 @@ public class WorkoutSessionController {
 
     // 운동일지 페이지에서 yyyy-mm 문자열 형태로 입력을 받으면, 그달 1일 부터 말일까지 workout_session 테이블 정보를
     // arrayList 형태로 출력한다.
-    @GetMapping("/{yearMonth}/{userId}")
-    public List<WorkoutSessionDTO> get(@PathVariable(name = "yearMonth") String yearMonth, @PathVariable(name="userId") Integer userId) {
-        String[] days = yearMonth.split("-");
-        Integer year = Integer.parseInt(days[0]);
-        Integer month = Integer.parseInt(days[1]);
-        LocalDate startDate = LocalDate.of(year,month,1);
-        // LocalDate startDate = LocalDate.parse(yearMonth + "-01");
-        LocalDate endDate = startDate.plusMonths(2);
-        startDate = startDate.minusMonths(1);
+    @GetMapping("/get/{startDate}/{endDate}/{userId}")
+    public List<WorkoutSessionDTO> get(@PathVariable(name = "startDate") String startDate,
+            @PathVariable(name = "endDate") String endDate,
+            @PathVariable(name = "userId") Integer userId) {
+        log.info("startDate: " + startDate);
+        log.info("endDate: " + endDate);
+        // String[] days = yearMonth.split("-");
+        // Integer year = Integer.parseInt(days[0]);
+        // Integer month = Integer.parseInt(days[1]);
+        // LocalDate startDate = LocalDate.of(year, month, 1);
+        // // LocalDate startDate = LocalDate.parse(yearMonth + "-01");
+        // LocalDate endDate = startDate.plusMonths(2);
+        // startDate = startDate.minusMonths(1);
 
-        return service.get(userId,startDate, endDate);
+        // log.info("startDate: " + startDate);
+        // log.info("endDate: " + endDate);
+        return service.get(userId, LocalDate.parse(startDate), LocalDate.parse(endDate));
     }
 
     /*
@@ -94,7 +100,7 @@ public class WorkoutSessionController {
     }
 
     // workoutSession 수정
-    @PutMapping("/{workoutSessionId}")
+    @PutMapping("/modify/{workoutSessionId}")
     public Map<String, String> modify(@PathVariable(name = "workoutSessionId") Integer workoutSessionId,
             @RequestBody WorkoutSessionDTO workoutSessionDTO) {
         workoutSessionDTO.setWorkoutSessionId(workoutSessionId);
@@ -104,7 +110,7 @@ public class WorkoutSessionController {
     }
 
     // workoutSession 삭제
-    @DeleteMapping("/{workoutSessionId}")
+    @DeleteMapping("/delete/{workoutSessionId}")
     public Map<String, String> remove(@PathVariable(name = "workoutSessionId") Integer workoutSessionId) {
         log.info("Remove: " + workoutSessionId);
         service.remove(workoutSessionId);

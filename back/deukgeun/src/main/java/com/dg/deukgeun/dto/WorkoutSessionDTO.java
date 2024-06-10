@@ -18,13 +18,13 @@ public class WorkoutSessionDTO {
     private Integer workoutSessionId;
     private Integer userId;
     private Integer ptSessionId;
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate workoutDate;
     private String content;
     private Double bodyWeight;
     private String memo;
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private LocalTime startTime;
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private LocalTime endTime;
 }
