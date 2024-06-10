@@ -214,8 +214,8 @@ const CalendarPage = () => {
   };
 
   return (
-    <Layout>
-      <div className="xl:w-8/12 p-8">
+    <>
+      <div className="xl:w-8/12 p-8 slide">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
@@ -254,7 +254,7 @@ const CalendarPage = () => {
         />
       </div>
       <Button label="전체 삭제" onClick={handleDeleteAll} />
-    </Layout>
+    </>
   );
 };
 
