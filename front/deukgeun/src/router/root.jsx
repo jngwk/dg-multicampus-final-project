@@ -8,6 +8,7 @@ const ChartPage = lazy(() => import("../pages/ChartPage"));
 const ChatRoom = lazy(() => import("../pages/ChatRoom"));
 const CalendarPage = lazy(() => import("../pages/CalendarPage"));
 const UserInfoPage = lazy(() => import("../components/modals/MyInfo"));
+const MemberList = lazy(() => import("../pages/MemberList"));
 
 const root = createBrowserRouter([
   {
@@ -46,6 +47,14 @@ const root = createBrowserRouter([
     element: (
       <Suspense fallback={Loading}>
         <UserInfoPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/memberList",
+    element: (
+      <Suspense fallback={Loading}>
+        <MemberList />
       </Suspense>
     ),
   },

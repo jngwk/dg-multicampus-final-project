@@ -2,7 +2,7 @@ import React, { useState ,useRef, useEffect } from "react";
 import Clock from "react-live-clock";
 import { FaAngleLeft, FaRegCalendarPlus } from "react-icons/fa";
 import { LuSend } from "react-icons/lu";
-import { RiAttachment2 } from "react-icons/ri";
+
 
 
 const Chatting = () => {
@@ -46,7 +46,7 @@ const Chatting = () => {
     }, [chat]);
 
     return (
-        <div className=" relative w-11/12 h-[35rem] mx-1 border-2 rounded-lg border-grayish-red">
+        <div className=" relative w-4/6 h-[35rem] mx-1 border-2 rounded-lg border-grayish-red">
             <div className="flex items-center mx-3 w-68 h-14 border-b-2 border-grayish-red">
                 <FaAngleLeft className="m-3"/>
                 <span className="text-sm font-medium"> 등록된 헬스장 이름 | 회원 이름 </span>
@@ -71,7 +71,6 @@ const Chatting = () => {
            <div className= "mt-2 mx-3 w-68 h-11 border-y-2 border-grayish-red">
                     <div className="flex space-x-3 m-2">
                         <button ><FaRegCalendarPlus size="24" color="#4E4C4F"/></button>
-                        <button><RiAttachment2 size="24" color="#4E4C4F"/></button>
                         <input className=" w-full outline-none " type="text" onChange={handleChatInput} value={text} onKeyPress={handleKeyPress} ></input>
                         <button  type="button" onClick={handleSubmitBtn} ><LuSend size="24" color="#4E4C4F"/></button>
                     </div>
