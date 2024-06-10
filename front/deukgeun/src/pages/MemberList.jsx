@@ -21,7 +21,7 @@ const MemberList = () => {
                     <LuClipboardList color="#ffbe98" size="56"/> 
                     <span className="font-semibold text-2xl mx-3 ">회원 관리</span>
                 </div>
-                <table className="rounded-[20px] overflow-hidden min-w-full table-auto text-gray-800">
+                <table className="rounded-t-[20px] overflow-hidden min-w-full table-auto text-gray-800">
                     <thead className="justify-between">
                         <tr className="bg-peach-fuzz bg-opacity-50">
                             <th className=" text-black px-4 py-3">회원번호</th> 
