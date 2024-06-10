@@ -54,7 +54,6 @@ rabbitmq:
     json:
       key: dgRoutingJsonKey
 
-<<<<<<< HEAD
 #시큐리티 보안키
 security:
   jwt:
@@ -64,7 +63,6 @@ security:
 logging:
   level:
     org.springframework.security: DEBUG
-=======
 # email 관련
 mail:
   host: smtp.gmail.com
@@ -77,4 +75,3 @@ mail:
         auth: true
         starttls:
           enable: true
->>>>>>> 0b06c2891e16cd245ee04699b2baf993dcbef9e1
