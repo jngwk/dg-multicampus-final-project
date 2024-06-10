@@ -2,13 +2,11 @@ package com.dg.deukgeun.entity;
 
 import com.dg.deukgeun.dto.user.SignUpDTO;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,16 +26,17 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
-    
     private String userName;
     private String email;
     private String address;
+    private String detailAddress;
     private String category;
     private String password;
-    private Integer approval;
+    private String token;
 
     @Column(nullable = false)
     private String role;
+
 
     public User(SignUpDTO dto) {
         this.userId = dto.getUserId();
@@ -46,9 +45,9 @@ public class User {
         this.address = dto.getAddress();
         this.category = dto.getCategory();
         this.password = dto.getPassword();
-        this.approval = dto.getApproval();
+        this.token = "";
     }
-    
+
     // @Enumerated(EnumType.STRING)
     // private UserRole role;
 

@@ -1,7 +1,7 @@
 package com.dg.deukgeun.service;
 
 import java.util.*;
-
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -180,13 +180,20 @@ public class UserService {
         }
     }
 
-    public ResponseDTO<List<User>> getAllUsers(String adminEmail) {
+    public ResponseDTO<List<User>> getAllUsers(String adminEmail, String searchQuery) {
         try {
             // Check if the adminEmail belongs to an ADMIN user
             Optional<User> adminOptional = userRepository.findByEmail(adminEmail);
             if (adminOptional.isPresent() && "ADMIN".equals(adminOptional.get().getRole())) {
                 // Fetch all users with role USER
                 List<User> users = userRepository.findByRole("USER");
+                if (searchQuery != null && !searchQuery.isEmpty()) {
+                    // 검색 쿼리를 포함하는 이름으로 사용자를 가져옵니다.
+                    users = userRepository.findByUserNameContainingIgnoreCase(searchQuery);
+                } else {
+                    // 역할이 USER인 모든 사용자를 가져옵니다.
+                    users = userRepository.findByRole("USER");
+                }
                 // For security reasons, set the password field to an empty string
                 for (User user : users) {
                     user.setPassword("");
@@ -199,4 +206,6 @@ public class UserService {
             return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
         }
     }
+
+    
 }
