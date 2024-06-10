@@ -16,7 +16,6 @@ const MemberList = () => {
     },[]);
 
     return (
-        <Layout >
             <div className="container max-w-screen-lg mx-auto">
                 <div className="flex items-center p-4">
                     <LuClipboardList color="#ffbe98" size="56"/> 
@@ -36,8 +35,6 @@ const MemberList = () => {
                 </table>
                     
             </div>
-                
-        </Layout>
     );
 };
 
