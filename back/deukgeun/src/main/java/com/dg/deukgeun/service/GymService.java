@@ -32,14 +32,6 @@ public class GymService {
         String email = dto.getEmail();
         String password = dto.getPassword();
 
-        //사업자 등록 번호 확인
-        if(CRNumberCheckApi.check(dto.getCrNumber()) == null){
-            return ResponseDTO.setFailed("잘못된 사업자등록번호 입니다.");
-        } else if (!CRNumberCheckApi.check(dto.getCrNumber()).equals("01")){
-            return ResponseDTO.setFailed("잘못된 사업자등록번호 입니다.");
-        }
-
-
         // 이메일 중복 확인
         try {
             if (userRepository.existsByEmail(email)) {
