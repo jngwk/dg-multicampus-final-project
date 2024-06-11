@@ -4,6 +4,7 @@ import Input from "../components/shared/Input";
 import Button from "../components/shared/Button";
 import { useAuth } from "../context/AuthContext";
 import useValidation from "../hooks/useValidation";
+import { registerInquery } from "../api/qnaApi";
 
 const initState = {
   userName: "",
@@ -27,10 +28,15 @@ const ContactForm = () => {
 
   const handleSubmit = async () => {
     if (!validateForm(formValues)) return;
+
     try {
-      console.log("문의내역 DB에 기입하기");
+      const formData = { ...formValues, regDate: new Date().toISOString };
+      console.log(formData);
+      const res = registerInquery(formData);
+      console.log(res.data);
     } catch (error) {
-      console.log(error);
+      console.error("Error registering form data", error);
+      throw error;
     }
   };
 
