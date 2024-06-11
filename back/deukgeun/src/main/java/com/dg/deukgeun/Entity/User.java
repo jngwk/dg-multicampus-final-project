@@ -1,9 +1,12 @@
 package com.dg.deukgeun.entity;
 
+import com.dg.deukgeun.dto.UserRole;
 import com.dg.deukgeun.dto.user.UserSignUpDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,8 +37,9 @@ public class User {
     private String password;
     private String token;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role;
+    private UserRole role;
 
     public User(UserSignUpDTO dto) {
         this.userId = dto.getUserId();
@@ -43,9 +47,13 @@ public class User {
         this.email = dto.getEmail();
         this.address = dto.getAddress();
         this.detailAddress = dto.getDetailAddress();
-        this.category = dto.getCategory();
+        this.role = dto.getRole();
         this.password = dto.getPassword();
         this.token = "";
+    }
+
+    public User(String userId) {
+        this.userId = Integer.parseInt(userId);
     }
 
     // @Enumerated(EnumType.STRING)

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Layout from "../components/shared/Layout";
 import CalendarInputForm from "../components/calendar/CalendarInputForm";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -26,6 +25,7 @@ const CalendarPage = () => {
     const savedEvents = localStorage.getItem("events");
     return savedEvents ? JSON.parse(savedEvents) : [];
   });
+
   const [selectedDate, setSelectedDate] = useState(
     // default를 오늘 날짜로 설정
     new Date().toISOString().split("T")[0]
@@ -68,6 +68,10 @@ const CalendarPage = () => {
       );
       console.log(result);
       const updatedEvent = formatFormValues(formValues, selectedEvent.id);
+
+      setSelectedEvent(updatedEvent);
+      // console.log("@@@@CHECK", updatedEvent);
+
       const updatedEvents = events.map((event) =>
         event.id == selectedEvent.id ? updatedEvent : event
       );
@@ -100,8 +104,7 @@ const CalendarPage = () => {
   const handleDatesSet = async (info) => {
     const startDate = info.startStr.split("T")[0];
     const endDate = info.endStr.split("T")[0];
-
-    console.log(startDate);
+    console.log("calling data from range: ", startDate, endDate);
     try {
       const result = await getWorkoutSessions(startDate, endDate, userId);
       console.log("Get result: ", result);
@@ -145,18 +148,17 @@ const CalendarPage = () => {
 
         const updatedFormValues = {
           ...event.extendedProps,
-          date: startDate,
+          workoutDate: startDate,
           startTime: startTime,
           endDate: endDate,
           endTime: endTime,
         };
 
-        setSelectedEvent(info.event);
-
         updateEvent(updatedFormValues);
 
         return formatFormValues(updatedFormValues, event.id);
       }
+
       return event;
     });
 
@@ -206,8 +208,8 @@ const CalendarPage = () => {
     return {
       id: id,
       title: formValues.content,
-      start: new Date(`${formValues.date}T${formValues.startTime}`),
-      end: new Date(`${formValues.date}T${formValues.endTime}`),
+      start: new Date(`${formValues.workoutDate}T${formValues.startTime}`),
+      end: new Date(`${formValues.workoutDate}T${formValues.endTime}`),
       color: "#ffbe98",
       extendedProps: formValues,
     };
