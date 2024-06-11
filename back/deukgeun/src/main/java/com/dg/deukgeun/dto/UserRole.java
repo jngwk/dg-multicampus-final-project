@@ -1,5 +1,5 @@
 package com.dg.deukgeun.dto;
 
 public enum UserRole {
-    GENERAL, TRAINER, GYM, ADMIN;
+    ROLE_GYM, ROLE_TRAINER, ROLE_GENERAL, ROLE_ADMIN;
 }

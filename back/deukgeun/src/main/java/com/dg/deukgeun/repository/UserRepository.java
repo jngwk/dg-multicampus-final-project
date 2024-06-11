@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.dg.deukgeun.dto.UserRole;
 import com.dg.deukgeun.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
@@ -19,7 +20,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     public boolean existsByEmailAndPassword(String email, String password);
 
      //role에 따른 목록 조회를 위한 메서드
-     List<User> findByRole(String role);
+     List<User> findByRole(UserRole role);
 
      //userName으로 검색
      List<User> findByUserNameContainingIgnoreCase(String userName);
