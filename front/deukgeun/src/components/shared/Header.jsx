@@ -14,6 +14,7 @@ export default function Header() {
   const [isProfileDropdownVisible, setIsProfileDropdownVisible] =
     useState(false);
   const badge = useRef(null);
+  const dropdown = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,7 +23,10 @@ export default function Header() {
 
   useEffect(() => {
     const closeWhenClickedOutside = (e) => {
-      if (!badge.current?.contains(e.target)) {
+      if (
+        !dropdown.current?.contains(e.target) &&
+        !badge.current?.contains(e.target)
+      ) {
         setIsProfileDropdownVisible(false);
       }
     };
@@ -58,13 +62,13 @@ export default function Header() {
               </button>
 
               {/* User type 지정해서 안에 메뉴 변경 */}
-              {isProfileDropdownVisible ? (
-                <div className="absolute right-0 top-0">
+              <div ref={dropdown} className="absolute right-0 top-10">
+                {isProfileDropdownVisible ? (
                   <ProfileDropdown type="user" />
-                </div>
-              ) : (
-                ""
-              )}
+                ) : (
+                  ""
+                )}
+              </div>
             </>
           ) : (
             <>
