@@ -5,14 +5,20 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.dg.deukgeun.dto.user.ResponseDTO;
+import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.entity.User;
+import com.dg.deukgeun.repository.GymRepository;
 import com.dg.deukgeun.repository.UserRepository;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
 
     @Autowired 
     UserRepository userRepository;
+
+    @Autowired
+    private GymRepository gymRepository;
 
     public ResponseDTO<List<User>> getAllUsers(String adminEmail, String searchQuery) {
         try {
@@ -39,4 +45,33 @@ public class AdminService {
             return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
         }
     }
+
+    public ResponseDTO<?> getAllGymUsers(String searchQuery) {
+        List<Gym> gyms;
+        
+        try {
+            gyms = gymRepository.findAll();
+        } catch (Exception e) {
+            return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
+        }
+
+        // Gym 엔티티에서 유저 목록 추출
+        List<User> gymUsers = gyms.stream()
+                                  .map(Gym::getUser)
+                                  .collect(Collectors.toList());
+
+        if (searchQuery != null && !searchQuery.isEmpty()) {
+            gymUsers = gymUsers.stream()
+                               .filter(user -> user.getUserName().toLowerCase().contains(searchQuery.toLowerCase()))
+                               .collect(Collectors.toList());
+        }
+
+        // 보안상의 이유로 비밀번호 필드를 빈 문자열로 설정합니다.
+        for (User user : gymUsers) {
+            user.setPassword("");
+        }
+
+        return ResponseDTO.setSuccessData("헬스장을 운영하고 있는 유저 목록 조회에 성공했습니다.", gymUsers);
+    }
 }
+ 
