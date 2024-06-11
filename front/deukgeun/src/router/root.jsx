@@ -12,6 +12,7 @@ const Calendar = lazy(() => import("../pages/CalendarPage"));
 const SignUpChoice = lazy(() => import("../pages/SignUpChoicePage"));
 const SignUpForm = lazy(() => import("../pages/SignUpPage"));
 const ContactForm = lazy(() => import("../pages/ContactForm"));
+const ChatTest = lazy(() => import("../components/chat/ChatTest"));
 const UserInfoPage = lazy(() => import("../components/modals/MyInfo"));
 
 const Loading = <div>Loading...</div>;
@@ -66,6 +67,10 @@ const root = createBrowserRouter([
       {
         path: "contact",
         element: <ContactForm />,
+      },
+      {
+        path: "chatTest",
+        element: <ChatTest />,
       },
     ],
   },
