@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-const ModalLayout = ({ children, toggleModal, className, isModalVisible }) => {
+const ModalLayout = ({ children, toggleModal, className }) => {
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
