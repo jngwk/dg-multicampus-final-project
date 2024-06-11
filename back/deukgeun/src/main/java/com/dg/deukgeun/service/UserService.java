@@ -120,7 +120,7 @@ public class UserService {
                 userEntity.setPassword("");
 
                 // 사용자가 트레이너인 경우
-                if ("trainer".equals(userEntity.getCategory())) {
+                if ("TRAINER".equals(userEntity.getRole())) {
                     Optional<Trainer> trainerOptional = trainerRepository.findByUser_UserId(userEntity.getUserId());
                     if (trainerOptional.isPresent()) {
                         Trainer trainerEntity = trainerOptional.get();
@@ -155,12 +155,13 @@ public class UserService {
                 user.setUserName(dto.getUserName());
                 user.setEmail(dto.getEmail());
                 user.setAddress(dto.getAddress());
+                user.setDetailAddress(dto.getDetailAddress());
 
                 // Save the updated user entity
                 userRepository.save(user);
 
                 // If user is a trainer, update trainer information as well
-                if ("trainer".equals(user.getCategory())) {
+                if ("TRAINER".equals(user.getRole())) {
                     Optional<Trainer> trainerOptional = trainerRepository.findByUser_UserId(user.getUserId());
                     if (trainerOptional.isPresent()) {
                         Trainer trainer = trainerOptional.get();
