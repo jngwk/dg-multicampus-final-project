@@ -3,6 +3,8 @@ import { Outlet, createBrowserRouter } from "react-router-dom";
 import signUp from "./signUp";
 import PageTransitionWrapper from "../components/PageTransitionWrapper";
 import Layout from "../components/shared/Layout";
+import Loader from "../components/shared/Loader";
+import Fallback from "../components/shared/Fallback";
 // import QuillEditor from "../components/shared/QuillEditor";
 
 const Main = lazy(() => import("../pages/Main"));
@@ -16,8 +18,6 @@ const ChatTest = lazy(() => import("../components/chat/ChatTest"));
 const UserInfoPage = lazy(() => import("../components/modals/MyInfo"));
 const MemberList = lazy(() => import("../pages/MemberList"));
 
-const Loading = <div>Loading...</div>;
-
 const root = createBrowserRouter([
   {
     path: "/",
@@ -29,7 +29,7 @@ const root = createBrowserRouter([
       //     </Suspense>
       //   </PageTransitionWrapper>
       // </Layout>
-      <Suspense fallback={Loading}>
+      <Suspense fallback={<Fallback />}>
         <Layout>
           <Outlet />
         </Layout>
