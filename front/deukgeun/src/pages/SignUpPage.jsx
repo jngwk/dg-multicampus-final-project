@@ -203,8 +203,8 @@ const SignUpPage = () => {
 
   return (
     <>
-      {/* sm:translate-y-[20%] */}
-      <div className="w-fit h-fit mx-auto mt-3 sm:mt-0">
+      {/* sm:translate-y-[20%] mt-3*/}
+      <div className="w-fit h-fit mx-auto sm:mt-0">
         <span className="block text-center text-6xl my-10 hover:animate-wave cursor-grab">
           👋
         </span>
