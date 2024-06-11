@@ -2,12 +2,13 @@ import React, { useState ,useRef, useEffect } from "react";
 import Clock from "react-live-clock";
 import { FaAngleLeft, FaRegCalendarPlus } from "react-icons/fa";
 import { LuSend } from "react-icons/lu";
+import ChatMain from "./ChatMain";
 import ChatUserInfo from "./ChatUserInfo";
 
 
 
 const Chatting = () => {
-
+    const [isback,setIsback]  = useState(false); //뒤로가기
     const [text,setText]=useState(''); //입력할 chat
     const [chat,setChat]=useState([]); //입력한 chat기록
     const messageEndRef = useRef(null);
@@ -47,11 +48,18 @@ const Chatting = () => {
     }, [chat]);
 
     return (
-        <div className=" relative w-full h-[35rem] mx-1 border-2 rounded-lg border-grayish-red">
+      <>
+        {isback? (
+            <ChatMain/>
+        ) : (
+          <>
+          <div className=" relative w-full h-[35rem] mx-1 border-2 rounded-lg border-grayish-red">
             <div className="flex items-center mx-3 w-68 h-14 border-b-2 border-grayish-red">
-                <FaAngleLeft className="m-3" size="22"/>
+                <button id="backscreen" onClick={() => setIsback(!isback)}>
+                  <FaAngleLeft className="m-3" size="22"/>
+                </button>
                 <span className="text-sm font-medium"> 등록된 헬스장 이름 | 회원 이름 </span>
-                <ChatUserInfo/>
+                {/* <ChatUserInfo/> */}
             </div>
 
             <article className="w-full h-[27rem] mx-3 overflow-y-scroll scrollbar-hide md:scrollbar-default" >
@@ -78,6 +86,11 @@ const Chatting = () => {
                     </div>
             </div>
         </div>
+        </>
+        )
+      }
+     </>
+        
     );
 
 
