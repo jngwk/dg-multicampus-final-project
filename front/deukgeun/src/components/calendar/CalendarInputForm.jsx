@@ -16,7 +16,7 @@ const CalendarInputForm = ({
   const { computeTime, getTime } = useCustomDate();
 
   const [formValues, setFormValues] = useState({
-    date: "",
+    workoutDate: "",
     startTime: "",
     endTime: "",
     // client: "",
@@ -46,7 +46,7 @@ const CalendarInputForm = ({
     } else if (selectedDate) {
       const selectedTime = selectedDate.split("T")[1];
       setFormValues({
-        date: selectedDate.split("T")[0],
+        workoutDate: selectedDate.split("T")[0],
         startTime: selectedTime ? computeTime(selectedTime) : getTime(),
         endTime: selectedTime ? computeTime(selectedTime, 0.5) : getTime(1),
         workouts: [
@@ -121,9 +121,9 @@ const CalendarInputForm = ({
         <div className="h-5/6 overflow-scroll overflow-x-hidden">
           <Input
             label="날짜"
-            name="date"
+            name="workoutDate"
             type="date"
-            value={formValues.date || ""}
+            value={formValues.workoutDate || ""}
             onChange={handleChange}
           />
           <Input
