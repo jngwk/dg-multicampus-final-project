@@ -12,7 +12,7 @@ public class CustomSerlvetConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
 
         registry.addMapping("/**")
-                .allowedOriginPatterns("http://localhost:8282") 
+                .allowedOriginPatterns("http://localhost:8282","http://localhost:3000") 
                 .allowedMethods("HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);

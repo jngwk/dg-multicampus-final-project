@@ -7,6 +7,7 @@ import {
   signUpGeneral,
   signUpGym,
   sendVerificationEmail,
+  checkCrNumber,
 } from "../api/signUpApi";
 import AlertModal from "../components/modals/AlertModal";
 import useValidation from "../hooks/useValidation";
@@ -44,11 +45,15 @@ const SignUpPage = () => {
   const [role, setRole] = useState(initRole);
   const [userData, setUserData] = useState(initUserData);
   const [gymData, setGymData] = useState(initGymData);
+  const [codeData, setCodeData] = useState(initCodeData);
+
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
+  const [isCrNumberValid, setIsCrNumberValid] = useState(null);
+
   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
   const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
-  const [codeData, setCodeData] = useState(initCodeData);
+
+  const [error, setError] = useState("");
   const { errors, resetErrors, validateForm, validateInput } = useValidation();
 
   const handleUserDataChange = (e) => {
@@ -61,20 +66,29 @@ const SignUpPage = () => {
     validateInput(name, value);
   };
 
-  const handleEmailChange = (e) => {
-    setUserData({ ...userData, email: e.target.value });
-    validateInput("email", e.target.value);
-    (codeData.verified || codeData.sent) && setCodeData(initCodeData);
-    console.log("codeData", codeData);
-  };
-
   const handleGymDataChange = (e) => {
     const { name, value } = e.target;
+    // console.log(name, value);
     setGymData({
       ...gymData,
       [name]: value,
     });
     validateInput(name, value);
+  };
+
+  const handleEmailChange = (e) => {
+    setUserData({ ...userData, email: e.target.value });
+    validateInput("email", e.target.value);
+    (codeData.verified || codeData.sent) && setCodeData(initCodeData);
+    // console.log("codeData", codeData);
+  };
+
+  const handleCrNumberChange = (e) => {
+    setGymData({
+      ...gymData,
+      crNumber: e.target.value,
+    });
+    setIsCrNumberValid(null);
   };
 
   const handleConfirmPasswordChange = (e) => {
@@ -91,7 +105,7 @@ const SignUpPage = () => {
     } else {
       setCodeData({ ...codeData, inputCode: e.target.value, verified: false });
     }
-    console.log(codeData);
+    // console.log(codeData);
   };
 
   const handleSubmit = async () => {
@@ -99,8 +113,14 @@ const SignUpPage = () => {
 
     if (!validateForm(data, confirmPassword, codeData.verified)) {
       console.log("Validation failed");
-      console.log(codeData.verified);
+      // console.log(codeData.verified);
       return;
+    }
+
+    if (role === "gym") {
+      if (!isCrNumberValid) {
+        return;
+      }
     }
 
     try {
@@ -143,11 +163,11 @@ const SignUpPage = () => {
       console.log("RequestBody", userData.email, codeData.code);
       const response = sendVerificationEmail(userData.email, generatedCode);
       setCodeData({ ...codeData, sent: true, code: generatedCode });
-      console.log("codeData: ", codeData);
-      console.log("response: ", response);
+      // console.log("codeData: ", codeData);
+      // console.log("response: ", response);
     } catch (error) {
       setError("이메일 전송 오류");
-      console.log("Error while sending email: ", error);
+      // console.log("Error while sending email: ", error);
       setCodeData({ ...codeData, sent: false });
     }
   };
@@ -159,13 +179,17 @@ const SignUpPage = () => {
     return generatedCode;
   };
 
-  const verifyGym = () => {
-    console.log("사업자등록번호 조회 API 사용하기");
-  };
-
-  const toggleAddressModal = () => {
-    console.log("주소 검색 API 활용하기");
-    setIsAddressModalVisible(true);
+  const verifyGym = async () => {
+    // 2728702429 사용해서 테스트
+    try {
+      const response = await checkCrNumber(gymData.crNumber);
+      response.data.result
+        ? setIsCrNumberValid(true)
+        : setIsCrNumberValid(false);
+    } catch (error) {
+      setError("사업자등록번호 조회 실패");
+      console.log(error);
+    }
   };
 
   const resetForm = () => {
@@ -173,11 +197,12 @@ const SignUpPage = () => {
     setGymData(initGymData);
     setCodeData(initCodeData);
     setConfirmPassword("");
+    setIsCrNumberValid(null);
     resetErrors();
   };
 
   return (
-    <Layout>
+    <>
       {/* sm:translate-y-[20%] */}
       <div className="w-fit h-fit mx-auto mt-3 sm:mt-0">
         <span className="block text-center text-6xl my-10 hover:animate-wave cursor-grab">
@@ -229,9 +254,13 @@ const SignUpPage = () => {
                 width="340px"
                 name="crNumber"
                 value={gymData.crNumber}
-                onChange={handleGymDataChange}
+                onChange={handleCrNumberChange}
                 required={true}
-                error={errors.crNumber}
+                maxLength={"10"}
+                error={
+                  isCrNumberValid === false && "등록된 정보가 없는 번호입니다."
+                }
+                message={isCrNumberValid && "등록된 번호입니다."}
                 feature="인증하기"
                 featureOnClick={verifyGym}
               />
@@ -294,7 +323,7 @@ const SignUpPage = () => {
               label="전화번호"
               type="phone"
               width="340px"
-              name="crNumber"
+              name="phoneNumber"
               value={gymData.phoneNumber}
               onChange={handleGymDataChange}
               required={true}
@@ -351,7 +380,7 @@ const SignUpPage = () => {
           toggleModal={() => setIsAddressModalVisible(false)}
         />
       )}
-    </Layout>
+    </>
   );
 };
 
