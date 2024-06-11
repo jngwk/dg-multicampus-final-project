@@ -12,6 +12,7 @@ const Calendar = lazy(() => import("../pages/CalendarPage"));
 const SignUpChoice = lazy(() => import("../pages/SignUpChoicePage"));
 const SignUpForm = lazy(() => import("../pages/SignUpPage"));
 const ContactForm = lazy(() => import("../pages/ContactForm"));
+const ChatTest = lazy(() => import("../components/chat/ChatTest"));
 const UserInfoPage = lazy(() => import("../components/modals/MyInfo"));
 const MemberList = lazy(() => import("../pages/MemberList"));
 
@@ -70,7 +71,11 @@ const root = createBrowserRouter([
       },
       {
         path: "/memberList",
-        element: <MemberList />
+        element: <MemberList />,
+      },
+      {
+        path: "chatTest",
+        element: <ChatTest />,
       },
     ],
   },

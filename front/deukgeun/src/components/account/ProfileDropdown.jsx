@@ -27,7 +27,7 @@ const ProfileDropdown = ({ type }) => {
           {isModalVisible ? <MyInfo toggleModal={toggleModal} /> : ""}
           <li
             className="profile-dropdown-list"
-            onClick={() => customNavigate("/calender")}
+            onClick={() => customNavigate("/calendar")}
           >
             <img className="inline-block peer w-7 mx-3" src="" alt="icon" />
             <span>운동일지</span>

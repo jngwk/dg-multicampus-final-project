@@ -37,4 +37,14 @@ public class ChatRoom {
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ChatMessage> messages;
+
+    // Constructor to accept id as a String
+    public ChatRoom(String id) {
+        this.id = Long.parseLong(id);
+    }
+
+    // Constructor to accept id as an Integer
+    public ChatRoom(Long id) {
+        this.id = id;
+    }
 }

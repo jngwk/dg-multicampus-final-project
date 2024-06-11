@@ -7,7 +7,7 @@ export const registerWorkoutSession = async (userId, event) => {
   try {
     const response = await axios.post(`${prefix}/register`, {
       userId,
-      workoutDate: event.date,
+      workoutDate: event.workoutDate,
       content: event.content,
       bodyWeight: event.bodyWeight,
       memo: event.memo,
@@ -27,7 +27,7 @@ export const modifyWorkoutSession = async (userId, event, eventId) => {
     const response = await axios.put(`${prefix}/modify/${eventId}`, {
       workoutSessionId: eventId,
       userId: userId,
-      workoutDate: event.date,
+      workoutDate: event.workoutDate,
       content: event.content,
       bodyWeight: event.bodyWeight,
       memo: event.memo,

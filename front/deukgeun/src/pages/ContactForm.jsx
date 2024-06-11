@@ -4,6 +4,7 @@ import Input from "../components/shared/Input";
 import Button from "../components/shared/Button";
 import { useAuth } from "../context/AuthContext";
 import useValidation from "../hooks/useValidation";
+import { registerInquery } from "../api/qnaApi";
 
 const initState = {
   userName: "",
@@ -19,6 +20,7 @@ const ContactForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    // console.log(name, value);
     setFormValues({
       ...formValues,
       [name]: value,
@@ -27,10 +29,15 @@ const ContactForm = () => {
 
   const handleSubmit = async () => {
     if (!validateForm(formValues)) return;
+
     try {
-      console.log("문의내역 DB에 기입하기");
+      const formData = { ...formValues, regDate: new Date().toISOString };
+      console.log(formData);
+      const res = registerInquery(formData);
+      console.log(res.data);
     } catch (error) {
-      console.log(error);
+      console.error("Error registering form data", error);
+      throw error;
     }
   };
 
@@ -58,6 +65,7 @@ const ContactForm = () => {
               label="이름"
               required={true}
               width="140px"
+              name="userName"
               value={formValues.userName}
               onChange={handleChange}
               error={errors.userName}
@@ -66,6 +74,7 @@ const ContactForm = () => {
               label="이메일"
               required={true}
               width="240px"
+              name="email"
               value={formValues.email}
               onChange={handleChange}
               error={errors.email}
@@ -77,6 +86,7 @@ const ContactForm = () => {
             label="제목"
             required={true}
             width="400px"
+            name="title"
             value={formValues.title}
             onChange={handleChange}
             error={errors.title}
@@ -84,6 +94,7 @@ const ContactForm = () => {
           <TextArea
             label="문의내용"
             required={true}
+            name="content"
             value={formValues.content}
             onChange={handleChange}
             error={errors.content}
