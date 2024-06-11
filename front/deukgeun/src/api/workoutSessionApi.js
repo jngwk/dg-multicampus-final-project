@@ -9,7 +9,7 @@ export const registerWorkoutSession = async (userId, event) => {
     const token = localStorage.getItem('authToken');
     const response = await axios.post(`${prefix}/workoutSession/register`, {
       userId,
-      workoutDate: event.date,
+      workoutDate: event.workoutDate,
       content: event.content,
       bodyWeight: event.bodyWeight,
       memo: event.memo,
@@ -33,7 +33,7 @@ export const modifyWorkoutSession = async (userId, event, eventId) => {
     const response = await axios.put(`${prefix}/workoutSession/modify/${eventId}`, {
       workoutSessionId: eventId,
       userId: userId,
-      workoutDate: event.date,
+      workoutDate: event.workoutDate,
       content: event.content,
       bodyWeight: event.bodyWeight,
       memo: event.memo,

@@ -20,6 +20,7 @@ const ContactForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    // console.log(name, value);
     setFormValues({
       ...formValues,
       [name]: value,
@@ -64,6 +65,7 @@ const ContactForm = () => {
               label="이름"
               required={true}
               width="140px"
+              name="userName"
               value={formValues.userName}
               onChange={handleChange}
               error={errors.userName}
@@ -72,6 +74,7 @@ const ContactForm = () => {
               label="이메일"
               required={true}
               width="240px"
+              name="email"
               value={formValues.email}
               onChange={handleChange}
               error={errors.email}
@@ -83,6 +86,7 @@ const ContactForm = () => {
             label="제목"
             required={true}
             width="400px"
+            name="title"
             value={formValues.title}
             onChange={handleChange}
             error={errors.title}
@@ -90,6 +94,7 @@ const ContactForm = () => {
           <TextArea
             label="문의내용"
             required={true}
+            name="content"
             value={formValues.content}
             onChange={handleChange}
             error={errors.content}
