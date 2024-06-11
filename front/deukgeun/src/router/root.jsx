@@ -1,55 +1,76 @@
 import React, { Suspense, lazy } from "react";
-import { createBrowserRouter } from "react-router-dom";
+import { Outlet, createBrowserRouter } from "react-router-dom";
 import signUp from "./signUp";
-const Loading = <div>Loading...</div>;
+import PageTransitionWrapper from "../components/PageTransitionWrapper";
+import Layout from "../components/shared/Layout";
+// import QuillEditor from "../components/shared/QuillEditor";
 
 const Main = lazy(() => import("../pages/Main"));
-const ChartPage = lazy(() => import("../pages/ChartPage"));
-const ChatRoom = lazy(() => import("../pages/ChatRoom"));
-const CalendarPage = lazy(() => import("../pages/CalendarPage"));
+const Chart = lazy(() => import("../pages/ChartPage"));
+const Chat = lazy(() => import("../pages/ChatRoom"));
+const Calendar = lazy(() => import("../pages/CalendarPage"));
+const SignUpChoice = lazy(() => import("../pages/SignUpChoicePage"));
+const SignUpForm = lazy(() => import("../pages/SignUpPage"));
+const ContactForm = lazy(() => import("../pages/ContactForm"));
 const UserInfoPage = lazy(() => import("../components/modals/MyInfo"));
+
+const Loading = <div>Loading...</div>;
 
 const root = createBrowserRouter([
   {
     path: "/",
     element: (
+      // <Layout>
+      //   <PageTransitionWrapper>
+      //     <Suspense fallback={Loading}>
+      //       <Outlet />
+      //     </Suspense>
+      //   </PageTransitionWrapper>
+      // </Layout>
       <Suspense fallback={Loading}>
-        <Main />
+        <Layout>
+          <Outlet />
+        </Layout>
       </Suspense>
     ),
+    children: [
+      {
+        index: true,
+        element: <Main />,
+      },
+      {
+        path: "chart",
+        element: <Chart />,
+      },
+      {
+        path: "chat",
+        element: <Chat />,
+      },
+      {
+        path: "calendar",
+        element: <Calendar />,
+      },
+      {
+        path: "signUp",
+        children: [
+          {
+            index: true,
+            element: <SignUpChoice />,
+          },
+          {
+            path: "form",
+            element: <SignUpForm />,
+          },
+        ],
+      },
+      {
+        path: "contact",
+        element: <ContactForm />,
+      },
+    ],
   },
-  {
-    path: "/membership/stats",
-    element: (
-      <Suspense fallback={Loading}>
-        <ChartPage />
-      </Suspense>
-    ),
-  },
-  {
-    path: "/chat",
-    element: (
-      <Suspense fallback={Loading}>
-        <ChatRoom />
-      </Suspense>
-    ),
-  },
-  {  path: "/calender",
-    element: (
-      <Suspense fallback={Loading}>
-        <CalendarPage />
-      </Suspense>
-    ),
-  },
-  {
-    path: "/myInfo",
-    element: (
-      <Suspense fallback={Loading}>
-        <UserInfoPage />
-      </Suspense>
-    ),
-  },
-  ...signUp.routes,
+
+  // ...signUp.routes,
 ]);
 
 export default root;

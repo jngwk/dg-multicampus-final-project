@@ -24,6 +24,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     sessionStorage.removeItem("user");
     console.log("logged out");
+    console.log(currentPath);
   };
 
   return (

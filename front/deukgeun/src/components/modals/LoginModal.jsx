@@ -97,6 +97,10 @@ const LoginModal = ({ toggleModal }) => {
     }
   };
 
+  const handleSignUpClick = () => {
+    toggleModal();
+    customNavigate("/signUp");
+  };
   return (
     <ModalLayout toggleModal={toggleModal}>
       <img src={logo} alt="logo" width={120} className="mb-14" />
@@ -130,7 +134,7 @@ const LoginModal = ({ toggleModal }) => {
         <br />
         <Button onClick={handleLogin} color="peach-fuzz" label="로그인" />
         <Button
-          onClick={() => customNavigate("/signUp/choose")}
+          onClick={handleSignUpClick}
           color="bright-orange"
           label="회원가입"
         />

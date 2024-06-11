@@ -47,8 +47,7 @@ public class QnaService {
                 qna.setUserName(user.getUserName());
                 qna.setEmail(user.getEmail());
             } else {
-                // Handle case where userId is provided but the user is not found
-                // You might want to throw an exception or handle it differently
+                
                 log.warn("User with userId {} not found", qnaDTO.getUserId());
             }
         }
