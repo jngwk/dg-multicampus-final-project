@@ -11,7 +11,7 @@ module.exports = {
       ...colors,
     },
     fontFamily: {
-      sans: ["Noto Sans Kr"],
+      sans: ['"Noto Sans Kr"', "sans-serif"],
     },
     extend: {
       keyframes: {
