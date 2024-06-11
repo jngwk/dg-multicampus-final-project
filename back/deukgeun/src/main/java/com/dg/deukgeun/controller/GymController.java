@@ -1,12 +1,15 @@
 package com.dg.deukgeun.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dg.deukgeun.api.CRNumberCheckApi;
+import com.dg.deukgeun.dto.gym.GymDTO;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
@@ -47,4 +50,12 @@ public class GymController {
         ResponseDTO<?> result = gymService.login(requestBody);
         return result;
     }
+
+    //from gachudon brench
+    //체육관 정보 불러오기
+    @GetMapping("/{gymId}")
+    public GymDTO get(@PathVariable("name = gymId") Integer gymId){
+        return gymService.get(gymId);
+    }
+    //gachudon brench end
 }

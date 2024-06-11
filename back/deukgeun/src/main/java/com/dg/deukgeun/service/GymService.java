@@ -1,11 +1,15 @@
 package com.dg.deukgeun.service;
 
+import java.util.Optional;
+
+import org.modelmapper.ModelMapper;
 import org.modelmapper.internal.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.dg.deukgeun.api.CRNumberCheckApi;
+import com.dg.deukgeun.dto.gym.GymDTO;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.LoginResponseDTO;
@@ -16,8 +20,18 @@ import com.dg.deukgeun.repository.GymRepository;
 import com.dg.deukgeun.repository.UserRepository;
 import com.dg.deukgeun.security.TokenProvider;
 
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
 @Service
+//from gachudon brench
+@Transactional
+@RequiredArgsConstructor
+//gachudon brench end
 public class GymService {
+    //from gachudon brench
+    private final ModelMapper modelMapper;
+    //from gachudon brench
 
     @Autowired
     private GymRepository gymRepository;
@@ -139,4 +153,14 @@ public class GymService {
 
         return ResponseDTO.setSuccessData("로그인에 성공하였습니다.", loginResponseDto);
     }
+
+    // from gachudon brench
+    // GymDTO 형태로 데이터 불러오기
+    public GymDTO get (Integer gymId){
+        Optional<Gym> result = gymRepository.findById(gymId);
+        Gym gym = result.orElseThrow();
+        GymDTO dto = modelMapper.map(gym, GymDTO.class);
+        return dto;
+    }
+    //gachudon brench end
 }
