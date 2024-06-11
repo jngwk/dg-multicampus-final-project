@@ -180,6 +180,7 @@ const SignUpPage = () => {
   };
 
   const verifyGym = async () => {
+    // 2728702429 사용해서 테스트
     try {
       const response = await checkCrNumber(gymData.crNumber);
       response.data.result
@@ -202,8 +203,8 @@ const SignUpPage = () => {
 
   return (
     <>
-      {/* sm:translate-y-[20%] */}
-      <div className="w-fit h-fit mx-auto mt-3 sm:mt-0">
+      {/* sm:translate-y-[20%] mt-3*/}
+      <div className="w-fit h-fit mx-auto sm:mt-0">
         <span className="block text-center text-6xl my-10 hover:animate-wave cursor-grab">
           👋
         </span>
@@ -240,7 +241,7 @@ const SignUpPage = () => {
           {role === "gym" && (
             <>
               <Input
-                label="헬스장 이름"
+                label="헬스장 이름 (지점명 포함)"
                 width="340px"
                 name="gymName"
                 value={gymData.gymName}

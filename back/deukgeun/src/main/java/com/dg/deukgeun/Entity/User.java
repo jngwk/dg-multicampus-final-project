@@ -52,6 +52,10 @@ public class User {
         this.token = "";
     }
 
+    public User(String userId) {
+        this.userId = Integer.parseInt(userId);
+    }
+
     // @Enumerated(EnumType.STRING)
     // private UserRole role;
 

@@ -1,6 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const ModalLayout = ({ children, toggleModal, className }) => {
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
   return (
     <div
       className="fixed top-0 left-0 w-full h-full bg-black/60 flex justify-center items-center z-50 overflow-hidden"
