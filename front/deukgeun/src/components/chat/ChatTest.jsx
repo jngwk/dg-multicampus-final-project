@@ -9,22 +9,30 @@ import {
 } from "../../api/chatApi";
 import Button from "../shared/Button";
 import ModalLayout from "../modals/ModalLayout";
+import Loader from "../shared/Loader";
 
 const ChatTest = () => {
   const [stompClient, setStompClient] = useState(null);
+
   const [messages, setMessages] = useState([]); // 메세지 내역
+
+  const [chatRoom, setChatRoom] = useState({ id: 0 }); // token에서 chatRoom 가져오기
   const [chatRooms, setChatRooms] = useState([]); // 채팅 목록
   const [chatMessage, setChatMessage] = useState(""); // 보낼 메세지
-  const [chatRoom, setChatRoom] = useState("1"); // token에서 chatRoom 가져오기
-  const [userId, setUserId] = useState("1"); // token에서 sender id 가져오기
+
   const [availableUsers, setAvailableUsers] = useState([]); // 대화 가능 상대
+
   const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const [messagesLoading, setMessagesLoading] = useState(false);
+  const [availableUsersLoading, setAvailableUsersLoading] = useState(false);
+
+  const userData = JSON.parse(sessionStorage.getItem("user"));
 
   useEffect(() => {
     loadChatHistory();
     loadChatRooms();
-    loadAvailableUsers();
-
+    // loadAvailableUsers(); // 모달 클릭했을 때 리로드 되게
     const socket = new SockJS("http://localhost:8282/ws");
 
     const client = new Client({
@@ -39,7 +47,8 @@ const ChatTest = () => {
           stompClient.deactivate();
           console.log("client deactivated");
         }
-        client.subscribe(`/topic/${chatRoom}`, onMessageReceived);
+        client.subscribe(`/topic/${chatRoom.id}`, onMessageReceived);
+        console.log("chatRoom ID: ", chatRoom.id);
       },
       onStompError: (frame) => {
         console.error("Broker reported error: " + frame.headers["message"]);
@@ -48,6 +57,7 @@ const ChatTest = () => {
     });
 
     if (stompClient) {
+      // 중복 연결 방지
       stompClient.deactivate();
       console.log("client deactivated");
     }
@@ -63,18 +73,11 @@ const ChatTest = () => {
     };
   }, [chatRoom]);
 
-  // useEffect(() => {
-  //   if (isModalVisible) {
-  //     loadAvailableUsers(); // Changed: Conditionally fetching available users
-  //   } else {
-  //     setAvailableUsers([]);
-  //   }
-  // }, [isModalVisible]);
-
   // 구독한 메세지 수신
   const onMessageReceived = (payload) => {
     const message = JSON.parse(payload.body);
-    console.log(message);
+    console.log("msg", message);
+    // 대화 목록에 없는 대화방이면 추가
     if (!chatRooms.find((room) => room.id === message.chatRoom.id)) {
       setChatRooms([...chatRooms, message.chatRoom]);
     }
@@ -84,10 +87,15 @@ const ChatTest = () => {
   // 메세지 발행
   const sendMessage = () => {
     if (stompClient && stompClient.connected) {
+      console.log(chatRoom.users);
+      const receiver =
+        chatRoom.users[0].userId === userData.userId
+          ? chatRoom.users[1]
+          : chatRoom.users[0];
       const messageToSend = {
-        chatRoom: { id: chatRoom }, // 토큰에서 가져온거 넣기
-        sender: { userId: "1", userName: "최정욱" }, // 토큰에서 가져온거 넣기
-        receiver: { userId: "2", userName: "심민규" }, // 채팅 대상 아이디 넣기
+        chatRoom: chatRoom, // 토큰에서 가져온거 넣기
+        sender: userData, // 토큰에서 가져온거 넣기
+        receiver: receiver, // TODO 수정하기
         timestamp: new Date().toISOString(),
         message: chatMessage,
       };
@@ -103,19 +111,22 @@ const ChatTest = () => {
   // 채팅 내역 불러오기
   const loadChatHistory = async () => {
     try {
-      const chatHistory = await getChatHistory(chatRoom);
+      setMessagesLoading(true);
+      const chatHistory = await getChatHistory(chatRoom.id);
       //   console.log(chatHistory);
       setMessages(chatHistory);
     } catch (error) {
       console.error("Error loading chat history", error);
       throw error;
+    } finally {
+      setMessagesLoading(false);
     }
   };
 
   // 채팅방 목록 불러오기
   const loadChatRooms = async () => {
     try {
-      const chatRoomsList = await getChatRooms(userId);
+      const chatRoomsList = await getChatRooms(userData.userId);
       setChatRooms(chatRoomsList);
     } catch (error) {
       console.error("Error loading chat rooms", error);
@@ -135,10 +146,11 @@ const ChatTest = () => {
 
   // 채팅방 추가하기
   const findOrCreateChatRoom = async (selectedUserId) => {
+    toggleModal();
     try {
       console.log("채팅방 생성하기");
-      const newChatRoom = await getChatRoom(userId, selectedUserId);
-      setChatRoom(newChatRoom.id);
+      const newChatRoom = await getChatRoom(userData.userId, selectedUserId);
+      setChatRoom(newChatRoom);
       console.log("findOrCreateChatRoom", newChatRoom);
     } catch (error) {
       console.error("Error creating chat room", error);
@@ -151,6 +163,7 @@ const ChatTest = () => {
   // 추후 수정: 등록된 헬스장 / 트레이너 불러오기
   const loadAvailableUsers = async () => {
     try {
+      setAvailableUsersLoading(true);
       const users = await getAvailableUsers();
       console.log("대화 가능 상대 불러오기");
       setAvailableUsers(users);
@@ -158,22 +171,21 @@ const ChatTest = () => {
     } catch (error) {
       console.error("Error loading available users", error);
       throw error;
+    } finally {
+      setAvailableUsersLoading(false);
     }
   };
 
   const toggleModal = () => {
-    // {
-    //   !isModalVisible
-    //     ? setAvailableUsers(loadAvailableUsers())
-    //     : setAvailableUsers([]);
-    // }
+    {
+      !isModalVisible ? loadAvailableUsers() : setAvailableUsers([]);
+    }
     setIsModalVisible(!isModalVisible);
     console.log(
       "Modal Visible: AvailableUsers",
       availableUsers,
       availableUsers.length
     );
-    console.log("user", availableUsers[0].userName);
   };
 
   return (
@@ -181,15 +193,15 @@ const ChatTest = () => {
       <div className="flex flex-col justify-center items-center">
         {/* 채팅방 목록 */}
         <h2 className="w-[400px]">Chat Rooms</h2>
-        <div className="relative h-[700px] w-[400px] overflow-y-auto flex flex-col gap-1">
+        <div className="relative h-[600px] w-[400px] overflow-y-auto flex flex-col gap-1">
           {chatRooms.map((room, index) => (
             <div
               className="cursor-pointer"
               key={index}
-              onClick={() => setChatRoom(room.id)}
+              onClick={() => setChatRoom(room)}
             >
               <b>
-                {String(room.users[0].userId) === userId
+                {room.users[0].userId === userData.userId
                   ? room.users[1].userName
                   : room.users[0].userName}
               </b>
@@ -201,20 +213,24 @@ const ChatTest = () => {
             {isModalVisible && (
               <ModalLayout toggleModal={toggleModal}>
                 <div>
-                  {availableUsers.length > 0
-                    ? availableUsers.map(
-                        (user, index) =>
-                          String(user.userId) !== userId && (
-                            <div
-                              className="cursor-pointer"
-                              key={index}
-                              onClick={() => findOrCreateChatRoom(user.userId)}
-                            >
-                              <b>{user.userName}</b>
-                            </div>
-                          )
-                      )
-                    : "대화 가능한 상대가 없습니다. \n 헬스장 조회를 통해 대화를 시작하거나 PT 등록을 해주세요."}
+                  {availableUsersLoading ? (
+                    <Loader />
+                  ) : availableUsers.length > 0 ? (
+                    availableUsers.map(
+                      (user, index) =>
+                        user.userId !== userData.userId && (
+                          <div
+                            className="cursor-pointer"
+                            key={index}
+                            onClick={() => findOrCreateChatRoom(user.userId)}
+                          >
+                            <b>{user.userName}</b>
+                          </div>
+                        )
+                    )
+                  ) : (
+                    "대화 가능한 상대가 없습니다. \n 헬스장 조회를 통해 대화를 시작하거나 PT 등록을 해주세요."
+                  )}
                 </div>
               </ModalLayout>
             )}
@@ -223,28 +239,41 @@ const ChatTest = () => {
       </div>
       <div>
         {/* 채팅 내역 */}
-        <h2>Chat: {chatRoom}</h2>
-        <div className="h-[700px] w-[400px] overflow-y-auto flex flex-col gap-1">
-          {messages.map((msg, index) =>
-            String(msg.sender.userId) === userId ? (
-              <div key={index} className="text-right">
-                {msg.message}:<b>{msg.sender.userName}</b>
+        <h2>Chat: {chatRoom.id === 0 ? "" : chatRoom.id}</h2>
+        <div className="h-[600px] w-[400px] overflow-y-auto flex flex-col gap-1">
+          {chatRoom !== 0 &&
+            (messagesLoading ? (
+              <div className="flex flex-col justify-center items-center h-2/3">
+                <Loader />
+                {/* <span className="block text-peach-fuzz font-semibold translate-x-7 -translate-y-12 -rotate-45">
+                Loading...
+              </span> */}
               </div>
             ) : (
-              <div key={index} className="text-left">
-                <b>{msg.sender.userName}</b>:{msg.message}
-              </div>
-            )
-          )}
+              messages.map((msg, index) =>
+                msg.sender.userId === userData.userId ? (
+                  <div key={index} className="text-right">
+                    {msg.message}:<b>{msg.sender.userName}</b>
+                  </div>
+                ) : (
+                  <div key={index} className="text-left">
+                    <b>{msg.sender.userName}</b>:{msg.message}
+                  </div>
+                )
+              )
+            ))}
         </div>
         <div>
           <input
             type="text"
             value={chatMessage}
             onChange={(e) => setChatMessage(e.target.value)}
+            readOnly={chatRoom.id === 0 && true}
             placeholder="Type a message..."
           />
-          <button onClick={sendMessage}>Send</button>
+          <button onClick={sendMessage} disabled={chatRoom.id === 0 && true}>
+            Send
+          </button>
         </div>
       </div>
     </div>
