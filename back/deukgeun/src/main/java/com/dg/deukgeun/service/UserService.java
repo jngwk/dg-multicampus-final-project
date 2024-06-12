@@ -161,7 +161,7 @@ public class UserService {
                 userRepository.save(user);
 
                 // If user is a trainer, update trainer information as well
-                if ("TRAINER".equals(user.getRole())) {
+                if ("ROLE_TRAINER".equals(user.getRole())) {
                     Optional<Trainer> trainerOptional = trainerRepository.findByUser_UserId(user.getUserId());
                     if (trainerOptional.isPresent()) {
                         Trainer trainer = trainerOptional.get();
