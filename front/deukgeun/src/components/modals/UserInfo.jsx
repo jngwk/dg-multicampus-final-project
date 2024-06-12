@@ -12,12 +12,12 @@ import useValidation from "../../hooks/useValidation";
 const MyInfo = ({ toggleModal }) => {
   const [imageUrl, setImageUrl] = useState(null);
   const [userData, setUserData] = useState({
-    address: "",
-    category: "",
-    detailAddress: "",
-    email: "",
-    userId: "",
     userName: "",
+    userId: "",
+    email: "",
+    address: "",
+    detailAddress: "",
+    role: "",
   }); // Correctly define userData using useState
   const fileInput = useRef(null);
   const sessionData = JSON.parse(sessionStorage.getItem("user"));
@@ -34,7 +34,6 @@ const MyInfo = ({ toggleModal }) => {
             const data = await userInfo();
             setUserData(data.data.user);
             console.log(data.data.user);
-            console.log(userData);
         };
 
         fetchData();

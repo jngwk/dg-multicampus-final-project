@@ -1,13 +1,14 @@
 import axios from "axios";
 
 // export const API_SERVER_HOST = "http://localhost:8282";
-// const prefix = `${API_SERVER_HOST}/api/user`;
-const prefix = `/api/user`; // proxy 사용
+// const userPrefix = `${API_SERVER_HOST}/api/user`;
+// const gymPrefix = `${API_SERVER_HOST}/api/gym`;
+const userPrefix = `/api/user`;  //user proxy 사용
+const gymPrefix = `/api/gym`;  //gym proxy 사용
 
 export const signUpGeneral = async (userData) => {
   try {
-    const response = await axios.post(`${prefix}/signUp/general`, userData);
-
+    const response = await axios.post(`${userPrefix}/signUp/general`, userData);
     return response.data;
   } catch (error) {
     throw new Error("Login failed");
@@ -17,8 +18,7 @@ export const signUpGeneral = async (userData) => {
 export const signUpGym = async (userData) => {
   try {
     console.log(userData);
-    const response = await axios.post(`${prefix}/signUp/gym`, userData);
-
+    const response = await axios.post(`${userPrefix}/signUp/gym`, userData);
     return response.data;
   } catch (error) {
     throw new Error("Signup failed");
@@ -27,7 +27,7 @@ export const signUpGym = async (userData) => {
 
 export const sendVerificationEmail = async (email, code) => {
   try {
-    const response = await axios.post(`${prefix}/sendCode`, {
+    const response = await axios.post(`${userPrefix}/sendCode`, {
       email: email,
       code: code,
     });
@@ -41,7 +41,7 @@ export const sendVerificationEmail = async (email, code) => {
 
 export const checkCrNumber = async (crNumber) => {
   try {
-    const response = await axios.post(`/api/gym/crNumberCheck`, {
+    const response = await axios.post(`${gymPrefix}/crNumberCheck`, {
       crNumber: crNumber,
     });
     console.log("response: ", response);

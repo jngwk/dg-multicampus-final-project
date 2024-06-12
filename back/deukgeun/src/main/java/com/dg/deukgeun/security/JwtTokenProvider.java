@@ -39,7 +39,7 @@ public class JwtTokenProvider {
 
             // JWT 클레임 설정
             JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                    .subject("userId")
+                    .subject(userId.toString())
                     .claim("email", email)
                     .claim("role", role.name())
                     .claim("userName", userName)
@@ -116,6 +116,22 @@ public class JwtTokenProvider {
         }
     }
 
+        /**
+     * JWT 토큰에서 역할을 추출하는 메서드
+     * 
+     * @param token JWT 토큰
+     * @return 추출된 역할
+     */
+    public Integer getUserIdFromToken(String token) {
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            return Integer.parseInt(signedJWT.getJWTClaimsSet().getSubject());
+        } catch (Exception e) {
+            System.out.println("JWT 토큰에서 유저Id 추출 중 오류 발생: " + e.getMessage());
+            return null;
+        }
+    }
+
     /**
      * JWT 토큰에서 이메일을 추출하는 메서드
      * 
@@ -125,7 +141,7 @@ public class JwtTokenProvider {
     public String getEmailFromToken(String token) {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
-            return signedJWT.getJWTClaimsSet().getSubject();
+            return signedJWT.getJWTClaimsSet().getStringClaim("email");
         } catch (Exception e) {
             System.out.println("JWT 토큰에서 이메일 추출 중 오류 발생: " + e.getMessage());
             return null;
@@ -149,16 +165,14 @@ public class JwtTokenProvider {
         }
     }
     
-    public Integer getUserIdFromToken(String token) {
-        try {
-            SignedJWT signedJWT = SignedJWT.parse(token);
-            return signedJWT.getJWTClaimsSet().getIntegerClaim("userId");
-        } catch (Exception e) {
-            System.out.println("JWT 토큰에서 유저Id 추출 중 오류 발생: " + e.getMessage());
-            return null;
-        }
-    }
 
+
+    /**
+     * JWT 토큰에서 userName을 추출하는 메서드
+     * 
+     * @param token JWT 토큰
+     * @return 추출된 이름
+     */
     public String getUserNameFromToken(String token) {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
