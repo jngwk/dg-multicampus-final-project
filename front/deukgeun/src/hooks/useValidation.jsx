@@ -13,6 +13,7 @@ const useValidation = () => {
     if (!/^[가-힣]+$/.test(userName)) {
       tempErrors.userName = "이름은 한글로만 입력해주세요";
     }
+    return tempErrors.userName !== "";
   };
 
   const validateEmail = (email, tempErrors) => {
@@ -20,6 +21,7 @@ const useValidation = () => {
     if (!/\S+@\S+\.\S+/.test(email)) {
       tempErrors.email = "유효한 이메일 주소를 입력해주세요";
     }
+    return tempErrors.email !== "";
   };
   // const validateEmailVerification = (verified, tempErrors) => {
   //   !verified && (tempErrors.email = "이메일 인증이 되지 않았습니다.");
@@ -35,6 +37,7 @@ const useValidation = () => {
       tempErrors.password =
         "최소 8자, 영문 대소문자, 숫자, 특수문자를 포함해야 합니다";
     }
+    return tempErrors.password !== "";
   };
 
   const validateConfirmPassword = (password, confirmPassword, tempErrors) => {
@@ -42,6 +45,7 @@ const useValidation = () => {
     if (password !== confirmPassword) {
       tempErrors.confirmPassword = "비밀번호가 일치하지 않습니다";
     }
+    return tempErrors.confirmPassword !== "";
   };
 
   const validateNotEmpty = (field, value, tempErrors) => {
@@ -49,6 +53,7 @@ const useValidation = () => {
     if (!value) {
       tempErrors[field] = "필수 입력 항목입니다";
     }
+    return tempErrors[field] !== "";
   };
 
   const validateInput = (field, value, password = "", verified = true) => {

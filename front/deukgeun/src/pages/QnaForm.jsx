@@ -3,7 +3,7 @@ import TextArea from "../components/shared/TextArea";
 import Input from "../components/shared/Input";
 import Button from "../components/shared/Button";
 import { useAuth } from "../context/AuthContext";
-import useValidation from "../hooks/useValidation";
+import useQnaValidation from "../hooks/useQnaValidation";
 import { registerInquery } from "../api/qnaApi";
 
 const initState = {
@@ -13,14 +13,13 @@ const initState = {
   content: "",
 };
 
-const ContactForm = () => {
+const QnaForm = () => {
   const { user } = useAuth();
   const [formValues, setFormValues] = useState(initState);
-  const { errors, validateForm } = useValidation();
+  const { errors, validateForm } = useQnaValidation();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // console.log(name, value);
     setFormValues({
       ...formValues,
       [name]: value,
@@ -31,10 +30,10 @@ const ContactForm = () => {
     if (!validateForm(formValues)) return;
 
     try {
-      const formData = { ...formValues, regDate: new Date().toISOString };
+      const formData = { ...formValues, regDate: new Date().toISOString() };
       console.log(formData);
-      const res = registerInquery(formData);
-      console.log(res.data);
+      const res = await registerInquery(formData);
+      console.log(res);
     } catch (error) {
       console.error("Error registering form data", error);
       throw error;
@@ -42,10 +41,9 @@ const ContactForm = () => {
   };
 
   return (
-    // xl:translate-y-[30%] translate-y-[10%]
-    <div className="mx-auto xl:grid xl:grid-cols-2  xl:w-[1000px] flex-col flex justify-center items-center ">
+    <div className="mx-auto xl:grid xl:grid-cols-2 xl:w-[1000px] flex-col flex justify-center items-center">
       <div className="w-[400px] p-11">
-        <header className=" text-5xl mb-11 font-bold">문의하기</header>
+        <header className="text-5xl mb-11 font-bold">문의하기</header>
         <div className="flex flex-col gap-6">
           <p className="w-80">득근을 방문에 주셔서 감사합니다.</p>
           <p className="w-80">
@@ -107,4 +105,4 @@ const ContactForm = () => {
   );
 };
 
-export default ContactForm;
+export default QnaForm;
