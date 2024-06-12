@@ -95,7 +95,7 @@ public class UserService {
         String token;
 
         try {
-            token = tokenProvider.createToken(email, user.getRole(), user.getUserId(), exprTime);
+            token = tokenProvider.createToken(user.getUserId(), email, user.getRole(),  user.getUserName(), exprTime);
             if (token == null || token.isEmpty()) {
                 throw new Exception("토큰 생성에 실패하였습니다.");
             }

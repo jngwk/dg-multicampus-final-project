@@ -32,16 +32,17 @@ public class JwtTokenProvider {
      * @param duration 토큰 유효 기간(초)
      * @return 생성된 JWT 토큰
      */
-    public String createToken(String email, UserRole role, Integer userId, int duration) {
+    public String createToken(Integer userId, String email, UserRole role,  String userName, int duration) {
         try {
             Instant now = Instant.now();
             Instant expiryTime = now.plusSeconds(duration);
 
             // JWT 클레임 설정
             JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                    .subject(email)
+                    .subject("userId")
+                    .claim("email", email)
                     .claim("role", role.name())
-                    .claim("userId", userId)
+                    .claim("userName", userName)
                     .issueTime(Date.from(now))
                     .expirationTime(Date.from(expiryTime))
                     .build();
@@ -156,5 +157,15 @@ public class JwtTokenProvider {
             System.out.println("JWT 토큰에서 유저Id 추출 중 오류 발생: " + e.getMessage());
             return null;
         }
+    }
+
+    public String getUserNameFromToken(String token) {
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            return signedJWT.getJWTClaimsSet().getStringClaim("userName");
+        } catch (Exception e) {
+            System.out.println("JWT 토큰에서 유저이름 추출 중 오류 발생: " + e.getMessage());
+            return null;
+        } 
     }
 }
