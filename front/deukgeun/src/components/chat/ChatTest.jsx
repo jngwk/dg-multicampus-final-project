@@ -33,7 +33,7 @@ const ChatTest = () => {
     loadChatHistory();
     loadChatRooms();
     // loadAvailableUsers(); // 모달 클릭했을 때 리로드 되게
-    const socket = new SockJS("http://localhost:8282/ws");
+    const socket = new SockJS("http://localhost:8282/ws"); // 소켓 연결 URL
 
     const client = new Client({
       webSocketFactory: () => socket,
@@ -44,10 +44,10 @@ const ChatTest = () => {
       onConnect: () => {
         console.log("Connected");
         if (stompClient) {
-          stompClient.deactivate();
+          stompClient.deactivate(); // 중복 연결 방지
           console.log("client deactivated");
         }
-        client.subscribe(`/topic/${chatRoom.id}`, onMessageReceived);
+        client.subscribe(`/topic/${chatRoom.id}`, onMessageReceived); // 구독 ; onMessageReceived 메소드 구현 (메시지 보냈을 때 혹은 받았을 대 화면에 띄우는 메소드임)
         console.log("chatRoom ID: ", chatRoom.id);
       },
       onStompError: (frame) => {
@@ -66,6 +66,7 @@ const ChatTest = () => {
     setStompClient(client);
 
     return () => {
+      // component unmount 됐을 때 연결 해제
       if (client.connected) {
         client.deactivate();
         console.log("client deactivated");
