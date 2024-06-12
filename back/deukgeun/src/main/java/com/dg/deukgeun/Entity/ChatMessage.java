@@ -35,6 +35,8 @@ public class ChatMessage {
     @JoinColumn(name = "chat_id")
     private ChatRoom chatRoom;
 
+    // fetch = FetchType.EAGER
+    // 쓰고 싶지만 그냥 화면에서 유저 이름 받아서 쓰기
     @ManyToOne
     @JoinColumn(name = "sender_id")
     private User sender;

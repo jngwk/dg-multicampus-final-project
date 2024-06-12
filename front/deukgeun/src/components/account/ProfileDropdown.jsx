@@ -4,37 +4,49 @@ import { useAuth } from "../../context/AuthContext";
 import { useModal } from "../../hooks/useModal";
 import MyInfo from "../modals/MyInfo";
 
+
 const ProfileDropdown = ({ type }) => {
+
+
+  const userName = localStorage.getItem("userName");  
   // user type 별로 badge 내용을 다르게 표시
-  const userEmail = sessionStorage.getItem("user").replace(/"/g, "");
+
+  const userData = JSON.parse(sessionStorage.getItem("user"));
+
+
   const customNavigate = useCustomNavigate();
   const { removeUserFromSession } = useAuth();
   const { isModalVisible, toggleModal } = useModal();
 
+  console.log("userData", userData);
   return (
-    <div className="absolute border border-gray-400 w-64 h-fit right-5 top-20 rounded-lg p-3 bg-white shadow-sm z-40">
+    <div className="border border-gray-400 w-64 h-fit rounded-lg p-3 bg-white shadow-sm z-40">
       <div className="border-b-[0.5px] border-gray-400 p-2">
-        {/* 받아온 이름 넣기 */}
+        {/* 사용자 이름 표시 */}
         <span className="block">이름</span>
-        <span className="block text-gray-600">{userEmail}</span>
+        <span className="block text-gray-600">{userName}</span>
+        {/* 받아온 이름 넣기 */}
+        {/* <span className="block">{userData.userName}</span>
+        <span className="block text-gray-600">{userData.email}</span> */}
       </div>
       <div>
         <ul className="mt-4">
-          <li className="profile-dropdown-list">
+          <li className="profile-dropdown-list" onClick={toggleModal}>
             <img className="inline-block peer w-7 mx-3" src="" alt="icon" />
-            <button onClick={toggleModal}>내 정보</button>
+            <span>내 정보</span>
           </li>
           {isModalVisible ? <MyInfo toggleModal={toggleModal} /> : ""}
           <li
             className="profile-dropdown-list"
-            onClick={() => customNavigate("/calender")}
+            onClick={() => customNavigate("/Calendar")}
           >
             <img className="inline-block peer w-7 mx-3" src="" alt="icon" />
             <span>운동일지</span>
           </li>
-          <li className="profile-dropdown-list"
-              onClick={() => customNavigate("/chat")}
-              >
+          <li
+            className="profile-dropdown-list"
+            onClick={() => customNavigate("/Chat")}
+          >
             <img className="inline-block peer w-7 mx-3" src="" alt="icon" />
             <span>대화방</span>
           </li>

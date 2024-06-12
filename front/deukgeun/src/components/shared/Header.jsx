@@ -3,21 +3,44 @@ import LoginModal from "../modals/LoginModal";
 import { useModal } from "../../hooks/useModal";
 import { useAuth } from "../../context/AuthContext";
 import ProfileDropdown from "../account/ProfileDropdown";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 console.log(logo);
 export default function Header() {
   const { user } = useAuth();
+  const location = useLocation();
   const { isModalVisible, toggleModal } = useModal();
   const [isProfileDropdownVisible, setIsProfileDropdownVisible] =
     useState(false);
+  const badge = useRef(null);
+  const dropdown = useRef(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setIsProfileDropdownVisible(false);
+  }, [location]);
+
+  useEffect(() => {
+    const closeWhenClickedOutside = (e) => {
+      if (
+        !dropdown.current?.contains(e.target) &&
+        !badge.current?.contains(e.target)
+      ) {
+        setIsProfileDropdownVisible(false);
+      }
+    };
+
+    document.body.addEventListener("click", closeWhenClickedOutside);
+
+    return () => {
+      document.body.removeEventListener("click", closeWhenClickedOutside);
+    };
+  }, []);
 
   const toggleProfileDropdown = () => {
     setIsProfileDropdownVisible(!isProfileDropdownVisible);
-    console.log(isProfileDropdownVisible);
+    // console.log(isProfileDropdownVisible);
   };
 
   return (
@@ -30,22 +53,31 @@ export default function Header() {
           src={logo}
           alt="logo"
         />
-        {user ? (
-          <>
-            <button onClick={toggleProfileDropdown}>프로필 뱃지</button>
-            {isProfileDropdownVisible ? (
-              <ProfileDropdown type="user" /> // user type 지정해서 안에 메뉴 변경
-            ) : (
-              ""
-            )}
-          </>
-        ) : (
-          <>
-            <button onClick={toggleModal}>로그인</button>
-            {isModalVisible ? <LoginModal toggleModal={toggleModal} /> : ""}
-          </>
-        )}
-      </div>        
-    </div>  
+        <div className="flex gap-4 relative">
+          <button onClick={() => navigate("/contact")}>문의하기</button>
+          {user ? (
+            <>
+              <button ref={badge} onClick={toggleProfileDropdown}>
+                프로필 뱃지
+              </button>
+
+              {/* User type 지정해서 안에 메뉴 변경 */}
+              <div ref={dropdown} className="absolute right-0 top-10">
+                {isProfileDropdownVisible ? (
+                  <ProfileDropdown type="user" />
+                ) : (
+                  ""
+                )}
+              </div>
+            </>
+          ) : (
+            <>
+              <button onClick={toggleModal}>로그인</button>
+              {isModalVisible ? <LoginModal toggleModal={toggleModal} /> : ""}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

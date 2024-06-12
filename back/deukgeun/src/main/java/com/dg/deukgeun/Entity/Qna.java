@@ -1,4 +1,3 @@
-
 package com.dg.deukgeun.entity;
 
 import java.time.LocalDate;

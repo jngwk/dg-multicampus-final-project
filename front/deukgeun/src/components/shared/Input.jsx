@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 export default function Input({
-  label,
-  placeholder = "",
-  type = "text",
-  className,
-  height = "44px",
-  width = "240px",
-  value = "",
-  step,
-  required = false,
-  error = "",
-  message = "",
-  validationState = null, // 'valid', 'invalid', or null
+  label, // 이름
+  type = "text", // 타입
+  className, // input element 추가 스타일
+  height = "44px", // 높이
+  width = "240px", // 너비
+  value = "", // 값
+  step, // type=time에만 해당 (증가/감소치)
+  required = false, // required
+  error = "", // 에러 메세지 (빨간색으로 하단에 표시)
+  message = "", // 메세지 (초록색으로 하단에 표시)
+  feature = "", // input 우측에 표시되는 버튼 이름
+  featureOnClick, // 버튼 onClick 함수
+  featureEnableOnLoad = false, // 유효성 검사 없이 버튼 눌러도 되는지
   ...props
 }) {
   const [focus, setFocus] = useState(false);
@@ -46,11 +47,16 @@ export default function Input({
   };
 
   return (
-    <div className={`relative my-2 `} style={{ width }}>
+    <div
+      className={`relative my-2 ${
+        error || message ? "h-[3.75rem]" : "h-11"
+      } transition-all ease-out duration-300`}
+      style={{ width }}
+    >
       <input
         style={{ height, width }}
         type={type}
-        className={` py-3 px-4 block w-full appearance-none bg-transparent border rounded-lg
+        className={`py-3 px-4 block w-full appearance-none bg-transparent border rounded-lg
         ${getBorderColor()} focus:border-2 focus:outline-none focus:ring-0 text-sm peer ${className} `}
         onFocus={handleFocus}
         onBlur={handleBlur}
@@ -63,9 +69,30 @@ export default function Input({
       >
         {label}
       </label>
-      {error && <p className="px-2 text-xs text-red-500 mt-1">{error}</p>}
-      {message && <p className="px-2 text-xs text-green-500 mt-1">{message}</p>}
-      {/* input 우측 끝에 icon 혹은 버튼 넣기 */}
+      <p
+        className={`${
+          error || message ? " translate-y-0" : " -translate-y-2"
+        } absolute transition duration-200 px-2 text-xs ${
+          error ? "text-red-500 mt-1" : "text-green-500"
+        }`}
+      >
+        {error || message}
+      </p>
+      {feature && (
+        <span
+          className={`absolute underline underline-offset-2 text-[10px] right-2 top-[14px] text-gray-500 ${
+            featureEnableOnLoad
+              ? "cursor-pointer hover:text-peach-fuzz"
+              : !error &&
+                !message &&
+                value &&
+                "cursor-pointer hover:text-peach-fuzz"
+          }`}
+          onClick={featureOnClick}
+        >
+          {feature}
+        </span>
+      )}
     </div>
   );
 }

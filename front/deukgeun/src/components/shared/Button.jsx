@@ -1,13 +1,13 @@
 import React from "react";
 
 const Button = ({
-  label,
-  height = "44px",
-  width = "240px",
-  color = "peach-fuzz",
+  label, // 버튼 이름
+  height = "44px", // 높이
+  width = "240px", // 너비
+  color = "peach-fuzz", // 버튼 색깔
   name = "",
-  onClick,
-  className,
+  onClick, // onClick 함수
+  className, // 추가 스타일
 }) => {
   const backgroundColorClass = {
     "peach-fuzz": "bg-peach-fuzz",
