@@ -41,10 +41,10 @@ public class GymController {
         }
     }
 
-    // GYM 로그인
-    @PostMapping("/login")
-    public ResponseDTO<?> login(@RequestBody LoginDTO requestBody) {
-        ResponseDTO<?> result = gymService.login(requestBody);
-        return result;
-    }
+    // // GYM 로그인
+    // @PostMapping("/login")
+    // public ResponseDTO<?> login(@RequestBody LoginDTO requestBody) {
+    //     ResponseDTO<?> result = gymService.login(requestBody);
+    //     return result;
+    // }
 }

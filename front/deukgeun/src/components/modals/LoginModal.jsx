@@ -58,22 +58,31 @@ const LoginModal = ({ toggleModal }) => {
   };
 
   const handleLogin = async () => {
-    // console.log("login clicked");
+     console.log("login clicked");
+     
     if (!validateInput()) {
-      // console.log("Input validation failed");
-      // console.log(errors);
+      
+       console.log("Input validation failed");
+       console.log(errors);
       return;
     }
     try {
-      const res = await login(email, password);
-      console.log(res);
+      
+      const data = await login(email, password);
+      
       // 로그인 성공시 context에 로그인 여부 넣기
-      if (res.result) {
-        addUserToSession({
-          userId: res.data.user.userId,
-          userName: res.data.user.userName,
-          email: res.data.user.email,
-        });
+      if (data.result) {
+        addUserToSession(email);
+         console.log("로그인 성공", data);
+      // const res = await login(email, password);
+      // console.log(res);
+      // // 로그인 성공시 context에 로그인 여부 넣기
+      // if (res.result) {
+      //   addUserToSession({
+      //     userId: res.data.user.userId,
+      //     userName: res.data.user.userName,
+      //     email: res.data.user.email,
+      //   });
         // console.log("로그인 성공", data);
         toggleModal(); // 로그인 성공시 팝업 닫음
         customNavigate("/");

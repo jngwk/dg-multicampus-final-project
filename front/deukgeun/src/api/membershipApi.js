@@ -4,20 +4,18 @@ import axios from "axios";
 // const prefix = `${API_SERVER_HOST}/api/user`;
 const prefix = `/api/user`; // proxy 사용
 
-export const userInfo = async () => {
-  
+export const registerMembership = async (membershipData) => {
   try {
-    const token = localStorage.getItem('authToken');
-    const res = await axios.get(`${prefix}/userInfo`, {
+    const token = localStorage.getItem('authToken');;
+    const res = await axios.post(`${prefix}/user/registerMembership`, membershipData, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
-    console.log(token);
     return res.data;
-
+    
   } catch (error) {
-    console.error("Error fetching user info:", error);
+    console.error("Error registering membership:", error);
     throw error;
   }
 };
