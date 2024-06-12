@@ -15,7 +15,12 @@ export default function ChatRoom() {
   // 반응형을 위한 effect
   useEffect(() => {
     getChatListDisplay();
-    windowSize.width < 768 ? setIsMainVisible(false) : setIsMainVisible(true);
+    if (windowSize.width < 768) {
+      !isChatVisible ? setIsMainVisible(false) : setIsMainVisible(true);
+    }
+    if (windowSize.width >= 768) {
+      isMainVisible ? setIsChatVisible(false) : setIsChatVisible(true);
+    }
   }, [windowSize.width, windowSize.height]);
 
   // 반응형을 위한 함수
@@ -56,31 +61,8 @@ export default function ChatRoom() {
             </div>
           </div>
         </div>
-        {/* chatMain으로 시작 후 메시지 보내기 클릭 시 Chatting창으로  */}
-
-        {/* ChatMain or Chatting */}
-        {/* {windowSize.width >= 768 && (
-          <div className="flex-grow min-w-[460px]">
-            {isMainVisible ? (
-              <ChatMain />
-            ) : (
-              <Chatting
-                setIsChatListVisible={setIsChatListVisible}
-                setIsChatVisible={setIsChatVisible}
-                setIsMainVisible={setIsMainVisible}
-              />
-            )}
-          </div>
-        )}
-        {windowSize.width < 768 && isChatVisible && (
-          <Chatting
-            setIsChatListVisible={setIsChatListVisible}
-            setIsChatVisible={setIsChatVisible}
-            setIsMainVisible={setIsMainVisible}
-          />
-        )} */}
-        {isMainVisible && <ChatMain />}
-        {isChatVisible && (
+        {isMainVisible && !isChatVisible && <ChatMain />}
+        {isChatVisible && !isMainVisible && (
           <Chatting
             setIsChatListVisible={setIsChatListVisible}
             setIsChatVisible={setIsChatVisible}

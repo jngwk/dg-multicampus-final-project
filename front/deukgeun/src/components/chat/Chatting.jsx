@@ -53,10 +53,11 @@ const Chatting = ({
   };
 
   // 뒤로가기 버튼 클릭시
+  // 반응형을 위한 함수
   const handleBackButtonClick = () => {
     if (windowSize.width < 768) {
-      setIsChatVisible(false); // 반응형을 위한 함수
-      setIsChatListVisible(true); // 반응형을 위한 함수}
+      setIsChatVisible(false);
+      setIsChatListVisible(true);
     } else {
       setIsChatVisible(false);
       setIsMainVisible(true);
@@ -138,7 +139,7 @@ const Chatting = ({
           <div
             className={`flex flex-col justify-center items-center ${
               isOpen ? "w-2/6" : "w-0"
-            } mx-1 border-2 rounded-lg border-grayish-red transition-transform duration-300`}
+            } mx-1 border-2 rounded-lg border-grayish-red transition-all duration-300`}
           >
             <div className="p-3 flex flex-col items-center ">
               <img
