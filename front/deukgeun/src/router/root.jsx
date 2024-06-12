@@ -1,7 +1,5 @@
 import React, { Suspense, lazy } from "react";
 import { Outlet, createBrowserRouter } from "react-router-dom";
-import signUp from "./signUp";
-import PageTransitionWrapper from "../components/PageTransitionWrapper";
 import Layout from "../components/shared/Layout";
 import Loader from "../components/shared/Loader";
 import Fallback from "../components/shared/Fallback";
@@ -13,9 +11,9 @@ const Chat = lazy(() => import("../pages/ChatRoom"));
 const Calendar = lazy(() => import("../pages/CalendarPage"));
 const SignUpChoice = lazy(() => import("../pages/SignUpChoicePage"));
 const SignUpForm = lazy(() => import("../pages/SignUpPage"));
-const ContactForm = lazy(() => import("../pages/ContactForm"));
+const QnaForm = lazy(() => import("../pages/QnaForm"));
 const ChatTest = lazy(() => import("../components/chat/ChatTest"));
-const UserInfoPage = lazy(() => import("../components/modals/MyInfo"));
+const UserInfoPage = lazy(() => import("../components/modals/UserInfo"));
 const MemberList = lazy(() => import("../pages/MemberList"));
 
 const root = createBrowserRouter([
@@ -66,8 +64,8 @@ const root = createBrowserRouter([
         ],
       },
       {
-        path: "contact",
-        element: <ContactForm />,
+        path: "qna",
+        element: <QnaForm />,
       },
       {
         path: "/memberList",

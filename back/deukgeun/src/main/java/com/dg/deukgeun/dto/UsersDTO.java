@@ -17,5 +17,4 @@ public class UsersDTO {
     private String address;
     private String detail_address;
     private UserRole role;
-    private Integer approval;
 }

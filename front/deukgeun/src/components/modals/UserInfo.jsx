@@ -28,17 +28,29 @@ const MyInfo = ({ toggleModal }) => {
   const [newPassword, setNewPassword] = useState("");
   const { errors, validateInput } = useValidation();
 
-  // Fetch user info when component mounts
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await userInfo(sessionData.email);
-      setUserData(data.data.user);
-      console.log(data.data.user);
-      console.log(userData);
-    };
+    // Fetch user info when component mounts
+    useEffect(() => {
+        const fetchData = async () => {
+            const data = await userInfo();
+            setUserData(data.data.user);
+            console.log(data.data.user);
+            console.log(userData);
+        };
 
-    fetchData();
-  }, []);
+        fetchData();
+    }, []);
+
+  // Fetch user info when component mounts
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const data = await userInfo(sessionData.email);
+  //     setUserData(data.data.user);
+  //     console.log(data.data.user);
+  //     console.log(userData);
+  //   };
+
+  //   fetchData();
+  // }, []);
 
   // password type 변경하는 함수
   const handlePasswordType = () => {

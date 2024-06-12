@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dg.deukgeun.api.CRNumberCheckApi;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
-import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.service.GymService;
 
@@ -41,10 +40,10 @@ public class GymController {
         }
     }
 
-    // GYM 로그인
-    @PostMapping("/login")
-    public ResponseDTO<?> login(@RequestBody LoginDTO requestBody) {
-        ResponseDTO<?> result = gymService.login(requestBody);
-        return result;
-    }
+    // // GYM 로그인
+    // @PostMapping("/login")
+    // public ResponseDTO<?> login(@RequestBody LoginDTO requestBody) {
+    //     ResponseDTO<?> result = gymService.login(requestBody);
+    //     return result;
+    // }
 }

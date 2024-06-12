@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Line } from 'react-chartjs-2';
-import { getChart } from '../../api/chartApi';
+import { getChart } from '../../../api/chartApi';
 import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
 
 // Chart.js 요소 등록
