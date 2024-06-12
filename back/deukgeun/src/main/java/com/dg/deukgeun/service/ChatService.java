@@ -66,11 +66,11 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
                                                            // 보냄
     public void receiveMessage(ChatMessage chatMessage) {
         // 테스팅용 delay
-        try {
-            Thread.sleep(5000); // 5 seconds delay
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        // try {
+        // Thread.sleep(5000); // 5 seconds delay
+        // } catch (InterruptedException e) {
+        // Thread.currentThread().interrupt();
+        // }
 
         log.info("Received message using chatService: " + chatMessage);
 
@@ -107,6 +107,19 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
             newChatRoom.setUsers(users);
             return chatRoomRepository.save(newChatRoom);
         }
+    }
+
+    public List<ChatRoom> getChatRooms(Integer userId) {
+        return chatRoomRepository.findByUsers_userId(userId);
+    }
+
+    public List<ChatRoom> getChatRoomsByLatestMessage(Integer userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+        return chatRoomRepository.findByUserIdOrderByLatestMessage(user);
+    }
+
+    public List<User> getAvailableUsers() {
+        return userRepository.findAll();
     }
 
 }

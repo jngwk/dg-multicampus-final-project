@@ -25,4 +25,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     // 사용자 ID로 사용자 조회 
     Optional<User> findById(Integer userId);
+
+     //userName으로 검색
+     List<User> findByUserNameContainingIgnoreCase(String userName);
 }

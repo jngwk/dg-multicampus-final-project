@@ -7,7 +7,7 @@ const prefix = `${API_SERVER_HOST}/api/workoutSession`;
 export const registerWorkoutSession = async (userId, event) => {
   try {
     const token = localStorage.getItem('authToken');
-    const response = await axios.post(`${prefix}/workoutSession/register`, {
+    const res = await axios.post(`${prefix}/register`, {
       userId,
       workoutDate: event.workoutDate,
       content: event.content,
@@ -18,10 +18,11 @@ export const registerWorkoutSession = async (userId, event) => {
       workouts: event.workouts,
     }, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       }
     });
-    return response.data;
+    return res.data;
+
   } catch (error) {
     throw new Error("Register workout session failed...");
   }
@@ -30,7 +31,7 @@ export const registerWorkoutSession = async (userId, event) => {
 export const modifyWorkoutSession = async (userId, event, eventId) => {
   try {
     const token = localStorage.getItem('authToken');
-    const response = await axios.put(`${prefix}/workoutSession/modify/${eventId}`, {
+    const res = await axios.put(`${prefix}/modify/${eventId}`, {
       workoutSessionId: eventId,
       userId: userId,
       workoutDate: event.workoutDate,
@@ -42,10 +43,11 @@ export const modifyWorkoutSession = async (userId, event, eventId) => {
       workouts: event.workouts,
     }, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       }
     });
-    return response.data;
+    return res.data;
+
   } catch (error) {
     throw new Error("Modify workout session failed...");
   }
@@ -54,12 +56,13 @@ export const modifyWorkoutSession = async (userId, event, eventId) => {
 export const deleteWorkoutSession = async (eventId) => {
   try {
     const token = localStorage.getItem('authToken');
-    const response = await axios.delete(`${prefix}/workoutSession/delete/${eventId}`, {
+    const res = await axios.delete(`${prefix}/delete/${eventId}`, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       }
     });
-    return response.data;
+    return res.data;
+    
   } catch (error) {
     throw new Error("Delete workout session failed...");
   }
@@ -68,15 +71,15 @@ export const deleteWorkoutSession = async (eventId) => {
 export const getWorkoutSessions = async (startDate, endDate, userId) => {
   try {
     const token = localStorage.getItem('authToken');
-    const response = await axios.get(
-      `${prefix}/workoutSession/get/${startDate}/${endDate}/${userId}`,
+    const res = await axios.get(
+      `${prefix}/get/${startDate}/${endDate}/${userId}`,
       {
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
-      }
-    );
-    return response.data;
+      });
+    return res.data;
+    
   } catch (error) {
     throw new Error("Get workout sessions failed...");
   }

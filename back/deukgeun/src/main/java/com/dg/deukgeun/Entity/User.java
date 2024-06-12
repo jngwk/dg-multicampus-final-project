@@ -3,6 +3,7 @@ package com.dg.deukgeun.entity;
 import com.dg.deukgeun.dto.UserRole;
 import com.dg.deukgeun.dto.user.UserSignUpDTO;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -33,9 +34,10 @@ public class User {
     private String address;
     private String detailAddress;
     private String password;
-    private Integer approval;
+
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserRole role;
 
     public User(UserSignUpDTO dto) {
@@ -44,8 +46,8 @@ public class User {
         this.email = dto.getEmail();
         this.address = dto.getAddress();
         this.detailAddress = dto.getDetailAddress();
+        this.role = dto.getRole();
         this.password = dto.getPassword();
-        this.approval = dto.getApproval();
     }
 
     public static User toUserEntity(UserSignUpDTO userDTO) {
@@ -56,8 +58,11 @@ public class User {
             .address(userDTO.getAddress())
             .detailAddress(userDTO.getDetailAddress())
             .password(userDTO.getPassword())
-            .approval(userDTO.getApproval())
             .role(userDTO.getRole())
             .build();
+    }
+
+    public User(String userId) {
+        this.userId = Integer.parseInt(userId);
     }
 }

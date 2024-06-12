@@ -44,7 +44,8 @@ public class SecurityConfig {
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리를 Stateless로 설정합니다.
         .authorizeHttpRequests(authorize -> authorize
             .requestMatchers("/api/user/login", "/api/user/signUp/general","/api/user/signUp", "/api/user/signUp/gym", "/api/user/sendCode").permitAll() // 로그인과 회원가입 API는 인증 없이 접근 가능하도록 설정합니다.
-            .requestMatchers("/api/user/userInfo").hasAnyAuthority("ROLE_GENERAL")
+            .requestMatchers("/api/user/userInfo").hasAnyAuthority("ROLE_GENERAL","ROLE_GYM")
+            .requestMatchers("/api/user/workoutSession").hasAnyAuthority("ROLE_GENERAL")
             .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN") // ADMIN 역할만 접근할 수 있도록 설정합니다.
             // .requestMatchers("/api/user").permitAll()
             .requestMatchers("/api/membership/stats").hasAuthority("ROLE_GYM")

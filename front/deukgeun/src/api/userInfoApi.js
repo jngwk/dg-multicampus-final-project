@@ -6,16 +6,15 @@ const prefix = `${API_SERVER_HOST}/api/user`;
 
 export const userInfo = async () => {
   
-  // console.log(token);
   try {
     const token = localStorage.getItem('authToken');
-    const response = await axios.get(`${prefix}/userInfo`, {
+    const res = await axios.get(`${prefix}/userInfo`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
     console.log(token);
-    return response.data;
+    return res.data;
   } catch (error) {
     console.error("Error fetching user info:", error);
     throw error;
