@@ -1,5 +1,7 @@
 package com.dg.deukgeun.dto.user;
 
+import com.dg.deukgeun.dto.UserRole;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -26,15 +28,12 @@ public class UserSignUpDTO {
 
     private String detailAddress;
 
-    @NotBlank(message = "카테고리는 필수 입력 항목입니다.")
-    @Pattern(regexp = "^[a-zA-Z가-힣\\s]+$", message = "카테고리는 영문자, 한글만 사용할 수 있습니다.")
-    private String category;
-
     @NotBlank(message = "비밀번호는 필수 입력 항목입니다.")
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#\\$%\\^&\\*])(?=\\S+$).{8,}$", message = "비밀번호는 최소 8자 이상, 대문자, 소문자, 숫자 및 특수 문자를 포함해야 합니다.")
     private String password;
 
     private int approval;
     private String token;
-
+    
+    private UserRole role;
 }

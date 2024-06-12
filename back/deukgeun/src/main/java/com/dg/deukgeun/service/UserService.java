@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.dg.deukgeun.dto.UserRole;
 import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.LoginResponseDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
@@ -120,11 +121,10 @@ public class UserService {
                 userEntity.setPassword("");
 
                 // 사용자가 트레이너인 경우
-                if ("trainer".equals(userEntity.getCategory())) {
+                if (UserRole.ROLE_TRAINER.equals(userEntity.getRole())) {
                     Optional<Trainer> trainerOptional = trainerRepository.findByUser_UserId(userEntity.getUserId());
                     if (trainerOptional.isPresent()) {
                         Trainer trainerEntity = trainerOptional.get();
-                        // 사용자와 트레이너 정보를 모두 포함하는 DTO 생성
                         UserWithTrainerDTO userWithTrainerDTO = new UserWithTrainerDTO(userEntity, trainerEntity);
                         return ResponseDTO.setSuccessData("사용자 정보를 조회했습니다.", userWithTrainerDTO);
                     } else {
@@ -155,12 +155,13 @@ public class UserService {
                 user.setUserName(dto.getUserName());
                 user.setEmail(dto.getEmail());
                 user.setAddress(dto.getAddress());
+                user.setDetailAddress(dto.getDetailAddress());
 
                 // Save the updated user entity
                 userRepository.save(user);
 
                 // If user is a trainer, update trainer information as well
-                if ("trainer".equals(user.getCategory())) {
+                if ("TRAINER".equals(user.getRole())) {
                     Optional<Trainer> trainerOptional = trainerRepository.findByUser_UserId(user.getUserId());
                     if (trainerOptional.isPresent()) {
                         Trainer trainer = trainerOptional.get();

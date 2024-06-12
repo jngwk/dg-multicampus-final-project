@@ -16,6 +16,6 @@ public class UsersDTO {
     private String email;
     private String address;
     private String detail_address;
-    private String category;
+    private UserRole role;
     private Integer approval;
 }
