@@ -13,7 +13,7 @@ const ProfileDropdown = ({ type }) => {
 
   console.log("userData", userData);
   return (
-    <div className="border border-gray-400 w-64 h-fit rounded-lg p-3 bg-white shadow-sm z-40">
+    <div className="relative border border-gray-400 w-64 h-fit rounded-lg p-3 bg-white shadow-sm z-40">
       <div className="border-b-[0.5px] border-gray-400 p-2">
         {/* 받아온 이름 넣기 */}
         <span className="block">{userData.userName}</span>
