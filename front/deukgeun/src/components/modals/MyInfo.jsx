@@ -27,7 +27,7 @@ const MyInfo = ({ toggleModal }) => {
     // Fetch user info when component mounts
     useEffect(() => {
         const fetchData = async () => {
-            const data = await userInfo("aaa@naver.com");
+            const data = await userInfo();
             setUserData(data.data.user);
             console.log(data.data.user);
             console.log(userData);

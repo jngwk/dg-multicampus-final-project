@@ -11,7 +11,7 @@ export const login = async (email, password) => {
       password,
     });
 
-    if (response.data.success) {
+    if (response.data.result) {
       const token = response.data.data.token;
       localStorage.setItem('authToken', token);
       return response.data;

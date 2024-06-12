@@ -1,6 +1,7 @@
 package com.dg.deukgeun.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.Authentication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,9 +24,11 @@ import com.dg.deukgeun.service.GymService;
 import com.dg.deukgeun.service.UserService;
 import com.dg.deukgeun.service.VerificationCodeService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api/user")
-
 public class UserController {
 
     @Autowired
@@ -54,10 +57,16 @@ public class UserController {
     // 인증번호 이메일 전송
     @PostMapping("/sendCode")
     public ResponseEntity<?> sendVerificationCode(@RequestBody VerificationCode codeEntity) {
-        if (!emailService.isValidEmailAddress(codeEntity.getEmail())) {
-            return ResponseEntity.badRequest().body("유효하지 않은 이메일입니다.");
+        System.out.println("SendCode!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        try {
+            if (!emailService.isValidEmailAddress(codeEntity.getEmail())) {
+                return ResponseEntity.badRequest().body("유효하지 않은 이메일입니다.");
+            }
+            emailService.sendVerificationEmail(codeEntity.getEmail(), codeEntity.getCode());
+        } catch(Exception e) {
+            e.printStackTrace();
         }
-        emailService.sendVerificationEmail(codeEntity.getEmail(), codeEntity.getCode());
+        
         return ResponseEntity.ok("이메일이 전송됐습니다. 인증번호: " + codeEntity.getCode());
     }
 
@@ -104,8 +113,8 @@ public class UserController {
     }
 
     @GetMapping("/userInfo")
-    public ResponseDTO<?> getUserInfo(@RequestParam String email) {
-        return userService.getUserInfo(email);
+    public ResponseDTO<?> getUserInfo(HttpServletRequest request) {
+        return userService.getUserInfo(request.getAttribute("email").toString());
     }
 
     @PutMapping("/update/{email}")

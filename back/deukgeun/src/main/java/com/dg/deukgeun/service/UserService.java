@@ -95,7 +95,7 @@ public class UserService {
         String token;
 
         try {
-            token = tokenProvider.createToken(email, user.getRole(), exprTime);
+            token = tokenProvider.createToken(email, user.getRole(), user.getUserId(), exprTime);
             if (token == null || token.isEmpty()) {
                 throw new Exception("토큰 생성에 실패하였습니다.");
             }
@@ -116,6 +116,7 @@ public class UserService {
     public ResponseDTO<UserWithTrainerDTO> getUserInfo(String email) {
         try {
             Optional<User> userOptional = userRepository.findByEmail(email);
+            
             if (userOptional.isPresent()) {
                 User userEntity = userOptional.get();
                 // 사용자 비밀번호 필드를 빈 문자열로 설정하여 보안성을 유지

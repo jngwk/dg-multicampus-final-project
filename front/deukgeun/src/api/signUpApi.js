@@ -6,7 +6,7 @@ const prefix = `${API_SERVER_HOST}/api/user`;
 
 export const signUpGeneral = async (userData) => {
   try {
-    const response = await axios.post(`${prefix}/signUp`, userData);
+    const response = await axios.post(`${prefix}/signUp/general`, userData);
 
     return response.data;
   } catch (error) {
@@ -17,7 +17,7 @@ export const signUpGeneral = async (userData) => {
 export const signUpGym = async (userData) => {
   try {
     console.log(userData);
-    const response = await axios.post(`/api/gym/signUp`, userData);
+    const response = await axios.post(`${prefix}/signUp/gym`, userData);
 
     return response.data;
   } catch (error) {
