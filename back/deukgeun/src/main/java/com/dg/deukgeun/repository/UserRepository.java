@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.dg.deukgeun.entity.User;
 
-
 public interface UserRepository extends JpaRepository<User, Integer> {
 
     // 반환 타입은 Optional이며, 이는 조회 결과가 없을 경우 null 대신 Optional.empty()를 반환하여 NullPointer
@@ -23,9 +22,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     // 역할(role)로 사용자 목록을 조회하는 메서드
     List<User> findByRole(String role);
 
-    // 사용자 ID로 사용자 조회 
-    Optional<User> findById(Integer userId);
+    // 사용자 ID로 사용자 조회
+    Optional<User> findByUserId(Integer userId);
 
-     //userName으로 검색
-     List<User> findByUserNameContainingIgnoreCase(String userName);
+    Optional<User> findByUserName(String userName);
+
+    // userName으로 검색
+    List<User> findByUserNameContainingIgnoreCase(String userName);
 }
