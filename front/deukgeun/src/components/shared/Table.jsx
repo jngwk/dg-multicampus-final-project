@@ -1,3 +1,5 @@
+//테이블 화면 코드
+
 import React from 'react';
 
 const Table = ({ headers, data }) => {
