@@ -95,7 +95,12 @@ public class UserService {
 
         user.setPassword("");
 
-        int exprTime = 3600; // 1h
+        /*
+         * 
+         * 쿠키 유효기간
+         * 
+         */
+        int exprTime = 24 * 3600; // 1h
         String token;
 
         try {
@@ -108,11 +113,11 @@ public class UserService {
         }
 
         // 쿠키 생성
-        ResponseCookie cookie = ResponseCookie.from("token", token)
+        ResponseCookie cookie = ResponseCookie.from("accessToken", token)
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .maxAge(60 * 60) // 1 hour
+                .maxAge(exprTime)
                 .sameSite("Strict")
                 .build();
 

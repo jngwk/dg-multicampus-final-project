@@ -84,15 +84,19 @@ public class SecurityConfig {
                                                                                                               // Stateless로
                                                                                                               // 설정합니다.
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/qna/**").permitAll() // 로그인과 회원가입 API는 인증 없이 접근 가능하도록 설정합니다.
-                        .requestMatchers("/api/user/login", "/api/user/signUp/**", "/api/user/sendCode",
+                        .requestMatchers("/api/user/login", "/api/qna/**", "/api/user/logout").permitAll() // 로그인과 회원가입
+                                                                                                           // API는 인증 없이
+                                                                                                           // 접근 가능하도록
+                        // 설정합니다.
+                        .requestMatchers("/api/user/signUp/**", "/api/user/sendCode",
                                 "/api/gym/signup",
                                 "/api/user/sendCode", "/api/gym/crNumberCheck")
                         .anonymous() // 비회원만 가능
-                        .requestMatchers("/api/user/userInfo").hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM")
+                        .requestMatchers("/api/user/userInfo", "/ws/**").hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM")
                         .requestMatchers("/api/user/workoutSession").hasAnyAuthority("ROLE_GENERAL")
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN") // ADMIN 역할만 접근할 수 있도록 설정합니다.
                         .requestMatchers("/api/membership/stats").hasAuthority("ROLE_GYM")
+
                         .anyRequest().authenticated()) // 그 외 모든 요청은 인증이 필요합니다
 
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider, customUserDetailsService),
@@ -120,16 +124,7 @@ public class SecurityConfig {
                 @NonNull FilterChain filterChain) throws ServletException, IOException {
             // String token = resolveToken(request); // 요청에서 JWT 토큰을 추출합니다.
 
-            String token = null;
-            Cookie[] cookies = request.getCookies(); // 쿠키에서 토큰 추출
-
-            if (cookies != null) {
-                for (Cookie cookie : cookies) {
-                    if ("accessToken".equals(cookie.getName())) {
-                        token = cookie.getValue();
-                    }
-                }
-            }
+            String token = resolveToken(request);
 
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 Integer userId = jwtTokenProvider.getUserIdFromToken(token); // userId만 추출
@@ -176,15 +171,18 @@ public class SecurityConfig {
             filterChain.doFilter(request, response); // 다음 필터를 호출합니다. 요청당 한번만 실행되도록 필터 실행 제어.
         }
 
-        // private String resolveToken(HttpServletRequest request) {
-        // String jwtToken = request.getHeader("Authorization"); // Authorization 헤더에서
-        // 토큰을 가져옵니다.
+        private String resolveToken(HttpServletRequest request) {
+            Cookie[] cookies = request.getCookies(); // 쿠키에서 토큰 추출
 
-        // if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
-        // return jwtToken.substring(7); // "Bearer " 부분을 제거하고 토큰을 반환합니다.
-        // }
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("accessToken".equals(cookie.getName())) {
+                        return cookie.getValue();
+                    }
+                }
+            }
 
-        // return null;
-        // }
+            return null;
+        }
     }
 }

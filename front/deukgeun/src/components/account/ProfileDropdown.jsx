@@ -6,12 +6,12 @@ import UserInfo from "../modals/UserInfo";
 import Loader from "../shared/Loader";
 
 const ProfileDropdown = ({ type }) => {
-  const { userData, logout, loading } = useAuth();
+  const { userData, removeCookieAndLogOut, loading } = useAuth();
   const customNavigate = useCustomNavigate();
   const { isModalVisible, toggleModal } = useModal();
 
   const handleLogout = () => {
-    logout();
+    removeCookieAndLogOut();
     customNavigate("/");
   };
 

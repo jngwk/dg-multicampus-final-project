@@ -10,111 +10,123 @@ import {
 import Button from "../shared/Button";
 import ModalLayout from "../modals/ModalLayout";
 import Loader from "../shared/Loader";
+import { useAuth } from "../../context/AuthContext";
+import Fallback from "../shared/Fallback";
+import axiosInstance from "../../api/axiosInstance";
 
 const ChatTest = () => {
   const [stompClient, setStompClient] = useState(null);
-
-  const [messages, setMessages] = useState([]); // 메세지 내역
-
-  const [chatRoom, setChatRoom] = useState({ id: 0 }); // token에서 chatRoom 가져오기
-  const [chatRooms, setChatRooms] = useState([]); // 채팅 목록
-  const [chatMessage, setChatMessage] = useState(""); // 보낼 메세지
-
-  const [availableUsers, setAvailableUsers] = useState([]); // 대화 가능 상대
-
+  const [messages, setMessages] = useState([]);
+  const [chatRoom, setChatRoom] = useState({ id: 0 });
+  const [chatRooms, setChatRooms] = useState([]);
+  const [chatMessage, setChatMessage] = useState("");
+  const [availableUsers, setAvailableUsers] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [availableUsersLoading, setAvailableUsersLoading] = useState(false);
-
-  const userData = JSON.parse(sessionStorage.getItem("user"));
+  const { userData, loading } = useAuth();
+  const [token, setToken] = useState(null);
 
   useEffect(() => {
-    loadChatHistory();
-    loadChatRooms();
-    // loadAvailableUsers(); // 모달 클릭했을 때 리로드 되게
-    const socket = new SockJS("http://localhost:8282/ws"); // 소켓 연결 URL
+    if (token) return;
+    const fetchToken = async () => {
+      try {
+        const response = await axiosInstance.get(
+          "http://localhost:8282/api/user/token"
+        );
+        const fetchedToken = response.data;
+        setToken(fetchedToken);
+        console.log("fetchedToken: ", fetchedToken);
 
-    const client = new Client({
-      webSocketFactory: () => socket,
-      debug: (str) => {
-        console.log(new Date(), str);
-      },
-      reconnectDelay: 5000,
-      onConnect: () => {
-        console.log("Connected");
-        if (stompClient) {
-          stompClient.deactivate(); // 중복 연결 방지
-          console.log("client deactivated");
-        }
-        client.subscribe(`/topic/${chatRoom.id}`, onMessageReceived); // 구독 ; onMessageReceived 메소드 구현 (메시지 보냈을 때 혹은 받았을 대 화면에 띄우는 메소드임)
-        console.log("chatRoom ID: ", chatRoom.id);
-      },
-      onStompError: (frame) => {
-        console.error("Broker reported error: " + frame.headers["message"]);
-        console.error("Additional details: " + frame.body);
-      },
-    });
+        const socket = new SockJS("http://localhost:8282/ws");
+        const client = new Client({
+          webSocketFactory: () => socket,
+          connectHeaders: {
+            Authorization: `Bearer ${fetchedToken}`,
+          },
+          debug: (str) => {
+            console.log(new Date(), str);
+          },
+          reconnectDelay: 5000,
+          onConnect: () => {
+            console.log("Connected");
+            client.subscribe(`/topic/${chatRoom.id}`, onMessageReceived);
+            console.log("chatRoom ID: ", chatRoom.id);
+          },
+          onStompError: (frame) => {
+            console.error("Broker reported error: " + frame.headers["message"]);
+            console.error("Additional details: " + frame.body);
+          },
+        });
 
-    if (stompClient) {
-      // 중복 연결 방지
-      stompClient.deactivate();
-      console.log("client deactivated");
-    }
+        client.activate();
+        setStompClient(client);
 
-    client.activate();
-    setStompClient(client);
+        return () => {
+          if (client) {
+            client.deactivate();
+          }
+        };
+      } catch (error) {
+        console.error("Error fetching token");
+        throw error;
+      }
+    };
+
+    fetchToken();
 
     return () => {
-      // component unmount 됐을 때 연결 해제
-      if (client.connected) {
-        client.deactivate();
+      if (stompClient) {
+        stompClient.deactivate();
         console.log("client deactivated");
       }
     };
-  }, [chatRoom]);
+  }, [chatRoom, token]);
 
-  // 구독한 메세지 수신
+  useEffect(() => {
+    if (loading || !userData) return;
+    loadChatHistory();
+    loadChatRooms();
+  }, [loading, userData, chatRoom]);
+
   const onMessageReceived = (payload) => {
     const message = JSON.parse(payload.body);
     console.log("msg", message);
-    // 대화 목록에 없는 대화방이면 추가
     if (!chatRooms.find((room) => room.id === message.chatRoom.id)) {
       setChatRooms([...chatRooms, message.chatRoom]);
     }
     setMessages((prevMessages) => [...prevMessages, message]);
   };
 
-  // 메세지 발행
   const sendMessage = () => {
     if (stompClient && stompClient.connected) {
-      console.log(chatRoom.users);
       const receiver =
         chatRoom.users[0].userId === userData.userId
           ? chatRoom.users[1]
           : chatRoom.users[0];
       const messageToSend = {
-        chatRoom: chatRoom, // 토큰에서 가져온거 넣기
-        sender: userData, // 토큰에서 가져온거 넣기
-        receiver: receiver, // TODO 수정하기
+        chatRoom: chatRoom,
+        sender: userData,
+        receiver: receiver,
         timestamp: new Date().toISOString(),
         message: chatMessage,
       };
       stompClient.publish({
         destination: "/pub/chat.sendMessage",
         body: JSON.stringify(messageToSend),
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-      console.log(messageToSend);
       setChatMessage("");
     }
   };
 
-  // 채팅 내역 불러오기
   const loadChatHistory = async () => {
+    if (chatRoom.id === 0) return;
     try {
       setMessagesLoading(true);
       const chatHistory = await getChatHistory(chatRoom.id);
-      //   console.log(chatHistory);
       setMessages(chatHistory);
     } catch (error) {
       console.error("Error loading chat history", error);
@@ -124,10 +136,9 @@ const ChatTest = () => {
     }
   };
 
-  // 채팅방 목록 불러오기
   const loadChatRooms = async () => {
     try {
-      const chatRoomsList = await getChatRooms(userData.userId);
+      const chatRoomsList = await getChatRooms();
       setChatRooms(chatRoomsList);
     } catch (error) {
       console.error("Error loading chat rooms", error);
@@ -135,40 +146,22 @@ const ChatTest = () => {
     }
   };
 
-  // TODO 채팅방 선택시 채팅방 불러오기
-  const loadSelectedChatRoom = async () => {
-    try {
-      console.log("선택된 채팅방 열기");
-    } catch (error) {
-      console.error("Error loading chat room", error);
-      throw error;
-    }
-  };
-
-  // 채팅방 추가하기
   const findOrCreateChatRoom = async (selectedUserId) => {
     toggleModal();
     try {
-      console.log("채팅방 생성하기");
-      const newChatRoom = await getChatRoom(userData.userId, selectedUserId);
+      const newChatRoom = await getChatRoom(selectedUserId);
       setChatRoom(newChatRoom);
-      console.log("findOrCreateChatRoom", newChatRoom);
     } catch (error) {
       console.error("Error creating chat room", error);
       throw error;
     }
   };
 
-  // 채팅 대상 불러오기
-  // 현재: 모든 유저 불러오기
-  // 추후 수정: 등록된 헬스장 / 트레이너 불러오기
   const loadAvailableUsers = async () => {
     try {
       setAvailableUsersLoading(true);
       const users = await getAvailableUsers();
-      console.log("대화 가능 상대 불러오기");
       setAvailableUsers(users);
-      // return users;
     } catch (error) {
       console.error("Error loading available users", error);
       throw error;
@@ -178,37 +171,37 @@ const ChatTest = () => {
   };
 
   const toggleModal = () => {
-    {
-      !isModalVisible ? loadAvailableUsers() : setAvailableUsers([]);
-    }
+    if (!isModalVisible) loadAvailableUsers();
     setIsModalVisible(!isModalVisible);
-    console.log(
-      "Modal Visible: AvailableUsers",
-      availableUsers,
-      availableUsers.length
-    );
   };
+
+  if (loading) {
+    return <Fallback />;
+  }
 
   return (
     <div className="grid grid-cols-2 items-center mt-10">
       <div className="flex flex-col justify-center items-center">
-        {/* 채팅방 목록 */}
         <h2 className="w-[400px]">Chat Rooms</h2>
         <div className="relative h-[600px] w-[400px] overflow-y-auto flex flex-col gap-1">
-          {chatRooms.map((room, index) => (
-            <div
-              className="cursor-pointer"
-              key={index}
-              onClick={() => setChatRoom(room)}
-            >
-              <b>
-                {room.users[0].userId === userData.userId
-                  ? room.users[1].userName
-                  : room.users[0].userName}
-              </b>
-            </div>
-          ))}
-          {/* 채팅방 추가 버튼 및 모달 */}
+          {chatRooms.length > 0 ? (
+            chatRooms.map((room, index) => (
+              <div
+                className="cursor-pointer"
+                key={index}
+                onClick={() => setChatRoom(room)}
+              >
+                <b>
+                  {room.users.length === 2 &&
+                    (room.users[0].userId === userData.userId
+                      ? room.users[1].userName
+                      : room.users[0].userName)}
+                </b>
+              </div>
+            ))
+          ) : (
+            <Loader />
+          )}
           <div className="absolute bottom-0">
             <Button label="채팅추가" onClick={toggleModal} />
             {isModalVisible && (
@@ -239,16 +232,12 @@ const ChatTest = () => {
         </div>
       </div>
       <div>
-        {/* 채팅 내역 */}
         <h2>Chat: {chatRoom.id === 0 ? "" : chatRoom.id}</h2>
         <div className="h-[600px] w-[400px] overflow-y-auto flex flex-col gap-1">
-          {chatRoom !== 0 &&
-            (messagesLoading ? (
+          {chatRoom.id !== 0 &&
+            (messages.length <= 0 ? (
               <div className="flex flex-col justify-center items-center h-2/3">
                 <Loader />
-                {/* <span className="block text-peach-fuzz font-semibold translate-x-7 -translate-y-12 -rotate-45">
-                Loading...
-              </span> */}
               </div>
             ) : (
               messages.map((msg, index) =>
@@ -269,10 +258,10 @@ const ChatTest = () => {
             type="text"
             value={chatMessage}
             onChange={(e) => setChatMessage(e.target.value)}
-            readOnly={chatRoom.id === 0 && true}
+            readOnly={chatRoom.id === 0}
             placeholder="Type a message..."
           />
-          <button onClick={sendMessage} disabled={chatRoom.id === 0 && true}>
+          <button onClick={sendMessage} disabled={chatRoom.id === 0}>
             Send
           </button>
         </div>

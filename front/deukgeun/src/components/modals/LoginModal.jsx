@@ -6,7 +6,6 @@ import Button from "../shared/Button";
 import { Link } from "react-router-dom";
 import useCustomNavigate from "../../hooks/useCustomNavigate";
 import { login } from "../../api/loginApi";
-import Cookies from "js-cookie";
 import { useAuth } from "../../context/AuthContext";
 import Fallback from "../shared/Fallback";
 
@@ -70,25 +69,13 @@ const LoginModal = ({ toggleModal }) => {
     try {
       const accessToken = await login(email, password);
 
-      // 로그인 성공시 context에 로그인 여부 넣기
       if (accessToken) {
-        Cookies.set("accessToken", accessToken);
         sessionStorage.setItem("isLoggedIn", true);
         console.log(
           "로그인 성공",
           accessToken,
           sessionStorage.getItem("isLoggedIn")
         );
-        // const res = await login(email, password);
-        // console.log(res);
-        // // 로그인 성공시 context에 로그인 여부 넣기
-        // if (res.result) {
-        //   addUserToSession({
-        //     userId: res.data.user.userId,
-        //     userName: res.data.user.userName,
-        //     email: res.data.user.email,
-        //   });
-        // console.log("로그인 성공", data);
         toggleModal(); // 로그인 성공시 팝업 닫음
         customNavigate("/"); // 메인으로 이동
         fetchUserData(); // 유저 데이터 가져오기

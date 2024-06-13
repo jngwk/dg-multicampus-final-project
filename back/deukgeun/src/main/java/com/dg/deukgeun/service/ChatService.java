@@ -10,6 +10,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.dg.deukgeun.entity.ChatMessage;
@@ -46,7 +48,9 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
     private ChatRoomRepository chatRoomRepository;
 
     // 메시지 발행
+    @PreAuthorize("(hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')) && (#chatMessage.senderId == principal.userId)")
     public void sendMessage(ChatMessage chatMessage) {
+        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@ sendMessage service");
         log.info("Sending message using chatService:" + chatMessage);
         log.info("Routing Key: " + routingKey);
         log.info("Exchange: " + exchange);
@@ -61,15 +65,10 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
     }
 
     // 메시지 구독
-    @RabbitListener(queues = { "${rabbitmq.queue.name}" }) // 특정 queue로 메시지를
-                                                           // 보냄
+    @PreAuthorize("(hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')) && " +
+            "(#chatMessage.senderId == principal.userId || #chatMessage.receiverId == principal.userId)")
+    @RabbitListener(queues = { "${rabbitmq.queue.name}" }) // 특정 queue로 메시지를 보냄
     public void receiveMessage(ChatMessage chatMessage) {
-        // 테스팅용 delay
-        // try {
-        // Thread.sleep(5000); // 5 seconds delay
-        // } catch (InterruptedException e) {
-        // Thread.currentThread().interrupt();
-        // }
 
         log.info("Received message using chatService: " + chatMessage);
 
@@ -81,42 +80,52 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
     }
 
     // 메시지 기록 불러오기
+    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')")
     public List<ChatMessage> getChatHistory(Integer chatId) {
         return chatMessageRepository.findByChatRoomIdOrderByTimestampAsc(chatId);
     }
 
     // 대화방 존재하는지 확인하기
-    public ChatRoom findOrCreateChatRoom(Integer userId1, Integer userId2) {
+    @PreAuthorize("(hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')) &&" +
+            "#currentUserId == principal.userId")
+    public ChatRoom findOrCreateChatRoom(Integer currentUserId, Integer targetUserId) {
         // userId로 user 객체 받기
-        User user1 = userRepository.findById(userId1)
-                .orElseThrow(() -> new IllegalArgumentException("존재하는 회원이 없습니다" + userId1));
-        User user2 = userRepository.findById(userId2)
-                .orElseThrow(() -> new IllegalArgumentException("존재하는 회원이 없습니다" + userId2));
+        User currentUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하는 회원이 없습니다" + currentUserId));
+        User targetUser = userRepository.findById(targetUserId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하는 회원이 없습니다" + targetUserId));
 
         // user 둘이 존재하는 채팅방이 있는지 확인
-        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findByUsersContainsAndUsersContains(user1, user2);
+        Optional<ChatRoom> chatRoomOptional = chatRoomRepository.findByUsersContainsAndUsersContains(currentUser,
+                targetUser);
         if (chatRoomOptional.isPresent()) { // 존재하면 채팅방을 반환
             return chatRoomOptional.get();
         } else { // 없으면 새로운 채팅방 생성
             ChatRoom newChatRoom = new ChatRoom();
             Set<User> users = new HashSet<>();
-            users.add(user1);
-            users.add(user2);
+            users.add(currentUser);
+            users.add(targetUser);
 
             newChatRoom.setUsers(users);
             return chatRoomRepository.save(newChatRoom);
         }
     }
 
+    @PreAuthorize("(hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')) &&" +
+            "#userId == principal.userId")
     public List<ChatRoom> getChatRooms(Integer userId) {
         return chatRoomRepository.findByUsers_userId(userId);
     }
 
+    @PreAuthorize("(hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')) &&" +
+            "#userId == principal.userId")
     public List<ChatRoom> getChatRoomsByLatestMessage(Integer userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
         return chatRoomRepository.findByUserIdOrderByLatestMessage(user);
     }
 
+    // TODO 회원과 관련된 헬스장 / 트레이너만 불러오기로 수정
+    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')")
     public List<User> getAvailableUsers() {
         return userRepository.findAll();
     }

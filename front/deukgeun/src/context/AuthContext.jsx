@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
-import Cookies from "js-cookie";
 import { userInfo } from "../api/userInfoApi";
+import { logout } from "../api/loginApi";
 
 const AuthContext = createContext(null);
 
@@ -33,14 +33,22 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   };
 
-  const logout = async () => {
-    Cookies.remove("accessToken");
-    setUserData(null);
-    sessionStorage.removeItem("isLoggedIn", false);
+  const removeCookieAndLogOut = async () => {
+    try {
+      const response = await logout();
+      setUserData(null);
+      sessionStorage.removeItem("isLoggedIn", false);
+      console.log(response);
+    } catch (error) {
+      console.error("Error logging out");
+      throw error;
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ userData, loading, logout, fetchUserData }}>
+    <AuthContext.Provider
+      value={{ userData, loading, removeCookieAndLogOut, fetchUserData }}
+    >
       {children}
     </AuthContext.Provider>
   );
