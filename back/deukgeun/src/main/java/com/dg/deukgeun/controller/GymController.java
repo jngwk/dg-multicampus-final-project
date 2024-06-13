@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dg.deukgeun.api.CRNumberCheckApi;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
-import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.service.GymService;
 

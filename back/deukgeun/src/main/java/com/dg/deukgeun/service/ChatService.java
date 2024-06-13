@@ -60,7 +60,6 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
 
     }
 
-    // TODO RabbitListener 오류해결
     // 메시지 구독
     @RabbitListener(queues = { "${rabbitmq.queue.name}" }) // 특정 queue로 메시지를
                                                            // 보냄

@@ -13,9 +13,8 @@ export const registerInquery = async (formValues) => {
       }
     });
     return res.data;
-    
   } catch (error) {
-    console.error("Error fetching chart data:", error);
+    console.error("Error fetching qna data:", error);
     throw error;
   }
 };

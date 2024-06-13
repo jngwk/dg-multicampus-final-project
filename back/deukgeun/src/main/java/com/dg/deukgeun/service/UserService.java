@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -95,7 +96,7 @@ public class UserService {
         String token;
 
         try {
-            token = tokenProvider.createToken(email, user.getRole(), user.getUserId(), exprTime);
+            token = tokenProvider.createToken(user.getUserId(), email, user.getRole(), user.getUserName(), exprTime);
             if (token == null || token.isEmpty()) {
                 throw new Exception("토큰 생성에 실패하였습니다.");
             }
@@ -113,10 +114,11 @@ public class UserService {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')")
     public ResponseDTO<UserWithTrainerDTO> getUserInfo(Integer userId) {
         try {
-            Optional<User> userOptional = userRepository.findById(userId);
-            
+            Optional<User> userOptional = userRepository.findByUserId(userId);
+
             if (userOptional.isPresent()) {
                 User userEntity = userOptional.get();
                 // 사용자 비밀번호 필드를 빈 문자열로 설정하여 보안성을 유지
@@ -143,6 +145,40 @@ public class UserService {
             return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
         }
     }
+
+    // public ResponseDTO<UserWithTrainerDTO> getUserInfo(String email) {
+    // try {
+    // Optional<User> userOptional = userRepository.findByEmail(email);
+
+    // if (userOptional.isPresent()) {
+    // User userEntity = userOptional.get();
+    // // 사용자 비밀번호 필드를 빈 문자열로 설정하여 보안성을 유지
+    // userEntity.setPassword("");
+
+    // // 사용자가 트레이너인 경우
+    // if (UserRole.ROLE_TRAINER.equals(userEntity.getRole())) {
+    // Optional<Trainer> trainerOptional =
+    // trainerRepository.findByUser_UserId(userEntity.getUserId());
+    // if (trainerOptional.isPresent()) {
+    // Trainer trainerEntity = trainerOptional.get();
+    // UserWithTrainerDTO userWithTrainerDTO = new UserWithTrainerDTO(userEntity,
+    // trainerEntity);
+    // return ResponseDTO.setSuccessData("사용자 정보를 조회했습니다.", userWithTrainerDTO);
+    // } else {
+    // return ResponseDTO.setFailed("해당 이메일로 가입된 트레이너를 찾을 수 없습니다.");
+    // }
+    // }
+
+    // // 사용자가 일반 사용자인 경우
+    // return ResponseDTO.setSuccessData("사용자 정보를 조회했습니다.", new
+    // UserWithTrainerDTO(userEntity, null));
+    // } else {
+    // return ResponseDTO.setFailed("해당 이메일로 가입된 사용자를 찾을 수 없습니다.");
+    // }
+    // } catch (Exception e) {
+    // return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
+    // }
+    // }
 
     public ResponseDTO<?> updateUser(UpdateUserDTO dto) {
         Integer userId = dto.getUserId();

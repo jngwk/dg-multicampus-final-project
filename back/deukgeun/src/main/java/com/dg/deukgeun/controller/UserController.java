@@ -2,6 +2,7 @@ package com.dg.deukgeun.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,12 +18,11 @@ import com.dg.deukgeun.dto.user.UpdateUserDTO;
 import com.dg.deukgeun.dto.user.UserSignUpDTO;
 import com.dg.deukgeun.entity.VerificationCode;
 import com.dg.deukgeun.repository.UserRepository;
+import com.dg.deukgeun.security.CustomUserDetails;
 import com.dg.deukgeun.service.EmailService;
 import com.dg.deukgeun.service.GymService;
 import com.dg.deukgeun.service.UserService;
 import com.dg.deukgeun.service.VerificationCodeService;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/user")
@@ -49,10 +49,10 @@ public class UserController {
                 return ResponseEntity.badRequest().body("유효하지 않은 이메일입니다.");
             }
             emailService.sendVerificationEmail(codeEntity.getEmail(), codeEntity.getCode());
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         return ResponseEntity.ok("이메일이 전송됐습니다. 인증번호: " + codeEntity.getCode());
     }
 
@@ -75,10 +75,18 @@ public class UserController {
     }
 
     @GetMapping("/userInfo")
-    public ResponseDTO<?> getUserInfo(HttpServletRequest request) {
-        Integer userId = (Integer) request.getAttribute("userId");
+    public ResponseDTO<?> getUserInfo() {
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer userId = userDetails.getUserId();
         return userService.getUserInfo(userId);
     }
+
+    // @GetMapping("/userInfo")
+    // public ResponseDTO<?> getUserInfo(HttpServletRequest request) {
+        // Integer userId = (Integer) request.getAttribute("userId");
+    // return userService.getUserInfo(userId);
+    // }
 
     @PutMapping("/update/{userId}")
     public ResponseDTO<?> updateUser(@PathVariable Integer userId, @RequestBody UpdateUserDTO updateUserDTO) {

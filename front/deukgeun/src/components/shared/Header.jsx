@@ -6,7 +6,7 @@ import ProfileDropdown from "../account/ProfileDropdown";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-console.log(logo);
+// console.log(logo);
 export default function Header() {
   const { user } = useAuth();
   const location = useLocation();
@@ -54,7 +54,7 @@ export default function Header() {
           alt="logo"
         />
         <div className="flex gap-4 relative">
-          <button onClick={() => navigate("/contact")}>문의하기</button>
+          <button onClick={() => navigate("/qna")}>문의하기</button>
           {user ? (
             <>
               <button ref={badge} onClick={toggleProfileDropdown}>
