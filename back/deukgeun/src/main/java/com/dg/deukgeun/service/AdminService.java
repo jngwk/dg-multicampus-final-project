@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.dg.deukgeun.dto.page.PageRequestDTO;
@@ -29,6 +30,7 @@ public class AdminService {
     @Autowired
     private GymRepository gymRepository;
 
+     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public PageResponseDTO<User> getAllUsers(Integer adminId, String searchQuery, PageRequestDTO pageRequestDTO) {
         try {
             // 관리자 이메일이 ADMIN 사용자에 속하는지 확인합니다.
