@@ -16,14 +16,6 @@ const MemberList = ({}) => {
 
   // 임시 더미데이터
   useEffect(() => {
-    axios
-      .get("https://jsonplaceholder.typicode.com/users")
-      .then((res) => setInfo(res.data))
-      .catch((err) => console.log(err));
-  }, []);
-
-  // 임시 더미데이터
-  useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
       const res = await axios.get(
