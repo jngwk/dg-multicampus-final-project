@@ -1,6 +1,6 @@
 package com.dg.deukgeun.entity;
 
-import com.dg.deukgeun.dto.user.SignUpDTO;
+// import com.dg.deukgeun.dto.user.SignUpDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,15 +38,15 @@ public class User {
     private String role;
 
 
-    public User(SignUpDTO dto) {
-        this.userId = dto.getUserId();
-        this.userName = dto.getUserName();
-        this.email = dto.getEmail();
-        this.address = dto.getAddress();
-        this.category = dto.getCategory();
-        this.password = dto.getPassword();
-        this.token = "";
-    }
+    // public User(SignUpDTO dto) {
+    //     this.userId = dto.getUserId();
+    //     this.userName = dto.getUserName();
+    //     this.email = dto.getEmail();
+    //     this.address = dto.getAddress();
+    //     this.category = dto.getCategory();
+    //     this.password = dto.getPassword();
+    //     this.token = "";
+    // }
 
     // @Enumerated(EnumType.STRING)
     // private UserRole role;

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
-import com.dg.deukgeun.dto.user.SignUpDTO;
+// import com.dg.deukgeun.dto.user.SignUpDTO;
 import com.dg.deukgeun.dto.user.UpdateUserDTO;
 import com.dg.deukgeun.repository.UserRepository;
 import com.dg.deukgeun.service.UserService;
@@ -29,19 +29,19 @@ public class UserController {
     @Autowired UserService userService;
     @Autowired UserRepository userRepository;
 
-    //회원가입
-    @PostMapping("/signUp")
-    public ResponseDTO<?> signUp(@RequestBody SignUpDTO requestBody) {
-        ResponseDTO<?> result = userService.signUp(requestBody);
-        return result;
-    }
+    // //회원가입
+    // @PostMapping("/signUp")
+    // public ResponseDTO<?> signUp(@RequestBody SignUpDTO requestBody) {
+    //     ResponseDTO<?> result = userService.signUp(requestBody);
+    //     return result;
+    // }
 
-    //로그인
-    @PostMapping("/login")
-    public ResponseDTO<?> login(@RequestBody LoginDTO requestBody) {
-        ResponseDTO<?> result = userService.login(requestBody);
-        return result;
-    }
+    // //로그인
+    // @PostMapping("/login")
+    // public ResponseDTO<?> login(@RequestBody LoginDTO requestBody) {
+    //     ResponseDTO<?> result = userService.login(requestBody);
+    //     return result;
+    // }
 
     @GetMapping("/userInfo")
     public ResponseDTO<?> getUserInfo(@RequestParam String email) {

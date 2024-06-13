@@ -1,9 +1,19 @@
 package com.dg.deukgeun.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import com.dg.deukgeun.dto.page.PageRequestDTO;
+import com.dg.deukgeun.dto.page.PageResponseDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.UserRepository;
@@ -14,29 +24,38 @@ public class AdminService {
     @Autowired 
     UserRepository userRepository;
 
-    public ResponseDTO<List<User>> getAllUsers(String adminEmail, String searchQuery) {
+
+    public PageResponseDTO<User> getAllUsers(Integer adminId, String searchQuery, PageRequestDTO pageRequestDTO) {
         try {
             // 관리자 이메일이 ADMIN 사용자에 속하는지 확인합니다.
-            Optional<User> adminOptional = userRepository.findByEmail(adminEmail);
-            if (adminOptional.isPresent() && "ADMIN".equals(adminOptional.get().getRole())) {
+            Optional<User> adminOptional = userRepository.findById(adminId);
+            if (adminOptional.isPresent()) {
+                Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(), Sort.by("userId").ascending());
                 List<User> users;
+                long totalUsers;
                 if (searchQuery != null && !searchQuery.isEmpty()) {
-                    // 검색 쿼리를 포함하는 이름으로 사용자를 가져옵니다.
-                    users = userRepository.findByUserNameContainingIgnoreCase(searchQuery);
+                    users = userRepository.findByUserNameContainingIgnoreCase(searchQuery, pageable).getContent();
+                    totalUsers = userRepository.countByUserNameContainingIgnoreCase(searchQuery);
                 } else {
-                    // 역할이 USER인 모든 사용자를 가져옵니다.
-                    users = userRepository.findByRole("USER");
+                    users = userRepository.findAll(pageable).getContent();
+                    totalUsers = userRepository.count();
                 }
                 // 보안상의 이유로 비밀번호 필드를 빈 문자열로 설정합니다.
                 for (User user : users) {
                     user.setPassword("");
                 }
-                return ResponseDTO.setSuccessData("모든 사용자 목록을 가져왔습니다.", users);
+                return PageResponseDTO.<User>withAll()
+                        .dtoList(users)
+                        .pageRequestDTO(pageRequestDTO)
+                        .totalCount(totalUsers)
+                        .build();
             } else {
-                return ResponseDTO.setFailed("권한이 없습니다.");
+                throw new IllegalAccessException("권한이 없습니다.");
             }
         } catch (Exception e) {
-            return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
+            throw new RuntimeException("데이터베이스 연결에 실패하였습니다.", e);
         }
     }
+
+
 }
