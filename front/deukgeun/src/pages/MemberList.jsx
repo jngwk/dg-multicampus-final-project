@@ -18,8 +18,13 @@ const MemberList = () => {
 
         const fetchPosts = async () => {
             setLoading(true);
-            const res = await axios.get('https://localhost:8282/api/admin/users');
-            setPosts(res.data);
+            try {
+                const data = await usersInfo(); // usersInfo 함수 호출
+                setPosts(data.dtoList.data); // 데이터 구조에 맞게 설정
+                console.log(data.dtoList.data)
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
             setLoading(false);
         }
 

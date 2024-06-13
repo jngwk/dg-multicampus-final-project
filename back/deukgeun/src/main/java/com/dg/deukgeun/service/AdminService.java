@@ -30,7 +30,7 @@ public class AdminService {
     @Autowired
     private GymRepository gymRepository;
 
-    // @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public PageResponseDTO<User> getAllUsers(Integer adminId, String searchQuery, PageRequestDTO pageRequestDTO) {
         try {
             // 관리자 이메일이 ADMIN 사용자에 속하는지 확인합니다.
@@ -63,42 +63,42 @@ public class AdminService {
         }
     }
 
-    public PageResponseDTO<Map<String, Object>> getAllGymUsers(String searchQuery, PageRequestDTO pageRequestDTO) {
-        try {
-            List<Gym> gyms = gymRepository.findAll();
-            List<Map<String, Object>> gymUsers = gyms.stream()
-                    .map(gym -> {
-                        Map<String, Object> gymUserMap = new HashMap<>();
-                        gymUserMap.put("userId", gym.getUser().getUserId());
-                        gymUserMap.put("userName", gym.getUser().getUserName());
-                        gymUserMap.put("address", gym.getAddress());
-                        gymUserMap.put("detailAddress", gym.getDetailAddress());
-                        gymUserMap.put("gymId", gym.getGymId());
-                        gymUserMap.put("gymName", gym.getGymName());
-                        return gymUserMap;
-                    })
-                    .collect(Collectors.toList());
+    // public PageResponseDTO<Map<String, Object>> getAllGymUsers(String searchQuery, PageRequestDTO pageRequestDTO) {
+    //     try {
+    //         List<Gym> gyms = gymRepository.findAll();
+    //         List<Map<String, Object>> gymUsers = gyms.stream()
+    //                 .map(gym -> {
+    //                     Map<String, Object> gymUserMap = new HashMap<>();
+    //                     gymUserMap.put("userId", gym.getUser().getUserId());
+    //                     gymUserMap.put("userName", gym.getUser().getUserName());
+    //                     gymUserMap.put("address", gym.getAddress());
+    //                     gymUserMap.put("detailAddress", gym.getDetailAddress());
+    //                     gymUserMap.put("gymId", gym.getGymId());
+    //                     gymUserMap.put("gymName", gym.getGymName());
+    //                     return gymUserMap;
+    //                 })
+    //                 .collect(Collectors.toList());
 
-            if (searchQuery != null && !searchQuery.isEmpty()) {
-                gymUsers = gymUsers.stream()
-                        .filter(user -> ((String) user.get("userName")).toLowerCase().contains(searchQuery.toLowerCase()) ||
-                                ((String) user.get("address")).toLowerCase().contains(searchQuery.toLowerCase()))
-                        .collect(Collectors.toList());
-            }
+    //         if (searchQuery != null && !searchQuery.isEmpty()) {
+    //             gymUsers = gymUsers.stream()
+    //                     .filter(user -> ((String) user.get("userName")).toLowerCase().contains(searchQuery.toLowerCase()) ||
+    //                             ((String) user.get("address")).toLowerCase().contains(searchQuery.toLowerCase()))
+    //                     .collect(Collectors.toList());
+    //         }
 
-            int totalGymUsers = gymUsers.size();
-            int start = (pageRequestDTO.getPage() - 1) * pageRequestDTO.getSize();
-            int end = Math.min(start + pageRequestDTO.getSize(), totalGymUsers);
-            List<Map<String, Object>> paginatedGymUsers = gymUsers.subList(start, end);
+    //         int totalGymUsers = gymUsers.size();
+    //         int start = (pageRequestDTO.getPage() - 1) * pageRequestDTO.getSize();
+    //         int end = Math.min(start + pageRequestDTO.getSize(), totalGymUsers);
+    //         List<Map<String, Object>> paginatedGymUsers = gymUsers.subList(start, end);
 
-            return PageResponseDTO.<Map<String, Object>>withAll()
-                    .dtoList(paginatedGymUsers)
-                    .pageRequestDTO(pageRequestDTO)
-                    .totalCount(totalGymUsers)
-                    .build();
+    //         return PageResponseDTO.<Map<String, Object>>withAll()
+    //                 .dtoList(paginatedGymUsers)
+    //                 .pageRequestDTO(pageRequestDTO)
+    //                 .totalCount(totalGymUsers)
+    //                 .build();
 
-        } catch (Exception e) {
-            throw new RuntimeException("데이터베이스 연결에 실패하였습니다.", e);
-        }
-    }
+    //     } catch (Exception e) {
+    //         throw new RuntimeException("데이터베이스 연결에 실패하였습니다.", e);
+    //     }
+    // }
 }

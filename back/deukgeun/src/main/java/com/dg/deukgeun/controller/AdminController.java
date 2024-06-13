@@ -22,16 +22,14 @@ public class AdminController {
     private AdminService adminService;
 
     @GetMapping("/users")
-    public PageResponseDTO<User> getAllUsers(String searchQuery,PageRequestDTO pageRequestDTO) {
-         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        Integer adminId = userDetails.getUserId();
+    public PageResponseDTO<User> getAllUsers(@RequestParam Integer adminId,
+                                             @RequestParam(required = false) String searchQuery,
+                                             PageRequestDTO pageRequestDTO) {
         return adminService.getAllUsers(adminId, searchQuery, pageRequestDTO);
     }
-
-    @GetMapping("/gym-users")
-    public PageResponseDTO<Map<String, Object>> getAllGymUsers(@RequestParam(required = false) String searchQuery,
-                                                               PageRequestDTO pageRequestDTO) {
-        return adminService.getAllGymUsers(searchQuery, pageRequestDTO);
-    }
+    // @GetMapping("/gym-users")
+    // public PageResponseDTO<Map<String, Object>> getAllGymUsers(@RequestParam(required = false) String searchQuery,
+    //                                                            PageRequestDTO pageRequestDTO) {
+    //     return adminService.getAllGymUsers(searchQuery, pageRequestDTO);
+    // }
 }

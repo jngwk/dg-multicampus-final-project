@@ -7,7 +7,12 @@ export const usersInfo = async () => {
   
     try {
       const token = localStorage.getItem('authToken');
-      const res = await axios.get((`${prefix}/users`).data, {
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+      console.log("Auth Token:", token); // 토큰 확인
+
+      const res = await axios.get(`${prefix}/users`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
