@@ -16,7 +16,7 @@ const Table = ({ headers, data }) => {
             </thead>
             <tbody>
                 {data.map(item => (
-                    <TableRow key={item.id} item={item} />
+                    <TableRow key={item.userId} item={item} />
                 ))}
             </tbody>
         </table>
@@ -26,11 +26,10 @@ const Table = ({ headers, data }) => {
 const TableRow = ({ item }) => {
     return (
         <tr className="bg-white border-y-2 border-gray-200 text-sm">
-            <td className="px-4 py-2">{item.id}</td>
-            <td className="px-4 py-2">{item.name}</td>
+            <td className="px-4 py-2">{item.userId}</td>
+            <td className="px-4 py-2">{item.userName}</td>
             <td className="px-4 py-2">{item.email}</td>
-            <td className="px-4 py-2">{item.phone}</td>
-            <td className="px-4 py-2">{item.website}</td>
+            <td className="px-4 py-2">{item.address}</td>
         </tr>
     );
 };

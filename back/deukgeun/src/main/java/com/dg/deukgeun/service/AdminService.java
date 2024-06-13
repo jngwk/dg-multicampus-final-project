@@ -30,7 +30,7 @@ public class AdminService {
     @Autowired
     private GymRepository gymRepository;
 
-     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    // @PreAuthorize("hasRole('ROLE_ADMIN')")
     public PageResponseDTO<User> getAllUsers(Integer adminId, String searchQuery, PageRequestDTO pageRequestDTO) {
         try {
             // 관리자 이메일이 ADMIN 사용자에 속하는지 확인합니다.

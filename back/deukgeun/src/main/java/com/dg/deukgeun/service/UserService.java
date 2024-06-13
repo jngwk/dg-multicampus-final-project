@@ -37,8 +37,8 @@ public class UserService {
     TrainerRepository trainerRepository;
     @Autowired
     EmailService emailService;
-    @Autowired
-    BCryptPasswordEncoder passwordEncoder;
+    // @Autowired
+    // BCryptPasswordEncoder passwordEncoder;
 
     public ResponseDTO<?> signUp(UserSignUpDTO dto) {
         String email = dto.getEmail();
@@ -245,44 +245,44 @@ public class UserService {
         }
     }
 
-    public ResponseDTO<?> requestPasswordReset(String email) {
-        try {
-            User user = userRepository.findByEmail(email).orElse(null);
-            if (user == null) {
-                return ResponseDTO.setFailed("입력하신 이메일로 등록된 계정이 존재하지 않습니다.");
-            }
+    // public ResponseDTO<?> requestPasswordReset(String email) {
+    //     try {
+    //         User user = userRepository.findByEmail(email).orElse(null);
+    //         if (user == null) {
+    //             return ResponseDTO.setFailed("입력하신 이메일로 등록된 계정이 존재하지 않습니다.");
+    //         }
 
-            // Generate reset token
-            String resetToken = tokenProvider.createToken(user.getUserId(), email, user.getRole(), user.getUserName(), 3600); // 1 hour expiry
-            emailService.sendResetPasswordEmail(email, resetToken);
+    //         // Generate reset token
+    //         String resetToken = tokenProvider.createToken(user.getUserId(), email, user.getRole(), user.getUserName(), 3600); // 1 hour expiry
+    //         emailService.sendResetPasswordEmail(email, resetToken);
 
-            return ResponseDTO.setSuccess("비밀번호 재설정 이메일이 발송되었습니다.");
-        } catch (Exception e) {
-            return ResponseDTO.setFailed("비밀번호 재설정 요청 처리 중 오류가 발생하였습니다.");
-        }
-    }
+    //         return ResponseDTO.setSuccess("비밀번호 재설정 이메일이 발송되었습니다.");
+    //     } catch (Exception e) {
+    //         return ResponseDTO.setFailed("비밀번호 재설정 요청 처리 중 오류가 발생하였습니다.");
+    //     }
+    // }
 
-    public ResponseDTO<?> resetPassword(String token, String newPassword) {
-        try {
-            if (tokenProvider.validateToken(token)) {
-                Integer userId = tokenProvider.getUserIdFromToken(token);
-                User user = userRepository.findByUserId(userId).orElse(null);
+    // public ResponseDTO<?> resetPassword(String token, String newPassword) {
+    //     try {
+    //         if (tokenProvider.validateToken(token)) {
+    //             Integer userId = tokenProvider.getUserIdFromToken(token);
+    //             User user = userRepository.findByUserId(userId).orElse(null);
 
-                if (user == null) {
-                    return ResponseDTO.setFailed("유효하지 않은 토큰입니다.");
-                }
+    //             if (user == null) {
+    //                 return ResponseDTO.setFailed("유효하지 않은 토큰입니다.");
+    //             }
 
-                String hashedPassword = passwordEncoder.encode(newPassword);
-                user.setPassword(hashedPassword);
-                userRepository.save(user);
+    //             String hashedPassword = passwordEncoder.encode(newPassword);
+    //             user.setPassword(hashedPassword);
+    //             userRepository.save(user);
 
-                return ResponseDTO.setSuccess("비밀번호가 성공적으로 변경되었습니다.");
-            } else {
-                return ResponseDTO.setFailed("유효하지 않은 토큰입니다.");
-            }
-        } catch (Exception e) {
-            return ResponseDTO.setFailed("비밀번호 재설정 처리 중 오류가 발생하였습니다.");
-        }
-    }
+    //             return ResponseDTO.setSuccess("비밀번호가 성공적으로 변경되었습니다.");
+    //         } else {
+    //             return ResponseDTO.setFailed("유효하지 않은 토큰입니다.");
+    //         }
+    //     } catch (Exception e) {
+    //         return ResponseDTO.setFailed("비밀번호 재설정 처리 중 오류가 발생하였습니다.");
+    //     }
+    // }
     
 }

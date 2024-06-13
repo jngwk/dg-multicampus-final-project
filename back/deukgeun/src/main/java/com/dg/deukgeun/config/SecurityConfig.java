@@ -88,11 +88,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/user/login", "/api/user/signUp/**", "/api/user/sendCode", "/api/qna/**",
                                 "/api/gym/signup",
-                                "/api/user/sendCode", "/api/qna/**", "/api/gym/crNumberCheck")
+                                "/api/user/sendCode", "/api/qna/**", "/api/gym/crNumberCheck", "/api/admin/users", "/memberList")
                         .permitAll() // 로그인과 회원가입 API는 인증 없이 접근 가능하도록 설정합니다.
                         .requestMatchers("/api/user/userInfo").hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM")
                         .requestMatchers("/api/user/workoutSession").hasAnyAuthority("ROLE_GENERAL")
-                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN") // ADMIN 역할만 접근할 수 있도록 설정합니다.
+                        // .requestMatchers("/api/admin/users", "/memberList").hasAuthority("ROLE_ADMIN") // ADMIN 역할만 접근할 수 있도록 설정합니다.
                         .requestMatchers("/api/membership/stats").hasAuthority("ROLE_GYM")
                         .anyRequest().authenticated()) // 그 외 모든 요청은 인증이 필요합니다
 
