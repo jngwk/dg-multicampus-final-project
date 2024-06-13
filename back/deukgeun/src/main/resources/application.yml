@@ -54,6 +54,15 @@ rabbitmq:
     json:
       key: dgRoutingJsonKey
 
+#시큐리티 보안키
+security:
+  jwt:
+    secret-key: your-very-long-secret-key-of-at-least-32-characters
+
+#로깅 디버그
+logging:
+  level:
+    org.springframework.security: DEBUG
 # email 관련
 mail:
   host: smtp.gmail.com

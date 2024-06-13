@@ -4,19 +4,17 @@ import com.dg.deukgeun.dto.UserRole;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserSignUpDTO {
-    private int userId;
+    private Integer userId;
 
-    @NotBlank(message = "이름은 필수 입력 항목입니다.")
-    @Pattern(regexp = "^[a-zA-Z가-힣\\s]+$", message = "이름은 영문자, 한글만 사용할 수 있습니다.")
+    @NotBlank(message = "사용자 이름은 필수 입력 항목입니다.")
     private String userName;
 
     @NotBlank(message = "이메일은 필수 입력 항목입니다.")
@@ -29,11 +27,9 @@ public class UserSignUpDTO {
     private String detailAddress;
 
     @NotBlank(message = "비밀번호는 필수 입력 항목입니다.")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#\\$%\\^&\\*])(?=\\S+$).{8,}$", message = "비밀번호는 최소 8자 이상, 대문자, 소문자, 숫자 및 특수 문자를 포함해야 합니다.")
     private String password;
 
-    private int approval;
-    private String token;
-    
+    private Integer approval;
+
     private UserRole role;
 }
