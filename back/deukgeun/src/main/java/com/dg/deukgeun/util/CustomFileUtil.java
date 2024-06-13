@@ -44,9 +44,7 @@ public class CustomFileUtil {
                 log.info("after copy");
                 uploadNames.add(savedName);
             } catch(IOException e){
-                log.info(e.getMessage());
-                return new ArrayList<String>();
-                // throw new RuntimeException(e.getMessage());
+                throw new RuntimeException(e.getMessage());
             }
         }
         return uploadNames;

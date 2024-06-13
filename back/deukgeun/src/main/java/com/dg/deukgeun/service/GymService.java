@@ -22,11 +22,13 @@ import com.dg.deukgeun.security.TokenProvider;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 //from gachudon brench
 @Transactional
 @RequiredArgsConstructor
+@Log4j2
 //gachudon brench end
 public class GymService {
     //from gachudon brench
@@ -161,6 +163,14 @@ public class GymService {
         Gym gym = result.orElseThrow();
         GymDTO dto = modelMapper.map(gym, GymDTO.class);
         return dto;
+    }
+
+    //새로운 헬스장 정보 입력
+    public Integer insert(GymDTO gymDTO){
+        log.info("--------------------");
+        Gym gym = modelMapper.map(gymDTO,Gym.class);
+        Gym savedGym = gymRepository.save(gym);
+        return savedGym.getGymId();
     }
     //gachudon brench end
 }
