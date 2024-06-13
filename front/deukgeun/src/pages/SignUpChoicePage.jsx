@@ -1,5 +1,4 @@
 import React from "react";
-import Layout from "../components/shared/Layout";
 import Button from "../components/shared/Button";
 import useCustomNavigate from "../hooks/useCustomNavigate";
 

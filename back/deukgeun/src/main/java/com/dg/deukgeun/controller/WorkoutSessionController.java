@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dg.deukgeun.dto.WorkoutDTO;
 import com.dg.deukgeun.dto.WorkoutSessionDTO;
 import com.dg.deukgeun.entity.WorkoutSessionRequest;
+import com.dg.deukgeun.security.CustomUserDetails;
 import com.dg.deukgeun.service.WorkoutService;
 import com.dg.deukgeun.service.WorkoutSessionService;
 
@@ -38,12 +40,14 @@ public class WorkoutSessionController {
 
     // 운동일지 페이지에서 yyyy-mm 문자열 형태로 입력을 받으면, 그달 1일 부터 말일까지 workout_session 테이블 정보를
     // arrayList 형태로 출력한다.
-    @GetMapping("/get/{startDate}/{endDate}/{userId}")
+    @GetMapping("/get/{startDate}/{endDate}")
     public List<WorkoutSessionDTO> get(@PathVariable(name = "startDate") String startDate,
-            @PathVariable(name = "endDate") String endDate,
-            @PathVariable(name = "userId") Integer userId) {
+            @PathVariable(name = "endDate") String endDate) {
         log.info("startDate: " + startDate);
         log.info("endDate: " + endDate);
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer userId = userDetails.getUserId();
         // String[] days = yearMonth.split("-");
         // Integer year = Integer.parseInt(days[0]);
         // Integer month = Integer.parseInt(days[1]);
@@ -83,10 +87,13 @@ public class WorkoutSessionController {
         workoutSessionDTO.setContent(workoutSessionRequest.getContent());
         workoutSessionDTO.setMemo(workoutSessionRequest.getMemo());
         workoutSessionDTO.setPtSessionId(workoutSessionRequest.getPtSessionId());
-        workoutSessionDTO.setUserId(workoutSessionRequest.getUserId());
         workoutSessionDTO.setWorkoutDate(workoutSessionRequest.getWorkoutDate());
         workoutSessionDTO.setStartTime(workoutSessionRequest.getStartTime());
         workoutSessionDTO.setEndTime(workoutSessionRequest.getEndTime());
+
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        workoutSessionDTO.setUserId(userDetails.getUserId());
 
         Integer workoutSessionId = service.register(workoutSessionDTO);
 
@@ -103,6 +110,9 @@ public class WorkoutSessionController {
     @PutMapping("/modify/{workoutSessionId}")
     public Map<String, String> modify(@PathVariable(name = "workoutSessionId") Integer workoutSessionId,
             @RequestBody WorkoutSessionDTO workoutSessionDTO) {
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        workoutSessionDTO.setUserId(userDetails.getUserId());
         workoutSessionDTO.setWorkoutSessionId(workoutSessionId);
         log.info("Modify: " + workoutSessionDTO);
         service.modify(workoutSessionDTO);

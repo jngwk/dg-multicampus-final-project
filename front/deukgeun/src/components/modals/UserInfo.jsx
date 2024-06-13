@@ -6,21 +6,13 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { IoSearchOutline } from "react-icons/io5";
 import { BiCommentDetail } from "react-icons/bi";
 import { LiaUserEditSolid } from "react-icons/lia";
-import { userInfo } from "../../api/userInfoApi";
 import useValidation from "../../hooks/useValidation";
+import { useAuth } from "../../context/AuthContext";
+import Loader from "../shared/Loader";
 
-const MyInfo = ({ toggleModal }) => {
+const MyInfo = ({ toggleModal, userData }) => {
   const [imageUrl, setImageUrl] = useState(null);
-  const [userData, setUserData] = useState({
-    address: "",
-    category: "",
-    detailAddress: "",
-    email: "",
-    userId: "",
-    userName: "",
-  }); // Correctly define userData using useState
   const fileInput = useRef(null);
-  const sessionData = JSON.parse(sessionStorage.getItem("user"));
   const [passwordType, setPasswordType] = useState({
     type: "password",
     visible: false,
@@ -28,29 +20,7 @@ const MyInfo = ({ toggleModal }) => {
   const [newPassword, setNewPassword] = useState("");
   const { errors, validateInput } = useValidation();
 
-    // Fetch user info when component mounts
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await userInfo();
-            setUserData(data.data.user);
-            console.log(data.data.user);
-            console.log(userData);
-        };
-
-        fetchData();
-    }, []);
-
   // Fetch user info when component mounts
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const data = await userInfo(sessionData.email);
-  //     setUserData(data.data.user);
-  //     console.log(data.data.user);
-  //     console.log(userData);
-  //   };
-
-  //   fetchData();
-  // }, []);
 
   // password type 변경하는 함수
   const handlePasswordType = () => {

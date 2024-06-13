@@ -11,13 +11,8 @@ export const login = async (email, password) => {
       password,
     });
 
-    if (response.data.result) {
-      const token = response.data.data.token;
-      localStorage.setItem('authToken', token);
-      return response.data;
-    } else {
-      throw new Error(response.data.message);
-    }
+    const { token } = response.data;
+    return token;
   } catch (error) {
     throw new Error("Login failed: " + error.message);
   }
