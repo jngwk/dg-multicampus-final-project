@@ -84,11 +84,12 @@ public class UserController {
 
     // @GetMapping("/userInfo")
     // public ResponseDTO<?> getUserInfo(HttpServletRequest request) {
-    // return userService.getUserInfo(request.getAttribute("email").toString());
+        // Integer userId = (Integer) request.getAttribute("userId");
+    // return userService.getUserInfo(userId);
     // }
 
-    @PutMapping("/update/{email}")
-    public ResponseDTO<?> updateUser(@PathVariable String email, @RequestBody UpdateUserDTO updateUserDTO) {
+    @PutMapping("/update/{userId}")
+    public ResponseDTO<?> updateUser(@PathVariable Integer userId, @RequestBody UpdateUserDTO updateUserDTO) {
         return userService.updateUser(updateUserDTO);
     }
 }
