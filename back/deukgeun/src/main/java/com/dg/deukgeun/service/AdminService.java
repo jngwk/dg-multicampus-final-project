@@ -29,10 +29,10 @@ public class AdminService {
     @Autowired
     private GymRepository gymRepository;
 
-    public PageResponseDTO<User> getAllUsers(String adminEmail, String searchQuery, PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<User> getAllUsers(Integer adminId, String searchQuery, PageRequestDTO pageRequestDTO) {
         try {
             // 관리자 이메일이 ADMIN 사용자에 속하는지 확인합니다.
-            Optional<User> adminOptional = userRepository.findByEmail(adminEmail);
+            Optional<User> adminOptional = userRepository.findById(adminId);
             if (adminOptional.isPresent()) {
                 Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(), Sort.by("userId").ascending());
                 List<User> users;

@@ -113,9 +113,9 @@ public class UserService {
         }
     }
 
-    public ResponseDTO<UserWithTrainerDTO> getUserInfo(String email) {
+    public ResponseDTO<UserWithTrainerDTO> getUserInfo(Integer userId) {
         try {
-            Optional<User> userOptional = userRepository.findByEmail(email);
+            Optional<User> userOptional = userRepository.findById(userId);
             
             if (userOptional.isPresent()) {
                 User userEntity = userOptional.get();
@@ -145,11 +145,11 @@ public class UserService {
     }
 
     public ResponseDTO<?> updateUser(UpdateUserDTO dto) {
-        String email = dto.getEmail();
+        Integer userId = dto.getUserId();
 
         try {
             // Find user by email
-            Optional<User> userOptional = userRepository.findByEmail(email);
+            Optional<User> userOptional = userRepository.findById(userId);
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
 
@@ -185,10 +185,10 @@ public class UserService {
         }
     }
 
-    public ResponseDTO<List<User>> getAllUsers(String adminEmail) {
+    public ResponseDTO<List<User>> getAllUsers(Integer adminId) {
         try {
             // Check if the adminEmail belongs to an ADMIN user
-            Optional<User> adminOptional = userRepository.findByEmail(adminEmail);
+            Optional<User> adminOptional = userRepository.findById(adminId);
             if (adminOptional.isPresent() && "ADMIN".equals(adminOptional.get().getRole())) {
                 // Fetch all users with role USER
                 List<User> users = userRepository.findByRole("USER");

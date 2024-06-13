@@ -16,8 +16,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UpdateUserDTO {
     private String userName;
-
-     @NotBlank(message = "이메일은 필수 입력 항목입니다.")
+    private Integer userId;
+    @NotBlank(message = "이메일은 필수 입력 항목입니다.")
     @Email(message = "유효한 이메일 주소를 입력해주세요.")
     private String email;
 

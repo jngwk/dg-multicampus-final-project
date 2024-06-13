@@ -20,10 +20,10 @@ public class AdminController {
     private AdminService adminService;
 
     @GetMapping("/users")
-    public PageResponseDTO<User> getAllUsers(@RequestParam String adminEmail,
+    public PageResponseDTO<User> getAllUsers(@RequestParam Integer adminId,
                                              @RequestParam(required = false) String searchQuery,
                                              PageRequestDTO pageRequestDTO) {
-        return adminService.getAllUsers(adminEmail, searchQuery, pageRequestDTO);
+        return adminService.getAllUsers(adminId, searchQuery, pageRequestDTO);
     }
 
     @GetMapping("/gym-users")
