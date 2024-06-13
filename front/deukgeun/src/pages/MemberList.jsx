@@ -6,6 +6,7 @@ import { CiSearch } from "react-icons/ci";
 import axios from "axios";
 import Table from "../components/shared/Table";
 import Pagination from "../components/shared/Pagination";
+import Loader from "../components/shared/Loader";
 
 const MemberList = ({}) => {
     const [posts, setPosts] = useState([]);
@@ -29,7 +30,7 @@ const MemberList = ({}) => {
 
 
     if(loading) {
-        return <h2>Loading...</h2>;
+        return <Loader/>;
     }
 
     //get current posts
