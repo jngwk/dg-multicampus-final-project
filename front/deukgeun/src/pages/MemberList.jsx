@@ -9,7 +9,13 @@ import Loader from "../components/shared/Loader";
 import { usersInfo } from "../api/adminApi";
 
 const MemberList = () => {
-    const [posts, setPosts] = useState([]);
+    const [posts, setPosts] = useState([
+        {userId: "",
+        userName: "",
+        email: "",
+        address: "",
+        role: ""
+    }]);
     const [loading, setLoading] = useState(false); // 로딩페이지 바꿔야함
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage, setPostsPerPage] = useState(10);
@@ -19,9 +25,17 @@ const MemberList = () => {
         const fetchPosts = async () => {
             setLoading(true);
             try {
-                const data = await usersInfo(); // usersInfo 함수 호출
-                setPosts(data.dtoList.data); // 데이터 구조에 맞게 설정
-                console.log(data.dtoList.data)
+                const data = await usersInfo();
+                console.log(data)
+                const userList = data.dtoList.data.map(user => ({
+                    userId: user.userId,
+                    userName: user.userName,
+                    email: user.email,
+                    address: `${user.address} ${user.detailAddress}`,
+                    role: user.role
+                }));
+                console.log(userList);
+                setPosts(userList);  // 서버에서 반환하는 데이터 구조에 따라 설정
             } catch (error) {
                 console.error('Error fetching data:', error);
             }

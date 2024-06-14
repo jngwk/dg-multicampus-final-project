@@ -17,7 +17,7 @@ export const usersInfo = async () => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log(token);
+      console.log(res.dtoList.data);
       return res.data;
   
     } catch (error) {

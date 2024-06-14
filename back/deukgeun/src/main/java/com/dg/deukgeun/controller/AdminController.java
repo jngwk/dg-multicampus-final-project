@@ -21,11 +21,21 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    @GetMapping("/users")
-    public PageResponseDTO<User> getAllUsers(@RequestParam Integer adminId,
-                                             @RequestParam(required = false) String searchQuery,
+    // @GetMapping("/users")
+    // public PageResponseDTO<User> getAllUsers(@RequestParam Integer adminId,
+    //                                          @RequestParam(required = false) String searchQuery,
+    //                                          PageRequestDTO pageRequestDTO) {
+    //     return adminService.getAllUsers(adminId, searchQuery, pageRequestDTO);
+    // }
+    @GetMapping("/api/admin/users")
+    public PageResponseDTO<User> getAllUsers(@RequestParam(required = false) String searchQuery,
                                              PageRequestDTO pageRequestDTO) {
-        return adminService.getAllUsers(adminId, searchQuery, pageRequestDTO);
+        // 현재 인증된 사용자의 정보를 가져옵니다.
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userDetails.getUserId();
+
+        // AdminService의 getAllUsers 메소드를 호출하여 사용자 목록을 가져옵니다.
+        return adminService.getAllUsers(userId, searchQuery, pageRequestDTO);
     }
     // @GetMapping("/gym-users")
     // public PageResponseDTO<Map<String, Object>> getAllGymUsers(@RequestParam(required = false) String searchQuery,
