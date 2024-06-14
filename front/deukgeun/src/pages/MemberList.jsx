@@ -1,4 +1,4 @@
-//관리자페이지-회원관리 테이블 화면 구현
+//관리자페이지-전체회원관리 테이블 화면 구현
 
 import React, { useEffect, useState } from "react";
 import { LuClipboardList } from "react-icons/lu";
@@ -10,7 +10,7 @@ import Loader from "../components/shared/Loader";
 
 const MemberList = ({}) => {
     const [posts, setPosts] = useState([]);
-    const [loading, setLoading] = useState(false); //로딩페이지 바꿔야함
+    const [loading, setLoading] = useState(false); 
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage, setPostsPerPage] = useState(10);
 
@@ -42,7 +42,25 @@ const MemberList = ({}) => {
     const paginate = pageNumber => setCurrentPage(pageNumber);
 
     
-    const headers = ["회원번호", "이름", "이메일", "주소", "승인/거절"]; 
+    const headers = ["회원번호", "이름", "이메일", "주소"]; // Headers array
+
+    // header에 따로 데이터 불러오기
+    const extractColumns = (item) => {
+        return headers.map(header => {
+            switch (header) {
+                case "회원번호":
+                    return item.id;
+                case "이름":
+                    return item.name;
+                case "이메일":
+                    return item.email;
+                case "주소":
+                    return item.body; 
+                default:
+                    return ''; 
+            }
+        });
+    };
 
     return (
         <div className="container max-w-screen-lg mx-auto">
@@ -63,7 +81,7 @@ const MemberList = ({}) => {
                     </div>
                 </form>
             </div>
-            <Table headers={headers} data={currentPosts} loading={loading} />
+            <Table headers={headers} data={currentPosts} loading={loading} extractColumns={extractColumns} />
             <Pagination postsPerPage={postsPerPage} totalPosts={posts.length} paginate={paginate}/>
         </div>
     );
