@@ -4,7 +4,7 @@ import TableRow from './TableRow';
 
 const Table = ({ headers, data, extractColumns }) => {
     return (
-        <div className="overflow-auto max-w-full ">
+        <div className="overflow-auto max-w-full m-4">
             <table className="rounded-t-[20px] overflow-hidden min-w-full table-auto text-gray-800">
                 <thead className="justify-between text-left">
                     <tr className="bg-peach-fuzz bg-opacity-50 text-center ">

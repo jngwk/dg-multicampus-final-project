@@ -66,16 +66,18 @@ const PTMemberList = () => {
 
     return (
         <div className="container max-w-screen-lg mx-auto">
-            <div className="flex items-center pb-4">
-                <LuClipboardList color="#ffbe98" size="56" />
-                <span className="font-semibold text-2xl mx-3"> PT 회원 관리</span>
+            <div className="flex ">
+                <div className="flex items-center">
+                    <LuClipboardList color="#ffbe98" size="56" />
+                    <span className="font-semibold text-2xl mx-3"> PT 회원 관리</span>
+                </div>
 
                 <form className="w-1/4 ml-auto">
                     <label htmlFor="default-search" className="mb-4 text-sm font-medium text-grayish-red sr-only">Search</label>
-                    <div className="relative">
+                    <div className="relative top-7 end-6 ">
                         <input type="text" id="default-search" className="block w-full p-2 ps-2 text-xs text-gray-900 border-gray-300 border-b-2 focus:outline-none" placeholder="이름, 이메일, 주소를 검색해주세요." required />
 
-                        <div className="absolute inset-y-0 end-2 flex items-center ps-3">
+                        <div className="absolute inset-y-0 end-2  flex items-center ps-3">
                             <button>
                                 <CiSearch className="w-4 h-4" />
                             </button>
