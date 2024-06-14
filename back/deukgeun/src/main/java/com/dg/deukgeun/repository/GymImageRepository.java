@@ -9,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.dg.deukgeun.entity.GymImage;
 
 public interface GymImageRepository extends JpaRepository<GymImage,String>{
-    List<GymImage> findByGymId(Integer gymId);
+    public List<GymImage> findByGymId(Integer gymId);
 }
