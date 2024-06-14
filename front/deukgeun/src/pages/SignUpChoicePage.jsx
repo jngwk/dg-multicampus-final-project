@@ -1,5 +1,4 @@
 import React from "react";
-import Layout from "../components/shared/Layout";
 import Button from "../components/shared/Button";
 import useCustomNavigate from "../hooks/useCustomNavigate";
 
@@ -7,7 +6,8 @@ const SignUpChoicePage = () => {
   const customNavigate = useCustomNavigate();
 
   return (
-    <div className="w-full translate-y-1/2 flex justify-center items-center">
+    // translate-y-1/2
+    <div className="w-full flex justify-center items-center">
       <div className="w-96 h-auto flex flex-col justify-center items-center">
         <div className="mb-5 text-xl font-medium">
           운동하러 오셨나요? <span className="text-2xl ml-3">💪</span>

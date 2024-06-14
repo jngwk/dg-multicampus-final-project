@@ -26,28 +26,29 @@ public class WorkoutController {
 
     // @GetMapping("/{workoutId}")
     // public WorkoutDTO get(@PathVariable(name="workoutId") Integer workoutId){
-    //     return service.get(workoutId);
+    // return service.get(workoutId);
     // }
 
     @GetMapping("/{yearMonth}/{workoutSessionId}")
-    public List<WorkoutDTO> get(@PathVariable(name="workoutSessionId") Integer workoutSessionId){
+    public List<WorkoutDTO> get(@PathVariable(name = "workoutSessionId") Integer workoutSessionId) {
         return service.getByWorkoutSessionId(workoutSessionId);
     }
 
-    //workout 수정
+    // workout 수정
     @PutMapping("/{yearMonth}/{workoutSessionId}/{workoutId}")
-    public Map<String,String> modify(@PathVariable(name = "workoutId") Integer workoutId, @RequestBody WorkoutDTO workoutDTO){
+    public Map<String, String> modify(@PathVariable(name = "workoutId") Integer workoutId,
+            @RequestBody WorkoutDTO workoutDTO) {
         workoutDTO.setWorkoutId(workoutId);
-        log.info("Modify: "+workoutDTO);
+        log.info("Modify: " + workoutDTO);
         service.modify(workoutDTO);
-        return Map.of("RESULT","SUCCESS");
+        return Map.of("RESULT", "SUCCESS");
     }
 
-    //workout 삭제
+    // workout 삭제
     @DeleteMapping("/{yearMonth}/{workoutSessionId}/{workoutId}")
-    public Map<String,String> remove(@PathVariable(name="workoutId")Integer workoutId){
-        log.info("Remove: "+workoutId);
+    public Map<String, String> remove(@PathVariable(name = "workoutId") Integer workoutId) {
+        log.info("Remove: " + workoutId);
         service.remove(workoutId);
-        return Map.of("RESULT","SUCCESS");
+        return Map.of("RESULT", "SUCCESS");
     }
 }

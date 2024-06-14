@@ -4,6 +4,8 @@
 
 package com.dg.deukgeun.dto.gym;
 
+import com.dg.deukgeun.dto.UserRole;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -31,8 +33,7 @@ public class GymSignUpDTO {
 
     private String detailAddress;
 
-    @NotBlank(message = "카테고리는 필수 입력 항목입니다.")
-    private String category;
+    private UserRole role;
 
     @NotBlank(message = "헬스장 이름은 필수 입력 항목입니다.")
     private String gymName;
@@ -42,8 +43,6 @@ public class GymSignUpDTO {
 
     @NotBlank(message = "전화번호는 필수 입력 항목입니다.")
     private String phoneNumber;
-
-    private Integer approval;
     
     private String operatingHours;
     private String prices;

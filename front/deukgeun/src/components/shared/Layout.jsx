@@ -5,7 +5,9 @@ const Layout = ({ children }) => {
   return (
     <div>
       <Header />
-      <div className="relative min-h-[90dvh] w-5/6 mx-auto">{children}</div>
+      <div className="flex justify-center p-10 min-h-[50dvh] w-5/6 mx-auto">
+        {children}
+      </div>
     </div>
   );
 };

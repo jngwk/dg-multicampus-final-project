@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Layout from "../components/shared/Layout";
 import CalendarInputForm from "../components/calendar/CalendarInputForm";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -15,38 +14,52 @@ import {
   deleteWorkoutSession,
   getWorkoutSessions,
 } from "../api/workoutSessionApi";
+import Fallback from "../components/shared/Fallback";
 
 // TODO 트레이나/일반 구분하기
+// security 설정해서 바꾸기
 const CalendarPage = () => {
-  // TODO TOKEN 에서 받아오기
-  const userId = 1;
   const [events, setEvents] = useState(() => {
     // TODO DB에 저장된 값들 불러와서 캘린더에 추가
     // local storage에서 저장된 이벤트 받아오기
-    const savedEvents = localStorage.getItem("events");
-    return savedEvents ? JSON.parse(savedEvents) : [];
+    // const savedEvents = localStorage.getItem("events");
+    // return savedEvents ? JSON.parse(savedEvents) : [];
   });
+
   const [selectedDate, setSelectedDate] = useState(
     // default를 오늘 날짜로 설정
     new Date().toISOString().split("T")[0]
-    // TODO custom hook으로 사용할지 고민
   );
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isInputFormVisible, setIsInputFormVisible] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   // TODO DB에 새로운 event 저장
   // addEvent로 event 추가 후 events 업데이트가 되면 localStorage에 저장
   useEffect(() => {
-    localStorage.setItem("events", JSON.stringify(events));
-    console.log("Events updated: ", events);
-  }, [events]);
+    // TODO loadEvents
+    const loadEvents = async () => {
+      try {
+        const result = await getWorkoutSessions(selectedDate, selectedDate);
+        console.log("workoutSessionFetch results", result);
+        const newEvents = result.map((session) =>
+          formatSessionToEvent(session)
+        );
+        setEvents(newEvents);
+      } catch (error) {
+        setError("Failed to fetch workout sessions");
+        console.error("Error fetching workout sessions:", error);
+      }
+    };
+    loadEvents();
+    setLoading(false);
+  }, []);
 
   const addEvent = async (formValues) => {
     // events에 추가
     try {
-      // userId 1인 회원 만들고 테스트
-      const result = await registerWorkoutSession(userId, formValues);
+      const result = await registerWorkoutSession(formValues);
       console.log(result);
       const newEvent = formatFormValues(formValues, result.workoutSessionId);
       setEvents((prevEvents) => [...prevEvents, newEvent]);
@@ -59,15 +72,16 @@ const CalendarPage = () => {
   };
 
   const updateEvent = async (formValues) => {
+    console.log(selectedEvent);
     try {
       // userId 1인 회원 만들고 테스트
-      const result = await modifyWorkoutSession(
-        userId,
-        formValues,
-        selectedEvent.id
-      );
+      const result = await modifyWorkoutSession(formValues, selectedEvent.id);
       console.log(result);
       const updatedEvent = formatFormValues(formValues, selectedEvent.id);
+
+      setSelectedEvent(updatedEvent);
+      // console.log("@@@@CHECK", updatedEvent);
+
       const updatedEvents = events.map((event) =>
         event.id == selectedEvent.id ? updatedEvent : event
       );
@@ -100,10 +114,9 @@ const CalendarPage = () => {
   const handleDatesSet = async (info) => {
     const startDate = info.startStr.split("T")[0];
     const endDate = info.endStr.split("T")[0];
-
-    console.log(startDate);
+    console.log("calling data from range: ", startDate, endDate);
     try {
-      const result = await getWorkoutSessions(startDate, endDate, userId);
+      const result = await getWorkoutSessions(startDate, endDate);
       console.log("Get result: ", result);
       const newEvents = result.map((session) => formatSessionToEvent(session));
       setEvents(newEvents);
@@ -132,6 +145,8 @@ const CalendarPage = () => {
 
   // 이벤트 드래그 & 드롭시 날짜 및 시간 변경
   const handleEventDrop = (info) => {
+    setSelectedEvent(info.event);
+    console.log(selectedEvent);
     const updatedEvents = events.map((event) => {
       if (event.id == info.event.id) {
         console.log(info.event);
@@ -145,18 +160,17 @@ const CalendarPage = () => {
 
         const updatedFormValues = {
           ...event.extendedProps,
-          date: startDate,
+          workoutDate: startDate,
           startTime: startTime,
           endDate: endDate,
           endTime: endTime,
         };
 
-        setSelectedEvent(info.event);
-
         updateEvent(updatedFormValues);
 
         return formatFormValues(updatedFormValues, event.id);
       }
+
       return event;
     });
 
@@ -206,13 +220,16 @@ const CalendarPage = () => {
     return {
       id: id,
       title: formValues.content,
-      start: new Date(`${formValues.date}T${formValues.startTime}`),
-      end: new Date(`${formValues.date}T${formValues.endTime}`),
+      start: new Date(`${formValues.workoutDate}T${formValues.startTime}`),
+      end: new Date(`${formValues.workoutDate}T${formValues.endTime}`),
       color: "#ffbe98",
       extendedProps: formValues,
     };
   };
 
+  if (loading) {
+    return <Fallback />;
+  }
   return (
     <>
       <div className="xl:w-8/12 p-8 slide">

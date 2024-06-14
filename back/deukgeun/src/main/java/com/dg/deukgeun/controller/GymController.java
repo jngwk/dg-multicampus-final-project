@@ -163,4 +163,10 @@ public class GymController {
         return Map.of("RESULT","SUCCESS");
     }
     //gachudon brench end
+    // // GYM 로그인
+    // @PostMapping("/login")
+    // public ResponseDTO<?> login(@RequestBody LoginDTO requestBody) {
+    //     ResponseDTO<?> result = gymService.login(requestBody);
+    //     return result;
+    // }
 }

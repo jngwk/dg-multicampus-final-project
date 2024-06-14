@@ -32,8 +32,8 @@ public class Gym {
     private String operatingHours;
     private String prices;
     private String introduce;
-    private Integer approval;
-
+    
+    
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -48,6 +48,5 @@ public class Gym {
         this.operatingHours = dto.getOperatingHours();
         this.prices = dto.getPrices();
         this.introduce = dto.getIntroduce();
-        this.approval = dto.getApproval();
     }
 }

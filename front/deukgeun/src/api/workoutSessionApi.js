@@ -1,13 +1,13 @@
-import axios from "axios";
+import axiosInstance from "./axiosInstance";
+
 // export const API_SERVER_HOST = "http://localhost:8282";
-// const prefix = `${API_SERVER_HOST}/api`;
+// const prefix = `${API_SERVER_HOST}/api/workoutSession`;
 const prefix = `/api/workoutSession`; // proxy 사용
 
-export const registerWorkoutSession = async (userId, event) => {
+export const registerWorkoutSession = async (event) => {
   try {
-    const response = await axios.post(`${prefix}/register`, {
-      userId,
-      workoutDate: event.date,
+    const res = await axiosInstance.post(`${prefix}/register`, {
+      workoutDate: event.workoutDate,
       content: event.content,
       bodyWeight: event.bodyWeight,
       memo: event.memo,
@@ -15,19 +15,17 @@ export const registerWorkoutSession = async (userId, event) => {
       endTime: event.endTime,
       workouts: event.workouts,
     });
-    return response.data;
+    return res.data;
   } catch (error) {
     throw new Error("Register workout session failed...");
   }
 };
 
-export const modifyWorkoutSession = async (userId, event, eventId) => {
-  console.log("Updating event: ", event);
+export const modifyWorkoutSession = async (event, eventId) => {
   try {
-    const response = await axios.put(`${prefix}/modify/${eventId}`, {
+    const res = await axiosInstance.put(`${prefix}/modify/${eventId}`, {
       workoutSessionId: eventId,
-      userId: userId,
-      workoutDate: event.date,
+      workoutDate: event.workoutDate,
       content: event.content,
       bodyWeight: event.bodyWeight,
       memo: event.memo,
@@ -35,27 +33,27 @@ export const modifyWorkoutSession = async (userId, event, eventId) => {
       endTime: event.endTime,
       workouts: event.workouts,
     });
-    return response.data;
+    return res.data;
   } catch (error) {
-    throw new Error("Register workout session failed...");
+    throw new Error("Modify workout session failed...");
   }
 };
 
 export const deleteWorkoutSession = async (eventId) => {
   try {
-    const response = await axios.delete(`${prefix}/delete/${eventId}`);
-    return response.data;
+    const res = await axiosInstance.delete(`${prefix}/delete/${eventId}`);
+    return res.data;
   } catch (error) {
     throw new Error("Delete workout session failed...");
   }
 };
 
-export const getWorkoutSessions = async (startDate, endDate, userId) => {
+export const getWorkoutSessions = async (startDate, endDate) => {
   try {
-    const response = await axios.get(
-      `${prefix}/get/${startDate}/${endDate}/${userId}`
+    const res = await axiosInstance.get(
+      `${prefix}/get/${startDate}/${endDate}`
     );
-    return response.data;
+    return res.data;
   } catch (error) {
     throw new Error("Get workout sessions failed...");
   }
