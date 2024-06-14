@@ -114,9 +114,9 @@ const ChatTest = () => {
       stompClient.publish({
         destination: "/pub/chat.sendMessage",
         body: JSON.stringify(messageToSend),
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        // headers: {
+        //   Authorization: `Bearer ${token}`,
+        // },
       });
       setChatMessage("");
     }
