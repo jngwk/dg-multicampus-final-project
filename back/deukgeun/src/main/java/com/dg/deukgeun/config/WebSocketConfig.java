@@ -77,6 +77,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Token not null");
                         token = token.substring(7);
                         if (jwtTokenProvider.validateToken(token)) {
+                            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 들어왔다", token);
                             Integer userId = jwtTokenProvider.getUserIdFromToken(token);
                             CustomUserDetails customUserDetails = (CustomUserDetails) customUserDetailsService
                                     .loadUserById(userId);
@@ -84,6 +85,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                                     customUserDetails, null, customUserDetails.getAuthorities());
                             SecurityContextHolder.getContext().setAuthentication(auth);
                             accessor.setUser(auth);
+                            log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Auth", auth.toString().length());
                         }
                     }
                 }
@@ -94,7 +96,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             // private String resolveTokenFromCookies(StompHeaderAccessor accessor) {
             // List<String> cookieHeaders = accessor.getNativeHeader("cookie");
             // if (cookieHeaders != null) {
-            // log.info("@@@@@@@@@@@@@@@@@@@@ Cookie가 있어 쉬발!!");
             // for (String header : cookieHeaders) {
             // String[] cookies = header.split("; ");
             // for (String cookie : cookies) {
