@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +22,7 @@ import com.dg.deukgeun.service.WorkoutSessionService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -43,7 +43,8 @@ public class WorkoutSessionController {
     @GetMapping("/get/{startDate}/{endDate}/{userId}")
     public List<WorkoutSessionDTO> get(@PathVariable(name = "startDate") String startDate,
             @PathVariable(name = "endDate") String endDate,
-            @PathVariable(name = "userId") Integer userId) {
+            @PathVariable(name = "userId") Integer userId)
+    {
         log.info("startDate: " + startDate);
         log.info("endDate: " + endDate);
         // String[] days = yearMonth.split("-");
@@ -59,6 +60,12 @@ public class WorkoutSessionController {
         return service.get(userId, LocalDate.parse(startDate), LocalDate.parse(endDate));
     }
 
+    //workoutSession은 불러왔으니, 어떤 workoutSession을 클릭하면, 그 Id 정보를 가지고 있는 workout만 따로 불러옴 미리 부른 workoutSession + 지금 부른 workout으로 우측 form 박스를 채워주시면 됩니다.
+    @GetMapping("/get/{startDate}/{endDate}/{userId}/{workoutSessionId}")
+    public List<WorkoutDTO> getMethodName(@PathVariable(name = "workoutSessionId") Integer workoutSessionId) {
+        return workoutService.getByWorkoutSessionId(workoutSessionId);
+    }
+    
     /*
      * 데이터를 다음과 같이 받았다고 가정
      * 
