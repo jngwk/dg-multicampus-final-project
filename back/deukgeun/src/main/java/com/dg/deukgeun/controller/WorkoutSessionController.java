@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dg.deukgeun.dto.WorkoutDTO;
 import com.dg.deukgeun.dto.WorkoutSessionDTO;
+import com.dg.deukgeun.dto.WorkoutSessionReqeustDTO;
 import com.dg.deukgeun.entity.WorkoutSessionRequest;
 import com.dg.deukgeun.service.WorkoutService;
 import com.dg.deukgeun.service.WorkoutSessionService;
@@ -78,6 +80,7 @@ public class WorkoutSessionController {
     @PostMapping("/register")
     public Map<String, Integer> register(@RequestBody WorkoutSessionRequest workoutSessionRequest) {
         log.info(workoutSessionRequest);
+
         WorkoutSessionDTO workoutSessionDTO = new WorkoutSessionDTO();
         workoutSessionDTO.setBodyWeight(workoutSessionRequest.getBodyWeight());
         workoutSessionDTO.setContent(workoutSessionRequest.getContent());
@@ -100,16 +103,67 @@ public class WorkoutSessionController {
     }
 
     // workoutSession 수정
+    /* 프론트에서 다음과 같이 데이터를 받아서 workoutSession을 수정 (형태는 formdata 혹은 Json)
+     * mapping value로 workoutSessionId
+     * {
+     *  ptSessionId : Integer,
+     *  workoutDate : Date,
+     *  content : String,
+     *  bodyWeight : Double,
+     *  memo : String,
+     *  startTime : Time,
+     *  endTime Time,
+     *  workout : [
+     *      {workoutName, workoutSet, workoutRep, workoutWeight},
+     *      {workoutName, workoutSet, workoutRep, workoutWeight},
+     *      {workoutName, workoutSet, workoutRep, workoutWeight},...
+     * ]
+     * }
+     * 
+     * workoutSession은 workoutSessionId를 기준으로 값을 수정하면 됨
+     * workout의 경우 workoutSessionId를 가지고 있는 모든 workout을 삭제하고, 입력받은 workout으로 새로 create.
+     * userId의 경우, workoutSessionId가 PK로서 고유성을 보장하므로, 입력받지 않는 것이 security가 좋을듯. 수정하는 단계라면 이미 저장되어 있기도 하고.
+    */
     @PutMapping("/modify/{workoutSessionId}")
-    public Map<String, String> modify(@PathVariable(name = "workoutSessionId") Integer workoutSessionId,
-            @RequestBody WorkoutSessionDTO workoutSessionDTO) {
+    public Map<String, String> modify(@PathVariable(name = "workoutSessionId") Integer workoutSessionId, @RequestBody WorkoutSessionReqeustDTO workoutSessionReqeustDTO) {
+        
+        WorkoutSessionDTO workoutSessionDTO = new WorkoutSessionDTO();
+
         workoutSessionDTO.setWorkoutSessionId(workoutSessionId);
+        workoutSessionDTO.setBodyWeight(workoutSessionReqeustDTO.getBodyWeight());
+        workoutSessionDTO.setContent(workoutSessionReqeustDTO.getContent());
+        workoutSessionDTO.setEndTime(workoutSessionReqeustDTO.getEndTime());
+        workoutSessionDTO.setMemo(workoutSessionReqeustDTO.getMemo());
+        workoutSessionDTO.setPtSessionId(workoutSessionReqeustDTO.getPtSessionId());
+        workoutSessionDTO.setStartTime(workoutSessionReqeustDTO.getStartTime());
+        workoutSessionDTO.setWorkoutDate(workoutSessionReqeustDTO.getWorkoutDate());
+        
         log.info("Modify: " + workoutSessionDTO);
         service.modify(workoutSessionDTO);
+
+        workoutService.removeByWorkoutSessionId(workoutSessionId);
+        List<WorkoutDTO> workoutList = workoutSessionReqeustDTO.getWorkouts();
+        for(int i=0;i<workoutList.size();i++){
+            workoutList.get(i).setWorkoutSessionId(workoutSessionId);
+        }
+        workoutService.insertList(workoutList);
         return Map.of("RESULT", "SUCCESS");
     }
 
     // workoutSession 삭제
+    // workoutSession 만 삭제한다. workout의 경우 mysql 내부 트리거를 사용하면 자동으로 삭제되어 fk 의존성을 고려하지 않아도 된다.
+    /* mysql 트리거 쿼리. 아래의 쿼리를 mysql 워크벤치에 입력하고 show triggers 로 잘 적용되었는 지 확인
+        delimiter $$
+            create trigger delete_workout
+            before delete on workout_session
+            for each row
+            begin
+                declare workoutSessionId_old int;
+                set workoutSessionId_old = old.workout_session_id;
+                delete from workout where workout_session_id = workoutSessionId_old;
+            end $$
+        delimiter ;
+    */
     @DeleteMapping("/delete/{workoutSessionId}")
     public Map<String, String> remove(@PathVariable(name = "workoutSessionId") Integer workoutSessionId) {
         log.info("Remove: " + workoutSessionId);

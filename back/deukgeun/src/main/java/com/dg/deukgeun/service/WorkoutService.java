@@ -65,4 +65,7 @@ public class WorkoutService {
     public void remove(Integer workoutId){
         workoutRepository.deleteById(workoutId);
     }
+    public void removeByWorkoutSessionId(Integer workoutSessionId){
+        workoutRepository.deleteByWorkoutSessionId(workoutSessionId);
+    }
 }

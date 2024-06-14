@@ -57,6 +57,7 @@ public class WorkoutSessionService {
         workoutSession.setUserId(workoutSessionDTO.getUserId());
         workoutSession.setWorkoutDate(workoutSessionDTO.getWorkoutDate());
         workoutSession.setWorkoutSessionId(workoutSessionDTO.getWorkoutSessionId());
+        workoutSessionRepository.save(workoutSession);
     }
 
     public void remove(Integer workoutSessionId){
