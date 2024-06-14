@@ -1,17 +1,13 @@
+
 import axios from "axios";
 
-// export const API_SERVER_HOST = "http://localhost:8282";
-// const prefix = `${API_SERVER_HOST}/api/membership`;
-const prefix = `/api/membership`; // proxy 사용
+export const API_SERVER_HOST = "http://localhost:8282";
+const prefix = `${API_SERVER_HOST}/api`;
+// const prefix = `/api`; // proxy 사용
 
-export const getMembershipStats = async () => {
+export const getChart = async () => {
   try {
-    const token = localStorage.getItem('authToken');
-    const res = await axios.get(`${prefix}/stats`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const res = await axios.get(`${prefix}/chart`);
     return res.data;
 
   } catch (error) {

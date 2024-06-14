@@ -1,47 +1,68 @@
 import React, { useEffect, useState } from 'react';
-import { Bar } from 'react-chartjs-2';
-import { getMembershipStats } from '../../api/chartApi';
-import { useAuth } from '../../context/AuthContext';
+import { Doughnut } from 'react-chartjs-2';
 
-const AddressChart = () => {
-  const { user } = useAuth();
+function AddressChart({ data }) {
   const [chartData, setChartData] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getMembershipStats(user.token);
-        const addressCounts = data.reduce((acc, item) => {
-          acc[item.user.address] = (acc[item.user.address] || 0) + 1;
-          return acc;
-        }, {});
+        // Example: Extracting data for AddressChart
+        const labels = Object.keys(data);
+        const values = Object.values(data);
 
         setChartData({
-          labels: Object.keys(addressCounts),
+          labels: labels,
           datasets: [
             {
-              label: 'Addresses',
-              data: Object.values(addressCounts),
-              borderColor: 'rgba(75,192,192,1)',
-              backgroundColor: 'rgba(75,192,192,0.2)',
-              fill: true,
+              label: 'Users by Address',
+              data: values,
+              backgroundColor: [
+                '#FF6384',
+                '#36A2EB',
+                '#FFCE56',
+                '#8A2BE2',
+                '#00FF7F',
+                '#FF4500',
+              ],
+              hoverBackgroundColor: [
+                '#FF6384',
+                '#36A2EB',
+                '#FFCE56',
+                '#8A2BE2',
+                '#00FF7F',
+                '#FF4500',
+              ],
             },
           ],
         });
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
+        setError(error);
+        setLoading(false);
       }
     };
 
     fetchData();
-  }, [user.token]);
+  }, [data]);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error.message}</p>;
+  }
 
   return (
     <div className="bg-white p-4 rounded shadow">
       <h1 className="text-xl font-bold mb-4">Address Chart</h1>
-      <Bar data={chartData} />
+      <Doughnut data={chartData} />  {/* Doughnut chart rendering */}
     </div>
   );
-};
+}
 
 export default AddressChart;

@@ -23,6 +23,7 @@ export const AuthProvider = ({ children }) => {
     const currentPath = window.location.pathname;
     setUser(null);
     sessionStorage.removeItem("user");
+    localStorage.removeItem("authToken");
     console.log("logged out");
     console.log(currentPath);
   };

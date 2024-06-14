@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TextArea from "../components/shared/TextArea";
 import Input from "../components/shared/Input";
 import Button from "../components/shared/Button";
 import { useAuth } from "../context/AuthContext";
 import useQnaValidation from "../hooks/useQnaValidation";
 import { registerInquery } from "../api/qnaApi";
+import { jwtDecode } from "jwt-decode";
 
 const initState = {
   userName: "",
@@ -17,6 +18,22 @@ const QnaForm = () => {
   const { user } = useAuth();
   const [formValues, setFormValues] = useState(initState);
   const { errors, validateForm } = useQnaValidation();
+  const [decodedToken, setDecodedToken] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      const decoded = jwtDecode(token);
+      setDecodedToken(decoded);
+
+      // Automatically populate formValues with decoded token info
+      setFormValues({
+        ...formValues,
+        userName: decoded.userName,
+        email: decoded.email,
+      });
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,13 +44,23 @@ const QnaForm = () => {
   };
 
   const handleSubmit = async () => {
-    if (!validateForm(formValues)) return;
-
+    console.log("Handling submit...");
+    console.log("User:", user); // Ensure user is correctly defined
+  
+    if (!validateForm(formValues)) {
+      console.log("Form validation failed:", errors); // Check validation errors
+      return;
+    }
+  
     try {
-      const formData = { ...formValues, regDate: new Date().toISOString() };
-      console.log(formData);
+      const formData = {
+        ...formValues,
+        userId: decodedToken && user ? decodedToken.sub : null, // Adjust userId assignment conditionally
+        regDate: new Date().toISOString().split('T')[0],
+      };
+      console.log("Form data:", formData);
       const res = await registerInquery(formData);
-      console.log(res);
+      console.log("Response:", res);
     } catch (error) {
       console.error("Error registering form data", error);
       throw error;

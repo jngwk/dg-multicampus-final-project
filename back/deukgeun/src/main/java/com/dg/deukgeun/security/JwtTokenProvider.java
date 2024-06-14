@@ -32,7 +32,7 @@ public class JwtTokenProvider {
      * @param duration 토큰 유효 기간(초)
      * @return 생성된 JWT 토큰
      */
-    public String createToken(Integer userId, String email, UserRole role,  String userName, int duration) {
+    public String createToken(Integer userId, String email, UserRole role, String userName, int duration) {
         try {
             Instant now = Instant.now();
             Instant expiryTime = now.plusSeconds(duration);
@@ -164,8 +164,6 @@ public class JwtTokenProvider {
             return null;
         }
     }
-    
-
 
     /**
      * JWT 토큰에서 userName을 추출하는 메서드
@@ -180,6 +178,6 @@ public class JwtTokenProvider {
         } catch (Exception e) {
             System.out.println("JWT 토큰에서 유저이름 추출 중 오류 발생: " + e.getMessage());
             return null;
-        } 
+        }
     }
 }
