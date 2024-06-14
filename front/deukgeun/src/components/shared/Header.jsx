@@ -5,10 +5,11 @@ import { useAuth } from "../../context/AuthContext";
 import ProfileDropdown from "../account/ProfileDropdown";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import Fallback from "./Fallback";
 
 // console.log(logo);
 export default function Header() {
-  const { user } = useAuth();
+  const { userData, loading } = useAuth();
   const location = useLocation();
   const { isModalVisible, toggleModal } = useModal();
   const [isProfileDropdownVisible, setIsProfileDropdownVisible] =
@@ -43,6 +44,10 @@ export default function Header() {
     // console.log(isProfileDropdownVisible);
   };
 
+  if (loading) {
+    return <Fallback />;
+  }
+
   return (
     // 헤더 중앙 정렬
     <div className="flex justify-center items-center">
@@ -55,7 +60,7 @@ export default function Header() {
         />
         <div className="flex gap-4 relative">
           <button onClick={() => navigate("/qna")}>문의하기</button>
-          {user ? (
+          {sessionStorage.getItem("isLoggedIn") ? (
             <>
               <button ref={badge} onClick={toggleProfileDropdown}>
                 프로필 뱃지
@@ -64,7 +69,7 @@ export default function Header() {
               {/* User type 지정해서 안에 메뉴 변경 */}
               <div ref={dropdown} className="absolute right-0 top-10">
                 {isProfileDropdownVisible ? (
-                  <ProfileDropdown type="user" />
+                  <ProfileDropdown type="user" userData={userData} />
                 ) : (
                   ""
                 )}

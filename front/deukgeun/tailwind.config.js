@@ -19,9 +19,14 @@ module.exports = {
           "0%, 100%": { transform: "rotate(0deg)" },
           "50%": { transform: "rotate(-15deg)" },
         },
+        fadeInOut: {
+          "0%, 100%": { opacity: 0.5 },
+          "50%": { opacity: 1 },
+        },
       },
       animation: {
         wave: "wave 0.5s ease-in-out infinite",
+        fadeInOut: "fadeInOut 2s infinite",
       },
     },
   },

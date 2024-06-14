@@ -14,32 +14,31 @@ const MemberList = ({}) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage, setPostsPerPage] = useState(10);
 
+  // 임시 더미데이터
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setLoading(true);
+      const res = await axios.get(
+        "https://jsonplaceholder.typicode.com/comments"
+      );
+      setPosts(res.data);
+      setLoading(false);
+    };
 
-    // 임시 더미데이터
-    useEffect(() => {
+    fetchPosts();
+  }, []);
 
-        const fetchPosts = async () => {
-            setLoading(true);
-            const res = await axios.get('https://jsonplaceholder.typicode.com/comments');
-            setPosts(res.data);
-            setLoading(false);
-        }
+  if (loading) {
+    return <Loader />;
+  }
 
-        fetchPosts();
-    }, []);
+  //get current posts
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
 
-
-    if(loading) {
-        return <Loader/>;
-    }
-
-    //get current posts
-    const indexOfLastPost =  currentPage * postsPerPage;
-    const indexOfFirstPost = indexOfLastPost - postsPerPage;
-    const currentPosts = posts.slice(indexOfFirstPost,indexOfLastPost);
-
-    //Change page
-    const paginate = pageNumber => setCurrentPage(pageNumber);
+  //Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     
     const headers = ["회원번호", "이름", "이메일", "주소"]; // Headers array

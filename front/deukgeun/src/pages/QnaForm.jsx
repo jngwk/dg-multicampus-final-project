@@ -5,6 +5,7 @@ import Button from "../components/shared/Button";
 import { useAuth } from "../context/AuthContext";
 import useQnaValidation from "../hooks/useQnaValidation";
 import { registerInquery } from "../api/qnaApi";
+import Fallback from "../components/shared/Fallback";
 
 const initState = {
   userName: "",
@@ -14,7 +15,7 @@ const initState = {
 };
 
 const QnaForm = () => {
-  const { user } = useAuth();
+  const { loading } = useAuth();
   const [formValues, setFormValues] = useState(initState);
   const { errors, validateForm } = useQnaValidation();
 
@@ -40,6 +41,10 @@ const QnaForm = () => {
     }
   };
 
+  if (loading) {
+    return <Fallback />;
+  }
+
   return (
     <div className="mx-auto xl:grid xl:grid-cols-2 xl:w-[1000px] flex-col flex justify-center items-center">
       <div className="w-[400px] p-11">
@@ -58,7 +63,7 @@ const QnaForm = () => {
       </div>
       <div className="w-[472px] h-fit mx-auto border-2 border-peach-fuzz rounded-md p-9">
         <span className="block text-5xl mb-4">🙋‍♀️</span>
-        {!user && (
+        {!sessionStorage.getItem("isLoggedIn") && (
           <div className="flex justify-between w-[400px]">
             <Input
               label="이름"
