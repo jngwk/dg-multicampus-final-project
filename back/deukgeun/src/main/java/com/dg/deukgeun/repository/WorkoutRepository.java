@@ -7,5 +7,6 @@ import java.util.List;
 
 
 public interface WorkoutRepository extends JpaRepository<Workout,Integer> {
-    List<Workout> findByWorkoutSessionId(Integer workoutSessionId);
+    public List<Workout> findByWorkoutSessionId(Integer workoutSessionId);
+    public void deleteByWorkoutSessionId(Integer workoutSessionId);
 }
