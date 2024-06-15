@@ -1,9 +1,8 @@
 //센터별 회원List 페이지
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef} from "react";
 import { LuClipboardList } from "react-icons/lu";
 import { HiOutlineSpeakerphone } from "react-icons/hi";
-import { BsCaretDownFill, BsCaretUp  } from "react-icons/bs";
 import axios from "axios";
 import Table from "../components/shared/Table";
 import Pagination from "../components/shared/Pagination";
@@ -15,8 +14,27 @@ const CenterMemberList = ({}) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage, setPostsPerPage] = useState(10);
 
-    //dropdown메뉴
-    const [isDrop, setIsDrop] = useState(false);
+    //공지사항
+    const [idx, setIdx] = useState(0);
+    const idxRef = useRef(0); //current값 증가
+
+    const eventDetails = [
+        { no: 1, title: "첫 번째 이벤트 내용 - Line 1" },
+        { no: 2, title: "두 번째 이벤트 내용 - Line 2" },
+        { no: 3, title: "세 번째 이벤트 내용 - Line 3" },
+        { no: 4, title: "네 번째 이벤트 내용 - Line 4" },
+      ];
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            idxRef.current = (idxRef.current + 1) % eventDetails.length;
+            setIdx(idxRef.current);
+            console.log(idxRef.current);
+        }, 5000);
+    
+        return () => clearInterval(interval);
+    }, [eventDetails.length]);
+
 
   // 임시 더미데이터
   useEffect(() => {
@@ -77,30 +95,19 @@ const CenterMemberList = ({}) => {
 
                 <div className="flex justify-center items-center mt-4">  
                     <HiOutlineSpeakerphone className="w-7 h-7" color="FE8742" />
-                    <div className="relative flex flex-col items-center w-4/6  rounded-lg ml-4">
-                        <div className="cursor-pointer border-2 border-peach-fuzz font-semibold py-1 px-4 rounded-lg  w-full flex items-center  hover:border-l-peach-fuzz  justify-between tracking-wider active:border-grayish-red duration-200 active:font-semibold">
-                            첫 이벤트 내용
-                            <button onClick={() => setIsDrop((prev) => !prev)} className="">
-                            {!isDrop ? (
-                                <BsCaretDownFill className="h-8"/>
-                            ): (
-                                <BsCaretUp className="h-8"/>
-                            )}
-                            </button>
-                        </div>
-
-                        {isDrop && 
-                            <div className="absolute bg-white border-peach-fuzz border-2 roundedlg top-12 flex flex-col items-start rounded-lg w-full">
-                                {/* map 함수써서 데이터 가져오기 */}
-                                {headers.map((item, i ) => (
-                                    <div className="py-1 px-4 font-semibold flex w-full cursor-pointer rounded-r-lg border-l-transparent hover:border-l-peach-fuzz border-l-4 overflow-x-auto whitespace-nowrap scrollbar-hide " key={i}>
-                                        <h3>ㅇㄹㄷㄹㄷㄹㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷ</h3>
-                                        <h3>ㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷㄷ</h3>
-                                    </div>
-                                ))}
-                            </div>
-                        }
-                        
+                    <div className="relative items-center w-4/6 ml-4">
+                            <ul className=" notice overflow-hidden px-2 h-[40px] cursor-pointer rounded-lg border-2 border-peach-fuzz">
+                                <div className="transform transition-transform duration-1000 ease-in-out"
+                                   style={{ transform: `translateY(-${40 * idx}px)`}}>
+                                    {eventDetails.map((item, i) => {
+                                        return (
+                                            <li className="notice_content py-[4px] h-[40px] leading-3" key={i}>
+                                                <div className="notice_title whitespace-nowrap text-sm py-1 px-4 font-semibold border-l-peach-fuzz border-l-4">{item['title']}</div>
+                                            </li>
+                                        )
+                                    })}
+                                </div>
+                            </ul>
                     </div>
                 </div>
 
