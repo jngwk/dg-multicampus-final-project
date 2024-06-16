@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -73,7 +76,7 @@ public class UserService {
         return ResponseDTO.setSuccess("회원 생성에 성공했습니다.");
     }
 
-    public ResponseDTO<?> login(LoginDTO dto) {
+    public ResponseEntity<?> login(LoginDTO dto) {
         String email = dto.getEmail();
         String password = dto.getPassword();
 
@@ -81,22 +84,27 @@ public class UserService {
         try {
             user = userRepository.findByEmail(email).orElse(null);
             if (user == null) {
-                return ResponseDTO.setFailed("입력하신 이메일로 등록된 계정이 존재하지 않습니다.");
+                return ResponseEntity.badRequest().body("입력하신 이메일로 등록된 계정이 존재하지 않습니다.");
             }
 
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             String encodedPassword = user.getPassword();
 
             if (!passwordEncoder.matches(password, encodedPassword)) {
-                return ResponseDTO.setFailed("비밀번호가 일치하지 않습니다.");
+                return ResponseEntity.badRequest().body("비밀번호가 일치하지 않습니다.");
             }
         } catch (Exception e) {
-            return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
+            return ResponseEntity.badRequest().body("데이터베이스 연결에 실패하였습니다.");
         }
 
         user.setPassword("");
 
-        int exprTime = 3600; // 1h
+        /*
+         * 
+         * 쿠키 유효기간
+         * 
+         */
+        int exprTime = 24 * 3600; // 1h
         String token;
 
         try {
@@ -105,16 +113,27 @@ public class UserService {
                 throw new Exception("토큰 생성에 실패하였습니다.");
             }
         } catch (Exception e) {
-            return ResponseDTO.setFailed("토큰 생성에 실패하였습니다.");
+            return ResponseEntity.badRequest().body("토큰 생성에 실패하였습니다.");
         }
 
+        // 쿠키 생성
+        ResponseCookie cookie = ResponseCookie.from("accessToken", token)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(exprTime)
+                .sameSite("Strict")
+                .build();
+
+        // TODO gym 회원 토큰 관련 수정
         if (user.getRole() == UserRole.ROLE_GYM) {
             Gym gym = gymRepository.findByUser(user).orElse(null);
             GymLoginResponseDTO gymLoginResponseDto = new GymLoginResponseDTO(token, exprTime, user, gym);
-            return ResponseDTO.setSuccessData("로그인에 성공하였습니다.", gymLoginResponseDto);
+            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .body(new LoginResponseDTO(token));
         } else {
-            LoginResponseDTO loginResponseDto = new LoginResponseDTO(token, exprTime, user);
-            return ResponseDTO.setSuccessData("로그인에 성공하였습니다.", loginResponseDto);
+            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .body(new LoginResponseDTO(token));
         }
     }
 

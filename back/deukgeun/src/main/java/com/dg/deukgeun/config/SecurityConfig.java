@@ -1,7 +1,6 @@
 package com.dg.deukgeun.config;
 
 import java.io.IOException;
-import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,19 +11,18 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.dg.deukgeun.dto.UserRole;
 import com.dg.deukgeun.security.CustomUserDetails;
 import com.dg.deukgeun.security.CustomUserDetailsService;
 import com.dg.deukgeun.security.JwtTokenProvider;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -86,14 +84,19 @@ public class SecurityConfig {
                                                                                                               // Stateless로
                                                                                                               // 설정합니다.
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/user/login", "/api/user/signUp/**", "/api/user/sendCode", "/api/qna/**",
+                        .requestMatchers("/api/user/login", "/api/qna/**", "/api/user/logout").permitAll() // 로그인과 회원가입
+                                                                                                           // API는 인증 없이
+                                                                                                           // 접근 가능하도록
+                        // 설정합니다.
+                        .requestMatchers("/api/user/signUp/**", "/api/user/sendCode",
                                 "/api/gym/signup",
-                                "/api/user/sendCode", "/api/qna/**", "/api/gym/crNumberCheck")
-                        .permitAll() // 로그인과 회원가입 API는 인증 없이 접근 가능하도록 설정합니다.
-                        .requestMatchers("/api/user/userInfo").hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM", "ROLE_ADMIN")
+                                "/api/user/sendCode", "/api/gym/crNumberCheck")
+                        .anonymous() // 비회원만 가능
+                        .requestMatchers("/api/user/userInfo", "/ws/**").hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM")
                         .requestMatchers("/api/user/workoutSession").hasAnyAuthority("ROLE_GENERAL")
-                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN") // ADMIN 역할만 접근할 수 있도록 설정합니다.
+                        .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN") // ADMIN 역할만 접근할 수 있도록 설정합니다.
                         .requestMatchers("/api/membership/stats").hasAuthority("ROLE_GYM")
+
                         .anyRequest().authenticated()) // 그 외 모든 요청은 인증이 필요합니다
 
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider, customUserDetailsService),
@@ -119,7 +122,9 @@ public class SecurityConfig {
         @Override
         protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
                 @NonNull FilterChain filterChain) throws ServletException, IOException {
-            String token = resolveToken(request); // 요청에서 JWT 토큰을 추출합니다.
+            // String token = resolveToken(request); // 요청에서 JWT 토큰을 추출합니다.
+
+            String token = resolveToken(request);
 
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 Integer userId = jwtTokenProvider.getUserIdFromToken(token); // userId만 추출
@@ -167,10 +172,14 @@ public class SecurityConfig {
         }
 
         private String resolveToken(HttpServletRequest request) {
-            String jwtToken = request.getHeader("Authorization"); // Authorization 헤더에서 토큰을 가져옵니다.
+            Cookie[] cookies = request.getCookies(); // 쿠키에서 토큰 추출
 
-            if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
-                return jwtToken.substring(7); // "Bearer " 부분을 제거하고 토큰을 반환합니다.
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("accessToken".equals(cookie.getName())) {
+                        return cookie.getValue();
+                    }
+                }
             }
 
             return null;

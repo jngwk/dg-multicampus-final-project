@@ -1,30 +1,32 @@
-import React from "react";
-import { jwtDecode } from "jwt-decode";
+import React, { useEffect, useState } from "react";
 import useCustomNavigate from "../../hooks/useCustomNavigate";
 import { useAuth } from "../../context/AuthContext";
 import { useModal } from "../../hooks/useModal";
 import UserInfo from "../modals/UserInfo";
+import Loader from "../shared/Loader";
 
 const ProfileDropdown = ({ type }) => {
-  const token = localStorage.getItem('authToken'); // Get the token from localStorage
-
-  let userName = '';
-  if (token) {
-    const decodedToken = jwtDecode(token);
-    console.log(decodedToken);
-    userName = decodedToken.userName; // Adjust according to the actual structure of your token
-  }
-
+  const { userData, removeCookieAndLogOut, loading } = useAuth();
   const customNavigate = useCustomNavigate();
-  const { removeUserFromSession } = useAuth();
   const { isModalVisible, toggleModal } = useModal();
+
+  const handleLogout = () => {
+    removeCookieAndLogOut();
+    customNavigate("/");
+  };
 
   return (
     <div className="relative border border-gray-400 w-64 h-fit rounded-lg p-3 bg-white shadow-sm z-40">
       <div className="border-b-[0.5px] border-gray-400 p-2">
         {/* 사용자 이름 표시 */}
-        <span className="block">이름</span>
-        <span className="block text-gray-600">{userName}</span>
+        {loading ? (
+          <Loader />
+        ) : (
+          <>
+            <span className="block">{userData.userName}</span>
+            <span className="block text-gray-600">{userData.email}</span>
+          </>
+        )}
       </div>
       <div>
         <ul className="mt-4">
@@ -32,7 +34,11 @@ const ProfileDropdown = ({ type }) => {
             <img className="inline-block peer w-7 mx-3" src="" alt="icon" />
             <span>내 정보</span>
           </li>
-          {isModalVisible ? <UserInfo toggleModal={toggleModal} /> : ""}
+          {isModalVisible ? (
+            <UserInfo toggleModal={toggleModal} userData={userData} />
+          ) : (
+            ""
+          )}
           <li
             className="profile-dropdown-list"
             onClick={() => customNavigate("/Calendar")}
@@ -51,7 +57,7 @@ const ProfileDropdown = ({ type }) => {
             <img className="inline-block peer w-7 mx-3" src="" alt="icon" />
             <span>문의내역</span>
           </li>
-          <li className="profile-dropdown-list" onClick={removeUserFromSession}>
+          <li className="profile-dropdown-list" onClick={handleLogout}>
             <img className="inline-block peer w-7 mx-3" src="" alt="icon" />
             <span>로그아웃</span>
           </li>

@@ -30,6 +30,7 @@ const TableRow = ({ item }) => {
             <td className="px-4 py-2">{item.userName}</td>
             <td className="px-4 py-2">{item.email}</td>
             <td className="px-4 py-2">{item.address}</td>
+            <td className="px-4 py-2">{item.role}</td>
         </tr>
     );
 };

@@ -3,7 +3,11 @@ package com.dg.deukgeun.controller;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +29,10 @@ import com.dg.deukgeun.service.EmailService;
 import com.dg.deukgeun.service.GymService;
 import com.dg.deukgeun.service.UserService;
 import com.dg.deukgeun.service.VerificationCodeService;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/user")
@@ -72,8 +80,23 @@ public class UserController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseDTO<?> login(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         return userService.login(loginDTO);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("accessToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0) // Set maxAge to 0 to delete the cookie
+                .sameSite("Strict")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/userInfo")
@@ -86,13 +109,27 @@ public class UserController {
 
     // @GetMapping("/userInfo")
     // public ResponseDTO<?> getUserInfo(HttpServletRequest request) {
-        // Integer userId = (Integer) request.getAttribute("userId");
+    // Integer userId = (Integer) request.getAttribute("userId");
     // return userService.getUserInfo(userId);
     // }
 
     @PutMapping("/update/{userId}")
     public ResponseDTO<?> updateUser(@PathVariable Integer userId, @RequestBody UpdateUserDTO updateUserDTO) {
         return userService.updateUser(updateUserDTO);
+    }
+
+    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER') || hasRole('ROLE_ADMIN')")
+    @GetMapping("/token")
+    public ResponseEntity<String> getToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    return ResponseEntity.ok(cookie.getValue());
+                }
+            }
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token not found");
     }
 
     // @PostMapping("/reqPwReset")
@@ -107,5 +144,4 @@ public class UserController {
     //     String newPassword = request.get("newPassword");
     //     return ResponseEntity.ok(userService.resetPassword(token, newPassword));
     // }
-
 }

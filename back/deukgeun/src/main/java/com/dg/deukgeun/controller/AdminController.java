@@ -27,7 +27,7 @@ public class AdminController {
     //                                          PageRequestDTO pageRequestDTO) {
     //     return adminService.getAllUsers(adminId, searchQuery, pageRequestDTO);
     // }
-    @GetMapping("/api/admin/users")
+    @GetMapping("/users")
     public PageResponseDTO<User> getAllUsers(@RequestParam(required = false) String searchQuery,
                                              PageRequestDTO pageRequestDTO) {
         // 현재 인증된 사용자의 정보를 가져옵니다.
@@ -35,7 +35,7 @@ public class AdminController {
         Integer userId = userDetails.getUserId();
 
         // AdminService의 getAllUsers 메소드를 호출하여 사용자 목록을 가져옵니다.
-        return adminService.getAllUsers(userId, searchQuery, pageRequestDTO);
+        return adminService.getAllUsers(userId, pageRequestDTO);
     }
     // @GetMapping("/gym-users")
     // public PageResponseDTO<Map<String, Object>> getAllGymUsers(@RequestParam(required = false) String searchQuery,

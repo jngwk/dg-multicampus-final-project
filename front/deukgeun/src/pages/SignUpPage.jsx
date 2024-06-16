@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Layout from "../components/shared/Layout";
 import { useLocation } from "react-router-dom";
 import Button from "../components/shared/Button";
 import Input from "../components/shared/Input";

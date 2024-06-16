@@ -1,23 +1,18 @@
 import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
 const prefix = `/api/admin`; // proxy 사용
 
 
-export const usersInfo = async () => {
-  
+export const usersList = async (page = 1, size= 10) => {
     try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        throw new Error("No authentication token found");
-      }
-      console.log("Auth Token:", token); // 토큰 확인
-
-      const res = await axios.get(`${prefix}/users`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      console.log(res.dtoList.data);
+      const res = await axiosInstance.get(`${prefix}/users`,
+        {params: {
+          page,
+          size
+        }}
+      );
+      console.log(res.data);
       return res.data;
   
     } catch (error) {

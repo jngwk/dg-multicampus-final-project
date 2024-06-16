@@ -31,7 +31,7 @@ public class AdminService {
     private GymRepository gymRepository;
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public PageResponseDTO<User> getAllUsers(Integer adminId, String searchQuery, PageRequestDTO pageRequestDTO) {
+    public PageResponseDTO<User> getAllUsers(Integer adminId, PageRequestDTO pageRequestDTO) {
         try {
             // 관리자 이메일이 ADMIN 사용자에 속하는지 확인합니다.
             Optional<User> adminOptional = userRepository.findById(adminId);
@@ -39,13 +39,15 @@ public class AdminService {
                 Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(), Sort.by("userId").ascending());
                 List<User> users;
                 long totalUsers;
-                if (searchQuery != null && !searchQuery.isEmpty()) {
-                    users = userRepository.findByUserNameContainingIgnoreCase(searchQuery, pageable).getContent();
-                    totalUsers = userRepository.countByUserNameContainingIgnoreCase(searchQuery);
-                } else {
-                    users = userRepository.findAll(pageable).getContent();
-                    totalUsers = userRepository.count();
-                }
+                // if (searchQuery != null && !searchQuery.isEmpty()) {
+                //     users = userRepository.findByUserNameContainingIgnoreCase(searchQuery, pageable).getContent();
+                //     totalUsers = userRepository.countByUserNameContainingIgnoreCase(searchQuery);
+                // } else {
+                //     users = userRepository.findAll(pageable).getContent();
+                //     totalUsers = userRepository.count();
+                // }
+                users = userRepository.findAll(pageable).getContent();
+                totalUsers = userRepository.count();
                 // 보안상의 이유로 비밀번호 필드를 빈 문자열로 설정합니다.
                 for (User user : users) {
                     user.setPassword("");
