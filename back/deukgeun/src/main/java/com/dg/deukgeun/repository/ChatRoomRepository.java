@@ -22,6 +22,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
             "JOIN cr.messages cm " +
             "WHERE :user MEMBER OF cr.users " +
             "GROUP BY cr " +
-            "ORDER BY MAX(cm.timestamp) ASC")
+            "ORDER BY MAX(cm.timestamp) DESC")
     List<ChatRoom> findByUserIdOrderByLatestMessage(@Param("user") User user);
 }
