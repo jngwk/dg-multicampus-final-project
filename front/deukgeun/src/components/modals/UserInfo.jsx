@@ -1,26 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
-import ModalLayout from "./ModalLayout";
-import Button from "../shared/Button";
-import Bprofile from "../../assets/blank_profile.png";
+import React, { useRef, useState } from "react";
+import { BiCommentDetail } from "react-icons/bi";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { IoSearchOutline } from "react-icons/io5";
-import { BiCommentDetail } from "react-icons/bi";
 import { LiaUserEditSolid } from "react-icons/lia";
-import { userInfo } from "../../api/userInfoApi";
+import Bprofile from "../../assets/blank_profile.png";
 import useValidation from "../../hooks/useValidation";
+import Button from "../shared/Button";
+import ModalLayout from "./ModalLayout";
 
-const MyInfo = ({ toggleModal }) => {
+const MyInfo = ({ toggleModal, userData }) => {
   const [imageUrl, setImageUrl] = useState(null);
-  const [userData, setUserData] = useState({
-    userName: "",
-    userId: "",
-    email: "",
-    address: "",
-    detailAddress: "",
-    role: "",
-  }); // Correctly define userData using useState
   const fileInput = useRef(null);
-  const sessionData = JSON.parse(sessionStorage.getItem("user"));
   const [passwordType, setPasswordType] = useState({
     type: "password",
     visible: false,
@@ -28,28 +18,7 @@ const MyInfo = ({ toggleModal }) => {
   const [newPassword, setNewPassword] = useState("");
   const { errors, validateInput } = useValidation();
 
-    // Fetch user info when component mounts
-    useEffect(() => {
-        const fetchData = async () => {
-            const data = await userInfo();
-            setUserData(data.data.user);
-            console.log(data.data.user);
-        };
-
-        fetchData();
-    }, []);
-
   // Fetch user info when component mounts
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const data = await userInfo(sessionData.email);
-  //     setUserData(data.data.user);
-  //     console.log(data.data.user);
-  //     console.log(userData);
-  //   };
-
-  //   fetchData();
-  // }, []);
 
   // password type 변경하는 함수
   const handlePasswordType = () => {

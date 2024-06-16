@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import useCustomNavigate from "../../hooks/useCustomNavigate";
 import { login } from "../../api/loginApi";
 import { useAuth } from "../../context/AuthContext";
+import Fallback from "../shared/Fallback";
 
 const initErrors = { email: "", password: "", login: "" };
 
@@ -15,7 +16,7 @@ const LoginModal = ({ toggleModal }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState(initErrors);
-  const { addUserToSession } = useAuth();
+  const { fetchUserData, loading } = useAuth();
 
   useEffect(() => {
     // console.log("Updated Errors: ", errors);
@@ -58,34 +59,29 @@ const LoginModal = ({ toggleModal }) => {
   };
 
   const handleLogin = async () => {
-     console.log("login clicked");
-     
+    console.log("login clicked");
+
     if (!validateInput()) {
-      
-       console.log("Input validation failed");
-       console.log(errors);
+      console.log("Input validation failed");
+      console.log(errors);
       return;
     }
     try {
-      
-      const data = await login(email, password);
-      
-      // 로그인 성공시 context에 로그인 여부 넣기
-      if (data.result) {
-        addUserToSession(email);
-         console.log("로그인 성공", data);
-      // const res = await login(email, password);
-      // console.log(res);
-      // // 로그인 성공시 context에 로그인 여부 넣기
-      // if (res.result) {
-      //   addUserToSession({
-      //     userId: res.data.user.userId,
-      //     userName: res.data.user.userName,
-      //     email: res.data.user.email,
-      //   });
-        // console.log("로그인 성공", data);
+      const accessToken = await login(email, password);
+
+      if (accessToken) {
+        sessionStorage.setItem("isLoggedIn", true);
+        console.log(
+          "로그인 성공",
+          accessToken,
+          sessionStorage.getItem("isLoggedIn")
+        );
         toggleModal(); // 로그인 성공시 팝업 닫음
-        customNavigate("/");
+        customNavigate("/"); // 메인으로 이동
+        fetchUserData(); // 유저 데이터 가져오기
+        if (loading) {
+          return <Fallback />;
+        }
       } else {
         setErrors({ ...initErrors, login: "로그인 정보가 일치하지 않습니다." });
       }

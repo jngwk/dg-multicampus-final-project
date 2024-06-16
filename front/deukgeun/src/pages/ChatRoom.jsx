@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
-import useChangeMsg from "../hooks/useChangeMsg";
+import { IoAddCircle, IoChatbubbles } from "react-icons/io5";
+import ChatMain from "../components/chat/ChatMain";
 import Chatlist from "../components/chat/Chatlist";
 import Chatting from "../components/chat/Chatting";
-import ChatMain from "../components/chat/ChatMain";
-import { IoChatbubbles, IoAddCircle } from "react-icons/io5";
+import Fallback from "../components/shared/Fallback";
+import { useAuth } from "../context/AuthContext";
 import useWindowSize from "../hooks/useWindowResize";
 
 export default function ChatRoom() {
   const [isMainVisible, setIsMainVisible] = useState(true); // 메인화면 보이는지
   const [isChatListVisible, setIsChatListVisible] = useState(true); // 채팅방 목록 보이는지
   const [isChatVisible, setIsChatVisible] = useState(false); // 채팅 보이는지
+  const { userData, loading } = useAuth();
   const windowSize = useWindowSize(); // 반응형을 위한 custom hook
 
   // 반응형을 위한 effect
@@ -37,6 +39,10 @@ export default function ChatRoom() {
       setIsChatListVisible(false);
     }
   };
+
+  if (loading) {
+    return <Fallback />;
+  }
   return (
     <div className="w-full max-w-[1400px] py-5">
       <div className="md:flex items-center pb-2 ml-10">

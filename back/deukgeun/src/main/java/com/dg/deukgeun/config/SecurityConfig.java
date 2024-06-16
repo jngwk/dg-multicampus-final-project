@@ -22,6 +22,7 @@ import com.dg.deukgeun.security.JwtTokenProvider;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -81,14 +82,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // CSRF 보호를 비활성화합니다.
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리를 Stateless로 설정합니다.
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(
-                                "/api/user/login", "/api/user/signUp/**", "/api/user/sendCode", "/api/gym/crNumberCheck", "/api/qna", "/api/qna/**","/api/chart").permitAll() // 이 API는 인증 없이 접근 가능하도록 설정합니다.
-                        .requestMatchers("/api/user/userInfo").hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM")
+                        .requestMatchers("/api/user/login", "/api/qna", "/api/qna/**", "/api/user/logout", "/api/chart").permitAll() // 이 API는 인증 없이 접근 가능하도록 설정합니다.
+                        .requestMatchers("/api/user/signUp/**", "/api/user/sendCode", "/api/gym/signup", "/api/user/sendCode", "/api/gym/crNumberCheck").anonymous() // 비회원만 가능        
+                        .requestMatchers("/api/user/userInfo", "/ws/**").hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM")
                         .requestMatchers("/api/user/workoutSession").hasAnyAuthority("ROLE_GENERAL")
                         .requestMatchers("/api/membership/register").hasAuthority("ROLE_GENERAL") 
-                        .requestMatchers("/api/membership/stats", "/api/membership/stats/**").hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM")
+                        .requestMatchers("/api/membership/stats", "/api/membership/stats/**").hasAnyAuthority("ROLE_GYM")
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/membership/list").permitAll()
                         .anyRequest().authenticated()) // 그 외 모든 요청은 인증이 필요합니다
 
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider, customUserDetailsService),
@@ -115,6 +115,7 @@ public class SecurityConfig {
 
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 Integer userId = jwtTokenProvider.getUserIdFromToken(token); // userId만 추출
+
 
                 /*
                  * userId로 만든 detailsService를 사용해 customUserDetails를 정의
@@ -159,10 +160,14 @@ public class SecurityConfig {
         }
 
         private String resolveToken(HttpServletRequest request) {
-            String jwtToken = request.getHeader("Authorization"); // Authorization 헤더에서 토큰을 가져옵니다.
+            Cookie[] cookies = request.getCookies(); // 쿠키에서 토큰 추출
 
-            if (jwtToken != null && jwtToken.startsWith("Bearer ")) {
-                return jwtToken.substring(7); // "Bearer " 부분을 제거하고 토큰을 반환합니다.
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("accessToken".equals(cookie.getName())) {
+                        return cookie.getValue();
+                    }
+                }
             }
 
             return null;

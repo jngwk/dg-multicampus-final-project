@@ -1,5 +1,6 @@
 import React from "react";
-import Layout from "../components/shared/Layout";
+import { useAuth } from "../context/AuthContext";
+import Fallback from "../components/shared/Fallback";
 
 export default function Main() {
   return <div>Main</div>;

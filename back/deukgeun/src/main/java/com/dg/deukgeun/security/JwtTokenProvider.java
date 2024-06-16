@@ -40,9 +40,9 @@ public class JwtTokenProvider {
             // JWT 클레임 설정
             JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                     .subject(userId.toString())
-                    .claim("email", email)
+                    // .claim("email", email)
                     .claim("role", role.name())
-                    .claim("userName", userName)
+                    // .claim("userName", userName)
                     .issueTime(Date.from(now))
                     .expirationTime(Date.from(expiryTime))
                     .build();

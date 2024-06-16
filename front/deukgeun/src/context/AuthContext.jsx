@@ -1,36 +1,53 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
+import { userInfo } from "../api/userInfoApi";
+import { logout } from "../api/loginApi";
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    if (!sessionStorage.getItem("isLoggedIn")) {
+      setLoading(false);
+    } else {
+      fetchUserData();
     }
-    setLoading(false);
   }, []);
 
-  const addUserToSession = (userData) => {
-    setUser(userData);
-    sessionStorage.setItem("user", JSON.stringify(userData));
+  const fetchUserData = async () => {
+    console.log("Before fetch in AUTH", userData);
+    if (!userData && sessionStorage.getItem("isLoggedIn")) {
+      setLoading(true);
+      try {
+        const data = await userInfo();
+        setUserData(data.user);
+        console.log(data.user);
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    setLoading(false);
   };
 
-  const removeUserFromSession = () => {
-    const currentPath = window.location.pathname;
-    setUser(null);
-    sessionStorage.removeItem("user");
-    localStorage.removeItem("authToken");
-    console.log("logged out");
-    console.log(currentPath);
+  const removeCookieAndLogOut = async () => {
+    try {
+      const response = await logout();
+      setUserData(null);
+      sessionStorage.removeItem("isLoggedIn", false);
+      console.log(response);
+    } catch (error) {
+      console.error("Error logging out");
+      throw error;
+    }
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, addUserToSession, removeUserFromSession }}
+      value={{ userData, loading, removeCookieAndLogOut, fetchUserData }}
     >
       {children}
     </AuthContext.Provider>

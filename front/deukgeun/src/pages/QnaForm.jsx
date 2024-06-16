@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
-import TextArea from "../components/shared/TextArea";
-import Input from "../components/shared/Input";
+import Cookies from "js-cookie";
+import React, { useEffect, useState } from "react";
+import { registerInquery } from "../api/qnaApi";
 import Button from "../components/shared/Button";
+import Fallback from "../components/shared/Fallback";
+import Input from "../components/shared/Input";
+import TextArea from "../components/shared/TextArea";
 import { useAuth } from "../context/AuthContext";
 import useQnaValidation from "../hooks/useQnaValidation";
-import { registerInquery } from "../api/qnaApi";
-import { jwtDecode } from "jwt-decode";
 
 const initState = {
   userName: "",
@@ -14,16 +15,21 @@ const initState = {
   content: "",
 };
 
+
+const decodeJWT = (token) => {
+
+};
+
 const QnaForm = () => {
-  const { user } = useAuth();
+  const { loading } = useAuth();
   const [formValues, setFormValues] = useState(initState);
   const { errors, validateForm } = useQnaValidation();
   const [decodedToken, setDecodedToken] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
+    const token = Cookies.get("authToken"); // Read token from cookie
     if (token) {
-      const decoded = jwtDecode(token);
+      const decoded = decodeJWT(token); // Use your custom decode function
       setDecodedToken(decoded);
 
       // Automatically populate formValues with decoded token info
@@ -45,17 +51,17 @@ const QnaForm = () => {
 
   const handleSubmit = async () => {
     console.log("Handling submit...");
-    console.log("User:", user); // Ensure user is correctly defined
   
     if (!validateForm(formValues)) {
-      console.log("Form validation failed:", errors); // Check validation errors
+      console.log("Form validation failed:", errors);
       return;
     }
   
     try {
       const formData = {
         ...formValues,
-        userId: decodedToken && user ? decodedToken.sub : null, // Adjust userId assignment conditionally
+        //로그인 상태에서 안되는 이유 : userId를 못찾아서
+        userId: decodedToken ? decodedToken.sub : null,
         regDate: new Date().toISOString().split('T')[0],
       };
       console.log("Form data:", formData);
@@ -66,6 +72,10 @@ const QnaForm = () => {
       throw error;
     }
   };
+
+  if (loading) {
+    return <Fallback />;
+  }
 
   return (
     <div className="mx-auto xl:grid xl:grid-cols-2 xl:w-[1000px] flex-col flex justify-center items-center">
@@ -85,7 +95,7 @@ const QnaForm = () => {
       </div>
       <div className="w-[472px] h-fit mx-auto border-2 border-peach-fuzz rounded-md p-9">
         <span className="block text-5xl mb-4">🙋‍♀️</span>
-        {!user && (
+        {!sessionStorage.getItem("isLoggedIn") && (
           <div className="flex justify-between w-[400px]">
             <Input
               label="이름"

@@ -1,5 +1,6 @@
 package com.dg.deukgeun.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +27,7 @@ public class MembershipService {
     @Autowired
     GymRepository gymRepository;
 
-    @PreAuthorize("hasRole('ROLE_GENERAL')")
+    @PreAuthorize("(hasRole('ROLE_GENERAL')) &&" + "#userId == principal.userId")
     public ResponseDTO<?> registerMembership(MembershipDTO membershipDTO, Integer userId) {
         User user = userRepository.findByUserId(userId).orElse(null);
         Gym gym = gymRepository.findById(membershipDTO.getGymId()).orElse(null);
@@ -57,19 +58,17 @@ public class MembershipService {
             return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
         }
     }
-    
+
+    @PreAuthorize("(hasRole('ROLE_GYM')) && #userId == principal.userId")
     public List<Membership> getMembershipStatsByGymUserId(Integer userId) {
-        User user = userRepository.findByUserId(userId).orElse(null);
+        User user = userRepository.findById(userId).orElse(null);
         if (user != null) {
             Optional<Gym> gym = gymRepository.findByUser(user);
             if (gym.isPresent()) {
                 return membershipRepository.findByGym_GymId(gym.get().getGymId());
             }
         }
-        return List.of();
+        return Collections.emptyList(); // Return an empty list if no memberships found
     }
-    @PreAuthorize("hasRole('ROLE_GYM')")
-    public List<Membership> getAllMemberships() {
-        return membershipRepository.findAll();
-    }
+
 }
