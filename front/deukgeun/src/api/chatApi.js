@@ -1,4 +1,5 @@
 import axiosInstance from "./axiosInstance";
+import axios from "axios";
 
 // export const API_SERVER_HOST = "http://localhost:8282";
 // const prefix = `${API_SERVER_HOST}/api`;
@@ -6,9 +7,7 @@ const prefix = `/chat`; // proxy 사용
 
 export const getChatHistory = async (chatRoomId) => {
   try {
-    const res = await axiosInstance.get(
-      `${prefix}/history/${parseInt(chatRoomId)}`
-    );
+    const res = await axios.get(`${prefix}/history/${parseInt(chatRoomId)}`);
     console.log("getChatHistory", res);
     return res.data;
   } catch (error) {
@@ -19,7 +18,7 @@ export const getChatHistory = async (chatRoomId) => {
 
 export const getChatRooms = async () => {
   try {
-    const res = await axiosInstance.get(`${prefix}/rooms`);
+    const res = await axios.get(`${prefix}/rooms`);
     console.log("getChatRooms", res);
     return res.data;
   } catch (error) {
@@ -30,7 +29,7 @@ export const getChatRooms = async () => {
 
 export const getAvailableUsers = async () => {
   try {
-    const res = await axiosInstance.get(`${prefix}/availableUsers`);
+    const res = await axios.get(`${prefix}/availableUsers`);
     console.log("getAvailableUsers", res);
     return res.data;
   } catch (error) {
@@ -42,7 +41,7 @@ export const getAvailableUsers = async () => {
 export const getChatRoom = async (selectedUserId) => {
   try {
     console.log("targetUserId", selectedUserId);
-    const res = await axiosInstance.post(`${prefix}/findOrCreateChatRoom`, {
+    const res = await axios.post(`${prefix}/findOrCreateChatRoom`, {
       targetUserId: selectedUserId,
     });
     console.log("findOrCreateChatRoom", res);
