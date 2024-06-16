@@ -43,6 +43,7 @@ const CalendarPage = () => {
     // TODO loadEvents
     // const loadEvents = async () => {
     //   try {
+    //     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@");
     //     const result = await getWorkoutSessions(selectedDate, selectedDate);
     //     console.log("workoutSessionFetch results", result);
     //     const newEvents = result.map((session) =>
@@ -107,19 +108,19 @@ const CalendarPage = () => {
     }
   };
 
-  const updateEvent = async (formValues) => {
+  const updateEvent = async (formValues, id) => {
     console.log(selectedEvent);
     try {
       // userId 1인 회원 만들고 테스트
-      const result = await modifyWorkoutSession(formValues, selectedEvent.id);
+      const result = await modifyWorkoutSession(formValues, id);
       console.log(result);
-      const updatedEvent = formatFormValues(formValues, selectedEvent.id);
+      const updatedEvent = formatFormValues(formValues, id);
 
       setSelectedEvent(updatedEvent);
       // console.log("@@@@CHECK", updatedEvent);
 
       const updatedEvents = events.map((event) =>
-        event.id == selectedEvent.id ? updatedEvent : event
+        event.id == id ? updatedEvent : event
       );
       setEvents(updatedEvents);
       // console.log("이벤트 업데이트: ", updatedEvent);
@@ -170,7 +171,7 @@ const CalendarPage = () => {
   // 이벤트 드래그 & 드롭시 날짜 및 시간 변경
   const handleEventDrop = (info) => {
     setSelectedEvent(info.event);
-    console.log(selectedEvent);
+    // console.log(selectedEvent);
     const updatedEvents = events.map((event) => {
       if (event.id == info.event.id) {
         console.log(info.event);
@@ -190,7 +191,7 @@ const CalendarPage = () => {
           endTime: endTime,
         };
 
-        updateEvent(updatedFormValues);
+        updateEvent(updatedFormValues, event.id);
 
         return formatFormValues(updatedFormValues, event.id);
       }

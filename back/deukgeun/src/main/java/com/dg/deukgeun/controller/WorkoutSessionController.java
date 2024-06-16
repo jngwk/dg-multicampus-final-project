@@ -145,7 +145,9 @@ public class WorkoutSessionController {
             @RequestBody WorkoutSessionReqeustDTO workoutSessionReqeustDTO) {
 
         WorkoutSessionDTO workoutSessionDTO = new WorkoutSessionDTO();
-
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        workoutSessionDTO.setUserId(userDetails.getUserId());
         workoutSessionDTO.setWorkoutSessionId(workoutSessionId);
         workoutSessionDTO.setBodyWeight(workoutSessionReqeustDTO.getBodyWeight());
         workoutSessionDTO.setContent(workoutSessionReqeustDTO.getContent());
@@ -155,15 +157,28 @@ public class WorkoutSessionController {
         workoutSessionDTO.setStartTime(workoutSessionReqeustDTO.getStartTime());
         workoutSessionDTO.setWorkoutDate(workoutSessionReqeustDTO.getWorkoutDate());
 
-        log.info("Modify: " + workoutSessionDTO);
+        System.out.println("Modify: " + workoutSessionDTO);
         service.modify(workoutSessionDTO);
 
-        workoutService.removeByWorkoutSessionId(workoutSessionId);
+        // workoutService.removeByWorkoutSessionId(workoutSessionId);
+        // List<WorkoutDTO> workoutList = workoutSessionReqeustDTO.getWorkouts();
+        // for (int i = 0; i < workoutList.size(); i++) {
+        // workoutList.get(i).setWorkoutSessionId(workoutSessionId);
+        // }
+        // workoutService.insertList(workoutList);
         List<WorkoutDTO> workoutList = workoutSessionReqeustDTO.getWorkouts();
+        System.out.println("Workout List: " + workoutList.toString());
+
         for (int i = 0; i < workoutList.size(); i++) {
-            workoutList.get(i).setWorkoutSessionId(workoutSessionId);
+            WorkoutDTO dto = workoutList.get(i);
+            if (dto.getWorkoutSessionId() == null) {
+                dto.setWorkoutSessionId(workoutSessionId);
+                workoutService.register(dto);
+            } else {
+                workoutService.modify(dto);
+            }
+
         }
-        workoutService.insertList(workoutList);
         return Map.of("RESULT", "SUCCESS");
     }
 

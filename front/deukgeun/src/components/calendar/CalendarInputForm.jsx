@@ -105,8 +105,13 @@ const CalendarInputForm = ({
   };
 
   const handleSubmit = (e) => {
-    console.log("handleSubmit");
-    selectedEvent ? updateEvent(formValues) : addEvent(formValues);
+    console.log("handleSubmit: ", selectedEvent.id);
+    selectedEvent
+      ? updateEvent(
+          formValues,
+          selectedEvent.id || selectedEvent.extendedProps.workoutSessionId
+        )
+      : addEvent(formValues);
   };
 
   const handleDelete = () => {
