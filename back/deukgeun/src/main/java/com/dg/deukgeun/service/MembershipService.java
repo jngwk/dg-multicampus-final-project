@@ -1,10 +1,13 @@
 package com.dg.deukgeun.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import com.dg.deukgeun.dto.UserRole;
+
 import com.dg.deukgeun.dto.gym.MembershipDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.entity.Gym;
@@ -24,18 +27,19 @@ public class MembershipService {
     @Autowired
     GymRepository gymRepository;
 
-    public ResponseDTO<?> registerMembership(MembershipDTO membershipDTO, String userEmail) {
-        User user = userRepository.findByEmail(userEmail).orElse(null);
+    @PreAuthorize("(hasRole('ROLE_GENERAL')) &&" + "#userId == principal.userId")
+    public ResponseDTO<?> registerMembership(MembershipDTO membershipDTO, Integer userId) {
+        User user = userRepository.findByUserId(userId).orElse(null);
         Gym gym = gymRepository.findById(membershipDTO.getGymId()).orElse(null);
 
         if (user == null || gym == null) {
             return ResponseDTO.setFailed("사용자 또는 헬스장을 찾을 수 없습니다.");
         }
 
-        Optional<Membership> existingMembership = membershipRepository.findByUser(user);
-        if (existingMembership.isPresent()) {
-            return ResponseDTO.setFailed("이미 등록된 회원입니다.");
-        }
+        // Optional<Membership> existingMembership = membershipRepository.findByUser(user);
+        // if (existingMembership.isPresent()) {
+        //     return ResponseDTO.setFailed("이미 등록된 회원입니다.");
+        // }
 
         Membership membership = new Membership();
         membership.setUser(user);
@@ -55,14 +59,16 @@ public class MembershipService {
         }
     }
 
-    public List<Membership> getMembershipStatsByGymUserEmail(String userEmail) {
-        User user = userRepository.findByEmail(userEmail).orElse(null);
-        if (user != null && user.getRole() == UserRole.ROLE_GYM) {
+    @PreAuthorize("(hasRole('ROLE_GYM')) && #userId == principal.userId")
+    public List<Membership> getMembershipStatsByGymUserId(Integer userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user != null) {
             Optional<Gym> gym = gymRepository.findByUser(user);
             if (gym.isPresent()) {
                 return membershipRepository.findByGym_GymId(gym.get().getGymId());
             }
         }
-        return List.of();
+        return Collections.emptyList(); // Return an empty list if no memberships found
     }
+
 }

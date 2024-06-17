@@ -13,8 +13,10 @@ const SignUpChoice = lazy(() => import("../pages/SignUpChoicePage"));
 const SignUpForm = lazy(() => import("../pages/SignUpPage"));
 const QnaForm = lazy(() => import("../pages/QnaForm"));
 const ChatTest = lazy(() => import("../components/chat/ChatTest"));
-const UserInfoPage = lazy(() => import("../components/modals/UserInfo"));
 const MemberList = lazy(() => import("../pages/MemberList"));
+const PTMemberList = lazy(() => import("../pages/PTMemberList"));
+const CenterTrainerList = lazy(() => import("../pages/CenterTrainerList"));
+const CenterMemberList = lazy(() => import("../pages/CenterMemberList"));
 
 const root = createBrowserRouter([
   {
@@ -68,12 +70,24 @@ const root = createBrowserRouter([
         element: <QnaForm />,
       },
       {
-        path: "/memberList",
+        path: "memberList",
         element: <MemberList />,
       },
       {
         path: "chatTest",
         element: <ChatTest />,
+      },
+      {
+        path: "ptMemberList",
+        element: <PTMemberList />,
+      },
+      {
+        path: "centerTrainerList",
+        element: <CenterTrainerList />,
+      },
+      {
+        path: "centerMemberList",
+        element: <CenterMemberList />,
       },
     ],
   },

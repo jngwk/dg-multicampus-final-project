@@ -1,5 +1,7 @@
 package com.dg.deukgeun.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -129,4 +131,17 @@ public class UserController {
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token not found");
     }
+
+    // @PostMapping("/reqPwReset")
+    // public ResponseEntity<ResponseDTO<?>> requestPasswordReset(@RequestBody Map<String, String> request) {
+    //     String email = request.get("email");
+    //     return ResponseEntity.ok(userService.requestPasswordReset(email));
+    // }
+
+    // @PostMapping("/resetPw")
+    // public ResponseEntity<ResponseDTO<?>> resetPassword(@RequestBody Map<String, String> request) {
+    //     String token = request.get("token");
+    //     String newPassword = request.get("newPassword");
+    //     return ResponseEntity.ok(userService.resetPassword(token, newPassword));
+    // }
 }

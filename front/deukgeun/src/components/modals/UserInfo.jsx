@@ -125,7 +125,9 @@ const MyInfo = ({ toggleModal, userData }) => {
                   <p className="max-w-[190px] overflow-hidden text-ellipsis whitespace-nowrap">
                     {userData.address} {userData.detailAddress}
                   </p>
-                  <IoSearchOutline className="size-4 sm:mt-0.5 float-right" />
+                  <button>
+                    <IoSearchOutline className="size-4 sm:mt-0.5 float-right" />
+                  </button>
                 </dd>
               </div>
               <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-10">

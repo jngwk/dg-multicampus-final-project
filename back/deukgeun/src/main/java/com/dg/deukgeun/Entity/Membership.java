@@ -18,11 +18,12 @@ public class Membership {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer membershipId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    // @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "gym_id", nullable = false)
     private Gym gym;
 
