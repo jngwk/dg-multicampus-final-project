@@ -15,6 +15,7 @@ const QnaForm = lazy(() => import("../pages/QnaForm"));
 const ChatTest = lazy(() => import("../components/chat/ChatTest"));
 const UserInfoPage = lazy(() => import("../components/modals/UserInfo"));
 const MemberList = lazy(() => import("../pages/MemberList"));
+const GymSearch = lazy(() => import("../pages/GymSearchPage"));
 
 const root = createBrowserRouter([
   {
@@ -74,6 +75,10 @@ const root = createBrowserRouter([
       {
         path: "chatTest",
         element: <ChatTest />,
+      },
+      {
+        path: "gymSearch",
+        element: <GymSearch />,
       },
     ],
   },
