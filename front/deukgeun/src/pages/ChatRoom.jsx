@@ -1,18 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { IoAddCircle, IoChatbubbles } from "react-icons/io5";
-import ChatMain from "../components/chat/ChatMain";
 import Chatlist from "../components/chat/Chatlist";
 import Chatting from "../components/chat/Chatting";
-import Fallback from "../components/shared/Fallback";
-import { useAuth } from "../context/AuthContext";
+import ChatMain from "../components/chat/ChatMain";
 import useWindowSize from "../hooks/useWindowResize";
+import Fallback from "../components/shared/Fallback";
+import useChat from "../hooks/useChat";
+import Loader from "../components/shared/Loader";
+import AvailableUsersModal from "../components/modals/AvailableUsersModal";
 
 export default function ChatRoom() {
   const [isMainVisible, setIsMainVisible] = useState(true); // 메인화면 보이는지
   const [isChatListVisible, setIsChatListVisible] = useState(true); // 채팅방 목록 보이는지
   const [isChatVisible, setIsChatVisible] = useState(false); // 채팅 보이는지
-  const { userData, loading } = useAuth();
   const windowSize = useWindowSize(); // 반응형을 위한 custom hook
+  const {
+    stompClientRef,
+    messages,
+    chatRooms,
+    chatRoom,
+    setChatRoom,
+    chatMessage,
+    setChatMessage,
+    availableUsers,
+    isAvailableUsersModalVisible,
+    messagesLoading,
+    availableUsersLoading,
+    token,
+    loading,
+    userData,
+    findOrCreateChatRoom,
+    loadAvailableUsers,
+    sendMessage,
+    toggleAvailableUsersModal,
+  } = useChat();
 
   // 반응형을 위한 effect
   useEffect(() => {
@@ -30,7 +51,7 @@ export default function ChatRoom() {
     return isChatListVisible ? "" : "hidden";
   };
 
-  const handleChatListClick = () => {
+  const handleChatListClick = (room) => {
     if (windowSize.width >= 768) {
       setIsMainVisible(false);
       setIsChatVisible(true);
@@ -38,11 +59,15 @@ export default function ChatRoom() {
       setIsChatVisible(true);
       setIsChatListVisible(false);
     }
+    setChatRoom(room);
   };
+
+  // console.log("from chat Room", isAvailableUsersModalVisible);
 
   if (loading) {
     return <Fallback />;
   }
+
   return (
     <div className="w-full max-w-[1400px] py-5">
       <div className="md:flex items-center pb-2 ml-10">
@@ -59,23 +84,59 @@ export default function ChatRoom() {
           className={`${getChatListDisplay()} w-4/5 md:w-1/5 min-w-[260px] mx-8 border-none rounded-lg bg-peach-fuzz bg-opacity-20`}
         >
           <div className="flex-col space-y-4 overflow-y-auto overflow-x-hidden w-full h-full px-4 py-2 scrollbar-hide hover:scrollbar-default">
-            <div
-              className="w-full cursor-pointer"
-              onClick={handleChatListClick}
-            >
-              <Chatlist />
-            </div>
+            {chatRooms &&
+              (chatRooms.length > 0 ? (
+                chatRooms.map((room, index) => (
+                  <div
+                    key={index}
+                    className="w-full cursor-pointer"
+                    onClick={() => handleChatListClick(room)}
+                  >
+                    {room.users.length === 2 && (
+                      <Chatlist
+                        user={
+                          room.users[0].userId === userData.userId
+                            ? room.users[1]
+                            : room.users[0]
+                        }
+                      />
+                    )}
+                  </div>
+                ))
+              ) : chatRooms.length === 0 ? (
+                "대화 가능한 상대가 없습니다. 추가 후 대화를 시작해주세요."
+              ) : (
+                <Loader />
+              ))}
           </div>
         </div>
-        {isMainVisible && !isChatVisible && <ChatMain />}
+        {isMainVisible && !isChatVisible && (
+          <ChatMain toggleModal={toggleAvailableUsersModal} />
+        )}
         {isChatVisible && !isMainVisible && (
           <Chatting
             setIsChatListVisible={setIsChatListVisible}
             setIsChatVisible={setIsChatVisible}
             setIsMainVisible={setIsMainVisible}
+            messages={messages}
+            chatRoom={chatRoom}
+            chatMessage={chatMessage}
+            setChatMessage={setChatMessage}
+            messagesLoading={messagesLoading}
+            sendMessage={sendMessage}
+            userData={userData}
           />
         )}
       </div>
+      {isAvailableUsersModalVisible && (
+        <AvailableUsersModal
+          availableUsersLoading={availableUsersLoading}
+          availableUsers={availableUsers}
+          userData={userData}
+          toggleModal={toggleAvailableUsersModal}
+          handleButtonClick={findOrCreateChatRoom}
+        />
+      )}
     </div>
   );
 }

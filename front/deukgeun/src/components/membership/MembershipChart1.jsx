@@ -1,104 +1,100 @@
-import React, { useState } from "react";
-import { Line } from "react-chartjs-2";
-import {
-  Chart,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  TimeScale,
-} from "chart.js";
-import { getISOWeek } from "date-fns"; // Import getISOWeek from date-fns
-import "chartjs-adapter-date-fns"; // date-fns 어댑터 import
+import React, { useState, useEffect } from 'react';
+import { Line } from 'react-chartjs-2';
+import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, TimeScale } from 'chart.js';
+import 'chartjs-adapter-date-fns'; // date-fns adapter import
+import Button from '../shared/Button';
 
-// 필요한 Chart.js 컴포넌트 등록
-Chart.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  TimeScale
-);
+// Chart.js component registration
+Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, TimeScale);
 
 const TestChart = ({ stats }) => {
-  const [filterType, setFilterType] = useState("전체"); // 필터 타입을 추적하는 상태 변수 (전체, 남성, 여성)
-  const [yearMonthFilter, setYearMonthFilter] = useState(""); // 연도-월 필터 상태 변수
-  const [timeGranularity, setTimeGranularity] = useState("month"); // 시간 단위 필터 상태 변수 (month, week)
+  const [filterType, setFilterType] = useState('전체'); // State to track filter type ('전체', '남성', '여성')
+  const [start, setStart] = useState(''); // State for start date
+  const [end, setEnd] = useState(''); // State for end date
 
-  // 만료 날짜별 가입자 수를 계산하는 함수
-  const countSignupsPerExpDate = (stats, filter) => {
+  // Initialize start and end dates based on stats data
+  useEffect(() => {
+    if (stats.length > 0) {
+      const earliestDate = new Date(Math.min(...stats.map(item => new Date(item.expDate))));
+      const latestDate = new Date(Math.max(...stats.map(item => new Date(item.expDate))));
+      setStart(formatDate(earliestDate)); // Assuming formatDate is a function to format date as 'YYYY-MM-DD'
+      setEnd(formatDate(latestDate)); // Assuming formatDate is a function to format date as 'YYYY-MM-DD'
+    }
+  }, [stats]);
+
+  // Function to format date as 'YYYY-MM-DD'
+  const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // Function to count signups per expiration date
+  const countSignupsPerExpDate = (stats, filter, startDate, endDate) => {
     const counts = {};
-    stats.forEach((membership) => {
-      if (filter === "전체" || membership.userGender === filter) {
-        const expDate = new Date(membership.expDate);
-        let combinedDate;
-        
-        if (timeGranularity === "month") {
-          const year = expDate.getFullYear();
-          const month = expDate.getMonth() + 1; // getMonth()는 0부터 시작하는 월을 반환
-          combinedDate = `${year}-${month}`;
-        } else if (timeGranularity === "week") {
-          const year = expDate.getFullYear();
-          const week = getISOWeek(new Date(expDate));
-          combinedDate = `${year}-W${week}`;
-        }
+    stats.forEach(membership => {
+      const expDate = new Date(membership.expDate);
+      const year = expDate.getFullYear();
+      const month = expDate.getMonth() + 1; // getMonth() returns zero-based month
+      const combinedDate = `${year}-${month}`;
 
-        if (!counts[combinedDate]) {
-          counts[combinedDate] = 0;
+      // Filter by start and end dates
+      const isInRange =
+        (!startDate || expDate >= new Date(startDate)) &&
+        (!endDate || expDate <= new Date(endDate));
+
+      if (isInRange) {
+        if (filter === '전체' || membership.userGender === filter) {
+          if (!counts[combinedDate]) {
+            counts[combinedDate] = 0;
+          }
+          counts[combinedDate]++;
         }
-        counts[combinedDate]++;
       }
     });
     return counts;
   };
 
-  // 필터 변경 처리 함수
+  // Handler for filter change
   const handleFilterChange = (event) => {
     setFilterType(event.target.value);
   };
 
-  // 연도-월 필터 변경 처리 함수
-  const handleYearMonthFilterChange = (event) => {
-    setYearMonthFilter(event.target.value);
+  // Handler for start date change
+  const handleStartDateChange = (event) => {
+    setStart(event.target.value);
   };
 
-  // 시간 단위 필터 변경 처리 함수
-  const handleTimeGranularityChange = (event) => {
-    setTimeGranularity(event.target.value);
+  // Handler for end date change
+  const handleEndDateChange = (event) => {
+    setEnd(event.target.value);
   };
 
-  // 현재 필터에 따라 필터링된 데이터 계산
-  const filteredSignupsCount = countSignupsPerExpDate(stats, filterType);
-  const expDates = Object.keys(filteredSignupsCount).map((key) => key); // 필터링된 만료 날짜 배열
-  const signupsData = Object.values(filteredSignupsCount); // 필터에 따른 가입자 수 배열
+  // Handler for resetting filters
+  const handleResetFilters = () => {
+    setFilterType('전체');
+    setStart(formatDate(new Date(Math.min(...stats.map(item => new Date(item.expDate))))));
+    setEnd(formatDate(new Date(Math.max(...stats.map(item => new Date(item.expDate))))));
+  };
 
-  // 가입자 수의 최대값 계산
+  // Calculate filtered signup counts
+  const filteredSignupsCount = countSignupsPerExpDate(stats, filterType, start, end);
+  const sortedExpDates = Object.keys(filteredSignupsCount).sort((a, b) => new Date(a) - new Date(b)); // Sorted expiration dates array
+  const signupsData = sortedExpDates.map(date => filteredSignupsCount[date]); // Array of signup counts based on filter
+
+  // Calculate max signup count
   const maxSignups = Math.max(...signupsData, 0);
 
+  // Chart data and options
   const chartData = {
-    labels: expDates,
+    labels: sortedExpDates,
     datasets: [
       {
         label: `가입자 수 (${filterType})`,
         data: signupsData,
-        borderColor:
-          filterType === "남성"
-            ? "rgba(54, 162, 235, 1)"
-            : filterType === "전체"
-            ? "rgba(169, 169, 169, 1)"
-            : "rgba(255, 99, 132, 1)",
-        backgroundColor:
-          filterType === "남성"
-            ? "rgba(54, 162, 235, 0.2)"
-            : filterType === "전체"
-            ? "rgba(169, 169, 169, 0.2)"
-            : "rgba(255, 99, 132, 0.2)",
+        borderColor: filterType === '남성' ? 'rgba(54, 162, 235, 1)' : filterType === '전체' ? 'rgba(169, 169, 169, 1)' : 'rgba(255, 99, 132, 1)',
+        backgroundColor: filterType === '남성' ? 'rgba(54, 162, 235, 0.2)' : filterType === '전체' ? 'rgba(169, 169, 169, 0.2)' : 'rgba(255, 99, 132, 0.2)',
         fill: false,
         tension: 0.1,
       },
@@ -108,91 +104,60 @@ const TestChart = ({ stats }) => {
   const chartOptions = {
     scales: {
       x: {
-        type: "category", // Use 'category' scale for labels
+        type: 'category', // Use 'category' scale for labels
         title: {
           display: true,
-          text: "등록 날짜", // X-axis label
+          text: '등록 날짜', // X-axis label
         },
       },
       y: {
-        type: "linear", // Use 'linear' scale for person count
+        type: 'linear', // Use 'linear' scale for person count
         title: {
           display: true,
           text: `가입자 수 (${filterType})`, // Y-axis label with filterType dynamically included
-          align: "center", // Center align the text
-          scriptable: (ctx) => {
-            // Ensure the text is displayed horizontally
-            return "가입자 수 (" + ctx.chart.options.filterType + ")";
-          },
-          padding: {
-            top: 10,
-            bottom: 10,
-          },
         },
         ticks: {
           stepSize: 1, // Ensure y-axis ticks are whole numbers
         },
         suggestedMin: 0, // Ensure the y-axis starts from 0
-        suggestedMax: maxSignups + 1, // y축의 최대값을 데이터의 최대값 +1로 설정
+        suggestedMax: maxSignups + 1, // Set y-axis max to max value in data + 1
       },
     },
     plugins: {
       legend: {
         display: true, // Display legend
-        labels: {
-          filter: (legendItem) => {
-            return legendItem.text !== filterType;
-          },
-        },
       },
     },
   };
 
   return (
-    <div style={{ width: "100%", height: "500px" }}>
-      <h2>멤버십 등록 날짜 차트</h2>
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <label htmlFor="filterType" className="mr-2">
-            필터:
-          </label>
-          <select
-            id="filterType"
-            value={filterType}
-            onChange={handleFilterChange}
-          >
+    <div className="w-full lg:w-2/3 xl:w-1/2 mx-auto">
+      <h2 className="text-center mb-4">멤버십 등록 날짜 차트</h2>
+      <div className="flex flex-col items-center lg:flex-row lg:justify-center mb-4">
+        <div className="mb-2 lg:mb-0 lg:mr-2">
+          <select value={filterType} onChange={handleFilterChange} className="px-3 py-2 border rounded-md">
             <option value="전체">전체</option>
             <option value="남성">남성</option>
             <option value="여성">여성</option>
           </select>
         </div>
-        <div>
-          <label htmlFor="yearMonthFilter" className="mr-2">
-            년-월 필터:
-          </label>
-          <input
-            type="month"
-            id="yearMonthFilter"
-            value={yearMonthFilter}
-            onChange={handleYearMonthFilterChange}
-          />
+        <div className="flex items-center mb-2 lg:mb-0 lg:mr-2">
+          <label className="mr-2">Start:</label>
+          <input type="date" value={start} onChange={handleStartDateChange} className="px-3 py-2 border rounded-md" />
+        </div>
+        <div className="flex items-center mb-2 lg:mb-0 lg:mr-2">
+          <label className="mr-2">End:</label>
+          <input type="date" value={end} onChange={handleEndDateChange} className="px-3 py-2 border rounded-md" />
         </div>
         <div>
-          <label htmlFor="timeGranularity" className="mr-2">
-            시간 단위:
-          </label>
-          <select
-            id="timeGranularity"
-            value={timeGranularity}
-            onChange={handleTimeGranularityChange}
-          >
-            <option value="month">월 단위</option>
-            <option value="week">주 단위</option>
-          </select>
+          <Button label="리셋" onClick={handleResetFilters} width='150px'/>
         </div>
       </div>
-      <div className="w-full h-96">
-        {/* 예시: Tailwind CSS 클래스 사용 */}
+      <div className="flex flex-col items-center lg:flex-row lg:justify-center mb-4">
+        <p className="mb-2 lg:mb-0"><strong>Start:</strong> {start}</p>
+        <p className="mb-2 lg:mb-0 lg:ml-4"><strong>End:</strong> {end}</p>
+      </div>
+      <div className="lg:w-full h-auto lg:h-96 xl:h-96">
         <Line data={chartData} options={chartOptions} />
       </div>
     </div>

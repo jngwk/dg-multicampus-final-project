@@ -1,8 +1,8 @@
 import axiosInstance from "./axiosInstance";
 
-// export const API_SERVER_HOST = "http://localhost:8282";
-// const prefix = `${API_SERVER_HOST}/api/workoutSession`;
-const prefix = `/api/workoutSession`; // proxy 사용
+export const API_SERVER_HOST = "http://localhost:8282";
+const prefix = `${API_SERVER_HOST}/api/workoutSession`;
+// const prefix = `/api/workoutSession`; // proxy 사용
 
 export const registerWorkoutSession = async (event) => {
   try {
@@ -56,5 +56,17 @@ export const getWorkoutSessions = async (startDate, endDate) => {
     return res.data;
   } catch (error) {
     throw new Error("Get workout sessions failed...");
+  }
+};
+
+export const getWorkouts = async (workoutSessionId) => {
+  try {
+    console.log("WS ID", workoutSessionId);
+    const res = await axiosInstance.get(
+      `${prefix}/get/workouts/${workoutSessionId}`
+    );
+    return res.data;
+  } catch (error) {
+    throw new Error("Get workouts failed...");
   }
 };

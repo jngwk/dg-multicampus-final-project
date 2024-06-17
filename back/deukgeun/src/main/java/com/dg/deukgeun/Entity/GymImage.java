@@ -1,4 +1,5 @@
 package com.dg.deukgeun.entity;
+// written by Gachudon
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,24 +8,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Table(name = "chartdata")
-@Getter
-@Setter
+@Table(name="gym_image")
 @Builder
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
-
-public class Chart {
-
+@AllArgsConstructor
+public class GymImage {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String label;
-    private int value;
-
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    private String gymImage;
+    private Integer gymId;
 }

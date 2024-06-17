@@ -1,3 +1,7 @@
+/*
+ * 체육관 계정으로 회원가입/로그인 시 사용
+ */
+
 package com.dg.deukgeun.dto.gym;
 
 import com.dg.deukgeun.dto.UserRole;
