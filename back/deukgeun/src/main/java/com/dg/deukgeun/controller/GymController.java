@@ -210,9 +210,24 @@ public class GymController {
     }
 
     //헬스장 이미지'만' 추가
-    @PostMapping("/insertImage")
-    public Map<String, String> insertImage(List<GymImageDTO> gymImageList){
-        gymImageService.insertList(gymImageList);
+    /* 입력 내용
+     *  {
+     *  files : file array format
+     *  }
+     *  gymId는 PathVariable로 받음
+     */
+    @PostMapping("/insertImage/{gymId}")
+    public Map<String, String> insertImage(@PathVariable(name = "gymId")Integer gymId,@RequestBody GymRequestDTO gymRequestDTO){
+        List<GymImageDTO> dtoList = new ArrayList<>();
+        List<MultipartFile> files = gymRequestDTO.getFiles();
+        List<String> uploadFileNames = fileUtil.saveFile(files);
+        for(int i=0;i<files.size();i++){
+            GymImageDTO dto = new GymImageDTO();
+            dto.setGymId(gymId);
+            dto.setGymImage(uploadFileNames.get(i));
+            dtoList.add(dto);
+        }
+        gymImageService.insertList(dtoList);
         return Map.of("RESULT","SUCESS");
     }
 
