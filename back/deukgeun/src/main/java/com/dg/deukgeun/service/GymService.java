@@ -18,7 +18,6 @@ import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.GymRepository;
 import com.dg.deukgeun.repository.UserRepository;
 import com.dg.deukgeun.security.CustomUserDetails;
-import com.dg.deukgeun.security.TokenProvider;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

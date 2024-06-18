@@ -26,6 +26,7 @@ import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.entity.GymImage;
 import com.dg.deukgeun.service.GymImageService;
 import com.dg.deukgeun.service.GymService;
+import com.dg.deukgeun.service.TrainerService;
 import com.dg.deukgeun.util.CustomFileUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,8 @@ public class GymController {
     private GymService gymService;
     @Autowired
     private GymImageService gymImageService;
+    @Autowired
+    private TrainerService trainerService;
 
     // GYM 회원가입
     @PostMapping("/signUp")
@@ -81,6 +84,14 @@ public class GymController {
      * * 이미지 이름만 불러올 뿐 이미지 자체를 불러오진 않으므로,
      * 미리 약속된 이미지 경로를 프론트에서 호출할 것.
      * UserId : 헬스장 주인 아이디
+     * trainersList : {
+     *  trainerId : 트레이너 Id. userId 와 동일
+     *  trainerCareer : 트레이너 커리어
+     *  trainerImage : 트레이너 사진
+     *  gymId : 트레이너 소속의 gym Id
+     *  userName : 트레이너 이름
+     * }
+     *
      */
     @GetMapping("/{gymId}")
     public GymResponseDTO get(@PathVariable Integer gymId) {
@@ -92,7 +103,7 @@ public class GymController {
         }
         GymResponseDTO gymResponseDTO = new GymResponseDTO();
         gymResponseDTO.setAddress(gymDTO.getAddress());
-        gymResponseDTO.setApproval(gymDTO.getApproval());
+        // gymResponseDTO.setApproval(gymDTO.getApproval());
         gymResponseDTO.setCrNumber(gymDTO.getCrNumber());
         gymResponseDTO.setDetailAddress(gymDTO.getDetailAddress());
         gymResponseDTO.setGymId(gymDTO.getGymId());
@@ -103,6 +114,7 @@ public class GymController {
         gymResponseDTO.setPrices(gymDTO.getPrices());
         gymResponseDTO.setUploadFileName(fileNames);
         gymResponseDTO.setUserId(gymDTO.getUserId());
+        gymResponseDTO.setTrainersList(trainerService.getList(gymId));
         return gymResponseDTO;
     }
 
@@ -136,7 +148,7 @@ public class GymController {
 
         GymDTO gymDTO = new GymDTO();
         gymDTO.setAddress(gymRequestDTO.getAddress());
-        gymDTO.setApproval(gymRequestDTO.getApproval());
+        // gymDTO.setApproval(gymRequestDTO.getApproval());
         gymDTO.setCrNumber(gymRequestDTO.getCrNumber());
         gymDTO.setDetailAddress(gymRequestDTO.getDetailAddress());
         gymDTO.setGymName(gymRequestDTO.getGymName());
@@ -179,7 +191,7 @@ public class GymController {
         GymDTO gymDTO = new GymDTO();
 
         gymDTO.setAddress(gymRequestDTO.getAddress());
-        gymDTO.setApproval(gymRequestDTO.getApproval());
+        // gymDTO.setApproval(gymRequestDTO.getApproval());
         gymDTO.setCrNumber(gymRequestDTO.getCrNumber());
         gymDTO.setDetailAddress(gymRequestDTO.getDetailAddress());
         gymDTO.setGymId(gymId);

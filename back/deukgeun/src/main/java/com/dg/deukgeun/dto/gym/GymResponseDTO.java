@@ -4,7 +4,9 @@ package com.dg.deukgeun.dto.gym;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.web.multipart.MultipartFile;
+import com.dg.deukgeun.dto.TrainerDTO;
+
+// import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GymResponseDTO {
+    // Gym 
     private Integer gymId;
     private String gymName;
     private Integer userId;
@@ -26,7 +29,11 @@ public class GymResponseDTO {
     private String operatingHours;
     private String prices;
     private String introduce;
-    private Integer approval;
+    // private Integer approval;
     @Builder.Default
     private List<String> uploadFileName = new ArrayList<>();
+
+    //트레이너 정보 List
+    @Builder.Default
+    private List<TrainerDTO> trainersList = new ArrayList<>();
 }
