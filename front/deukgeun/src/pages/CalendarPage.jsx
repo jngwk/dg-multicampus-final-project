@@ -13,6 +13,7 @@ import {
   modifyWorkoutSession,
   deleteWorkoutSession,
   getWorkoutSessions,
+  getWorkouts,
 } from "../api/workoutSessionApi";
 import Fallback from "../components/shared/Fallback";
 
@@ -34,28 +35,64 @@ const CalendarPage = () => {
   const [isInputFormVisible, setIsInputFormVisible] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [workoutsLoading, setWorkoutsLoading] = useState(false);
 
   // TODO DB에 새로운 event 저장
   // addEvent로 event 추가 후 events 업데이트가 되면 localStorage에 저장
   useEffect(() => {
     // TODO loadEvents
-    const loadEvents = async () => {
-      try {
-        const result = await getWorkoutSessions(selectedDate, selectedDate);
-        console.log("workoutSessionFetch results", result);
-        const newEvents = result.map((session) =>
-          formatSessionToEvent(session)
-        );
-        setEvents(newEvents);
-      } catch (error) {
-        setError("Failed to fetch workout sessions");
-        console.error("Error fetching workout sessions:", error);
-      }
-    };
-    loadEvents();
+    // const loadEvents = async () => {
+    //   try {
+    //     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    //     const result = await getWorkoutSessions(selectedDate, selectedDate);
+    //     console.log("workoutSessionFetch results", result);
+    //     const newEvents = result.map((session) =>
+    //       formatSessionToEvent(session)
+    //     );
+    //     setEvents(newEvents);
+    //   } catch (error) {
+    //     setError("Failed to fetch workout sessions");
+    //     console.error("Error fetching workout sessions:", error);
+    //   }
+    // };
+    // loadEvents();
     setLoading(false);
   }, []);
 
+  // (Load workout sessions) 날짜 range 변경시
+  const loadWorkoutSessions = async (info) => {
+    const startDate = info.startStr.split("T")[0];
+    const endDate = info.endStr.split("T")[0];
+    console.log("calling data from range: ", startDate, endDate);
+    try {
+      const result = await getWorkoutSessions(startDate, endDate);
+      console.log("Get result: ", result);
+      const newEvents = result.map((session) => formatSessionToEvent(session));
+      setEvents(newEvents);
+    } catch (error) {
+      setError("데이터 베이스에서 불러오는데 실패했습니다.");
+      console.log("Get mapping error: ", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadWorkouts = async (event) => {
+    try {
+      setWorkoutsLoading(true);
+      const workoutList = await getWorkouts(event.id);
+      console.log("Workout List", workoutList);
+      setSelectedEvent({
+        ...event,
+        extendedProps: { ...event.extendedProps, workouts: workoutList },
+      });
+    } catch (error) {
+      console.error("Error", error);
+      throw error;
+    } finally {
+      setWorkoutsLoading(false);
+    }
+  };
   const addEvent = async (formValues) => {
     // events에 추가
     try {
@@ -71,19 +108,19 @@ const CalendarPage = () => {
     }
   };
 
-  const updateEvent = async (formValues) => {
+  const updateEvent = async (formValues, id) => {
     console.log(selectedEvent);
     try {
       // userId 1인 회원 만들고 테스트
-      const result = await modifyWorkoutSession(formValues, selectedEvent.id);
+      const result = await modifyWorkoutSession(formValues, id);
       console.log(result);
-      const updatedEvent = formatFormValues(formValues, selectedEvent.id);
+      const updatedEvent = formatFormValues(formValues, id);
 
       setSelectedEvent(updatedEvent);
       // console.log("@@@@CHECK", updatedEvent);
 
       const updatedEvents = events.map((event) =>
-        event.id == selectedEvent.id ? updatedEvent : event
+        event.id == id ? updatedEvent : event
       );
       setEvents(updatedEvents);
       // console.log("이벤트 업데이트: ", updatedEvent);
@@ -110,22 +147,6 @@ const CalendarPage = () => {
     }
   };
 
-  // 날짜 range 변경시
-  const handleDatesSet = async (info) => {
-    const startDate = info.startStr.split("T")[0];
-    const endDate = info.endStr.split("T")[0];
-    console.log("calling data from range: ", startDate, endDate);
-    try {
-      const result = await getWorkoutSessions(startDate, endDate);
-      console.log("Get result: ", result);
-      const newEvents = result.map((session) => formatSessionToEvent(session));
-      setEvents(newEvents);
-    } catch (error) {
-      setError("데이터 베이스에서 불러오는데 실패했습니다.");
-      console.log("Get mapping error: ", error);
-    }
-  };
-
   // 날짜 클릭시
   const handleDateClick = (info) => {
     setSelectedDate(info.dateStr);
@@ -138,6 +159,10 @@ const CalendarPage = () => {
   // TODO 내용 수정 및 삭제 가능하게 하기
   const handleEventClick = (info) => {
     setSelectedEvent(info.event);
+
+    console.log("load workout");
+    loadWorkouts(info.event);
+
     setSelectedDate(null);
     // 기록된 운동 창 띄우기
     setIsInputFormVisible(true);
@@ -146,7 +171,7 @@ const CalendarPage = () => {
   // 이벤트 드래그 & 드롭시 날짜 및 시간 변경
   const handleEventDrop = (info) => {
     setSelectedEvent(info.event);
-    console.log(selectedEvent);
+    // console.log(selectedEvent);
     const updatedEvents = events.map((event) => {
       if (event.id == info.event.id) {
         console.log(info.event);
@@ -166,7 +191,7 @@ const CalendarPage = () => {
           endTime: endTime,
         };
 
-        updateEvent(updatedFormValues);
+        updateEvent(updatedFormValues, event.id);
 
         return formatFormValues(updatedFormValues, event.id);
       }
@@ -177,6 +202,7 @@ const CalendarPage = () => {
     setEvents(updatedEvents);
   };
 
+  // 테스팅용
   const handleDeleteAll = () => {
     setEvents([]);
     setIsInputFormVisible(false);
@@ -237,7 +263,7 @@ const CalendarPage = () => {
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
           titleFormat={(date) => customTitleFormat(date)}
-          datesSet={handleDatesSet}
+          datesSet={loadWorkoutSessions}
           headerToolbar={{
             start: "",
             center: "title",
@@ -268,6 +294,7 @@ const CalendarPage = () => {
           selectedEvent={selectedEvent}
           isInputFormVisible={isInputFormVisible}
           toggleInputForm={toggleInputForm}
+          workoutsLoading={workoutsLoading}
         />
       </div>
       <Button label="전체 삭제" onClick={handleDeleteAll} />

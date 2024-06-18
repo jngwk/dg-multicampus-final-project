@@ -49,30 +49,22 @@ public class GymController {
         return result;
     }
 
-    //사업자등록번호 확인
+    // 사업자등록번호 확인
     @PostMapping("/crNumberCheck")
-    public ResponseDTO<?> crNumberCheck(@RequestBody GymSignUpDTO requestBody){
-        try{
-            if(!CRNumberCheckApi.check(requestBody.getCrNumber()).equals("01")){
+    public ResponseDTO<?> crNumberCheck(@RequestBody GymSignUpDTO requestBody) {
+        try {
+            if (!CRNumberCheckApi.check(requestBody.getCrNumber()).equals("01")) {
                 return ResponseDTO.setFailed("해당 사업자 등록 번호는 휴업중이거나, 폐업한 번호입니다. 번호를 확인해 주세요.");
-            } else
-            {
+            } else {
                 return ResponseDTO.setSuccess("올바른 사업자등록번호 입니다.");
             }
-        } catch(Exception e){
+        } catch (Exception e) {
             return ResponseDTO.setFailed("사업자 정보를 불러오는 것에 실패했습니다. 번호를 확인해 주세요.");
         }
     }
 
-    // GYM 로그인
-    @PostMapping("/login")
-    public ResponseDTO<?> login(@RequestBody LoginDTO requestBody) {
-        ResponseDTO<?> result = gymService.login(requestBody);
-        return result;
-    }
-
-    //from gachudon brench
-    //체육관 정보 불러오기
+    // from gachudon brench
+    // 체육관 정보 불러오기
     /*
      * 아래의 메서드는 체육관 정보를 불러오는 메서드로, react에게 다음과 같은 정보를 전달함:
      * address : 헬스장 주소
@@ -85,17 +77,17 @@ public class GymController {
      * OperatingHours : 헬스장 운영시간
      * PhonNumber : 헬스장/헬스장 대표자 전화번호
      * Prices : 등록/pt 가격 등 등록비용
-     * UploadFileName : 헬스장 이미지 List, 
-     * *    이미지 이름만 불러올 뿐 이미지 자체를 불러오진 않으므로, 
-     *      미리 약속된 이미지 경로를 프론트에서 호출할 것.
+     * UploadFileName : 헬스장 이미지 List,
+     * * 이미지 이름만 불러올 뿐 이미지 자체를 불러오진 않으므로,
+     * 미리 약속된 이미지 경로를 프론트에서 호출할 것.
      * UserId : 헬스장 주인 아이디
      */
     @GetMapping("/{gymId}")
-    public GymResponseDTO get(@PathVariable Integer gymId){
+    public GymResponseDTO get(@PathVariable Integer gymId) {
         GymDTO gymDTO = gymService.get(gymId);
         List<GymImageDTO> gymImageDTOList = gymImageService.getByGymId(gymId);
         List<String> fileNames = new ArrayList<>();
-        for(int i=0;i<gymImageDTOList.size();i++){
+        for (int i = 0; i < gymImageDTOList.size(); i++) {
             fileNames.add(gymImageDTOList.get(i).getGymImage());
         }
         GymResponseDTO gymResponseDTO = new GymResponseDTO();
@@ -117,17 +109,17 @@ public class GymController {
     /*
      * 다음과 같은 형태로 Json/FormData 포멧을 넘겨받았을 때를 가정
      * {
-     *  userId : Integer
-     *  gymName : String,
-     *  crNumber : String,
-     *  phoneNumber : String,
-     *  address : String,
-     *  detailAddress : String,
-     *  operatingHours : ?,
-     *  prices : ?,
-     *  introduce : String,
-     *  approval : 0 or 1 or 2 or... I don't know...,
-     *  files : file array format
+     * userId : Integer
+     * gymName : String,
+     * crNumber : String,
+     * phoneNumber : String,
+     * address : String,
+     * detailAddress : String,
+     * operatingHours : ?,
+     * prices : ?,
+     * introduce : String,
+     * approval : 0 or 1 or 2 or... I don't know...,
+     * files : file array format
      * }
      * 
      * Json/FormData 포멧에 맞게 Entity를 만들고 IO가 잘 이루어지는 지 확인할 것
@@ -153,17 +145,17 @@ public class GymController {
         gymDTO.setPhoneNumber(gymRequestDTO.getPhoneNumber());
         gymDTO.setPrices(gymRequestDTO.getPrices());
         gymDTO.setUserId(gymRequestDTO.getUserId());
-        
+
         int gymId = gymService.insert(gymDTO);
 
         List<GymImageDTO> gymImageDTOList = new ArrayList<>();
-        for(int i=0;i<uploadFileNames.size();i++){
-            gymImageDTOList.add(new GymImageDTO(uploadFileNames.get(i),gymId));
+        for (int i = 0; i < uploadFileNames.size(); i++) {
+            gymImageDTOList.add(new GymImageDTO(uploadFileNames.get(i), gymId));
         }
 
         gymImageService.insertList(gymImageDTOList);
 
-        return Map.of("RESULT","SUCCESS");
+        return Map.of("RESULT", "SUCCESS");
     }
 
     /* 다음과 같은 형태로 Json/FormData 포멧을 넘겨받았을 때를 가정
@@ -243,7 +235,7 @@ public class GymController {
     // // GYM 로그인
     // @PostMapping("/login")
     // public ResponseDTO<?> login(@RequestBody LoginDTO requestBody) {
-    //     ResponseDTO<?> result = gymService.login(requestBody);
-    //     return result;
+    // ResponseDTO<?> result = gymService.login(requestBody);
+    // return result;
     // }
 }

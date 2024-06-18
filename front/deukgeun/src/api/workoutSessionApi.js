@@ -58,3 +58,15 @@ export const getWorkoutSessions = async (startDate, endDate) => {
     throw new Error("Get workout sessions failed...");
   }
 };
+
+export const getWorkouts = async (workoutSessionId) => {
+  try {
+    console.log("WS ID", workoutSessionId);
+    const res = await axiosInstance.get(
+      `${prefix}/get/workouts/${workoutSessionId}`
+    );
+    return res.data;
+  } catch (error) {
+    throw new Error("Get workouts failed...");
+  }
+};

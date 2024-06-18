@@ -9,46 +9,34 @@ import {
 import { GiGymBag } from "react-icons/gi";
 import { MdAttachEmail } from "react-icons/md";
 import { FaMapLocationDot } from "react-icons/fa6";
-import ChatMain from "./ChatMain";
 import profileImg from "../../assets/profileImg.jpg";
 import useWindowSize from "../../hooks/useWindowResize";
+import Loader from "../shared/Loader";
+import { format, isSameDay, parseISO } from "date-fns";
 
 const Chatting = ({
   setIsChatVisible,
   setIsChatListVisible,
   setIsMainVisible,
+  messages, // 대화내역
+  chatRoom, // 채팅방 이름 밑 상대방 이름을 위함
+  chatMessage,
+  setChatMessage, // 입력 메세지
+  messagesLoading, // 대화 내역 로딩 상태
+  sendMessage,
+  userData, // 메세지 전송
+  chatReceiver,
 }) => {
-  const [text, setText] = useState(""); //입력할 chat
-  const [chat, setChat] = useState([]); //입력한 chat기록
   const messageEndRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false); //userInfo Open/Close
   const windowSize = useWindowSize();
-
-  //input폼 변경된 값 저장 - 계속 업데이트
-  const handleChatInput = (e) => {
-    setText(e.target.value);
-  };
-
-  //전송버튼클릭시 input의 변경된 값을 chat에 저장하고, input을 초기화시킴.
-  const handleSubmitBtn = () => {
-    if (text.trim() !== "") {
-      const newMessage = {
-        text: text,
-        time: new Date().toLocaleTimeString("en-GB", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        }),
-      };
-      setChat((prevChat) => [...prevChat, newMessage]);
-      setText("");
-    }
-  };
+  // cosnt [recipient, setRecipient ] = useState(chatRoom ? chatRoom.user.userId ?)
 
   // Enter클릭으로 전송
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
-      handleSubmitBtn();
+      // handleSubmitBtn();
+      sendMessage();
     }
   };
 
@@ -67,7 +55,7 @@ const Chatting = ({
   //마지막 메시지로 이동
   useEffect(() => {
     messageEndRef.current.scrollIntoView({ behavior: "smooth" });
-  }, [chat]);
+  }, [messages]);
 
   return (
     <>
@@ -82,9 +70,9 @@ const Chatting = ({
               <FaAngleLeft className="m-3" size="22" />
             </button>
             <span className="text-sm font-medium">
-              {" "}
+              {/* 헬스장 이름 추가 */}
               <span className="inline-block">등록된 헬스장 이름</span> |{" "}
-              <span className="inline-block">회원 이름</span>{" "}
+              <span className="inline-block">{chatReceiver.userName}</span>
             </span>
             <button
               className="hidden lg:block ml-auto m-1"
@@ -98,21 +86,19 @@ const Chatting = ({
             </button>
           </div>
 
-          <article className="flex-grow w-full h-[70%] overflow-y-auto scrollbar-hide sm:hover:scrollbar-default">
-            <div className="text-xs font-thin">
-              <span className="flex justify-center">
-                <Clock
-                  className="w-1/5 min-w-32 my-2 text-center rounded-xl bg-grayish-red text-white"
-                  format={" YYYY년 MM월 DD일 "}
-                  ticking={false}
-                  timezone={"Asia/Seoul"}
-                />
-              </span>
-            </div>
-
-            <section>{<ShowChatList chatList={chat} />}</section>
-
-            <div ref={messageEndRef}></div>
+          <article className="flex-grow w-full h-[70%] overflow-y-auto">
+            {messagesLoading ? (
+              <div className="w-full h-full flex justify-center items-center">
+                <Loader />
+              </div>
+            ) : (
+              <>
+                <section>
+                  {<ShowChatList chatList={messages} userData={userData} />}
+                </section>
+                <div ref={messageEndRef}></div>
+              </>
+            )}
           </article>
           <div className="w-full h-14 flex items-center">
             <div className="w-full h-11 border-y-2 border-grayish-red">
@@ -123,11 +109,11 @@ const Chatting = ({
                 <input
                   className="w-full outline-none"
                   type="text"
-                  onChange={handleChatInput}
-                  value={text}
+                  onChange={(e) => setChatMessage(e.target.value)}
+                  value={chatMessage}
                   onKeyPress={handleKeyPress}
                 ></input>
-                <button type="button" onClick={handleSubmitBtn}>
+                <button type="button" onClick={sendMessage}>
                   <LuSend size="24" color="#4E4C4F" />
                 </button>
               </div>
@@ -147,7 +133,9 @@ const Chatting = ({
                 src={profileImg}
                 alt="profile"
               />
-              <div className="text-sm font-semibold p-3"> 최OO 회원님 </div>
+              <div className="text-sm font-semibold p-3">
+                {chatReceiver.userName}
+              </div>
             </div>
 
             <div className="p-3 text-sm">
@@ -162,14 +150,14 @@ const Chatting = ({
                 <MdAttachEmail className="mr-10" size="28" />
                 <div className="flex-col">
                   <p className="text-sm">이메일</p>
-                  <p className="text-xs">Choi123@naver.com</p>
+                  <p className="text-xs">{chatReceiver.email}</p>
                 </div>
               </div>
               <div className="flex items-center whitespace-pre-line m-2 p-2">
                 <FaMapLocationDot className="mr-10" size="28" />
                 <div className="flex-col">
                   <p className="text-sm">주소</p>
-                  <p className="text-xs">서울특별시 강남구</p>
+                  <p className="text-xs">{chatReceiver.address}</p>
                 </div>
               </div>
             </div>
@@ -180,27 +168,95 @@ const Chatting = ({
   );
 };
 
-function ShowChatList({ chatList }) {
+// array 타입인 날짜를 변경
+const arrayToDate = (arr) => {
+  if (Array.isArray(arr) && arr.length >= 6) {
+    return new Date(
+      arr[0], // year
+      arr[1] - 1, // month
+      arr[2], // day
+      arr[3], // hour
+      arr[4], // minute
+      arr[5] // second
+    );
+  }
+  return null;
+};
+
+function ShowChatList({ chatList, userData }) {
   return chatList.map((chat, i) => {
     //마지막 시간만 보이도록 구현
-    const nextTime = chatList[i + 1]?.time;
-    const showTime = !nextTime || nextTime !== chat.time;
+    // console.log(chat);
+    let currentTimestamp = chat.timestamp;
+    if (Array.isArray(currentTimestamp)) {
+      currentTimestamp = arrayToDate(currentTimestamp).toISOString();
+    } else if (currentTimestamp && typeof currentTimestamp !== "string") {
+      currentTimestamp = new Date(currentTimestamp).toISOString();
+    }
+
+    const currentDate = currentTimestamp ? parseISO(currentTimestamp) : null;
+    const currentTime = currentDate ? format(currentDate, "HH:mm") : "";
+
+    const nextChat = chatList[i + 1];
+    let nextTimestamp = nextChat ? nextChat.timestamp : null;
+    if (Array.isArray(nextTimestamp)) {
+      nextTimestamp = arrayToDate(nextTimestamp).toISOString();
+    } else if (nextTimestamp && typeof nextTimestamp !== "string") {
+      nextTimestamp = new Date(nextTimestamp).toISOString();
+    }
+
+    const nextTime = nextTimestamp
+      ? format(parseISO(nextTimestamp), "HH:mm")
+      : null;
+    const showTime = !nextTime || nextTime !== currentTime;
+
+    const prevChat = chatList[i - 1];
+    let prevTimestamp = prevChat ? prevChat.timestamp : null;
+    if (Array.isArray(prevTimestamp)) {
+      prevTimestamp = arrayToDate(prevTimestamp).toISOString();
+    } else if (prevTimestamp && typeof prevTimestamp !== "string") {
+      prevTimestamp = new Date(prevTimestamp).toISOString();
+    }
+    const showDate =
+      i === 0 ||
+      (currentDate &&
+        nextChat &&
+        !isSameDay(currentDate, parseISO(prevTimestamp)));
+
     return (
       <div key={i}>
+        {showDate && (
+          <div className="text-xs font-thin">
+            <span className="flex justify-center">
+              <Clock
+                date={currentTimestamp}
+                className="w-1/5 min-w-32 my-2 text-center rounded-xl bg-grayish-red text-white"
+                format={"YYYY년 MM월 DD일"}
+                ticking={false}
+                timezone={"Asia/Seoul"}
+              />
+            </span>
+          </div>
+        )}
         <article>
-          <div className="flex items-end justify-end p-1 ">
+          <div
+            className={`flex items-end justify-end p-1 ${
+              chat.sender.userId !== userData.userId && "flex-row-reverse"
+            }`}
+          >
             {showTime && (
               <span>
                 <Clock
+                  date={currentTimestamp}
                   className="current_time text-xs"
-                  format={"A HH:mm"}
+                  format={"HH:mm"}
                   ticking={false}
                   timezone={"Asia/Seoul"}
                 />
               </span>
             )}
-            <p className="ml-3 px-10 py-2 rounded-xl bg-grayish-red bg-opacity-20 max-w-xs max-h-fit text-xs">
-              {chat.text}
+            <p className="mx-3 px-6 py-2 rounded-xl bg-grayish-red bg-opacity-20 max-w-xs max-h-fit min-h-[32px] text-xs">
+              {chat.message}
             </p>
           </div>
         </article>
