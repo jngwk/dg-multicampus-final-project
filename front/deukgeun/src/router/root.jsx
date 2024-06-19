@@ -18,6 +18,7 @@ const MemberList = lazy(() => import("../pages/MemberList"));
 const PTMemberList = lazy(() => import("../pages/PTMemberList"));
 const CenterTrainerList = lazy(() => import("../pages/CenterTrainerList"));
 const CenterMemberList = lazy(() => import("../pages/CenterMemberList"));
+const CenterView = lazy(()=>import("../pages/CenterView"));
 
 
 
@@ -92,7 +93,10 @@ const root = createBrowserRouter([
         path: "centerMemberList",
         element: <CenterMemberList />,
       },
-   
+      {
+        path: "centerView",
+        element: <CenterView />,
+      },
     ],
   },
 
