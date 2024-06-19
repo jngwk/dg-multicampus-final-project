@@ -1,14 +1,22 @@
 package com.dg.deukgeun.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
+import com.dg.deukgeun.dto.PageRequestDTO;
+import com.dg.deukgeun.dto.PageResponseDTO;
 import com.dg.deukgeun.dto.UserRole;
 import com.dg.deukgeun.dto.gym.GymDTO;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
@@ -138,6 +146,21 @@ public class GymService {
 
     public void remove(Integer gymId){
         gymRepository.deleteById(gymId);
+    }
+
+    public PageResponseDTO<GymDTO> list(PageRequestDTO pageRequestDTO){
+        Pageable pageable = PageRequest.of(pageRequestDTO.getPage()-1, pageRequestDTO.getSize(),Sort.by("gymId").descending());
+        Page<Gym> result = gymRepository.findAll(pageable);
+        List<GymDTO> dtoList = result.getContent().stream()
+        .map(gym->modelMapper.map(gym,GymDTO.class))
+        .collect(Collectors.toList());
+        long totalCount = result.getTotalElements();
+        PageResponseDTO<GymDTO> responseDTO = PageResponseDTO.<GymDTO>withAll()
+        .dtoList(dtoList)
+        .pageRequestDTO(pageRequestDTO)
+        .totalCount(totalCount)
+        .build();
+        return responseDTO;
     }
     //gachudon brench end
 }

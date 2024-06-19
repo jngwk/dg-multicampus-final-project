@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dg.deukgeun.api.CRNumberCheckApi;
+import com.dg.deukgeun.dto.PageRequestDTO;
+import com.dg.deukgeun.dto.PageResponseDTO;
 import com.dg.deukgeun.dto.gym.GymDTO;
 import com.dg.deukgeun.dto.gym.GymImageDTO;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
@@ -64,6 +66,11 @@ public class GymController {
         } catch (Exception e) {
             return ResponseDTO.setFailed("사업자 정보를 불러오는 것에 실패했습니다. 번호를 확인해 주세요.");
         }
+    }
+
+    @GetMapping("/getList")
+    public PageResponseDTO<GymDTO>list(PageRequestDTO pageRequestDTO){
+        return gymService.list(pageRequestDTO);
     }
 
     // from gachudon brench
