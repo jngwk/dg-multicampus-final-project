@@ -98,7 +98,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/membership/stats").hasAuthority("ROLE_GYM")
                         .requestMatchers("/api/reviews/delete/**", "api/reviews/update/**").hasAnyAuthority("ROLE_GENERAL","ROLE_ADMIN")
                         .requestMatchers("/api/reviews/add").hasAnyAuthority("ROLE_GENERAL")
-                        .requestMatchers("api/reviews/reviewList/**").permitAll()
+                        .requestMatchers("/api/reviews/reviewList/**").permitAll()
                         .anyRequest().authenticated()) // 그 외 모든 요청은 인증이 필요합니다
 
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider, customUserDetailsService),

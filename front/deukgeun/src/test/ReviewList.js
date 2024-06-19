@@ -8,7 +8,7 @@ const ReviewList = ({ gymId }) => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await axios.get(`http://localhost:8282/api/reviewList/${gymId}`, {
+        const response = await axios.get(`http://localhost:8282/api/reviews/reviewList/${gymId}`, {
           headers: {
             'Content-Type': 'application/json',
             // 필요한 경우 인증 토큰을 여기에 추가하세요

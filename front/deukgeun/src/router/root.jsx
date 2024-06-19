@@ -97,7 +97,7 @@ const root = createBrowserRouter([
       },
       {
         path: "ReviewList",
-        element: <ReviewList/>,
+        element: <ReviewList gymId={1}/>,
       },
     ],
   },
