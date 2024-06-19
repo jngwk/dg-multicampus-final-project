@@ -1,14 +1,14 @@
-//관리자페이지-전체회원관리 테이블 화면 구현
+//센터별 TrainerList 페이지
 
 import React, { useEffect, useState } from "react";
 import { LuClipboardList } from "react-icons/lu";
-import { CiSearch } from "react-icons/ci";
+import { LiaUserPlusSolid } from "react-icons/lia";
 import axios from "axios";
 import Table from "../components/shared/Table";
 import Pagination from "../components/shared/Pagination";
 import Loader from "../components/shared/Loader";
 
-const MemberList = ({}) => {
+const CenterTrainerList = ({}) => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(false); 
     const [currentPage, setCurrentPage] = useState(1);
@@ -41,7 +41,7 @@ const MemberList = ({}) => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     
-    const headers = ["회원번호", "이름", "이메일", "주소"]; // Headers array
+    const headers = ["회원번호", "이름", "이메일", "경력"]; // Headers array
 
     // header에 따로 데이터 불러오기
     const extractColumns = (item) => {
@@ -53,7 +53,7 @@ const MemberList = ({}) => {
                     return item.name;
                 case "이메일":
                     return item.email;
-                case "주소":
+                case "경력":
                     return item.body; 
                 default:
                     return ''; 
@@ -64,23 +64,21 @@ const MemberList = ({}) => {
     return (
         <div className="container max-w-screen-lg mx-auto">
             <div className="flex">
-              <div className="flex items-center">
-                <LuClipboardList color="#ffbe98" size="56" />
-                <span className="font-semibold text-2xl mx-3">회원 관리</span>
-              </div>
+                <div className=" flex items-center ">
+                    <LuClipboardList color="#ffbe98" size="56" />
+                    {/* []부분에 해당 지점이름 데이터 가져오기 */}
+                    <span className="font-semibold text-2xl mx-3"> [바디채널 OO점] 트레이너</span> 
+                </div>
 
-                <form className="w-1/4 ml-auto">  
-                <label for="default-search" class="mb-4 text-sm font-medium text-grayish-red sr-only">Search</label>
-                    <div class="relative top-7 end-6 ">
-                        <input type="text" id="default-search" class="block w-full p-2 ps-2 text-xs text-gray-900  border-gray-300 border-b-2 focus:outline-none " placeholder="이름, 이메일, 주소를 검색해주세요." required />
-
-                        <div class="absolute inset-y-0 end-2 flex items-center ps-3">
-                            <button>
-                                <CiSearch className="w-4 h-4"/>
+                <div className="w-1/4 ml-auto ">  
+                    <div class="relative">
+                        <div class="absolute top-8 end-6 flex items-center ps-3">
+                            <button className=" flex items-center justify-center w-20 h-13 p-1 border-2 border-grayish-red rounded-lg text-sm">
+                                <LiaUserPlusSolid className="w-5 h-5 mr-1" color="#9F8D8D" /> 등록
                             </button>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
             <Table headers={headers} data={currentPosts} loading={loading} extractColumns={extractColumns} />
             <Pagination postsPerPage={postsPerPage} totalPosts={posts.length} paginate={paginate}/>
@@ -88,4 +86,4 @@ const MemberList = ({}) => {
     );
 };
 
-export default MemberList;
+export default CenterTrainerList;

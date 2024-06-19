@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,7 @@ import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.GymRepository;
 import com.dg.deukgeun.repository.UserRepository;
+import com.dg.deukgeun.security.CustomUserDetails;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +85,8 @@ public class GymService {
         gym.setOperatingHours(dto.getOperatingHours());
         gym.setPrices(dto.getPrices());
         gym.setIntroduce(dto.getIntroduce());
+        // gym.setApproval(dto.getApproval());
+
         // Gym 엔티티를 데이터베이스에 저장
         try {
             gymRepository.save(gym);
@@ -109,5 +114,30 @@ public class GymService {
         Gym savedGym = gymRepository.save(gym);
         return savedGym.getGymId();
     }
-    // gachudon brench end
+
+    @PreAuthorize("hasRole('ROLE_GYM')")
+    public void modify(GymDTO gymDTO){
+        Optional<Gym> result = gymRepository.findById(gymDTO.getGymId());
+        Gym gym = result.orElseThrow();
+        gym.setAddress(gymDTO.getAddress());
+        gym.setCrNumber(gymDTO.getCrNumber());
+        gym.setDetailAddress(gymDTO.getDetailAddress());
+        gym.setGymName(gymDTO.getGymName());
+        gym.setIntroduce(gymDTO.getIntroduce());
+        gym.setOperatingHours(gymDTO.getOperatingHours());
+        gym.setPhoneNumber(gymDTO.getPhoneNumber());
+        gym.setPrices(gymDTO.getPrices());
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        
+        // 잘 실행될 지는 모르겠음 실행 후 확인 필요
+        User user = new User();
+        user.setUserId(userDetails.getUserId());
+        gym.setUser(user);
+        gymRepository.save(gym);
+    }
+
+    public void remove(Integer gymId){
+        gymRepository.deleteById(gymId);
+    }
+    //gachudon brench end
 }

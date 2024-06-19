@@ -25,5 +25,5 @@ public class GymDTO {
     private String operatingHours;
     private String prices;
     private String introduce;
-    private Integer approval;
+    // private Integer approval;
 }
