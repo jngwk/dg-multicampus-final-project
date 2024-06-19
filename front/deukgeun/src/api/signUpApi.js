@@ -1,4 +1,5 @@
 import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
 export const API_SERVER_HOST = "http://localhost:8282";
 const userPrefix = `${API_SERVER_HOST}/api/user`;
@@ -22,6 +23,17 @@ export const signUpGym = async (userData) => {
     return response.data;
   } catch (error) {
     throw new Error("Signup failed");
+  }
+};
+
+export const signUpTrainer = async (userData) => {
+  try {
+    console.log(userData);
+    const response = await axiosInstance.post(`${userPrefix}/signUp/trainer`, userData);
+    return response.data;
+  } catch (error) {
+    // throw new Error("Signup failed");
+    console.error("Error trainer singup", error);
   }
 };
 

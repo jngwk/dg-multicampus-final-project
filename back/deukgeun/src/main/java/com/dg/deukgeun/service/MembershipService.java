@@ -36,10 +36,10 @@ public class MembershipService {
             return ResponseDTO.setFailed("사용자 또는 헬스장을 찾을 수 없습니다.");
         }
 
-        Optional<Membership> existingMembership = membershipRepository.findByUser(user);
-        if (existingMembership.isPresent()) {
-            return ResponseDTO.setFailed("이미 등록된 회원입니다.");
-        }
+        // Optional<Membership> existingMembership = membershipRepository.findByUser(user);
+        // if (existingMembership.isPresent()) {
+        //     return ResponseDTO.setFailed("이미 등록된 회원입니다.");
+        // }
 
         Membership membership = new Membership();
         membership.setUser(user);

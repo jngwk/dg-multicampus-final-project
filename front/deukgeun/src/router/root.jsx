@@ -3,18 +3,21 @@ import { Outlet, createBrowserRouter } from "react-router-dom";
 import Fallback from "../components/shared/Fallback";
 import Layout from "../components/shared/Layout";
 // import QuillEditor from "../components/shared/QuillEditor";
-import TestChart from '../components/membership/MembershipChart1'; // Adjusted import name
 
-  const Main = lazy(() => import("../pages/Main"));
-  const Chat = lazy(() => import("../pages/ChatRoom"));
-  const Calendar = lazy(() => import("../pages/CalendarPage"));
-  const SignUpChoice = lazy(() => import("../pages/SignUpChoicePage"));
-  const SignUpForm = lazy(() => import("../pages/SignUpPage"));
-  const QnaForm = lazy(() => import("../pages/QnaForm"));
-  const ChatTest = lazy(() => import("../components/chat/ChatTest"));
-  const UserInfoPage = lazy(() => import("../components/modals/UserInfo"));
-  const MemberList = lazy(() => import("../pages/MemberList"));
-  const MembershipStats = lazy(() => import("../pages/MembershipStats"));
+const Main = lazy(() => import("../pages/Main"));
+const Chat = lazy(() => import("../pages/ChatRoom"));
+const Calendar = lazy(() => import("../pages/CalendarPage"));
+const SignUpChoice = lazy(() => import("../pages/SignUpChoicePage"));
+const SignUpForm = lazy(() => import("../pages/SignUpPage"));
+const QnaForm = lazy(() => import("../pages/QnaForm"));
+const ChatTest = lazy(() => import("../components/chat/ChatTest"));
+const MemberList = lazy(() => import("../pages/MemberList"));
+const PTMemberList = lazy(() => import("../pages/PTMemberList"));
+const CenterTrainerList = lazy(() => import("../pages/CenterTrainerList"));
+const CenterMemberList = lazy(() => import("../pages/CenterMemberList"));
+const MembershipStats = lazy(() => import("../pages/MembershipStats"));
+const SignUpTrainerPage = lazy(() => import("../pages/SignUpTrainerPage"));
+
 
 const root = createBrowserRouter([
   {
@@ -68,12 +71,28 @@ const root = createBrowserRouter([
         element: <MembershipStats />,
       },
       {
-        path: "/memberList",
+        path: "memberList",
         element: <MemberList />,
       },
       {
         path: "chatTest",
         element: <ChatTest />,
+      },
+      {
+        path: "ptMemberList",
+        element: <PTMemberList />,
+      },
+      {
+        path: "centerTrainerList",
+        element: <CenterTrainerList />,
+      },
+      {
+        path: "centerMemberList",
+        element: <CenterMemberList />,
+      },
+      {
+        path: 'trainer',
+        element: <SignUpTrainerPage />,
       },
     ],
   },

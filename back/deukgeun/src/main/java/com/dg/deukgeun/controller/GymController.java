@@ -16,10 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.dg.deukgeun.api.CRNumberCheckApi;
 import com.dg.deukgeun.dto.gym.GymDTO;
 import com.dg.deukgeun.dto.gym.GymImageDTO;
-import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 import com.dg.deukgeun.dto.gym.GymRequestDTO;
 import com.dg.deukgeun.dto.gym.GymResponseDTO;
-import com.dg.deukgeun.dto.user.LoginDTO;
+import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.service.GymImageService;
 import com.dg.deukgeun.service.GymService;
@@ -39,12 +38,12 @@ public class GymController {
     @Autowired
     private GymImageService gymImageService;
 
-    // GYM 회원가입
-    @PostMapping("/signUp")
-    public ResponseDTO<?> registerGym(@RequestBody GymSignUpDTO requestBody) {
-        ResponseDTO<?> result = gymService.signUp(requestBody);
-        return result;
-    }
+    // // GYM 회원가입
+    // @PostMapping("/signUp")
+    // public ResponseDTO<?> registerGym(@RequestBody GymSignUpDTO requestBody) {
+    //     ResponseDTO<?> result = gymService.signUp(requestBody);
+    //     return result;
+    // }
 
     // 사업자등록번호 확인
     @PostMapping("/crNumberCheck")
