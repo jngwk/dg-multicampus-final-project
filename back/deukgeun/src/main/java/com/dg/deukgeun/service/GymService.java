@@ -124,7 +124,7 @@ public class GymService {
     }
 
     @PreAuthorize("hasRole('ROLE_GYM')")
-    public void modify(GymDTO gymDTO){
+    public void modify(GymDTO gymDTO) {
         Optional<Gym> result = gymRepository.findById(gymDTO.getGymId());
         Gym gym = result.orElseThrow();
         gym.setAddress(gymDTO.getAddress());
@@ -135,8 +135,9 @@ public class GymService {
         gym.setOperatingHours(gymDTO.getOperatingHours());
         gym.setPhoneNumber(gymDTO.getPhoneNumber());
         gym.setPrices(gymDTO.getPrices());
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+
         // 잘 실행될 지는 모르겠음 실행 후 확인 필요
         User user = new User();
         user.setUserId(userDetails.getUserId());
@@ -144,23 +145,28 @@ public class GymService {
         gymRepository.save(gym);
     }
 
-    public void remove(Integer gymId){
+    public void remove(Integer gymId) {
         gymRepository.deleteById(gymId);
     }
 
-    public PageResponseDTO<GymDTO> list(PageRequestDTO pageRequestDTO){
-        Pageable pageable = PageRequest.of(pageRequestDTO.getPage()-1, pageRequestDTO.getSize(),Sort.by("gymId").descending());
+    public PageResponseDTO<GymDTO> listWithPaging(PageRequestDTO pageRequestDTO) {
+        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(),
+                Sort.by("gymId").descending());
         Page<Gym> result = gymRepository.findAll(pageable);
         List<GymDTO> dtoList = result.getContent().stream()
-        .map(gym->modelMapper.map(gym,GymDTO.class))
-        .collect(Collectors.toList());
+                .map(gym -> modelMapper.map(gym, GymDTO.class))
+                .collect(Collectors.toList());
         long totalCount = result.getTotalElements();
         PageResponseDTO<GymDTO> responseDTO = PageResponseDTO.<GymDTO>withAll()
-        .dtoList(dtoList)
-        .pageRequestDTO(pageRequestDTO)
-        .totalCount(totalCount)
-        .build();
+                .dtoList(dtoList)
+                .pageRequestDTO(pageRequestDTO)
+                .totalCount(totalCount)
+                .build();
         return responseDTO;
     }
-    //gachudon brench end
+
+    public List<Gym> list() {
+        return gymRepository.findAll();
+    }
+    // gachudon brench end
 }

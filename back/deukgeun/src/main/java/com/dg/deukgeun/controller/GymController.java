@@ -1,6 +1,7 @@
 package com.dg.deukgeun.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,12 +21,11 @@ import com.dg.deukgeun.dto.PageRequestDTO;
 import com.dg.deukgeun.dto.PageResponseDTO;
 import com.dg.deukgeun.dto.gym.GymDTO;
 import com.dg.deukgeun.dto.gym.GymImageDTO;
-import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 import com.dg.deukgeun.dto.gym.GymRequestDTO;
 import com.dg.deukgeun.dto.gym.GymResponseDTO;
-import com.dg.deukgeun.dto.user.LoginDTO;
+import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
-import com.dg.deukgeun.entity.GymImage;
+import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.service.GymImageService;
 import com.dg.deukgeun.service.GymService;
 import com.dg.deukgeun.service.TrainerService;
@@ -68,30 +68,30 @@ public class GymController {
         }
     }
 
-
     // 페이징 처리한 헬스장 데이터 목록 불러오기
-    /* 불러오는 데이터 포멧은 다음과 같습니다.
+    /*
+     * 불러오는 데이터 포멧은 다음과 같습니다.
      * {
      * "dtoList": [
-     *     {
-     *         "gymId": 1,
-     *         "gymName": null,
-     *         "userId": 3,
-     *         "crNumber": null,
-     *         "phoneNumber": null,
-     *         "address": null,
-     *         "detailAddress": null,
-     *         "operatingHours": null,
-     *         "prices": null,
-     *         "introduce": null
-     *     }
+     * {
+     * "gymId": 1,
+     * "gymName": null,
+     * "userId": 3,
+     * "crNumber": null,
+     * "phoneNumber": null,
+     * "address": null,
+     * "detailAddress": null,
+     * "operatingHours": null,
+     * "prices": null,
+     * "introduce": null
+     * }
      * ],
      * "pageNumList": [
-     *     1
+     * 1
      * ],
      * "pageRequestDTO": {
-     *     "page": 1,
-     *     "size": 10
+     * "page": 1,
+     * "size": 10
      * },
      * "prev": false,
      * "next": false,
@@ -102,9 +102,25 @@ public class GymController {
      * "current": 1
      * }
      */
+    @GetMapping("/getListWithPaging")
+    public PageResponseDTO<GymDTO> list(PageRequestDTO pageRequestDTO) {
+        return gymService.listWithPaging(pageRequestDTO);
+    }
+
     @GetMapping("/getList")
-    public PageResponseDTO<GymDTO>list(PageRequestDTO pageRequestDTO){
-        return gymService.list(pageRequestDTO);
+    public List<Gym> list() {
+        List<Gym> list = gymService.list();
+        for (Gym gym : list) {
+            gym.getUser().setPassword("");
+        }
+        // Map<String, Gym> responseMap = new HashMap<>();
+        // if (list.size() > 0) {
+        // for (Gym gym : list) {
+        // responseMap.put(gym.getUser().getUserName(), gym);
+        // }
+        // }
+        return list;
+
     }
 
     // from gachudon brench
@@ -126,11 +142,11 @@ public class GymController {
      * 미리 약속된 이미지 경로를 프론트에서 호출할 것.
      * UserId : 헬스장 주인 아이디
      * trainersList : {
-     *  trainerId : 트레이너 Id. userId 와 동일
-     *  trainerCareer : 트레이너 커리어
-     *  trainerImage : 트레이너 사진
-     *  gymId : 트레이너 소속의 gym Id
-     *  userName : 트레이너 이름
+     * trainerId : 트레이너 Id. userId 와 동일
+     * trainerCareer : 트레이너 커리어
+     * trainerImage : 트레이너 사진
+     * gymId : 트레이너 소속의 gym Id
+     * userName : 트레이너 이름
      * }
      *
      */
@@ -182,7 +198,7 @@ public class GymController {
      */
 
     @PostMapping("/post")
-    public Map<String,String> register(GymRequestDTO gymRequestDTO){
+    public Map<String, String> register(GymRequestDTO gymRequestDTO) {
         log.info("register: " + gymRequestDTO);
         List<MultipartFile> files = gymRequestDTO.getFiles();
         List<String> uploadFileNames = fileUtil.saveFile(files);
@@ -213,24 +229,26 @@ public class GymController {
         return Map.of("RESULT", "SUCCESS");
     }
 
-    /* 다음과 같은 형태로 Json/FormData 포멧을 넘겨받았을 때를 가정
+    /*
+     * 다음과 같은 형태로 Json/FormData 포멧을 넘겨받았을 때를 가정
      * {
-     *  userId : Integer
-     *  gymName : String,
-     *  crNumber : String,
-     *  phoneNumber : String,
-     *  address : String,
-     *  detailAddress : String,
-     *  operatingHours : ?,
-     *  prices : ?,
-     *  introduce : String,
-     *  approval : 0 or 1 or 2 or... I don't know...
+     * userId : Integer
+     * gymName : String,
+     * crNumber : String,
+     * phoneNumber : String,
+     * address : String,
+     * detailAddress : String,
+     * operatingHours : ?,
+     * prices : ?,
+     * introduce : String,
+     * approval : 0 or 1 or 2 or... I don't know...
      * }
      * 파일은 받지 않는다.
      * 이미지 파일의 경우 수정 없이 삭제/추가만 기능하는 것으로 조정
      */
     @PutMapping("/put/{gymId}")
-    public Map<String, String> modify(@PathVariable(name = "gymId")Integer gymId, @RequestBody GymRequestDTO gymRequestDTO){
+    public Map<String, String> modify(@PathVariable(name = "gymId") Integer gymId,
+            @RequestBody GymRequestDTO gymRequestDTO) {
         GymDTO gymDTO = new GymDTO();
 
         gymDTO.setAddress(gymRequestDTO.getAddress());
@@ -243,49 +261,51 @@ public class GymController {
         gymDTO.setOperatingHours(gymRequestDTO.getOperatingHours());
         gymDTO.setPhoneNumber(gymRequestDTO.getPhoneNumber());
         gymDTO.setPrices(gymRequestDTO.getPrices());
-        
+
         log.info("Modify: " + gymDTO);
         gymService.modify(gymDTO);
-        return Map.of("RESULT","SUCCESS");
+        return Map.of("RESULT", "SUCCESS");
     }
 
     @DeleteMapping("/delete/{gymId}")
-    public Map<String,String> remove(@PathVariable(name = "gymId") Integer gymId){
+    public Map<String, String> remove(@PathVariable(name = "gymId") Integer gymId) {
         log.info("Remove: " + gymId);
         gymService.remove(gymId);
         return Map.of("RESULT", "SUCCESS");
     }
 
-    //헬스장 이미지'만' 추가
-    /* 입력 내용
-     *  {
-     *  files : file array format
-     *  }
-     *  gymId는 PathVariable로 받음
+    // 헬스장 이미지'만' 추가
+    /*
+     * 입력 내용
+     * {
+     * files : file array format
+     * }
+     * gymId는 PathVariable로 받음
      */
     @PostMapping("/insertImage/{gymId}")
-    public Map<String, String> insertImage(@PathVariable(name = "gymId")Integer gymId,@RequestBody GymRequestDTO gymRequestDTO){
+    public Map<String, String> insertImage(@PathVariable(name = "gymId") Integer gymId,
+            @RequestBody GymRequestDTO gymRequestDTO) {
         List<GymImageDTO> dtoList = new ArrayList<>();
         List<MultipartFile> files = gymRequestDTO.getFiles();
         List<String> uploadFileNames = fileUtil.saveFile(files);
-        for(int i=0;i<files.size();i++){
+        for (int i = 0; i < files.size(); i++) {
             GymImageDTO dto = new GymImageDTO();
             dto.setGymId(gymId);
             dto.setGymImage(uploadFileNames.get(i));
             dtoList.add(dto);
         }
         gymImageService.insertList(dtoList);
-        return Map.of("RESULT","SUCESS");
+        return Map.of("RESULT", "SUCESS");
     }
 
-    //헬스장 이미지 삭제
+    // 헬스장 이미지 삭제
     @DeleteMapping("/deleteImage/{gymImage}")
-    public Map<String,String> removeImage(@PathVariable(name="gymImage") String gymImage){
+    public Map<String, String> removeImage(@PathVariable(name = "gymImage") String gymImage) {
         gymImageService.remove(gymImage);
-        return Map.of("RESULT","SUCCESS");
+        return Map.of("RESULT", "SUCCESS");
     }
 
-    //gachudon brench end
+    // gachudon brench end
 
     // // GYM 로그인
     // @PostMapping("/login")
