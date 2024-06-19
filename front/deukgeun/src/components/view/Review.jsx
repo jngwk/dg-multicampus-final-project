@@ -3,8 +3,12 @@
 import React from "react";
 import { MdOutlineRateReview } from "react-icons/md";
 import ReviewContent from "./ReviewContent";
+import ReviewModal from "../modals/ReviewModal";
+import { useModal } from "../../hooks/useModal";
 
 const Review = () => {
+    const { isModalVisible, toggleModal } = useModal();
+
     return (
         <div>
             {/* 리뷰 작성 헤더 */}
@@ -16,12 +20,17 @@ const Review = () => {
                     </div>
                     등록 리뷰 수: 52
                 </div>
-                <button className="absolute top-12 right-0 flex items-center mr-5">
-                    <div className="hover:font-bold">
+                <button className="absolute top-12 right-0 flex items-center mr-5" onClick={toggleModal} >
+                    <div className="hover:font-bold" >
                         리뷰작성
                     </div>
-                    <MdOutlineRateReview className="mx-1 mb-1" size="25" color="#9F8D8D" />
+                    <MdOutlineRateReview className="mx-1 mb-1" size="25" color="#9F8D8D"/>
                 </button>
+                {isModalVisible ? (
+                    <ReviewModal toggleModal={toggleModal} />
+                ) : (
+                    ""
+                )}
             </div>
 
             {/* 리뷰 내용 */}
