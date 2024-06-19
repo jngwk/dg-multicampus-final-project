@@ -3,6 +3,7 @@ import { Outlet, createBrowserRouter } from "react-router-dom";
 import Layout from "../components/shared/Layout";
 import Loader from "../components/shared/Loader";
 import Fallback from "../components/shared/Fallback";
+
 // import QuillEditor from "../components/shared/QuillEditor";
 
 const Main = lazy(() => import("../pages/Main"));
@@ -17,6 +18,7 @@ const MemberList = lazy(() => import("../pages/MemberList"));
 const PTMemberList = lazy(() => import("../pages/PTMemberList"));
 const CenterTrainerList = lazy(() => import("../pages/CenterTrainerList"));
 const CenterMemberList = lazy(() => import("../pages/CenterMemberList"));
+const CenterView = lazy(()=>import("../pages/CenterView"));
 const ReviewForm = lazy(() => import("../test/ReviewForm"));
 const ReviewList = lazy(() => import("../test/ReviewList"));
 
@@ -90,6 +92,10 @@ const root = createBrowserRouter([
       {
         path: "centerMemberList",
         element: <CenterMemberList />,
+      },
+      {
+        path: "centerView",
+        element: <CenterView />,
       },
       {
         path: "ReviewForm",

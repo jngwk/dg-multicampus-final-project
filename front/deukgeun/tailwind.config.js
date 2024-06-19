@@ -8,6 +8,7 @@ module.exports = {
       "bright-orange": "#fe8742",
       "grayish-red": "#9f8d8d",
       "light-gray": "#E6E6E6",
+      "light-black": "#4E4C4F",
       ...colors,
     },
     fontFamily: {
