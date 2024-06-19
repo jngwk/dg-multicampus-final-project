@@ -1,11 +1,11 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
 
-export const API_SERVER_HOST = "http://localhost:8282";
-const userPrefix = `${API_SERVER_HOST}/api/user`;
-const gymPrefix = `${API_SERVER_HOST}/api/gym`;
-// const userPrefix = `/api/user`;  //user proxy 사용
-// const gymPrefix = `/api/gym`;  //gym proxy 사용
+// export const API_SERVER_HOST = "http://localhost:8282";
+// const userPrefix = `${API_SERVER_HOST}/api/user`;
+// const gymPrefix = `${API_SERVER_HOST}/api/gym`;
+const userPrefix = `/api/user`;  //user proxy 사용
+const gymPrefix = `/api/gym`;  //gym proxy 사용
 
 export const signUpGeneral = async (userData) => {
   try {
@@ -29,7 +29,7 @@ export const signUpGym = async (userData) => {
 export const signUpTrainer = async (userData) => {
   try {
     console.log(userData);
-    const response = await axiosInstance.post(`${userPrefix}/signUp/trainer`, userData);
+    const response = await axios.post(`${userPrefix}/signUp/trainer`, userData);
     return response.data;
   } catch (error) {
     // throw new Error("Signup failed");

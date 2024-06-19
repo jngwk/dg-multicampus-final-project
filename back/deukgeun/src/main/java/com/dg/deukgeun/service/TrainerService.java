@@ -44,7 +44,7 @@ public class TrainerService {
             logger.warn("Email already exists: {}", email);
             return ResponseDTO.setFailed("중복된 Email 입니다.");
         }
-
+        
         // Hash the password
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String hashedPassword = passwordEncoder.encode(password);
@@ -76,10 +76,7 @@ public class TrainerService {
             return ResponseDTO.setFailed("유효하지 않은 User ID 입니다.");
         }
 
-        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4");
-
         System.out.println(userOptional);
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
         Optional<Gym> gymOptional = gymRepository.findByUser(userOptional.get());
         if (gymOptional.isEmpty()) {
@@ -88,14 +85,13 @@ public class TrainerService {
         }
         Gym gym = gymOptional.get();
 
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         // Create Trainer entity
         Trainer trainer = new Trainer();
         trainer.setUser(user);
         trainer.setGym(gym);
-        // trainer.setTrainerCareer(trainerDTO.getTrainerCareer());
-        // trainer.setTrainerAbout(trainerDTO.getTrainerAbout());
-        // trainer.setTrainerImage(trainerDTO.getTrainerImage());
+        trainer.setTrainerCareer(trainerDTO.getTrainerCareer());
+        trainer.setTrainerAbout(trainerDTO.getTrainerAbout());
+        trainer.setTrainerImage(trainerDTO.getTrainerImage());
 
         logger.info("Trainer entity created for user: {}", user.getEmail());
 

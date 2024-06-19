@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -30,7 +31,7 @@ public class Trainer {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "gym_id")
     private Gym gym;
 
@@ -39,6 +40,7 @@ public class Trainer {
     private String trainerImage;
 
     public Trainer(TrainerDTO dto) {
+        this.trainerId = dto.getTrainerId();
         this.user = new User();
         this.gym = new Gym();
         this.trainerCareer = dto.getTrainerCareer();
