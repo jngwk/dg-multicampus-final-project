@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dg.deukgeun.api.CRNumberCheckApi;
+import com.dg.deukgeun.dto.PageRequestDTO;
+import com.dg.deukgeun.dto.PageResponseDTO;
 import com.dg.deukgeun.dto.gym.GymDTO;
 import com.dg.deukgeun.dto.gym.GymImageDTO;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
@@ -64,6 +66,45 @@ public class GymController {
         } catch (Exception e) {
             return ResponseDTO.setFailed("사업자 정보를 불러오는 것에 실패했습니다. 번호를 확인해 주세요.");
         }
+    }
+
+
+    // 페이징 처리한 헬스장 데이터 목록 불러오기
+    /* 불러오는 데이터 포멧은 다음과 같습니다.
+     * {
+     * "dtoList": [
+     *     {
+     *         "gymId": 1,
+     *         "gymName": null,
+     *         "userId": 3,
+     *         "crNumber": null,
+     *         "phoneNumber": null,
+     *         "address": null,
+     *         "detailAddress": null,
+     *         "operatingHours": null,
+     *         "prices": null,
+     *         "introduce": null
+     *     }
+     * ],
+     * "pageNumList": [
+     *     1
+     * ],
+     * "pageRequestDTO": {
+     *     "page": 1,
+     *     "size": 10
+     * },
+     * "prev": false,
+     * "next": false,
+     * "totalCount": 1,
+     * "prevPage": 0,
+     * "nextPage": 0,
+     * "totalPage": 1,
+     * "current": 1
+     * }
+     */
+    @GetMapping("/getList")
+    public PageResponseDTO<GymDTO>list(PageRequestDTO pageRequestDTO){
+        return gymService.list(pageRequestDTO);
     }
 
     // from gachudon brench
