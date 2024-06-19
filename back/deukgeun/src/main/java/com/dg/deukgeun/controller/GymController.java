@@ -68,6 +68,40 @@ public class GymController {
         }
     }
 
+
+    // 페이징 처리한 헬스장 데이터 목록 불러오기
+    /* 불러오는 데이터 포멧은 다음과 같습니다.
+     * {
+     * "dtoList": [
+     *     {
+     *         "gymId": 1,
+     *         "gymName": null,
+     *         "userId": 3,
+     *         "crNumber": null,
+     *         "phoneNumber": null,
+     *         "address": null,
+     *         "detailAddress": null,
+     *         "operatingHours": null,
+     *         "prices": null,
+     *         "introduce": null
+     *     }
+     * ],
+     * "pageNumList": [
+     *     1
+     * ],
+     * "pageRequestDTO": {
+     *     "page": 1,
+     *     "size": 10
+     * },
+     * "prev": false,
+     * "next": false,
+     * "totalCount": 1,
+     * "prevPage": 0,
+     * "nextPage": 0,
+     * "totalPage": 1,
+     * "current": 1
+     * }
+     */
     @GetMapping("/getList")
     public PageResponseDTO<GymDTO>list(PageRequestDTO pageRequestDTO){
         return gymService.list(pageRequestDTO);

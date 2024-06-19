@@ -84,7 +84,7 @@ public class SecurityConfig {
                                                                                                               // Stateless로
                                                                                                               // 설정합니다.
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/user/login", "/api/qna/**", "/api/user/logout", "/api/gym/get/**").permitAll() // 로그인과 회원가입
+                        .requestMatchers("/api/user/login", "/api/qna/**", "/api/user/logout", "/api/gym/get/**", "/api/gym/getList").permitAll() // 로그인과 회원가입
                                                                                                            // API는 인증 없이
                                                                                                            // 접근 가능하도록
                         // 설정합니다.
