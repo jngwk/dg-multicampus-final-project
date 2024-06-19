@@ -19,8 +19,7 @@ const PTMemberList = lazy(() => import("../pages/PTMemberList"));
 const CenterTrainerList = lazy(() => import("../pages/CenterTrainerList"));
 const CenterMemberList = lazy(() => import("../pages/CenterMemberList"));
 const CenterView = lazy(()=>import("../pages/CenterView"));
-
-
+const ReviewForm = lazy(() => import("../test/ReviewForm"));
 
 const root = createBrowserRouter([
   {
@@ -96,6 +95,10 @@ const root = createBrowserRouter([
       {
         path: "centerView",
         element: <CenterView />,
+      },
+      {
+        path: "ReviewForm",
+        element: <ReviewForm />,
       },
     ],
   },
