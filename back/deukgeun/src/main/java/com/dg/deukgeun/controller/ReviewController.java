@@ -40,7 +40,7 @@ public class ReviewController {
         }
     }
 
-    @GetMapping("/gym/{gymId}")
+    @GetMapping("/reviewList/{gymId}")
     public List<ReviewDTO> getReviewsByGymId(@PathVariable Integer gymId) {
         return reviewService.getReviewsByGymId(gymId);
     }
