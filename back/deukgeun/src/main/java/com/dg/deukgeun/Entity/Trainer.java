@@ -29,7 +29,7 @@ public class Trainer {
     private String trainerAbout;
     private String trainerImage;
     @ManyToOne
-    @JoinColumn(name = "gymId")
+    @JoinColumn(name = "gym_id")
     private Gym gym;
 
 }

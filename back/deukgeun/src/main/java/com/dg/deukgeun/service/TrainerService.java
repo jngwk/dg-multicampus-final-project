@@ -21,9 +21,9 @@ import lombok.extern.log4j.Log4j2;
 public class TrainerService {
     private final ModelMapper modelMapper;
     private final TrainerRepository trainerRepository;
-
+    
     public List<TrainerDTO> getList(Integer gymId){
-        List<Trainer> result = trainerRepository.findAllTrainerBy_gymId(gymId); 
+        List<Trainer> result = trainerRepository.findAllBygymGymId(gymId); 
         List<TrainerDTO> dtoList = new ArrayList<>();
         for(int i=0;i<result.size();i++){
             TrainerDTO dto = new TrainerDTO();

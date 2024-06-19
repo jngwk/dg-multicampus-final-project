@@ -3,12 +3,12 @@ package com.dg.deukgeun.repository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import com.dg.deukgeun.entity.Trainer;
 
-@Repository
+// @Repository
 public interface TrainerRepository extends JpaRepository<Trainer, Integer> {
     Optional<Trainer> findByUser_UserId(int userId);
-    List<Trainer> findAllTrainerBy_gymId(Integer gymId);
+    // @Query(value="select t from Trainer t where Trainer.gym.gym = ?1")
+    List<Trainer> findAllBygymGymId(Integer gymId);
 }

@@ -93,7 +93,7 @@ public class GymController {
      * }
      *
      */
-    @GetMapping("/{gymId}")
+    @GetMapping("/get/{gymId}")
     public GymResponseDTO get(@PathVariable Integer gymId) {
         GymDTO gymDTO = gymService.get(gymId);
         List<GymImageDTO> gymImageDTOList = gymImageService.getByGymId(gymId);
@@ -114,7 +114,9 @@ public class GymController {
         gymResponseDTO.setPrices(gymDTO.getPrices());
         gymResponseDTO.setUploadFileName(fileNames);
         gymResponseDTO.setUserId(gymDTO.getUserId());
+        log.info("before trainersCall");
         gymResponseDTO.setTrainersList(trainerService.getList(gymId));
+        log.info("after trainersCall");
         return gymResponseDTO;
     }
 
