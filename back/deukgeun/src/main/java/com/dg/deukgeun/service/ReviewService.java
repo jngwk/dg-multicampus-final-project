@@ -35,6 +35,7 @@ public class ReviewService {
     @Autowired
     private GymRepository gymRepository;
 
+    @PreAuthorize("hasRole('ROLE_GENERAL')")
     public Review saveReview(ReviewDTO reviewDTO, Integer userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found for userId: " + userId));
         Gym gym = gymRepository.findById(reviewDTO.getGymId()).orElseThrow(() -> new RuntimeException("Gym not found"));
@@ -55,7 +56,7 @@ public class ReviewService {
                 .map(review -> new ReviewDTO(review))
                 .collect(Collectors.toList());
     }
-
+    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_ADMIN')")
     public void deleteReview(Integer reviewId, Integer userId) {
         Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
         if (reviewOptional.isPresent()) {
@@ -68,6 +69,7 @@ public class ReviewService {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_GENERAL')")
     @Transactional
     public void updateReview(ReviewDTO reviewDTO, Integer userId) {
         Optional<Review> optionalReview = reviewRepository.findById(reviewDTO.getId());
