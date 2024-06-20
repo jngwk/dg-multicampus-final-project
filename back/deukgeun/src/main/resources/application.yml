@@ -62,7 +62,9 @@ security:
 #로깅 디버그
 logging:
   level:
-    org.springframework.security: DEBUG
+    org:
+    springframework:
+      security: DEBUG
 # email 관련
 mail:
   host: smtp.gmail.com

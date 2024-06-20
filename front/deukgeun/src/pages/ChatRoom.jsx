@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { IoAddCircle, IoChatbubbles } from "react-icons/io5";
 import Chatlist from "../components/chat/Chatlist";
 import Chatting from "../components/chat/Chatting";
 import ChatMain from "../components/chat/ChatMain";
-import { IoChatbubbles, IoAddCircle } from "react-icons/io5";
 import useWindowSize from "../hooks/useWindowResize";
 import Fallback from "../components/shared/Fallback";
 import useChat from "../hooks/useChat";

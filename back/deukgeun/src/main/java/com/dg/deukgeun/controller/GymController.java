@@ -47,12 +47,12 @@ public class GymController {
     @Autowired
     private TrainerService trainerService;
 
-    // GYM 회원가입
-    @PostMapping("/signUp")
-    public ResponseDTO<?> registerGym(@RequestBody GymSignUpDTO requestBody) {
-        ResponseDTO<?> result = gymService.signUp(requestBody);
-        return result;
-    }
+    // // GYM 회원가입
+    // @PostMapping("/signUp")
+    // public ResponseDTO<?> registerGym(@RequestBody GymSignUpDTO requestBody) {
+    //     ResponseDTO<?> result = gymService.signUp(requestBody);
+    //     return result;
+    // }
 
     // 사업자등록번호 확인
     @PostMapping("/crNumberCheck")

@@ -1,6 +1,10 @@
 package com.dg.deukgeun.entity;
 
+import com.dg.deukgeun.dto.gym.TrainerDTO;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -13,23 +17,34 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "trainers")
-@Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Trainer {
+
     @Id
-    private int trainerId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer trainerId;
 
     @OneToOne
-    @JoinColumn(name = "trainerId", referencedColumnName = "userId")
+    @JoinColumn(name = "user_id")
     private User user;
 
-    private String trainerCareer;
-    private String trainerAbout;
-    private String trainerImage;
     @ManyToOne
     @JoinColumn(name = "gym_id")
     private Gym gym;
 
+    private String trainerCareer;
+    private String trainerAbout;
+    private String trainerImage;
+
+    public Trainer(TrainerDTO dto) {
+        this.trainerId = dto.getTrainerId();
+        this.user = new User();
+        this.gym = new Gym();
+        this.trainerCareer = dto.getTrainerCareer();
+        this.trainerAbout = dto.getTrainerAbout();
+        this.trainerImage = dto.getTrainerImage();
+    }
 }

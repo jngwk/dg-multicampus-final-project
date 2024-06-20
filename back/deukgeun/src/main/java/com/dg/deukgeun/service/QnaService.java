@@ -34,22 +34,25 @@ public class QnaService {
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
 
-     public Integer register(QnaDTO qnaDTO) {
+    public Integer register(QnaDTO qnaDTO) {
         log.info("Registering QnaDTO...");
 
         Qna qna = modelMapper.map(qnaDTO, Qna.class);
 
         if (qnaDTO.getUserId() != null) {
             Optional<User> userResult = userRepository.findById(qnaDTO.getUserId());
-            if (userResult.isPresent()) { 
+            if (userResult.isPresent()) {
                 User user = userResult.get();
-                qna.setUser(user);
+                qna.setUser(user); // Associate user with Qna
                 qna.setUserName(user.getUserName());
                 qna.setEmail(user.getEmail());
             } else {
-                
                 log.warn("User with userId {} not found", qnaDTO.getUserId());
             }
+        } else {
+            qna.setUser(null);
+            qna.setUserName(qnaDTO.getUserName());
+            qna.setEmail(qnaDTO.getEmail());
         }
 
         if (qna.getRegDate() == null) {

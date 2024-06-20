@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import TextArea from "../components/shared/TextArea";
-import Input from "../components/shared/Input";
-import Button from "../components/shared/Button";
+import React, { useEffect, useState } from "react";
+import { registerInquery } from "../api/qnaApi";
 import { useAuth } from "../context/AuthContext";
 import useQnaValidation from "../hooks/useQnaValidation";
-import { registerInquery } from "../api/qnaApi";
+import Input from "../components/shared/Input";
+import TextArea from "../components/shared/TextArea";
+import Button from "../components/shared/Button";
 import Fallback from "../components/shared/Fallback";
 
 const initState = {
@@ -15,29 +15,52 @@ const initState = {
 };
 
 const QnaForm = () => {
-  const { loading } = useAuth();
-  const [formValues, setFormValues] = useState(initState);
+  const { userData, loading } = useAuth();
   const { errors, validateForm } = useQnaValidation();
+  const [formValues, setFormValues] = useState(initState);
+
+  useEffect(() => {
+    if (userData) {
+      setFormValues((prevValues) => ({
+        ...prevValues,
+        userName: userData.userName,
+        email: userData.email,
+      }));
+    }
+  }, [userData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormValues({
-      ...formValues,
+    setFormValues((prevValues) => ({
+      ...prevValues,
       [name]: value,
-    });
+    }));
   };
 
   const handleSubmit = async () => {
-    if (!validateForm(formValues)) return;
+    console.log("Handling submit...");
+
+    if (!validateForm(formValues)) {
+      console.log("Form validation failed:", errors);
+      return;
+    }
 
     try {
-      const formData = { ...formValues, regDate: new Date().toISOString() };
-      console.log(formData);
+      const formData = {
+        ...formValues,
+        userId: userData ? userData.userId : null,
+        regDate: new Date().toISOString().split('T')[0],
+      };
+
+      console.log("Form data:", formData);
       const res = await registerInquery(formData);
-      console.log(res);
+      console.log("Response:", res);
+
+      // Optionally reset form after successful submission
+      setFormValues(initState);
     } catch (error) {
       console.error("Error registering form data", error);
-      throw error;
+      // Handle error, e.g., show an error message to the user
     }
   };
 

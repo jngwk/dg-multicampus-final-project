@@ -46,4 +46,24 @@
       flexwrap: wrap;
     */
   }
+<<<<<<< HEAD
 }
+=======
+
+  /* Custom scrollbar style */
+  .scrollbar {
+    overflow-y: scroll;
+    padding: 0 0.5rem;
+  }
+
+  .scrollbar::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: #ffbe98;
+    border-radius: 10px;
+  }
+
+}
+>>>>>>> a05941f0735ca9ef896626c2946ad680d80224f9

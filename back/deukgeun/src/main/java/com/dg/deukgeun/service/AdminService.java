@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import com.dg.deukgeun.dto.page.PageRequestDTO;
 import com.dg.deukgeun.dto.page.PageResponseDTO;
-import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.GymRepository;
