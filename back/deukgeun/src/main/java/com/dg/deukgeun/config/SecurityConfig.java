@@ -95,10 +95,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/userInfo", "/ws/**").hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM")
                         .requestMatchers("/api/user/workoutSession").hasAnyAuthority("ROLE_GENERAL")
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN") // ADMIN 역할만 접근할 수 있도록 설정합니다.
-                        .requestMatchers("/api/membership/stats","/api/user/signUp/trainer", "/api/trainers/update/**").hasAuthority("ROLE_GYM")
+                        .requestMatchers("/api/membership/stats","/api/user/signUp/trainer").hasAuthority("ROLE_GYM")
                         .requestMatchers("/api/reviews/delete/**", "api/reviews/update/**").hasAnyAuthority("ROLE_GENERAL","ROLE_ADMIN")
                         .requestMatchers("/api/reviews/add").hasAnyAuthority("ROLE_GENERAL")
                         .requestMatchers("/api/reviews/reviewList/**").permitAll()
+                        .requestMatchers("/api/trainers/update/**").hasAuthority("ROLE_TRAINER")
                         .anyRequest().authenticated()) // 그 외 모든 요청은 인증이 필요합니다
 
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider, customUserDetailsService),
