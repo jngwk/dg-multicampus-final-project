@@ -167,6 +167,15 @@ public class WorkoutSessionController {
         // }
         // workoutService.insertList(workoutList);
         List<WorkoutDTO> workoutList = workoutSessionReqeustDTO.getWorkouts();
+
+        // TODO 삭제된 workout 파악하기
+        // List<WorkoutDTO> savedWorkoutList =
+        // workoutService.getByWorkoutSessionId(workoutSessionId);
+
+        // for (int i=0; i<savedWorkoutList.size(); i ++) {
+
+        // }
+
         System.out.println("Workout List: " + workoutList.toString());
 
         for (int i = 0; i < workoutList.size(); i++) {

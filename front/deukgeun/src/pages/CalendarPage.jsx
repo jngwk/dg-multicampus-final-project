@@ -14,6 +14,7 @@ import {
   deleteWorkoutSession,
   getWorkoutSessions,
   getWorkouts,
+  deleteWorkout,
 } from "../api/workoutSessionApi";
 import Fallback from "../components/shared/Fallback";
 
@@ -111,10 +112,11 @@ const CalendarPage = () => {
   const updateEvent = async (formValues, id) => {
     console.log(selectedEvent);
     try {
-      // userId 1인 회원 만들고 테스트
+      console.log("@@@@@@@@@@@넘어가는 데이터", formValues);
       const result = await modifyWorkoutSession(formValues, id);
-      console.log(result);
+
       const updatedEvent = formatFormValues(formValues, id);
+      console.log("@@@@@선택된 이벤트", updatedEvent);
 
       setSelectedEvent(updatedEvent);
       // console.log("@@@@CHECK", updatedEvent);
@@ -131,19 +133,29 @@ const CalendarPage = () => {
   };
 
   // 선택된 이벤트 삭제
-  const deleteEvent = async () => {
+  const deleteEvent = async (id) => {
     try {
-      const result = await deleteWorkoutSession(selectedEvent.id);
+      const result = await deleteWorkoutSession(id);
       console.log(result);
-      const updatedEvents = events.filter(
-        (event) => event.id != selectedEvent.id
-      );
+      const updatedEvents = events.filter((event) => event.id != id);
       setSelectedEvent(null);
       setEvents(updatedEvents);
       setIsInputFormVisible(false);
     } catch (error) {
       setError("데이터 베이스에서 삭제하는데 실패했습니다.");
       console.log("Delete mapping error: ", error);
+    }
+  };
+
+  const deleteWorkouts = async (workoutList) => {
+    try {
+      const promises = workoutList.map(async (workoutId) => {
+        const res = await deleteWorkout(workoutId);
+        console.log("Deleted workoutId:", workoutId, res);
+      });
+      await Promise.all(promises);
+    } catch (error) {
+      console.error("Error deleting workouts", error);
     }
   };
 
@@ -174,7 +186,7 @@ const CalendarPage = () => {
     // console.log(selectedEvent);
     const updatedEvents = events.map((event) => {
       if (event.id == info.event.id) {
-        console.log(info.event);
+        console.log("@@@@@@", info.event);
         const start = info.event.startStr;
         const startDate = start.split("T")[0];
         const startTime = formatTime(start.split("T")[1]);
@@ -182,6 +194,8 @@ const CalendarPage = () => {
         const end = info.event.endStr;
         const endDate = end.split("T")[0];
         const endTime = end ? formatTime(end.split("T")[1]) : "";
+
+        console.log("@@@@@@@ 시간 변경", startTime, endTime);
 
         const updatedFormValues = {
           ...event.extendedProps,
@@ -203,10 +217,10 @@ const CalendarPage = () => {
   };
 
   // 테스팅용
-  const handleDeleteAll = () => {
-    setEvents([]);
-    setIsInputFormVisible(false);
-  };
+  // const handleDeleteAll = () => {
+  //   setEvents([]);
+  //   setIsInputFormVisible(false);
+  // };
 
   // Input form visibility를 toggle
   // TODO 슬라이딩 effect 추가
@@ -257,8 +271,8 @@ const CalendarPage = () => {
     return <Fallback />;
   }
   return (
-    <>
-      <div className="xl:w-8/12 p-8 slide">
+    <div className="w-full h-full">
+      <div className="xl:w-9/12 p-8 slide">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
@@ -295,10 +309,11 @@ const CalendarPage = () => {
           isInputFormVisible={isInputFormVisible}
           toggleInputForm={toggleInputForm}
           workoutsLoading={workoutsLoading}
+          deleteWorkouts={deleteWorkouts}
         />
       </div>
-      <Button label="전체 삭제" onClick={handleDeleteAll} />
-    </>
+      {/* <Button label="전체 삭제" onClick={handleDeleteAll} /> */}
+    </div>
   );
 };
 

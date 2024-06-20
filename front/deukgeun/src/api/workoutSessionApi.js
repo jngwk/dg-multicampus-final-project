@@ -1,3 +1,4 @@
+import axios from "axios";
 import axiosInstance from "./axiosInstance";
 
 // export const API_SERVER_HOST = "http://localhost:8282";
@@ -23,7 +24,7 @@ export const registerWorkoutSession = async (event) => {
 
 export const modifyWorkoutSession = async (event, eventId) => {
   try {
-    const res = await axiosInstance.put(`${prefix}/modify/${eventId}`, {
+    const res = await axios.put(`${prefix}/modify/${eventId}`, {
       workoutSessionId: eventId,
       workoutDate: event.workoutDate,
       content: event.content,
@@ -41,7 +42,7 @@ export const modifyWorkoutSession = async (event, eventId) => {
 
 export const deleteWorkoutSession = async (eventId) => {
   try {
-    const res = await axiosInstance.delete(`${prefix}/delete/${eventId}`);
+    const res = await axios.delete(`${prefix}/delete/${eventId}`);
     return res.data;
   } catch (error) {
     throw new Error("Delete workout session failed...");
@@ -50,9 +51,7 @@ export const deleteWorkoutSession = async (eventId) => {
 
 export const getWorkoutSessions = async (startDate, endDate) => {
   try {
-    const res = await axiosInstance.get(
-      `${prefix}/get/${startDate}/${endDate}`
-    );
+    const res = await axios.get(`${prefix}/get/${startDate}/${endDate}`);
     return res.data;
   } catch (error) {
     throw new Error("Get workout sessions failed...");
@@ -62,9 +61,17 @@ export const getWorkoutSessions = async (startDate, endDate) => {
 export const getWorkouts = async (workoutSessionId) => {
   try {
     console.log("WS ID", workoutSessionId);
-    const res = await axiosInstance.get(
-      `${prefix}/get/workouts/${workoutSessionId}`
-    );
+    const res = await axios.get(`${prefix}/get/workouts/${workoutSessionId}`);
+    return res.data;
+  } catch (error) {
+    throw new Error("Get workouts failed...");
+  }
+};
+
+export const deleteWorkout = async (workoutId) => {
+  try {
+    console.log("WO ID", workoutId);
+    const res = await axios.delete(`api/workout/delete/${workoutId}`);
     return res.data;
   } catch (error) {
     throw new Error("Get workouts failed...");
