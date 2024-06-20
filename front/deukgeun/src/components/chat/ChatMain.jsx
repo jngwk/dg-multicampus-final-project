@@ -1,7 +1,7 @@
 import React from "react";
 import { IoChatbubbles } from "react-icons/io5";
 
-const ChatMain = ({ loadAvailableUsers }) => {
+const ChatMain = ({ toggleModal }) => {
   return (
     <div className="flex flex-col justify-center items-center relative w-full h-full mx-1 border-2 rounded-lg border-grayish-red">
       <IoChatbubbles
@@ -15,7 +15,7 @@ const ChatMain = ({ loadAvailableUsers }) => {
       </span>
       <button
         className="m-3 text-xs bg-grayish-red bg-opacity-50 w-28 h-7 rounded-lg hover:border-grayish-red hover:border-2 hover:bg-light-gray hover:border-opacity-50"
-        onClick={loadAvailableUsers}
+        onClick={toggleModal}
       >
         메세지 보내기
       </button>

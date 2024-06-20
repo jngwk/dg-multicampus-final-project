@@ -24,7 +24,7 @@ public class WorkoutService {
     private final ModelMapper modelMapper;
     private final WorkoutRepository workoutRepository;
 
-    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')")
+    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_TRAINER')")
     public Integer register(WorkoutDTO workoutDTO) { // workout 정보 입력
         log.info("--------------------");
         Workout workout = modelMapper.map(workoutDTO, Workout.class);
@@ -32,7 +32,7 @@ public class WorkoutService {
         return savedWorkout.getWorkoutId();
     }
 
-    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')")
+    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_TRAINER')")
     public void insertList(List<WorkoutDTO> dtoList) {
         List<Workout> workoutList = new ArrayList<Workout>();
         for (int i = 0; i < dtoList.size(); i++) {
@@ -41,7 +41,7 @@ public class WorkoutService {
         workoutRepository.saveAll(workoutList);
     }
 
-    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')")
+    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_TRAINER')")
     public WorkoutDTO get(Integer workoutId) { // workoutId를 기준으로 read
         Optional<Workout> result = workoutRepository.findById(workoutId);
         Workout workout = result.orElseThrow();
@@ -49,7 +49,7 @@ public class WorkoutService {
         return dto;
     }
 
-    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')")
+    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_TRAINER')")
     public List<WorkoutDTO> getByWorkoutSessionId(Integer workoutSessionId) {
         List<Workout> result = workoutRepository.findByWorkoutSessionId(workoutSessionId);
         List<WorkoutDTO> dtoList = new ArrayList<WorkoutDTO>();
@@ -59,7 +59,7 @@ public class WorkoutService {
         return dtoList;
     }
 
-    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')")
+    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_TRAINER')")
     public void modify(WorkoutDTO workoutDTO) { // workoutId를 기준으로 update
         Optional<Workout> result = workoutRepository.findById(workoutDTO.getWorkoutId());
         Workout workout = result.orElseThrow();
@@ -69,8 +69,13 @@ public class WorkoutService {
         workout.setWorkoutSet(workoutDTO.getWorkoutSet());
     }
 
-    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')")
+    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_TRAINER')")
     public void remove(Integer workoutId) {
         workoutRepository.deleteById(workoutId);
+    }
+
+    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_TRAINER')")
+    public void removeByWorkoutSessionId(Integer workoutSessionId) {
+        workoutRepository.deleteByWorkoutSessionId(workoutSessionId);
     }
 }

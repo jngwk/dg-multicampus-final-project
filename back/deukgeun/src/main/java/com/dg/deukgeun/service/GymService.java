@@ -1,30 +1,45 @@
 package com.dg.deukgeun.service;
 
+import java.util.Optional;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.dg.deukgeun.dto.UserRole;
+import com.dg.deukgeun.dto.gym.GymDTO;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.GymRepository;
 import com.dg.deukgeun.repository.UserRepository;
-import com.dg.deukgeun.security.JwtTokenProvider;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Service
+// from gachudon brench
+@Transactional
+@RequiredArgsConstructor
+@Log4j2
+// gachudon brench end
 public class GymService {
+    // from gachudon brench
+    private final ModelMapper modelMapper;
+    // from gachudon brench
 
-    @Autowired GymRepository gymRepository;
-    @Autowired UserRepository userRepository;
-    @Autowired JwtTokenProvider tokenProvider;
+    @Autowired
+    private GymRepository gymRepository;
 
-    // 회원 가입 서비스 메서드
+    @Autowired
+    private UserRepository userRepository;
+
     public ResponseDTO<?> signUp(GymSignUpDTO dto) {
         String email = dto.getEmail();
         String password = dto.getPassword();
-
         // 이메일 중복 확인
         try {
             if (userRepository.existsByEmail(email)) {
@@ -34,12 +49,10 @@ public class GymService {
             System.out.println("데이터베이스 연결에 실패하였습니다. " + e.getMessage());
             return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
         }
-
         // 비밀번호 확인
         if (!password.equals(dto.getPassword())) {
             return ResponseDTO.setFailed("비밀번호가 일치하지 않습니다.");
         }
-
         // User 엔티티 생성
         User user = new User();
         user.setUserName(dto.getUserName());
@@ -47,12 +60,10 @@ public class GymService {
         user.setAddress(dto.getAddress());
         user.setDetailAddress(dto.getDetailAddress());
         user.setRole(UserRole.ROLE_GYM); // 역할 설정
-
         // 비밀번호 암호화
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String hashedPassword = passwordEncoder.encode(password);
         user.setPassword(hashedPassword);
-
         // User 엔티티를 데이터베이스에 저장
         try {
             userRepository.save(user);
@@ -60,7 +71,6 @@ public class GymService {
             System.out.println("데이터베이스 연결에 실패하였습니다. " + e.getMessage());
             return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
         }
-
         // Gym 엔티티 생성
         Gym gym = new Gym();
         gym.setUser(user);
@@ -72,7 +82,6 @@ public class GymService {
         gym.setOperatingHours(dto.getOperatingHours());
         gym.setPrices(dto.getPrices());
         gym.setIntroduce(dto.getIntroduce());
-
         // Gym 엔티티를 데이터베이스에 저장
         try {
             gymRepository.save(gym);
@@ -80,8 +89,25 @@ public class GymService {
             System.out.println("데이터베이스 연결에 실패하였습니다. " + e.getMessage());
             return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
         }
-
         // 사용자 정보 응답 DTO 생성
         return ResponseDTO.setSuccess("Gym 회원 생성에 성공했습니다.");
     }
+
+    // from gachudon brench
+    // GymDTO 형태로 데이터 불러오기
+    public GymDTO get(Integer gymId) {
+        Optional<Gym> result = gymRepository.findById(gymId);
+        Gym gym = result.orElseThrow();
+        GymDTO dto = modelMapper.map(gym, GymDTO.class);
+        return dto;
+    }
+
+    // 새로운 헬스장 정보 입력
+    public Integer insert(GymDTO gymDTO) {
+        log.info("--------------------");
+        Gym gym = modelMapper.map(gymDTO, Gym.class);
+        Gym savedGym = gymRepository.save(gym);
+        return savedGym.getGymId();
+    }
+    // gachudon brench end
 }

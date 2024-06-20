@@ -1,13 +1,10 @@
 import React, { Suspense, lazy } from "react";
 import { Outlet, createBrowserRouter } from "react-router-dom";
-import Layout from "../components/shared/Layout";
-import Loader from "../components/shared/Loader";
 import Fallback from "../components/shared/Fallback";
-
+import Layout from "../components/shared/Layout";
 // import QuillEditor from "../components/shared/QuillEditor";
 
 const Main = lazy(() => import("../pages/Main"));
-const Chart = lazy(() => import("../pages/ChartPage"));
 const Chat = lazy(() => import("../pages/ChatRoom"));
 const Calendar = lazy(() => import("../pages/CalendarPage"));
 const SignUpChoice = lazy(() => import("../pages/SignUpChoicePage"));
@@ -18,11 +15,18 @@ const MemberList = lazy(() => import("../pages/MemberList"));
 const PTMemberList = lazy(() => import("../pages/PTMemberList"));
 const CenterTrainerList = lazy(() => import("../pages/CenterTrainerList"));
 const CenterMemberList = lazy(() => import("../pages/CenterMemberList"));
+const MembershipStats = lazy(() => import("../pages/MembershipStats"));
+const SignUpTrainerPage = lazy(() => import("../pages/SignUpTrainerPage"));
+const SearchGymPage = lazy(() => import("../pages/SearchGymPage"));
 const CenterView = lazy(()=>import("../pages/CenterView"));
 const ReviewForm = lazy(() => import("../test/ReviewForm"));
 const ReviewList = lazy(() => import("../test/ReviewList"));
+<<<<<<< HEAD
 const MemberRegister = lazy(() => import("../pages/MemberRegister"));
 
+=======
+const TrainerUpdateForm = lazy(() => import("../test/TrainerUpdateForm"));
+>>>>>>> develop
 const root = createBrowserRouter([
   {
     path: "/",
@@ -44,10 +48,6 @@ const root = createBrowserRouter([
       {
         index: true,
         element: <Main />,
-      },
-      {
-        path: "chart",
-        element: <Chart />,
       },
       {
         path: "chat",
@@ -75,6 +75,10 @@ const root = createBrowserRouter([
         element: <QnaForm />,
       },
       {
+        path: "stats",
+        element: <MembershipStats />,
+      },
+      {
         path: "memberList",
         element: <MemberList />,
       },
@@ -95,6 +99,14 @@ const root = createBrowserRouter([
         element: <CenterMemberList />,
       },
       {
+        path: "trainer",
+        element: <SignUpTrainerPage />,
+      },
+      {
+        path: "search", 
+        element: <SearchGymPage /> 
+      },
+      {
         path: "centerView",
         element: <CenterView />,
       },
@@ -107,13 +119,16 @@ const root = createBrowserRouter([
         element: <ReviewList gymId={1}/>,
       },
       {
+<<<<<<< HEAD
         path: "memberRegister",
         element: <MemberRegister />,
+=======
+        path: "TrainerUpdateForm",
+        element: <TrainerUpdateForm/>,
+>>>>>>> develop
       },
     ],
   },
-
-  // ...signUp.routes,
 ]);
 
 export default root;

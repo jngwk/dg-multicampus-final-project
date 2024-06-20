@@ -1,14 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
-import ModalLayout from "./ModalLayout";
-import Button from "../shared/Button";
-import Bprofile from "../../assets/blank_profile.png";
+import React, { useRef, useState } from "react";
+import { BiCommentDetail } from "react-icons/bi";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { IoSearchOutline } from "react-icons/io5";
-import { BiCommentDetail } from "react-icons/bi";
 import { LiaUserEditSolid } from "react-icons/lia";
+import Bprofile from "../../assets/blank_profile.png";
 import useValidation from "../../hooks/useValidation";
-import { useAuth } from "../../context/AuthContext";
-import Loader from "../shared/Loader";
+import Button from "../shared/Button";
+import ModalLayout from "./ModalLayout";
 
 const MyInfo = ({ toggleModal, userData }) => {
   const [imageUrl, setImageUrl] = useState(null);

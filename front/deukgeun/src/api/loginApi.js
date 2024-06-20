@@ -7,7 +7,7 @@ const prefix = `/api/user`; // proxy 사용
 
 export const login = async (email, password) => {
   try {
-    const response = await axios.post(`${prefix}/login`, {
+    const response = await axiosInstance.post(`${prefix}/login`, {
       email,
       password,
     });
