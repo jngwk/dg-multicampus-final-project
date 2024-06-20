@@ -1,7 +1,6 @@
 package com.dg.deukgeun.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +24,7 @@ import com.dg.deukgeun.dto.gym.GymRequestDTO;
 import com.dg.deukgeun.dto.gym.GymResponseDTO;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
+
 import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.service.GymImageService;
 import com.dg.deukgeun.service.GymService;
@@ -50,8 +50,8 @@ public class GymController {
     // // GYM 회원가입
     // @PostMapping("/signUp")
     // public ResponseDTO<?> registerGym(@RequestBody GymSignUpDTO requestBody) {
-    //     ResponseDTO<?> result = gymService.signUp(requestBody);
-    //     return result;
+    // ResponseDTO<?> result = gymService.signUp(requestBody);
+    // return result;
     // }
 
     // 사업자등록번호 확인
