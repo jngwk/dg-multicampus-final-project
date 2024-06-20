@@ -20,6 +20,7 @@ public class PersonalTrainingDTO {
     private int ptCountTotal;
     private int ptCountRemain;
     private String ptContent;
+    private String userPtReason;
     private Integer userGender;
     private Integer userAge;
     private String userWorkoutDur;

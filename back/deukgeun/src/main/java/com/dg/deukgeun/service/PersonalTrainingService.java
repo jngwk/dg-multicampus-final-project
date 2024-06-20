@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.dg.deukgeun.dto.personalTraining.PersonalTrainingDTO;
@@ -25,6 +26,7 @@ public class PersonalTrainingService {
     private final PersonalTrainingRepository personalTrainingRepository;
 
     //서비스를 구분하기 쉽도록 메서드의 이름은 각각 대응되는 mysql 쿼리 이름으로 적어두겠습니다.
+    // @PreAuthorize("hasRole('ROLE_GENERAL')")
     public Integer insert(PersonalTrainingDTO personalTrainingDTO){
         PersonalTraining personalTraining = modelMapper.map(personalTrainingDTO,PersonalTraining.class);
         PersonalTraining savedPersonalTraining = personalTrainingRepository.save(personalTraining);
