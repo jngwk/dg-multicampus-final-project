@@ -4,8 +4,6 @@ package com.dg.deukgeun.dto.gym;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dg.deukgeun.dto.TrainerDTO;
-
 // import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
@@ -18,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GymResponseDTO {
-    // Gym 
+    // Gym
     private Integer gymId;
     private String gymName;
     private Integer userId;
@@ -33,7 +31,7 @@ public class GymResponseDTO {
     @Builder.Default
     private List<String> uploadFileName = new ArrayList<>();
 
-    //트레이너 정보 List
+    // 트레이너 정보 List
     @Builder.Default
     private List<TrainerDTO> trainersList = new ArrayList<>();
 }
