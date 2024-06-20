@@ -3,6 +3,7 @@ import { Map, MapMarker, useMap } from "react-kakao-maps-sdk";
 import Input from "./shared/Input";
 import { getGymList } from "../api/gymApi";
 import Button from "./shared/Button";
+import Select from "./shared/Select";
 const { kakao } = window;
 
 const GymSearchMap = () => {
@@ -169,7 +170,7 @@ const GymSearchMap = () => {
           width: "100%",
           height: "80dvh",
         }}
-        level={5}
+        level={4}
         onCreate={setMap}
         isPanto={true}
       >
@@ -186,7 +187,7 @@ const GymSearchMap = () => {
         )}
       </Map>
       <div className="absolute top-0 left-0 z-20  w-[320px] h-full flex justify-center items-center">
-        <div className="flex flex-col items-center h-[90%] w-5/6 bg-gray-50/90 rounded-md py-2">
+        <div className="flex flex-col items-center h-[90%] w-5/6 bg-gray-50/90 rounded-md py-2 border border-grayish-red shadow-xl">
           <div className="w-full flex flex-col items-center border-b-2 pb-2">
             {/* TODO 필터 적용하기 */}
             <select
@@ -208,6 +209,12 @@ const GymSearchMap = () => {
               width="90%"
             />
             <Button label="검색하기" onClick={handleSearch} width="90%" />
+            {/* <Select label="필터">
+              <>
+                <option value="currentLoc">내 위치에서 가까운</option>
+                <option value="currentLoc">회원권 가격이 저렴한</option>
+              </>
+            </Select> */}
           </div>
           <div className="flex flex-col items-center w-[90%]">
             {gyms
@@ -221,6 +228,10 @@ const GymSearchMap = () => {
                     <span className="text-ellipsis overflow-hidden text-sm">
                       {gym.address}
                     </span>
+                    {/* <div className="flex justify-between">
+                      <span>상세보기</span>
+                      <span>문의하기</span>
+                    </div> */}
                   </div>
                 ))
               : "일치하는 헬스장이 없습니다."}
