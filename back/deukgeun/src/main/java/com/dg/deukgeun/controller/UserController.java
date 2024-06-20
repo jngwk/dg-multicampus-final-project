@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
+import com.dg.deukgeun.dto.gym.TrainerDTO;
 import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.dto.user.UpdateUserDTO;
@@ -27,6 +28,7 @@ import com.dg.deukgeun.repository.UserRepository;
 import com.dg.deukgeun.security.CustomUserDetails;
 import com.dg.deukgeun.service.EmailService;
 import com.dg.deukgeun.service.GymService;
+import com.dg.deukgeun.service.TrainerService;
 import com.dg.deukgeun.service.UserService;
 import com.dg.deukgeun.service.VerificationCodeService;
 
@@ -49,6 +51,9 @@ public class UserController {
     VerificationCodeService codeService;
     @Autowired
     GymService gymService;
+
+    @Autowired
+    TrainerService trainerService;
 
     // 인증번호 이메일 전송
     @PostMapping("/sendCode")
@@ -76,6 +81,14 @@ public class UserController {
     @PostMapping("/signUp/gym")
     public ResponseDTO<?> registerGym(@RequestBody GymSignUpDTO requestBody) {
         return gymService.signUp(requestBody);
+    }
+     // trainer 회원가입
+    @PostMapping("/signUp/trainer")
+    public ResponseDTO<?> registerTrainer(@RequestBody TrainerDTO requestBody) {
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer userId = userDetails.getUserId();
+        return trainerService.signUp(requestBody, userId);
     }
 
     // 로그인

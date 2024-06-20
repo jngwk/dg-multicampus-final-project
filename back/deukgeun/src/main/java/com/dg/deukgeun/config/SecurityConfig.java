@@ -95,7 +95,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/userInfo", "/ws/**").hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM")
                         .requestMatchers("/api/user/workoutSession").hasAnyAuthority("ROLE_GENERAL")
                         .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN") // ADMIN 역할만 접근할 수 있도록 설정합니다.
-                        .requestMatchers("/api/membership/stats").hasAuthority("ROLE_GYM")
+                        .requestMatchers("/api/membership/stats","/api/user/signUp/trainer", "/api/trainers/update/**").hasAuthority("ROLE_GYM")
                         .requestMatchers("/api/reviews/delete/**", "api/reviews/update/**").hasAnyAuthority("ROLE_GENERAL","ROLE_ADMIN")
                         .requestMatchers("/api/reviews/add").hasAnyAuthority("ROLE_GENERAL")
                         .requestMatchers("/api/reviews/reviewList/**").permitAll()
