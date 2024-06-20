@@ -1,7 +1,10 @@
 package com.dg.deukgeun.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,10 +32,24 @@ import lombok.extern.log4j.Log4j2;
 public class TrainerService {
 
     private static final Logger logger = LoggerFactory.getLogger(TrainerService.class);
-
     private final UserRepository userRepository;
     private final TrainerRepository trainerRepository;
     private final GymRepository gymRepository;
+
+    public List<TrainerDTO> getList(Integer gymId) {
+        List<Trainer> result = trainerRepository.findAllBygymGymId(gymId);
+        List<TrainerDTO> dtoList = new ArrayList<>();
+        for (int i = 0; i < result.size(); i++) {
+            TrainerDTO dto = new TrainerDTO();
+            dto.setGymId(gymId);
+            dto.setTrainerCareer(result.get(i).getTrainerCareer());
+            dto.setTrainerId(result.get(i).getTrainerId());
+            dto.setTrainerImage(result.get(i).getTrainerImage());
+            dto.setUserName(result.get(i).getUser().getUserName());
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
 
     public ResponseDTO<?> signUp(TrainerDTO trainerDTO, Integer userId) {
         String email = trainerDTO.getEmail();
@@ -45,11 +62,11 @@ public class TrainerService {
             logger.warn("Email already exists: {}", email);
             return ResponseDTO.setFailed("중복된 Email 입니다.");
         }
-        
+
         // Hash the password
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String hashedPassword = passwordEncoder.encode(password);
-        
+
         // Create User entity
         User user = new User();
         user.setEmail(email);
@@ -60,7 +77,7 @@ public class TrainerService {
         user.setRole(UserRole.ROLE_TRAINER);
 
         logger.info("User entity created for email: {}", email);
-       
+
         // Save User entity
         try {
             userRepository.save(user);
@@ -107,7 +124,7 @@ public class TrainerService {
 
         return ResponseDTO.setSuccess("트레이너 생성에 성공했습니다.");
     }
-    
+
     @PreAuthorize("hasRole('ROLE_TRAINER')")
     public void updateTrainer(Integer trainerId, TrainerDTO trainerDTO, Integer userId) {
         Optional<Trainer> optionalTrainer = trainerRepository.findById(trainerId);

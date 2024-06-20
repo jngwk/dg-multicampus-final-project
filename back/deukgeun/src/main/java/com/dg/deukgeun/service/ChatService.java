@@ -84,7 +84,7 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
     // 메시지 기록 불러오기
     @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')")
     public List<ChatMessage> getChatHistory(Integer chatId) {
-        return chatMessageRepository.findByChatRoomIdOrderByTimestampAsc(chatId);
+        return chatMessageRepository.findByChatRoomIdOrderByTimestamp(chatId);
     }
 
     // 대화방 존재하는지 확인하기
