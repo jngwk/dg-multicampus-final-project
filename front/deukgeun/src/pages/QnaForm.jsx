@@ -1,12 +1,11 @@
-import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { registerInquery } from "../api/qnaApi";
-import Button from "../components/shared/Button";
-import Fallback from "../components/shared/Fallback";
-import Input from "../components/shared/Input";
-import TextArea from "../components/shared/TextArea";
 import { useAuth } from "../context/AuthContext";
 import useQnaValidation from "../hooks/useQnaValidation";
+import Input from "../components/shared/Input";
+import TextArea from "../components/shared/TextArea";
+import Button from "../components/shared/Button";
+import Fallback from "../components/shared/Fallback";
 
 const initState = {
   userName: "",
@@ -15,61 +14,53 @@ const initState = {
   content: "",
 };
 
-
-const decodeJWT = (token) => {
-
-};
-
 const QnaForm = () => {
-  const { loading } = useAuth();
-  const [formValues, setFormValues] = useState(initState);
+  const { userData, loading } = useAuth();
   const { errors, validateForm } = useQnaValidation();
-  const [decodedToken, setDecodedToken] = useState(null);
+  const [formValues, setFormValues] = useState(initState);
 
   useEffect(() => {
-    const token = Cookies.get("authToken"); // Read token from cookie
-    if (token) {
-      const decoded = decodeJWT(token); // Use your custom decode function
-      setDecodedToken(decoded);
-
-      // Automatically populate formValues with decoded token info
-      setFormValues({
-        ...formValues,
-        userName: decoded.userName,
-        email: decoded.email,
-      });
+    if (userData) {
+      setFormValues((prevValues) => ({
+        ...prevValues,
+        userName: userData.userName,
+        email: userData.email,
+      }));
     }
-  }, []);
+  }, [userData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormValues({
-      ...formValues,
+    setFormValues((prevValues) => ({
+      ...prevValues,
       [name]: value,
-    });
+    }));
   };
 
   const handleSubmit = async () => {
     console.log("Handling submit...");
-  
+
     if (!validateForm(formValues)) {
       console.log("Form validation failed:", errors);
       return;
     }
-  
+
     try {
       const formData = {
         ...formValues,
-        //로그인 상태에서 안되는 이유 : userId를 못찾아서
-        userId: decodedToken ? decodedToken.sub : null,
+        userId: userData ? userData.userId : null,
         regDate: new Date().toISOString().split('T')[0],
       };
+
       console.log("Form data:", formData);
       const res = await registerInquery(formData);
       console.log("Response:", res);
+
+      // Optionally reset form after successful submission
+      setFormValues(initState);
     } catch (error) {
       console.error("Error registering form data", error);
-      throw error;
+      // Handle error, e.g., show an error message to the user
     }
   };
 

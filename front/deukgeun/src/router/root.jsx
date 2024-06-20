@@ -17,7 +17,7 @@ const CenterTrainerList = lazy(() => import("../pages/CenterTrainerList"));
 const CenterMemberList = lazy(() => import("../pages/CenterMemberList"));
 const MembershipStats = lazy(() => import("../pages/MembershipStats"));
 const SignUpTrainerPage = lazy(() => import("../pages/SignUpTrainerPage"));
-
+const SearchGymPage = lazy(() => import("../pages/SearchGymPage"));
 
 const root = createBrowserRouter([
   {
@@ -67,7 +67,7 @@ const root = createBrowserRouter([
         element: <QnaForm />,
       },
       {
-        path: 'stats',
+        path: "stats",
         element: <MembershipStats />,
       },
       {
@@ -91,11 +91,15 @@ const root = createBrowserRouter([
         element: <CenterMemberList />,
       },
       {
-        path: 'trainer',
+        path: "trainer",
         element: <SignUpTrainerPage />,
+      },
+      {
+        path: "search", 
+        element: <SearchGymPage /> 
       },
     ],
   },
 ]);
 
-  export default root;
+export default root;
