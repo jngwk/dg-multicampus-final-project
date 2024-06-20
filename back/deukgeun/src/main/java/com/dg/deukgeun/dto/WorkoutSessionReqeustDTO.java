@@ -1,15 +1,20 @@
-package com.dg.deukgeun.entity;
+package com.dg.deukgeun.dto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.ArrayList;
 
-import com.dg.deukgeun.dto.WorkoutDTO;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class WorkoutSessionRequest {
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class WorkoutSessionReqeustDTO {
     private Integer workoutSessionId;
     private Integer userId;
     private Integer ptSessionId;
@@ -19,5 +24,6 @@ public class WorkoutSessionRequest {
     private String memo;
     private LocalTime startTime;
     private LocalTime endTime;
-    private List<WorkoutDTO> workouts;
+    @Builder.Default
+    private List <WorkoutDTO> workouts = new ArrayList<>();
 }

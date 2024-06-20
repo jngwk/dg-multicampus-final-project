@@ -1,7 +1,5 @@
 package com.dg.deukgeun.controller;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -97,6 +95,14 @@ public class UserController {
         return userService.login(loginDTO);
     }
 
+    @GetMapping("/userInfo")
+    public ResponseDTO<?> getUserInfo() {
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer userId = userDetails.getUserId();
+        return userService.getUserInfo(userId);
+    }
+
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("accessToken", "")
@@ -112,13 +118,6 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/userInfo")
-    public ResponseDTO<?> getUserInfo() {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        Integer userId = userDetails.getUserId();
-        return userService.getUserInfo(userId);
-    }
 
     // @GetMapping("/userInfo")
     // public ResponseDTO<?> getUserInfo(HttpServletRequest request) {

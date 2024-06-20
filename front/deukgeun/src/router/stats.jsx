@@ -4,7 +4,7 @@ import { createBrowserRouter } from "react-router-dom";
 const Loading = <div>Loading...</div>;
 
 const Main = lazy(() => import("../pages/Main"));
-const ChartPage = lazy(() => import("../pages/ChartPage"));
+const MembershipStats = lazy(() => import("../pages/MembershipStats"));
 
 const root = createBrowserRouter([
   {
@@ -19,7 +19,7 @@ const root = createBrowserRouter([
     path: "/stats",
     element: (
       <Suspense fallback={Loading}>
-        <ChartPage />
+        <MembershipStats />
       </Suspense>
     ),
   },

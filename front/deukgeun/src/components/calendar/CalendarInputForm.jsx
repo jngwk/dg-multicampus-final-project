@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Button from "../shared/Button";
 import Input from "../shared/Input";
 import useCustomDate from "../../hooks/useCustomDate";
+import Loader from "../shared/Loader";
 
 // 캘린더 포맷이랑 일치하게 수정하기
 const CalendarInputForm = ({
@@ -12,6 +13,7 @@ const CalendarInputForm = ({
   selectedEvent,
   isInputFormVisible,
   toggleInputForm,
+  workoutsLoading,
 }) => {
   const { computeTime, getTime } = useCustomDate();
 
@@ -156,38 +158,42 @@ const CalendarInputForm = ({
             onChange={handleChange}
           />
 
-          {formValues.workouts.map((workout, index) => (
-            <div key={index}>
-              <hr />
-              <Input
-                label="운동"
-                name="workoutName"
-                value={workout.workoutName || ""}
-                onChange={(e) => handleWorkoutChange(index, e)}
-              />
-              <Input
-                label="SET"
-                name="workoutSet"
-                type="number"
-                value={workout.workoutSet || ""}
-                onChange={(e) => handleWorkoutChange(index, e)}
-              />
-              <Input
-                label="REP"
-                name="workoutRep"
-                type="number"
-                value={workout.workoutRep || ""}
-                onChange={(e) => handleWorkoutChange(index, e)}
-              />
-              <Input
-                label="무게(KG)"
-                name="workoutWeight"
-                type="number"
-                value={workout.workoutWeight || ""}
-                onChange={(e) => handleWorkoutChange(index, e)}
-              />
-            </div>
-          ))}
+          {workoutsLoading ? (
+            <Loader />
+          ) : (
+            formValues.workouts.map((workout, index) => (
+              <div key={index}>
+                <hr />
+                <Input
+                  label="운동"
+                  name="workoutName"
+                  value={workout.workoutName || ""}
+                  onChange={(e) => handleWorkoutChange(index, e)}
+                />
+                <Input
+                  label="SET"
+                  name="workoutSet"
+                  type="number"
+                  value={workout.workoutSet || ""}
+                  onChange={(e) => handleWorkoutChange(index, e)}
+                />
+                <Input
+                  label="REP"
+                  name="workoutRep"
+                  type="number"
+                  value={workout.workoutRep || ""}
+                  onChange={(e) => handleWorkoutChange(index, e)}
+                />
+                <Input
+                  label="무게(KG)"
+                  name="workoutWeight"
+                  type="number"
+                  value={workout.workoutWeight || ""}
+                  onChange={(e) => handleWorkoutChange(index, e)}
+                />
+              </div>
+            ))
+          )}
           <Button label="+" onClick={handleAddWorkout} />
           <hr />
           <Input
