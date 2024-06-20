@@ -1,0 +1,58 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Save</title>
+</head>
+
+<body>
+    action : form에 작성한 데이터를 어디로 보낼지 지정
+    <form action="/save" method="post">
+        name : 서버로 전송 할 때 변수이름의 역할
+        이름 : <input type="text" name="userName"> <br>
+        이메일 : <input type="email" name="email"> <br>
+        비밀번호 : <input type="password" name="password"> <br>
+        주소 : <input type="text" name="address"> <br>
+        카테고리 : <input type="text" name="category"> <br>
+        <input type="hidden" name="approval" value="0">
+
+        <input type="submit" value="회원가입">
+    </form>e
+
+    <div id="error-message" style="color: red;"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);s
+            const errorMessage = urlParams.get('error');
+            const userName = urlParams.get('userName');
+            const email = urlParams.get('email');
+            const password = urlParams.get('password');
+            const address = urlParams.get('address');
+            const category = urlParams.get('category');
+
+            if (errorMessage) {
+                document.getElementById('error-message').innerText = errorMessage;
+            }
+
+            if (userName) {
+                document.querySelector('input[name="userName"]').value = userName;
+            }
+            if (email) {
+                document.querySelector('input[name="email"]').value = email;
+            }
+            if (password) {
+                document.querySelector('input[name="password"]').value = password;
+            }
+            if (address) {
+                document.querySelector('input[name="address"]').value = address;
+            }
+            if (category) {
+                document.querySelector('input[name="category"]').value = category;
+            }
+        });
+    </script>
+</body>
+
+</html> -->

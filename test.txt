@@ -4,6 +4,7 @@ Test text file
 최정욱
 
 서희정 냠냠 푸쉬 충돌 언제 나지
+minkyu branch 테스트
 
 testing source control
 심민규 충돌실험
