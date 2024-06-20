@@ -8,7 +8,7 @@ import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import com.dg.deukgeun.dto.PersonalTrainingDTO;
+import com.dg.deukgeun.dto.personalTraining.PersonalTrainingDTO;
 import com.dg.deukgeun.entity.PersonalTraining;
 import com.dg.deukgeun.repository.PersonalTrainingRepository;
 

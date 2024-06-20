@@ -1,4 +1,4 @@
-package com.dg.deukgeun.dto;
+package com.dg.deukgeun.dto.personalTraining;
 
 import java.sql.Date;
 
