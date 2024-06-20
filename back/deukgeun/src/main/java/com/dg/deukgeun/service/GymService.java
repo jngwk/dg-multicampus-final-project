@@ -1,12 +1,22 @@
 package com.dg.deukgeun.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
+import com.dg.deukgeun.dto.PageRequestDTO;
+import com.dg.deukgeun.dto.PageResponseDTO;
 import com.dg.deukgeun.dto.UserRole;
 import com.dg.deukgeun.dto.gym.GymDTO;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
@@ -15,6 +25,7 @@ import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.GymRepository;
 import com.dg.deukgeun.repository.UserRepository;
+import com.dg.deukgeun.security.CustomUserDetails;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +93,8 @@ public class GymService {
         gym.setOperatingHours(dto.getOperatingHours());
         gym.setPrices(dto.getPrices());
         gym.setIntroduce(dto.getIntroduce());
+        // gym.setApproval(dto.getApproval());
+
         // Gym 엔티티를 데이터베이스에 저장
         try {
             gymRepository.save(gym);
@@ -108,6 +121,52 @@ public class GymService {
         Gym gym = modelMapper.map(gymDTO, Gym.class);
         Gym savedGym = gymRepository.save(gym);
         return savedGym.getGymId();
+    }
+
+    @PreAuthorize("hasRole('ROLE_GYM')")
+    public void modify(GymDTO gymDTO) {
+        Optional<Gym> result = gymRepository.findById(gymDTO.getGymId());
+        Gym gym = result.orElseThrow();
+        gym.setAddress(gymDTO.getAddress());
+        gym.setCrNumber(gymDTO.getCrNumber());
+        gym.setDetailAddress(gymDTO.getDetailAddress());
+        gym.setGymName(gymDTO.getGymName());
+        gym.setIntroduce(gymDTO.getIntroduce());
+        gym.setOperatingHours(gymDTO.getOperatingHours());
+        gym.setPhoneNumber(gymDTO.getPhoneNumber());
+        gym.setPrices(gymDTO.getPrices());
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+
+        // 잘 실행될 지는 모르겠음 실행 후 확인 필요
+        User user = new User();
+        user.setUserId(userDetails.getUserId());
+        gym.setUser(user);
+        gymRepository.save(gym);
+    }
+
+    public void remove(Integer gymId) {
+        gymRepository.deleteById(gymId);
+    }
+
+    public PageResponseDTO<GymDTO> listWithPaging(PageRequestDTO pageRequestDTO) {
+        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(),
+                Sort.by("gymId").descending());
+        Page<Gym> result = gymRepository.findAll(pageable);
+        List<GymDTO> dtoList = result.getContent().stream()
+                .map(gym -> modelMapper.map(gym, GymDTO.class))
+                .collect(Collectors.toList());
+        long totalCount = result.getTotalElements();
+        PageResponseDTO<GymDTO> responseDTO = PageResponseDTO.<GymDTO>withAll()
+                .dtoList(dtoList)
+                .pageRequestDTO(pageRequestDTO)
+                .totalCount(totalCount)
+                .build();
+        return responseDTO;
+    }
+
+    public List<Gym> list() {
+        return gymRepository.findAll();
     }
     // gachudon brench end
 }

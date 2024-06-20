@@ -229,7 +229,7 @@ const SignUpPage = () => {
         </div>
         <div className="flex flex-col items-center justify-center">
           <Input
-            label={role === "general" ? "이름" : "사업자명"}
+            label={role === "general" ? "이름" : "헬스장 이름 (지점명 포함)"}
             width="340px"
             name="userName"
             value={userData.userName}
@@ -240,7 +240,7 @@ const SignUpPage = () => {
           {role === "gym" && (
             <>
               <Input
-                label="헬스장 이름 (지점명 포함)"
+                label="대표자명"
                 width="340px"
                 name="gymName"
                 value={gymData.gymName}

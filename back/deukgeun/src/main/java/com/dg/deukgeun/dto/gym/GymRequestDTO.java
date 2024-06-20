@@ -24,7 +24,7 @@ public class GymRequestDTO {
     private String operatingHours;
     private String prices;
     private String introduce;
-    private Integer approval;
+    // private Integer approval;
     @Builder.Default
     private List<MultipartFile> files = new ArrayList<>();
     @Builder.Default

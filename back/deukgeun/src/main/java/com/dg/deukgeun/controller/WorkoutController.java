@@ -20,7 +20,7 @@ import lombok.extern.log4j.Log4j2;
 @RestController
 @RequiredArgsConstructor
 @Log4j2
-@RequestMapping("/api/workoutSession")
+@RequestMapping("/api/workout")
 public class WorkoutController {
     private final WorkoutService service;
 
@@ -45,10 +45,10 @@ public class WorkoutController {
     }
 
     // workout 삭제
-    @DeleteMapping("/{yearMonth}/{workoutSessionId}/{workoutId}")
-    public Map<String, String> remove(@PathVariable(name = "workoutId") Integer workoutId) {
+    @DeleteMapping("/delete/{workoutId}")
+    public Map<String, String> remove(@PathVariable(name = "workoutId") String workoutId) {
         log.info("Remove: " + workoutId);
-        service.remove(workoutId);
+        service.remove(Integer.parseInt(workoutId));
         return Map.of("RESULT", "SUCCESS");
     }
 }

@@ -59,13 +59,20 @@ export default function Header() {
           alt="logo"
         />
         <div className="flex gap-4 relative">
+          <button onClick={() => navigate("/gymSearch")}>헬스장 조회</button>
           <button onClick={() => navigate("/qna")}>문의하기</button>
           {sessionStorage.getItem("isLoggedIn") ? (
             <>
-              <button ref={badge} onClick={toggleProfileDropdown}>
-                프로필 뱃지
-              </button>
-
+              <div className="cursor-pointer flex justify-center items-center">
+                <box-icon
+                  name="user-rectangle"
+                  type="solid"
+                  color="#737373"
+                  size="md"
+                  ref={badge}
+                  onClick={toggleProfileDropdown}
+                ></box-icon>
+              </div>
               {/* User type 지정해서 안에 메뉴 변경 */}
               <div ref={dropdown} className="absolute right-0 top-10">
                 {isProfileDropdownVisible ? (

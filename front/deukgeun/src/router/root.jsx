@@ -12,13 +12,15 @@ const SignUpForm = lazy(() => import("../pages/SignUpPage"));
 const QnaForm = lazy(() => import("../pages/QnaForm"));
 const ChatTest = lazy(() => import("../components/chat/ChatTest"));
 const MemberList = lazy(() => import("../pages/MemberList"));
+const GymSearch = lazy(() => import("../pages/GymSearchPage"));
+
 const PTMemberList = lazy(() => import("../pages/PTMemberList"));
 const CenterTrainerList = lazy(() => import("../pages/CenterTrainerList"));
 const CenterMemberList = lazy(() => import("../pages/CenterMemberList"));
 const MembershipStats = lazy(() => import("../pages/MembershipStats"));
 const SignUpTrainerPage = lazy(() => import("../pages/SignUpTrainerPage"));
 const SearchGymPage = lazy(() => import("../pages/SearchGymPage"));
-const CenterView = lazy(()=>import("../pages/CenterView"));
+const CenterView = lazy(() => import("../pages/CenterView"));
 const ReviewForm = lazy(() => import("../test/ReviewForm"));
 const ReviewList = lazy(() => import("../test/ReviewList"));
 const MemberRegister = lazy(() => import("../pages/MemberRegister"));
@@ -84,24 +86,16 @@ const root = createBrowserRouter([
         element: <ChatTest />,
       },
       {
-        path: "ptMemberList",
-        element: <PTMemberList />,
-      },
-      {
-        path: "centerTrainerList",
-        element: <CenterTrainerList />,
-      },
-      {
-        path: "centerMemberList",
-        element: <CenterMemberList />,
+        path: "gymSearch",
+        element: <GymSearch />,
       },
       {
         path: "trainer",
         element: <SignUpTrainerPage />,
       },
       {
-        path: "search", 
-        element: <SearchGymPage /> 
+        path: "search",
+        element: <SearchGymPage />,
       },
       {
         path: "centerView",
@@ -113,7 +107,7 @@ const root = createBrowserRouter([
       },
       {
         path: "ReviewList",
-        element: <ReviewList gymId={1}/>,
+        element: <ReviewList gymId={1} />,
       },
       {
         path: "memberRegister",
@@ -121,7 +115,7 @@ const root = createBrowserRouter([
       },
       {
         path: "TrainerUpdateForm",
-        element: <TrainerUpdateForm/>,
+        element: <TrainerUpdateForm />,
       },
     ],
   },
