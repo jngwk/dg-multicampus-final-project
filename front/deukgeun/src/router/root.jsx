@@ -21,12 +21,9 @@ const SearchGymPage = lazy(() => import("../pages/SearchGymPage"));
 const CenterView = lazy(()=>import("../pages/CenterView"));
 const ReviewForm = lazy(() => import("../test/ReviewForm"));
 const ReviewList = lazy(() => import("../test/ReviewList"));
-<<<<<<< HEAD
 const MemberRegister = lazy(() => import("../pages/MemberRegister"));
-
-=======
 const TrainerUpdateForm = lazy(() => import("../test/TrainerUpdateForm"));
->>>>>>> develop
+
 const root = createBrowserRouter([
   {
     path: "/",
@@ -119,13 +116,12 @@ const root = createBrowserRouter([
         element: <ReviewList gymId={1}/>,
       },
       {
-<<<<<<< HEAD
         path: "memberRegister",
         element: <MemberRegister />,
-=======
+      },
+      {
         path: "TrainerUpdateForm",
         element: <TrainerUpdateForm/>,
->>>>>>> develop
       },
     ],
   },
