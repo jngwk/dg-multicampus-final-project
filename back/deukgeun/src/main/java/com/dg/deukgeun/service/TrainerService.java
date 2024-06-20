@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -105,5 +106,37 @@ public class TrainerService {
         }
 
         return ResponseDTO.setSuccess("트레이너 생성에 성공했습니다.");
+    }
+    
+    @PreAuthorize("hasRole('ROLE_TRAINER')")
+    public void updateTrainer(Integer trainerId, TrainerDTO trainerDTO, Integer userId) {
+        Optional<Trainer> optionalTrainer = trainerRepository.findById(trainerId);
+        if (optionalTrainer.isPresent()) {
+            Trainer trainer = optionalTrainer.get();
+            if (trainer.getUser().getUserId().equals(userId)) {
+                logger.info("Original Trainer: {}", trainer);
+                trainer.setTrainerCareer(trainerDTO.getTrainerCareer());
+                trainer.setTrainerAbout(trainerDTO.getTrainerAbout());
+                trainer.setTrainerImage(trainerDTO.getTrainerImage());
+
+                if (trainerDTO.getUserName() != null) {
+                    trainer.getUser().setUserName(trainerDTO.getUserName());
+                }
+                if (trainerDTO.getAddress() != null) {
+                    trainer.getUser().setAddress(trainerDTO.getAddress());
+                }
+                if (trainerDTO.getDetailAddress() != null) {
+                    trainer.getUser().setDetailAddress(trainerDTO.getDetailAddress());
+                }
+
+                trainerRepository.save(trainer);
+                logger.info("Updated Trainer: {}", trainer);
+                logger.info("Trainer saved successfully.");
+            } else {
+                logger.warn("User is not authorized to update this trainer.");
+            }
+        } else {
+            logger.warn("Trainer not found.");
+        }
     }
 }

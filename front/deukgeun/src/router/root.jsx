@@ -18,7 +18,10 @@ const CenterMemberList = lazy(() => import("../pages/CenterMemberList"));
 const MembershipStats = lazy(() => import("../pages/MembershipStats"));
 const SignUpTrainerPage = lazy(() => import("../pages/SignUpTrainerPage"));
 const SearchGymPage = lazy(() => import("../pages/SearchGymPage"));
-
+const CenterView = lazy(()=>import("../pages/CenterView"));
+const ReviewForm = lazy(() => import("../test/ReviewForm"));
+const ReviewList = lazy(() => import("../test/ReviewList"));
+const TrainerUpdateForm = lazy(() => import("../test/TrainerUpdateForm"));
 const root = createBrowserRouter([
   {
     path: "/",
@@ -97,6 +100,22 @@ const root = createBrowserRouter([
       {
         path: "search", 
         element: <SearchGymPage /> 
+      },
+      {
+        path: "centerView",
+        element: <CenterView />,
+      },
+      {
+        path: "ReviewForm",
+        element: <ReviewForm />,
+      },
+      {
+        path: "ReviewList",
+        element: <ReviewList gymId={1}/>,
+      },
+      {
+        path: "TrainerUpdateForm",
+        element: <TrainerUpdateForm/>,
       },
     ],
   },

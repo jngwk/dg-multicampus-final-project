@@ -80,8 +80,7 @@ public class UserController {
     public ResponseDTO<?> registerGym(@RequestBody GymSignUpDTO requestBody) {
         return gymService.signUp(requestBody);
     }
-    
-    // trainer 회원가입
+     // trainer 회원가입
     @PostMapping("/signUp/trainer")
     public ResponseDTO<?> registerTrainer(@RequestBody TrainerDTO requestBody) {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
