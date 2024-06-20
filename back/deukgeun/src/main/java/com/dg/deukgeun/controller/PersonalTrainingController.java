@@ -2,6 +2,7 @@ package com.dg.deukgeun.controller;
 //작성자 : 허승돈
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,12 +73,13 @@ public class PersonalTrainingController {
      * userWorkoutDur :운동경력 (String)
      */
     // userId 는 CustomUserDetails를 사용해서 접근
+    // postman에서 작동 확인은 완료했으나, CustomUserDetails에 대한 테스트 필요.
     @PostMapping("/post")
-    public Integer post(@RequestBody PersonalTrainingDTO personalTrainingDTO){
+    public Map<String,Integer> post(@RequestBody PersonalTrainingDTO personalTrainingDTO){
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Integer userId = userDetails.getUserId();
         personalTrainingDTO.setUserId(userId);
-        return service.insert(personalTrainingDTO);
+        return Map.of("ptId",service.insert(personalTrainingDTO));
     }
 
 }
