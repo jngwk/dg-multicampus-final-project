@@ -8,7 +8,7 @@
 }
 
 .profile-dropdown-list {
-  @apply px-2 my-2 hover:opacity-70 hover:cursor-pointer hover:transition ease-in-out duration-100 flex items-center;
+  @apply px-2 my-4 opacity-85 hover:opacity-100 hover:cursor-pointer hover:transition ease-in-out duration-100 flex items-center;
 }
 
 .slide-enter {
@@ -45,5 +45,20 @@
     /*display: flex;
       flexwrap: wrap;
     */
+  }
+
+  /* Custom scrollbar style */
+  .scrollbar {
+    overflow-y: scroll;
+    padding: 0 0.5rem;
+  }
+
+  .scrollbar::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: #ffbe98;
+    border-radius: 10px;
   }
 }

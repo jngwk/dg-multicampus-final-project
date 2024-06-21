@@ -1,6 +1,8 @@
 package com.dg.deukgeun.entity;
 
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,9 +34,8 @@ public class Gym {
     private String operatingHours;
     private String prices;
     private String introduce;
-    
-    
-    @OneToOne
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id")
     private User user;
 

@@ -10,7 +10,6 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -85,7 +84,7 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
     // 메시지 기록 불러오기
     @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')")
     public List<ChatMessage> getChatHistory(Integer chatId) {
-        return chatMessageRepository.findByChatRoomIdOrderByTimestampAsc(chatId);
+        return chatMessageRepository.findByChatRoomIdOrderByTimestamp(chatId);
     }
 
     // 대화방 존재하는지 확인하기
@@ -127,7 +126,6 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
         return chatRoomRepository.findByUserIdOrderByLatestMessage(user);
     }
 
-    // TODO 회원과 관련된 헬스장 / 트레이너만 불러오기로 수정
     @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')")
     public List<User> getAvailableUsers() {
         return userRepository.findAll();

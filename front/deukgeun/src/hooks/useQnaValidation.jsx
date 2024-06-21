@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 
-const useValidation = () => {
+const useQnaValidation = () => {
   const [errors, setErrors] = useState({});
   const errorsRef = useRef(errors);
 
   useEffect(() => {
     errorsRef.current = errors;
   }, [errors]);
+
+  const isLoggedIn = sessionStorage.getItem("isLoggedIn");
 
   const validateUserName = (userName, tempErrors) => {
     if (!/^[가-힣]+$/.test(userName)) {
@@ -34,6 +36,9 @@ const useValidation = () => {
     const tempErrors = {};
 
     if (value === "") return;
+
+    if (isLoggedIn && (field === "userName" || field === "email")) return;
+
     switch (field) {
       case "userName":
         validateUserName(value, tempErrors);
@@ -53,11 +58,18 @@ const useValidation = () => {
 
   const validateForm = (userData) => {
     const tempErrors = {};
-    validateUserName(userData.userName, tempErrors);
-    validateEmail(userData.email, tempErrors);
+
+    if (!isLoggedIn) {
+      validateUserName(userData.userName, tempErrors);
+      validateEmail(userData.email, tempErrors);
+    }
+
     Object.entries(userData).forEach(([key, value]) => {
-      validateNotEmpty(key, value, tempErrors);
+      if (!(isLoggedIn && (key === "userName" || key === "email"))) {
+        validateNotEmpty(key, value, tempErrors);
+      }
     });
+
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
@@ -76,4 +88,4 @@ const useValidation = () => {
   };
 };
 
-export default useValidation;
+export default useQnaValidation;

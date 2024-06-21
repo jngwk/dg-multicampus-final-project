@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.dg.deukgeun.dto.UserRole;
 import com.dg.deukgeun.dto.gym.GymLoginResponseDTO;
+import com.dg.deukgeun.dto.gym.TrainerDTO;
 import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.LoginResponseDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
@@ -74,6 +75,67 @@ public class UserService {
         }
 
         return ResponseDTO.setSuccess("회원 생성에 성공했습니다.");
+    }
+
+    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')")
+    public ResponseDTO<?> signUp(TrainerDTO trainerDTO, Integer userId) {
+        String email = trainerDTO.getEmail();
+        String password = trainerDTO.getPassword();
+
+
+        // Check if email already exists
+        if (userRepository.existsByEmail(email)) {
+            return ResponseDTO.setFailed("중복된 Email 입니다.");
+        }
+
+        // Hash the password
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String hashedPassword = passwordEncoder.encode(password);
+
+        // Create User entity
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(hashedPassword);
+        user.setUserName(trainerDTO.getUserName());
+        user.setAddress(trainerDTO.getAddress());
+        user.setDetailAddress(trainerDTO.getDetailAddress());
+        user.setRole(UserRole.ROLE_TRAINER);
+
+        // Save User entity
+        try {
+            userRepository.save(user);
+        } catch (Exception e) {
+            return ResponseDTO.setFailed("사용자 정보를 저장하는 도중 오류가 발생했습니다.");
+        }
+      
+        // Find Gym by userId
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            return ResponseDTO.setFailed("유효하지 않은 User ID 입니다.");
+        }
+        Optional<Gym> gymOptional = gymRepository.findByUser(userOptional.get());
+        if (gymOptional.isEmpty()) {
+            return ResponseDTO.setFailed("해당 사용자에게 연결된 Gym을 찾을 수 없습니다.");
+        }
+        Gym gym = gymOptional.get();
+
+        // Create Trainer entity
+        Trainer trainer = new Trainer();
+        trainer.setUser(user);
+        trainer.setTrainerCareer(trainerDTO.getTrainerCareer());
+        trainer.setTrainerAbout(trainerDTO.getTrainerAbout());
+        trainer.setTrainerImage(trainerDTO.getTrainerImage());
+        trainer.setGym(gym);
+
+        // Save Trainer entity
+        try {
+            trainerRepository.save(trainer);
+        } catch (Exception e) {
+            return ResponseDTO.setFailed("트레이너 정보를 저장하는 도중 오류가 발생했습니다.");
+        }
+        
+
+        return ResponseDTO.setSuccess("트레이너 생성에 성공했습니다.");
     }
 
     public ResponseEntity<?> login(LoginDTO dto) {

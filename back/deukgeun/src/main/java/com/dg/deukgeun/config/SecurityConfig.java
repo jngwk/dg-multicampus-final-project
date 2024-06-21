@@ -98,17 +98,21 @@ public class SecurityConfig {
                                 "/api/user/sendCode", "/api/gym/crNumberCheck")
                         .anonymous() // 비회원만 가능
                         .requestMatchers("/api/user/userInfo", "/ws/**").hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM")
-                        .requestMatchers("/api/user/workoutSession", "/api/personalTraining/get/**", "/api/personalTraining/post").hasAnyAuthority("ROLE_GENERAL")
-                        .requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN") // ADMIN 역할만 접근할 수 있도록 설정합니다.
-                        .requestMatchers("/api/membership/stats").hasAuthority("ROLE_GYM")
-
+                        .requestMatchers("/api/user/workoutSession/**", "/api/personalTraining/get/**", "/api/personalTraining/post").hasAnyAuthority("ROLE_GENERAL")
+                        .requestMatchers("/api/membership/register").hasAuthority("ROLE_GENERAL")
+                        .requestMatchers("/api/membership/stats", "/api/membership/stats/**",
+                                "/api/user/signUp/trainer", "/api/trainers/update/**")
+                        .hasAnyAuthority("ROLE_GYM")
+                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/reviews/delete/**", "api/reviews/update/**")
+                        .hasAnyAuthority("ROLE_GENERAL", "ROLE_ADMIN")
+                        .requestMatchers("/api/reviews/add").hasAnyAuthority("ROLE_GENERAL")
+                        .requestMatchers("/api/reviews/reviewList/**").permitAll()
+                        .requestMatchers("/api/trainers/update/**").hasAuthority("ROLE_TRAINER")
                         .anyRequest().authenticated()) // 그 외 모든 요청은 인증이 필요합니다
 
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider, customUserDetailsService),
-                        UsernamePasswordAuthenticationFilter.class); // JWT
-        // 토큰
-        // 필터를
-        // 추가합니다.
+                        UsernamePasswordAuthenticationFilter.class); // JWT 토큰 필터를 추가합니다.
 
         return http.build();
     }
@@ -127,9 +131,7 @@ public class SecurityConfig {
         @Override
         protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
                 @NonNull FilterChain filterChain) throws ServletException, IOException {
-            // String token = resolveToken(request); // 요청에서 JWT 토큰을 추출합니다.
-
-            String token = resolveToken(request);
+            String token = resolveToken(request); // 요청에서 JWT 토큰을 추출합니다.
 
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 Integer userId = jwtTokenProvider.getUserIdFromToken(token); // userId만 추출

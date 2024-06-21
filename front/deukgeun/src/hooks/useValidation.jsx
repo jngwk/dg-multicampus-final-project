@@ -10,9 +10,9 @@ const useValidation = () => {
 
   const validateUserName = (userName, tempErrors) => {
     // console.log("Validating userName: ", userName); // Debugging
-    if (!/^[가-힣]+$/.test(userName)) {
-      tempErrors.userName = "이름은 한글로만 입력해주세요";
-    }
+    // if (!/^[가-힣]+$/.test(userName)) {
+    //   tempErrors.userName = "이름은 한글로만 입력해주세요";
+    // }
     return tempErrors.userName !== "";
   };
 

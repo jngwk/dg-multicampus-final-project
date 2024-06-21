@@ -8,6 +8,7 @@ module.exports = {
       "bright-orange": "#fe8742",
       "grayish-red": "#9f8d8d",
       "light-gray": "#E6E6E6",
+      "light-black": "#4E4C4F",
       ...colors,
     },
     fontFamily: {
@@ -22,6 +23,13 @@ module.exports = {
         fadeInOut: {
           "0%, 100%": { opacity: 0.5 },
           "50%": { opacity: 1 },
+        },
+        propel: {
+          '0%': { transform: 'translateX(0)' },
+          '20%': { transform: 'translateX(25%)' },
+          '40%': { transform: 'translateX(-25%)' },
+          '60%': { transform: 'translateX(25%)' },
+          '100%': { transform: 'translateX(-25%)' },
         },
       },
       animation: {
