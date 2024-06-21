@@ -8,6 +8,7 @@ import formatDate from "../components/shared/FormatDate";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { FaAngleDoubleRight } from "react-icons/fa";
 import { BsChevronDown } from "react-icons/bs";
+import { GiArchiveRegister } from "react-icons/gi";
 import TextArea from "../components/shared/TextArea";
 
 // 회원 정보
@@ -21,7 +22,7 @@ const initUserData = {
 
 // 신청사유와 운동경력
 const initState = {
-    userMemberReason:"",
+    userMemberReason: "",
     userWorkoutDuration: "",
 }
 
@@ -47,7 +48,7 @@ const MemberRegister = () => {
 
     const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false); 
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedPeriod, setSelectedPeriod] = useState(period[3].name); //선택상품
     const { validateInput } = useValidation();
 
@@ -90,7 +91,7 @@ const MemberRegister = () => {
     };
 
     const onClickPeriod = (e) => { //상품클릭
-        const {value} = e.target;
+        const { value } = e.target;
         setSelectedPeriod(value);
         setDateRange(value);
         toggleDropdown();
@@ -120,15 +121,15 @@ const MemberRegister = () => {
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormValues({
-          ...formValues,
-          [name]: value,
+            ...formValues,
+            [name]: value,
         });
-      };
+    };
 
-      //시작일변경
-      const handleRegDateChange = (date) => {
+    //시작일변경
+    const handleRegDateChange = (date) => {
         const today = new Date();
-        
+
         if (date < today) {
             alert("시작일은 오늘보다 이전일 수 없습니다.");
             return;
@@ -145,8 +146,10 @@ const MemberRegister = () => {
 
     return (
         <>
-            <div className="flex flex-row items-center">
-                <div className={`m-10 ${isExpanded ? "w-[1000px] justify-between space-x-10 px-20" : "w-[500px] justify-center"} h-[550px] rounded-lg flex items-center border-2 border-peach-fuzz`}>
+
+            <div className="flex flex-row items-center relative">
+            <GiArchiveRegister className="absolute left-20 top-3 w-20 h-20 bg-white" color="#9F8D8D"/>
+                <div className={`m-10 max-w-[1000px] transition-max-width duration-500 overflow-hidden ${isExpanded ? "w-[1000px] justify-between space-x-10 px-20" : "w-[500px] justify-center"} h-[550px] rounded-lg flex items-center border-2 border-peach-fuzz`}>
                     <div className="flex flex-col items-center space-y-6">
                         <p className="font-semibold text-xl">헬스권 등록</p>
                         {/* 이름 */}
@@ -161,7 +164,7 @@ const MemberRegister = () => {
 
                         <div className="flex w-full relative justify-between ">
                             {/* 성별 */}
-                            <label 
+                            <label
                                 className={`absolute -top-2 px-2 text-xs pointer-events-none text-gray-400`}
                             >
                                 성별
@@ -171,7 +174,7 @@ const MemberRegister = () => {
                                     onFocus={handleGenderFocus}
                                     onBlur={handleGenderBlur}
                                     type="button"
-                                    className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${genderFocus ? "border-peach-fuzz" : "border-gray-400"
+                                    className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm  ${genderFocus ? "border-peach-fuzz" : "border-gray-400"
                                         } focus:border-2 focus:outline-none text-sm peer my-2 `}
                                     value={userGender}
                                     onChange={handleChangeGender}
@@ -198,7 +201,7 @@ const MemberRegister = () => {
                                     onFocus={handleAgeFocus}
                                     onBlur={handleAgeBlur}
                                     type="button"
-                                    className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${ageFocus ? "border-peach-fuzz" : "border-gray-400"
+                                    className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm  ${ageFocus ? "border-peach-fuzz" : "border-gray-400"
                                         } focus:border-2 focus:outline-none text-sm peer my-2 `}
                                     value={userAge}
                                     onChange={handleChangeAge}
@@ -249,28 +252,28 @@ const MemberRegister = () => {
                     </div>
                     {isExpanded && (
                         <div className="flex flex-col items-center space-y-4 w-full">
-                            <div className="flex flex-row space-x-6 relative items-center justify-between">
+                            <div className="flex flex-row space-x-3 relative items-center justify-between">
                                 {/* 상품 */}
                                 <div className="dropdown relative">
-                                    <button 
-                                    onClick={toggleDropdown} 
-                                    isDropdownOpen={isDropdownOpen}
-                                    toggleDropdown={toggleDropdown}
-                                    selectedPeriod={selectedPeriod}
-                                    onClickPeriod={onClickPeriod}
-                                    className="w-[120px] flex justify-between items-center border border-gray-400 rounded-lg p-2 ">
+                                    <button
+                                        onClick={toggleDropdown}
+                                        isDropdownOpen={isDropdownOpen}
+                                        toggleDropdown={toggleDropdown}
+                                        selectedPeriod={selectedPeriod}
+                                        onClickPeriod={onClickPeriod}
+                                        className="h-11 w-[130px] flex justify-between items-center border border-gray-400 rounded-lg p-2">
                                         {selectedPeriod}
                                         <BsChevronDown />
                                     </button>
                                     {isDropdownOpen && (
                                         <ul className="absolute w-full border border-gray-400 rounded-lg list-none z-10 bg-white">
-                                        {period.map((item) => (
-                                            <li key= {item.id} className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30">
-                                                <button value={item.name} onClick={onClickPeriod}>
-                                                    {item.name}
-                                                </button>
-                                            </li>
-                                        ))}
+                                            {period.map((item) => (
+                                                <li key={item.id} className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30">
+                                                    <button value={item.name} onClick={onClickPeriod}>
+                                                        {item.name}
+                                                    </button>
+                                                </li>
+                                            ))}
                                         </ul>
                                     )}
                                 </div>
@@ -333,20 +336,20 @@ const MemberRegister = () => {
                                     />
                                 </div>
                             </div>
-                            
-                            <TextArea width="450px" height="200px" 
-                            label="신청사유"
-                            required={true}
-                            name="userMemberReason"
-                            value={formValues.userMemberReason}
-                            onChange={handleInputChange}/>
-                            
+
                             <TextArea width="450px" height="200px"
-                            label="운동경력(선택)"
-                            required={false}
-                            name="userMemberReason"
-                            value={formValues.userMemberReason}
-                            onChange={handleInputChange}/>
+                                label="신청사유"
+                                required={true}
+                                name="userMemberReason"
+                                value={formValues.userMemberReason}
+                                onChange={handleInputChange} />
+
+                            <TextArea width="450px" height="200px"
+                                label="운동경력(선택)"
+                                required={false}
+                                name="userMemberReason"
+                                value={formValues.userMemberReason}
+                                onChange={handleInputChange} />
                         </div>
                     )}
                 </div>
@@ -358,7 +361,7 @@ const MemberRegister = () => {
                 {isExpanded && (
                     //임시로 넣어둠 ( 누르면 결제창 이동)
                     <button>
-                            <FaAngleDoubleRight className=" mx-auto animate-[propel_3s_infinite]" />
+                        <FaAngleDoubleRight className=" mx-auto animate-[propel_3s_infinite]" />
                     </button>
                 )}
             </div>
