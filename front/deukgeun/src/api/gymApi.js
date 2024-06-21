@@ -11,3 +11,15 @@ export const getGymList = async () => {
     throw error;
   }
 };
+
+export const searchGyms = async (searchWord) => {
+  try {
+    console.log(searchWord);
+    const res = await axios.get(`${prefix}/search/${searchWord}`);
+    console.log("searchGyms", res);
+    return res.data;
+  } catch (error) {
+    console.error("Error in searchGyms", error);
+    throw error;
+  }
+};

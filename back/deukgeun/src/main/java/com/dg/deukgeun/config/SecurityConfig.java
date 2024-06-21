@@ -85,7 +85,7 @@ public class SecurityConfig {
                                                                                                               // 설정합니다.
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/user/login", "/api/qna", "/api/qna/**", "/api/user/logout", "/api/chart",
-                                "/api/search", "/api/gym/get/**",
+                                "/api/gym/search/**", "/api/gym/get/**",
                                 "/api/gym/getList", "/api/gym/getListWithPaging")
                         .permitAll() // 이 API는 인증 없이 접근 가능하도록 설정합니다.
                         .requestMatchers("/api/user/signUp/gym", "/api/user/signUp/general", "/api/user/sendCode",

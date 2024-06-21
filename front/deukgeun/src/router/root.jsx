@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from "react";
 import { Outlet, createBrowserRouter } from "react-router-dom";
 import Fallback from "../components/shared/Fallback";
 import Layout from "../components/shared/Layout";
+
 // import QuillEditor from "../components/shared/QuillEditor";
 
 const Main = lazy(() => import("../pages/Main"));
@@ -80,10 +81,6 @@ const root = createBrowserRouter([
       {
         path: "memberList",
         element: <MemberList />,
-      },
-      {
-        path: "chatTest",
-        element: <ChatTest />,
       },
       {
         path: "gymSearch",

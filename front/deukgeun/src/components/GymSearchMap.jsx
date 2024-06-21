@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Map, MapMarker, useMap } from "react-kakao-maps-sdk";
 import Input from "./shared/Input";
-import { getGymList } from "../api/gymApi";
-import Button from "./shared/Button";
-import Select from "./shared/Select";
+import { getGymList, searchGyms } from "../api/gymApi";
+import { Scrollbar } from "react-scrollbars-custom";
 const { kakao } = window;
 
 const GymSearchMap = () => {
@@ -19,10 +18,12 @@ const GymSearchMap = () => {
   const [coords, setCoords] = useState([]);
   const [map, setMap] = useState();
   const [gyms, setGyms] = useState([]);
+  const [selectedGym, setSelectedGym] = useState([]);
+  const [useCurrentLoc, setUseCurrentLoc] = useState(false);
 
   useEffect(() => {
-    getGyms();
     if (navigator.geolocation) {
+      setUseCurrentLoc(true);
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setState((prev) => ({
@@ -49,46 +50,13 @@ const GymSearchMap = () => {
         isLoading: false,
       }));
     }
+    getGyms();
   }, []);
 
   const getGyms = async () => {
     try {
       const res = await getGymList();
-      const newCoords = [];
-
-      if (res) {
-        setGyms(res);
-        const promises = res.map(async (gym) => {
-          try {
-            const latlng = await convertAddressToLatLng(
-              gym.address + " " + gym.detailAddress
-            );
-            return {
-              content: <div style={{ color: "#000" }}>{gym.user.userName}</div>,
-              latlng: latlng,
-            };
-          } catch (error) {
-            console.error("Failed to convert address:", error);
-            return null;
-          }
-        });
-
-        const results = await Promise.all(promises);
-        if (results.length === 1) {
-          setState((prev) => ({
-            ...prev,
-            center: { lat: results.latlng.lat, lng: results.latlng.lng },
-          }));
-        }
-        results.forEach((result) => {
-          if (result) {
-            newCoords.push(result);
-          }
-        });
-
-        setCoords(newCoords);
-        console.log(newCoords);
-      }
+      handleLoadedGyms(res);
     } catch (error) {
       console.error("Error fetching gym list:", error);
     }
@@ -122,30 +90,82 @@ const GymSearchMap = () => {
   };
 
   // TODO 등록된 헬스장도 같이 검색하기
-  const handleSearch = () => {
-    const ps = new kakao.maps.services.Places();
-    ps.keywordSearch(
-      searchWord,
-      (data, status, _pagination) => {
-        if (status === kakao.maps.services.Status.OK) {
-          // const bounds = new kakao.maps.LatLngBounds();
-          const newCoords = [];
+  const handleSearch = async () => {
+    if (!searchWord) return;
+    try {
+      const res = await searchGyms(searchWord);
+      handleLoadedGyms(res);
+    } catch (error) {
+      console.error("Error fetching gym list:", error);
+    }
 
-          for (let i = 0; i < data.length; i++) {
-            newCoords.push({
-              content: (
-                <div style={{ color: "#000" }}>{data[i].place_name}</div>
-              ),
-              latlng: { lat: data[i].y, lng: data[i].x },
-            });
-            // bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
-          }
-          setCoords(newCoords);
-          // map.setBounds(bounds);
+    // const ps = new kakao.maps.services.Places();
+    // ps.keywordSearch(
+    //   searchWord,
+    //   (data, status, _pagination) => {
+    //     if (status === kakao.maps.services.Status.OK) {
+    //       // const bounds = new kakao.maps.LatLngBounds();
+    //       const newCoords = [];
+
+    //       for (let i = 0; i < data.length; i++) {
+    //         newCoords.push({
+    //           content: (
+    //             <div style={{ color: "#000" }}>{data[i].place_name}</div>
+    //           ),
+    //           latlng: { lat: data[i].y, lng: data[i].x },
+    //         });
+    //         // bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
+    //       }
+    //       setCoords(newCoords);
+    //       // map.setBounds(bounds);
+    //     }
+    //   },
+    //   { useMapCenter: true }
+    // );
+  };
+
+  const handleLoadedGyms = async (res) => {
+    const newCoords = [];
+    if (res) {
+      setGyms(res);
+      const promises = res.map(async (gym) => {
+        try {
+          const latlng = await convertAddressToLatLng(
+            gym.address + " " + gym.detailAddress
+          );
+          return {
+            content: <div style={{ color: "#000" }}>{gym.user.userName}</div>,
+            latlng: latlng,
+          };
+        } catch (error) {
+          console.error("Failed to convert address:", error);
+          return null;
         }
-      },
-      { useMapCenter: true }
-    );
+      });
+
+      const results = await Promise.all(promises);
+      if (results.length === 1) {
+        setState((prev) => ({
+          ...prev,
+          center: { lat: results.latlng.lat, lng: results.latlng.lng },
+        }));
+      }
+      results.forEach((result, index) => {
+        if (index === 0 && !useCurrentLoc) {
+          console.log("@@@@@@@", result, index);
+          setState((prev) => ({
+            ...prev,
+            center: { lat: result.latlng.lat, lng: result.latlng.lng },
+          }));
+        }
+        if (result) {
+          newCoords.push(result);
+        }
+      });
+
+      setCoords(newCoords);
+      console.log(newCoords);
+    }
   };
 
   const handleListClick = async (gym) => {
@@ -186,17 +206,18 @@ const GymSearchMap = () => {
           </>
         )}
       </Map>
-      <div className="absolute top-0 left-0 z-20  w-[320px] h-full flex justify-center items-center">
+      <div className="absolute top-0 left-0 z-20  w-[400px] h-full flex justify-center items-center">
         <div className="flex flex-col items-center h-[90%] w-5/6 bg-gray-50/90 rounded-md py-2 border border-grayish-red shadow-xl">
           <div className="w-full flex flex-col items-center border-b-2 pb-2">
             {/* TODO 필터 적용하기 */}
             <select
               name="filter"
               id="filter"
-              className="bg-transparent w-[240px] text-sm"
+              className="bg-transparent w-[90%] text-sm text-center px-3 outline-none rounded-md focus:border-2 focus:border-peach-fuzz active:border-peach-fuzz"
+              onSele
             >
-              <option value="currentLoc">내 위치에서 가까운</option>
-              <option value="currentLoc">회원권 가격이 저렴한</option>
+              <option value="location">내 위치에서 가까운</option>
+              <option value="price">회원권 가격이 저렴한</option>
               {/* <option value="currentLoc">내 위치에서 가장 가까운...</option>
               <option value="currentLoc">내 위치에서 가장 가까운...</option> */}
             </select>
@@ -207,8 +228,15 @@ const GymSearchMap = () => {
               placeholder="검색어를 입력하세요..."
               onChange={(e) => setSearchWord(e.target.value)}
               width="90%"
+              feature={
+                <div className="-translate-y-1">
+                  <box-icon name="search" color="#bdbdbd" size="s"></box-icon>
+                </div>
+              }
+              featureEnableOnLoad={true}
+              featureOnClick={handleSearch}
             />
-            <Button label="검색하기" onClick={handleSearch} width="90%" />
+            {/* <Button label="검색하기" onClick={handleSearch} width="90%" /> */}
             {/* <Select label="필터">
               <>
                 <option value="currentLoc">내 위치에서 가까운</option>
@@ -216,26 +244,28 @@ const GymSearchMap = () => {
               </>
             </Select> */}
           </div>
-          <div className="flex flex-col items-center w-[90%]">
-            {gyms
-              ? gyms.map((gym, i) => (
-                  <div
-                    key={i}
-                    className="flex flex-col w-[240px] border-b-2 mt-1 h-[50px] cursor-pointer hover:bg-peach-fuzz/10"
-                    onClick={() => handleListClick(gym)}
-                  >
-                    <span>{gym.user.userName}</span>
-                    <span className="text-ellipsis overflow-hidden text-sm">
-                      {gym.address}
-                    </span>
-                    {/* <div className="flex justify-between">
+          <Scrollbar>
+            <div className="flex flex-col items-center w-full">
+              {gyms
+                ? gyms.map((gym, i) => (
+                    <div
+                      key={i}
+                      className="flex flex-col w-full border-b-2 p-3 h-[100px] cursor-pointer hover:bg-peach-fuzz/10"
+                      onClick={() => handleListClick(gym)}
+                    >
+                      <span>{gym.user.userName}</span>
+                      <span className="text-ellipsis overflow-hidden text-sm">
+                        {gym.address}
+                      </span>
+                      {/* <div className="flex justify-between">
                       <span>상세보기</span>
                       <span>문의하기</span>
                     </div> */}
-                  </div>
-                ))
-              : "일치하는 헬스장이 없습니다."}
-          </div>
+                    </div>
+                  ))
+                : "일치하는 헬스장이 없습니다."}
+            </div>
+          </Scrollbar>
         </div>
       </div>
     </div>
