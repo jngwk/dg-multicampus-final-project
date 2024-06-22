@@ -1,4 +1,4 @@
-package com.dg.deukgeun.controller;
+// package com.dg.deukgeun.controller;
 
 import java.util.List;
 import java.util.Map;
@@ -11,18 +11,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dg.deukgeun.dto.WorkoutDTO;
-import com.dg.deukgeun.service.WorkoutService;
+// import com.dg.deukgeun.dto.WorkoutDTO;
+// import com.dg.deukgeun.service.WorkoutService;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+// import lombok.RequiredArgsConstructor;
+// import lombok.extern.log4j.Log4j2;
 
-@RestController
-@RequiredArgsConstructor
-@Log4j2
-@RequestMapping("/api/workout")
-public class WorkoutController {
-    private final WorkoutService service;
+// @RestController
+// @RequiredArgsConstructor
+// @Log4j2
+// @RequestMapping("/api/workout")
+// public class WorkoutController {
+//     private final WorkoutService service;
 
     // @GetMapping("/{workoutId}")
     // public WorkoutDTO get(@PathVariable(name="workoutId") Integer workoutId){

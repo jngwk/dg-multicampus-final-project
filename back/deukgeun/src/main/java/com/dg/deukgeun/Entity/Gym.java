@@ -1,8 +1,11 @@
 package com.dg.deukgeun.entity;
 
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
+<<<<<<< HEAD
 
 import jakarta.persistence.CascadeType;
+=======
+>>>>>>> 60c7921400a822dc5e01e98e4e5368d3a2a03d12
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,8 +37,14 @@ public class Gym {
     private String operatingHours;
     private String prices;
     private String introduce;
+<<<<<<< HEAD
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+=======
+    
+    
+    @OneToOne
+>>>>>>> 60c7921400a822dc5e01e98e4e5368d3a2a03d12
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -50,4 +59,8 @@ public class Gym {
         this.prices = dto.getPrices();
         this.introduce = dto.getIntroduce();
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 60c7921400a822dc5e01e98e4e5368d3a2a03d12

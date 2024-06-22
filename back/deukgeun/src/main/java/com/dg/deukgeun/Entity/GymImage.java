@@ -1,5 +1,10 @@
 package com.dg.deukgeun.entity;
+<<<<<<<< HEAD:back/deukgeun/src/main/java/com/dg/deukgeun/Entity/GymImage.java
 // written by Gachudon
+========
+
+import java.sql.Time;
+>>>>>>>> 60c7921400a822dc5e01e98e4e5368d3a2a03d12:back/deukgeun/src/main/java/com/dg/deukgeun/Entity/PtSession.java
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

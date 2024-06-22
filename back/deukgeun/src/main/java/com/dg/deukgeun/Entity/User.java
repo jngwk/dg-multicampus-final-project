@@ -1,10 +1,15 @@
 package com.dg.deukgeun.entity;
 
+<<<<<<< HEAD
 import java.util.Set;
 
 import com.dg.deukgeun.dto.UserRole;
 import com.dg.deukgeun.dto.user.UserSignUpDTO;
 
+=======
+// import com.dg.deukgeun.dto.user.SignUpDTO;
+
+>>>>>>> 60c7921400a822dc5e01e98e4e5368d3a2a03d12
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -36,6 +41,7 @@ public class User {
     private String email;
     private String address;
     private String detailAddress;
+<<<<<<< HEAD
     private String password;
 
 
@@ -53,6 +59,25 @@ public class User {
         this.role = dto.getRole();
         this.password = dto.getPassword();
     }
+=======
+    private String category;
+    private String password;
+    private String token;
+
+    @Column(nullable = false)
+    private String role;
+
+
+    // public User(SignUpDTO dto) {
+    //     this.userId = dto.getUserId();
+    //     this.userName = dto.getUserName();
+    //     this.email = dto.getEmail();
+    //     this.address = dto.getAddress();
+    //     this.category = dto.getCategory();
+    //     this.password = dto.getPassword();
+    //     this.token = "";
+    // }
+>>>>>>> 60c7921400a822dc5e01e98e4e5368d3a2a03d12
 
     public static User toUserEntity(UserSignUpDTO userDTO) {
         return User.builder()

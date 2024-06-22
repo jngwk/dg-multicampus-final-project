@@ -2,6 +2,7 @@ package com.dg.deukgeun.service;
 
 import com.dg.deukgeun.dto.review.ReviewDTO;
 import com.dg.deukgeun.entity.Review;
+<<<<<<< HEAD
 import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.repository.ReviewRepository;
@@ -24,12 +25,24 @@ import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
 
 @Log4j2
+=======
+import com.dg.deukgeun.repository.ReviewRepository;
+import java.util.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+>>>>>>> 60c7921400a822dc5e01e98e4e5368d3a2a03d12
 @Service
 public class ReviewService {
 
     @Autowired
     private ReviewRepository reviewRepository;
 
+<<<<<<< HEAD
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -51,11 +64,24 @@ public class ReviewService {
 
         return reviewRepository.save(review);
     }
+=======
+    public Review saveReview(ReviewDTO reviewDTO) {
+        Review review = new Review();
+        review.setGym(reviewDTO.getGym());
+        review.setUser(reviewDTO.getUser());
+        review.setRating(reviewDTO.getRating());
+        review.setComment(reviewDTO.getComment());
+
+        return reviewRepository.save(review);
+    }
+
+>>>>>>> 60c7921400a822dc5e01e98e4e5368d3a2a03d12
     public List<ReviewDTO> getReviewsByGymId(Integer gymId) {
         return reviewRepository.findByGymId(gymId).stream()
                 .map(review -> new ReviewDTO(review))
                 .collect(Collectors.toList());
     }
+<<<<<<< HEAD
     @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_ADMIN')")
     public void deleteReview(Integer reviewId, Integer userId) {
         Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
@@ -92,3 +118,22 @@ public class ReviewService {
     }
     
 }
+=======
+
+    public void deleteReview(Integer reviewId) {
+        reviewRepository.deleteById(reviewId);
+    }
+
+    public void updateReview(ReviewDTO reviewDTO) {
+        Optional<Review> optionalReview = reviewRepository.findById(reviewDTO.getId());
+        if (optionalReview.isPresent()) {
+            Review review = optionalReview.get();
+            // update review entity from reviewDTO
+            reviewRepository.save(review);
+        } else {
+            throw new RuntimeException("Review not found");
+        }
+    }
+    
+}
+>>>>>>> 60c7921400a822dc5e01e98e4e5368d3a2a03d12

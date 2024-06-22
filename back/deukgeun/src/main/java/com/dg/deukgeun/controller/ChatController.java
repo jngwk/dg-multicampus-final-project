@@ -1,4 +1,4 @@
-package com.dg.deukgeun.controller;
+// package com.dg.deukgeun.controller;
 
 import java.util.List;
 import java.util.Map;
@@ -20,15 +20,15 @@ import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.security.CustomUserDetails;
 import com.dg.deukgeun.service.ChatService;
 
-import lombok.extern.log4j.Log4j2;
+// import lombok.extern.log4j.Log4j2;
 
-@Log4j2
-@RestController
-@RequestMapping("/chat")
-public class ChatController {
+// @Log4j2
+// @RestController
+// @RequestMapping("/chat")
+// public class ChatController {
 
-    @Autowired
-    private ChatService chatService;
+//     @Autowired
+//     private ChatService chatService;
 
     // 메세지 발행
     @MessageMapping("/chat.sendMessage")
@@ -72,12 +72,18 @@ public class ChatController {
         return users;
     }
 
-    // 여기부터 아래는 postman 테스팅용
+//     // 여기부터 아래는 postman 테스팅용
 
-    @PostMapping("/sendMessage")
-    public void sendMessageHttp(@RequestBody ChatMessage chatMessage) {
-        log.info("=============chat controller: sendMessageHttp=============");
-        chatService.sendMessage(chatMessage);
-    }
+//     @PostMapping("/sendMessage")
+//     public void sendMessageHttp(@RequestBody ChatMessage chatMessage) {
+//         log.info("=============chat controller: sendMessageHttp=============");
+//         chatService.sendMessage(chatMessage);
+//     }
 
-}
+//     @PostMapping("/addUser")
+//     public void addUserHttp(@RequestBody ChatMessage chatMessage) {
+//         log.info("=============chat controller: addUserHttp=============");
+//         chatService.sendMessage(chatMessage);
+//     }
+
+// }

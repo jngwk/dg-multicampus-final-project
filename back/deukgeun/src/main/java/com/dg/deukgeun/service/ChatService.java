@@ -1,9 +1,6 @@
 package com.dg.deukgeun.service;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -14,15 +11,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.dg.deukgeun.entity.ChatMessage;
-import com.dg.deukgeun.entity.ChatRoom;
-import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.ChatMessageRepository;
-import com.dg.deukgeun.repository.ChatRoomRepository;
-import com.dg.deukgeun.repository.UserRepository;
 
 import lombok.extern.log4j.Log4j2;
 
-/* TODO 메시지 브로드 캐스팅하는 메소드 추가하기 */
 @Log4j2
 @Service
 public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하는 서비스
@@ -40,12 +32,6 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
     @Autowired
     private ChatMessageRepository chatMessageRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ChatRoomRepository chatRoomRepository;
-
     // 메시지 발행
     // @PreAuthorize("(hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') ||
     // hasRole('ROLE_TRAINER')) && (#chatMessage.senderId == principal.userId)")
@@ -54,6 +40,7 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
         log.info("Sending message using chatService:" + chatMessage);
         log.info("Routing Key: " + routingKey);
         log.info("Exchange: " + exchange);
+<<<<<<< HEAD
 
         String dynamicRoutingKey = "chat." + chatMessage.getChatRoom().getId();
         log.info("Dynamic Routing Key: " + dynamicRoutingKey);
@@ -69,16 +56,33 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
     // hasRole('ROLE_TRAINER')) && " +
     // "(#chatMessage.senderId == principal.userId || #chatMessage.receiverId ==
     // principal.userId)")
+=======
+        rabbitTemplate.convertAndSend(exchange, routingKey, chatMessage); // rabbitMQ 로 메시지를 보낼 때 rabbitTemplate 사용
+    }
+
+    // 메시지 구독
+>>>>>>> 60c7921400a822dc5e01e98e4e5368d3a2a03d12
     @RabbitListener(queues = { "${rabbitmq.queue.name}" }) // 특정 queue로 메시지를 보냄
     public void receiveMessage(ChatMessage chatMessage) {
 
         log.info("Received message using chatService: " + chatMessage);
+<<<<<<< HEAD
 
         ChatMessage savedMessage = chatMessageRepository.save(chatMessage); // db에 저장
         log.info("Message saved in DB: " + savedMessage);
 
         // websocket을 사용해 broadcast 할 때 SimpMessagingTemplate을 사용
         messagingTemplate.convertAndSend("/topic/" + savedMessage.getChatRoom().getId(), savedMessage);
+=======
+        // chatMessageRepository.save(chatMessage); // db에 저장
+        try {
+            Thread.sleep(5000); // 5 seconds delay
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        // websocket을 사용해 broadcast 할 때 SimpMessagingTemplate을 사용
+        messagingTemplate.convertAndSend("/topic/" + chatMessage.getChatRoomId(), chatMessage);
+>>>>>>> 60c7921400a822dc5e01e98e4e5368d3a2a03d12
     }
 
     // 메시지 기록 불러오기
@@ -87,6 +91,7 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
         return chatMessageRepository.findByChatRoomIdOrderByTimestamp(chatId);
     }
 
+<<<<<<< HEAD
     // 대화방 존재하는지 확인하기
     @PreAuthorize("(hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')) &&" +
             "#currentUserId == principal.userId")
@@ -131,4 +136,6 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
         return userRepository.findAll();
     }
 
+=======
+>>>>>>> 60c7921400a822dc5e01e98e4e5368d3a2a03d12
 }

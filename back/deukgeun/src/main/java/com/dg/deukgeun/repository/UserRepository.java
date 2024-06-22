@@ -37,4 +37,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByUserName(String userName);
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 60c7921400a822dc5e01e98e4e5368d3a2a03d12

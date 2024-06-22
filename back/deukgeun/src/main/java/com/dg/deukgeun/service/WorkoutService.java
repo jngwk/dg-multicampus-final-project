@@ -1,5 +1,6 @@
-package com.dg.deukgeun.service;
+// package com.dg.deukgeun.service;
 
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -11,19 +12,23 @@ import org.springframework.stereotype.Service;
 import com.dg.deukgeun.dto.WorkoutDTO;
 import com.dg.deukgeun.entity.Workout;
 import com.dg.deukgeun.repository.WorkoutRepository;
+=======
+// import java.util.Optional;
 
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
-@Service
-@Transactional
-@Log4j2
-@RequiredArgsConstructor
-public class WorkoutService {
-    private final ModelMapper modelMapper;
-    private final WorkoutRepository workoutRepository;
+// import org.springframework.stereotype.Service;
+// import org.modelmapper.ModelMapper;
+>>>>>>> 60c7921400a822dc5e01e98e4e5368d3a2a03d12
 
+// import com.dg.deukgeun.Entity.Workout;
+// import com.dg.deukgeun.dto.WorkoutDTO;
+// import com.dg.deukgeun.repository.WorkoutRepository;
+
+// import jakarta.transaction.Transactional;
+// import lombok.RequiredArgsConstructor;
+// import lombok.extern.log4j.Log4j2;
+
+<<<<<<< HEAD
     @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_TRAINER')")
     public Integer register(WorkoutDTO workoutDTO) { // workout 정보 입력
         log.info("--------------------");
@@ -79,3 +84,38 @@ public class WorkoutService {
         workoutRepository.deleteByWorkoutSessionId(workoutSessionId);
     }
 }
+=======
+// @Service
+// @Transactional
+// @Log4j2
+// @RequiredArgsConstructor
+// public class WorkoutService {
+//     private final ModelMapper modelMapper;
+//     private final WorkoutRepository workoutRepository;
+
+//     public Integer register(WorkoutDTO workoutDTO){ //workout 정보 입력
+//         log.info("--------------------");
+//         Workout workout = modelMapper.map(workoutDTO,Workout.class);
+//         Workout savedWorkout = workoutRepository.save(workout);
+//         return savedWorkout.getWorkoutId();
+//     }
+//     public WorkoutDTO get(Integer workoutId){ //workoutId를 기준으로 read
+//         Optional<Workout> result = workoutRepository.findById(workoutId);
+//         Workout workout = result.orElseThrow();
+//         WorkoutDTO dto = modelMapper.map(workout,WorkoutDTO.class);
+//         return dto;
+//     }
+
+//     public void modify(WorkoutDTO workoutDTO){ //workoutId를 기준으로 update
+//         Optional<Workout> result = workoutRepository.findById(workoutDTO.getWorkoutId());
+//         Workout workout = result.orElseThrow();
+//         workout.setWeight(workoutDTO.getWeight());
+//         workout.setWorkoutName(workoutDTO.getWorkoutName());
+//         workout.setWorkoutRep(workoutDTO.getWorkoutRep());
+//         workout.setWorkoutSet(workoutDTO.getWorkoutSet());
+//     }
+//     public void remove(Integer workoutId){
+//         workoutRepository.deleteById(workoutId);
+//     }
+// }
+>>>>>>> 60c7921400a822dc5e01e98e4e5368d3a2a03d12

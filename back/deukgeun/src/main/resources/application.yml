@@ -1,7 +1,11 @@
 spring:
   application:
     name: deukgeun
+<<<<<<< HEAD
   datasource:
+=======
+  datasource: # DB 내용 수정
+>>>>>>> 60c7921400a822dc5e01e98e4e5368d3a2a03d12
     url: jdbc:mysql://localhost:3306/dgdb
     username: scott
     password: tiger
@@ -50,7 +54,7 @@ rabbitmq:
   exchange:
     name: dgExchange
   routing:
-    key: chat.#
+    key: dgRoutingKey
     json:
       key: dgRoutingJsonKey
 

@@ -16,12 +16,15 @@
     "axios": "^1.7.2",
     "boxicons": "^2.1.4",
     "chart.js": "^4.4.3",
+<<<<<<< HEAD
     "chartjs-adapter-date-fns": "^3.0.0",
     "date-fns": "^3.6.0",
     "http-proxy-middleware": "^3.0.0",
     "jwt-decode": "^4.0.0",
     "quill-image-resize": "^3.0.9",
     "quill-image-resize-module": "^3.0.0",
+=======
+>>>>>>> 60c7921400a822dc5e01e98e4e5368d3a2a03d12
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
     "react-date-picker": "^11.0.0",

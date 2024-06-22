@@ -1,5 +1,7 @@
 package com.dg.deukgeun.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,22 +15,25 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "chat_room_user")
+@Table(name="qna")
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class ChatRoomUser {
-
+@NoArgsConstructor
+public class Qna {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer qnaId;
 
     @ManyToOne
-    @JoinColumn(name = "chat_id")
-    private ChatRoom chatRoom;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     private User user;
+
+    private String userName;
+    private String email;
+
+    private String title;
+    private String content;
+
+    private LocalDate regDate; // Change LocalDateTime to LocalDate
 }

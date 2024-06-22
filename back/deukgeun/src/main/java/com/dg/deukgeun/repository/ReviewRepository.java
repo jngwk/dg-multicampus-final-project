@@ -9,5 +9,9 @@ import java.util.List;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
     List<Review> findByGymId(Integer gymId);
+<<<<<<< HEAD
     List<Review> findByUserId(Integer userId);
 }
+=======
+}
+>>>>>>> 60c7921400a822dc5e01e98e4e5368d3a2a03d12
