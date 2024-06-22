@@ -174,4 +174,9 @@ public class GymService {
         String processedSearchWord = searchWord.replaceAll("\\s+", "").toLowerCase();
         return gymRepository.searchGyms(processedSearchWord);
     }
+
+    public Boolean crNumberDuplicateCheck(String crNumber) {
+        return gymRepository.findByCrNumber(crNumber).isPresent();
+
+    }
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.tags.shaded.org.apache.xpath.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,6 +68,11 @@ public class GymController {
         } catch (Exception e) {
             return ResponseDTO.setFailed("사업자 정보를 불러오는 것에 실패했습니다. 번호를 확인해 주세요.");
         }
+    }
+
+    @PostMapping("/crNumberCheck/duplicate")
+    public Boolean crNumberDuplicateCheck(@RequestBody GymSignUpDTO requestBody) {
+        return gymService.crNumberDuplicateCheck(requestBody.getCrNumber());
     }
 
     // 페이징 처리한 헬스장 데이터 목록 불러오기

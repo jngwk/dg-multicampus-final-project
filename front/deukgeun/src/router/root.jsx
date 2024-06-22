@@ -11,7 +11,6 @@ const Calendar = lazy(() => import("../pages/CalendarPage"));
 const SignUpChoice = lazy(() => import("../pages/SignUpChoicePage"));
 const SignUpForm = lazy(() => import("../pages/SignUpPage"));
 const QnaForm = lazy(() => import("../pages/QnaForm"));
-const ChatTest = lazy(() => import("../components/chat/ChatTest"));
 const MemberList = lazy(() => import("../pages/MemberList"));
 const GymSearch = lazy(() => import("../pages/GymSearchPage"));
 
@@ -20,7 +19,6 @@ const CenterTrainerList = lazy(() => import("../pages/CenterTrainerList"));
 const CenterMemberList = lazy(() => import("../pages/CenterMemberList"));
 const MembershipStats = lazy(() => import("../pages/MembershipStats"));
 const SignUpTrainerPage = lazy(() => import("../pages/SignUpTrainerPage"));
-const SearchGymPage = lazy(() => import("../pages/SearchGymPage"));
 const CenterView = lazy(() => import("../pages/CenterView"));
 const ReviewForm = lazy(() => import("../test/ReviewForm"));
 const ReviewList = lazy(() => import("../test/ReviewList"));
@@ -89,10 +87,6 @@ const root = createBrowserRouter([
       {
         path: "trainer",
         element: <SignUpTrainerPage />,
-      },
-      {
-        path: "search",
-        element: <SearchGymPage />,
       },
       {
         path: "centerView",

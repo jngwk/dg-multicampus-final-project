@@ -330,6 +330,10 @@ public class UserService {
         }
     }
 
+    public Boolean emailDuplicateCheck(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
     // public ResponseDTO<?> requestPasswordReset(String email) {
     // try {
     // User user = userRepository.findByEmail(email).orElse(null);

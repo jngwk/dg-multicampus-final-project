@@ -36,8 +36,7 @@ const initCodeData = {
   verified: "",
 };
 
-// TODO 사업자등록번호 조회 + 유효성 검사
-// TODO 인증번호 유효시간 추가
+/* TODO useValidation CR number 중복 검사 주석처리 해제하기 */
 const SignUpPage = () => {
   const location = useLocation();
   const initRole = location.state.role || "general";
@@ -78,6 +77,7 @@ const SignUpPage = () => {
   const handleEmailChange = (e) => {
     setUserData({ ...userData, email: e.target.value });
     validateInput("email", e.target.value);
+    console.log(errors.email);
     (codeData.verified || codeData.sent) && setCodeData(initCodeData);
     // console.log("codeData", codeData);
   };
@@ -88,6 +88,7 @@ const SignUpPage = () => {
       crNumber: e.target.value,
     });
     setIsCrNumberValid(null);
+    validateInput("crNumber", e.target.value);
   };
 
   const handleConfirmPasswordChange = (e) => {
@@ -182,6 +183,7 @@ const SignUpPage = () => {
     // 2728702429 사용해서 테스트
     try {
       const response = await checkCrNumber(gymData.crNumber);
+      console.log(response);
       response.data.result
         ? setIsCrNumberValid(true)
         : setIsCrNumberValid(false);
@@ -257,9 +259,10 @@ const SignUpPage = () => {
                 required={true}
                 maxLength={"10"}
                 error={
-                  isCrNumberValid === false && "등록된 정보가 없는 번호입니다."
+                  errors.crNumber ||
+                  (isCrNumberValid === false && "등록된 정보가 없는 번호입니다")
                 }
-                message={isCrNumberValid && "등록된 번호입니다."}
+                message={isCrNumberValid && "확왼됐습니다"}
                 feature="인증하기"
                 featureOnClick={verifyGym}
               />
