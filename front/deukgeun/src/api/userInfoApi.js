@@ -13,3 +13,14 @@ export const userInfo = async (token) => {
     throw error;
   }
 };
+
+export const updateUserInfo = async (userData) => {
+  try {
+    const res = await axios.put(`${prefix}/update`, userData);
+    console.log("API", res);
+    return res.data;
+  } catch (error) {
+    console.error("Error updating user info:", error);
+    throw error;
+  }
+};

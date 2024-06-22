@@ -6,7 +6,7 @@ import UserInfo from "../modals/UserInfo";
 import Loader from "../shared/Loader";
 
 const ProfileDropdown = () => {
-  const { userData, removeCookieAndLogOut, loading } = useAuth();
+  const { userData, setUserData, removeCookieAndLogOut, loading } = useAuth();
   const customNavigate = useCustomNavigate();
   const { isModalVisible, toggleModal } = useModal();
 
@@ -16,7 +16,7 @@ const ProfileDropdown = () => {
   };
 
   return (
-    <div className="relative border border-gray-400 w-52 h-fit rounded-lg p-3 bg-white shadow-sm z-40">
+    <div className="relative border border-gray-200 w-52 h-fit rounded-lg p-3 bg-white shadow-md z-40 transition-all">
       <div className="border-b-[0.5px] border-gray-400 p-2">
         {/* 사용자 이름 표시 */}
         {loading ? (
@@ -38,7 +38,11 @@ const ProfileDropdown = () => {
             </span>
           </li>
           {isModalVisible ? (
-            <UserInfo toggleModal={toggleModal} userData={userData} />
+            <UserInfo
+              toggleModal={toggleModal}
+              userData={userData}
+              setUserData={setUserData}
+            />
           ) : (
             ""
           )}

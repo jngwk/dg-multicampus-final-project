@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUserData = async () => {
     console.log("Before fetch in AUTH", userData);
-    if (!userData && sessionStorage.getItem("isLoggedIn")) {
+    if (sessionStorage.getItem("isLoggedIn")) {
       setLoading(true);
       try {
         const data = await userInfo();
@@ -47,7 +47,13 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ userData, loading, removeCookieAndLogOut, fetchUserData }}
+      value={{
+        userData,
+        setUserData,
+        loading,
+        removeCookieAndLogOut,
+        fetchUserData,
+      }}
     >
       {children}
     </AuthContext.Provider>
