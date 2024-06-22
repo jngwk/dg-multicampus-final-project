@@ -314,7 +314,7 @@ public class UserService {
         try {
             // Check if the adminEmail belongs to an ADMIN user
             Optional<User> adminOptional = userRepository.findById(adminId);
-            if (adminOptional.isPresent() && "ADMIN".equals(adminOptional.get().getRole())) {
+            if (adminOptional.isPresent() && "ADMIN".equals(adminOptional.get().getRole().toString())) {
                 // Fetch all users with role USER
                 List<User> users = userRepository.findByRole("USER");
                 // For security reasons, set the password field to an empty string
