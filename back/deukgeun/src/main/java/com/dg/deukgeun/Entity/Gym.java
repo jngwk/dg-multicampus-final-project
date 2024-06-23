@@ -32,7 +32,6 @@ public class Gym {
     private String address;
     private String detailAddress;
     private String operatingHours;
-    private String prices;
     private String introduce;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -47,7 +46,6 @@ public class Gym {
         this.address = dto.getAddress();
         this.detailAddress = dto.getDetailAddress();
         this.operatingHours = dto.getOperatingHours();
-        this.prices = dto.getPrices();
         this.introduce = dto.getIntroduce();
     }
 }

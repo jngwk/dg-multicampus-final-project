@@ -22,7 +22,6 @@ public class GymRequestDTO {
     private String address;
     private String detailAddress;
     private String operatingHours;
-    private String prices;
     private String introduce;
     // private Integer approval;
     @Builder.Default
