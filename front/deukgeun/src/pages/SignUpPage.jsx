@@ -372,7 +372,7 @@ const SignUpPage = () => {
           //   path: "/",
           //   option: "{state:{isAlertModalVisible: true}}",
           // }}
-          button2={{ label: "메인으로", path: "/" }}
+          button2={{ label: "메인으로", path: "/", option: { replace: true } }}
         />
       )}
       {isAddressModalVisible && (
