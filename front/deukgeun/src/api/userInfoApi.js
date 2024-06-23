@@ -4,9 +4,10 @@ import axios from "axios";
 // const prefix = `${API_SERVER_HOST}/api/user`;
 const prefix = `/api/user`; // proxy 사용
 
-export const userInfo = async (token) => {
+export const userInfo = async () => {
   try {
     const res = await axios.get(`${prefix}/userInfo`);
+    console.log(res);
     return res.data.data;
   } catch (error) {
     console.error("Error fetching user info:", error);
