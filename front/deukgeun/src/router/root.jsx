@@ -97,10 +97,6 @@ const root = createBrowserRouter([
         element: <ReviewForm />,
       },
       {
-        path: "ReviewList",
-        element: <ReviewList gymId={1} />,
-      },
-      {
         path: "memberRegister",
         element: <MemberRegister />,
       },

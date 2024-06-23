@@ -99,9 +99,8 @@ public class SecurityConfig {
                                 "/api/user/signUp/trainer", "/api/trainers/update/**")
                         .hasAnyAuthority("ROLE_GYM")
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/reviews/delete/**", "api/reviews/update/**")
-                        .hasAnyAuthority("ROLE_GENERAL", "ROLE_ADMIN")
-                        .requestMatchers("/api/reviews/add").hasAnyAuthority("ROLE_GENERAL")
+                        .requestMatchers("/api/reviews/delete/**", "api/reviews/update/**").hasAnyAuthority("ROLE_GENERAL","ROLE_ADMIN")
+                        .requestMatchers("/api/reviews/registerReview").hasAuthority("ROLE_GENERAL")
                         .requestMatchers("/api/reviews/reviewList/**").permitAll()
                         .requestMatchers("/api/trainers/update/**").hasAuthority("ROLE_TRAINER")
                         .anyRequest().authenticated()) // 그 외 모든 요청은 인증이 필요합니다

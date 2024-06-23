@@ -8,7 +8,7 @@ import { useModal } from "../../hooks/useModal";
 
 const Review = () => {
     const { isModalVisible, toggleModal } = useModal();
-
+    const gymId = 1;
     return (
         <div>
             {/* 리뷰 작성 헤더 */}
@@ -27,7 +27,7 @@ const Review = () => {
                     <MdOutlineRateReview className="mx-1 mb-1" size="25" color="#9F8D8D"/>
                 </button>
                 {isModalVisible ? (
-                    <ReviewModal toggleModal={toggleModal} />
+                    <ReviewModal toggleModal={toggleModal} gymId={gymId}/>
                 ) : (
                     ""
                 )}

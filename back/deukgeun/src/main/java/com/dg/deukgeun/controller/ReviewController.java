@@ -1,8 +1,11 @@
 package com.dg.deukgeun.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,25 +22,25 @@ import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.security.CustomUserDetails;
 import com.dg.deukgeun.service.ReviewService;
 
+import lombok.extern.log4j.Log4j2;
+
 import java.util.List;
 
 @RestController
+@Log4j2
 @RequestMapping("/api/reviews")
 public class ReviewController {
 
     @Autowired
     private ReviewService reviewService;
 
-    @PostMapping("/add")
-    public ResponseDTO<?> addReview(@RequestBody ReviewDTO reviewDTO) {
-        try {
-            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            Integer userId = userDetails.getUserId();
-            reviewService.saveReview(reviewDTO, userId);
-            return ResponseDTO.setSuccess("Review added successfully.");
-        } catch (Exception e) {
-            return ResponseDTO.setFailed("Failed to add review.");
-        }
+    @PreAuthorize("hasRole('ROLE_GENERAL')")
+    @PostMapping("/registerReview")
+    public Map<String, Integer> registerReview(@RequestBody ReviewDTO reviewDTO) {
+        log.info("reviewDTO: " + reviewDTO);
+        
+        Integer reviewId = reviewService.registerReview(reviewDTO);
+        return Map.of("id", reviewId);
     }
 
     @GetMapping("/reviewList/{gymId}")
@@ -57,8 +60,10 @@ public class ReviewController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_GENERAL')")
     @PutMapping("/update/{reviewId}")
     public ResponseDTO<?> updateReview(@PathVariable Integer reviewId, @RequestBody ReviewDTO reviewDTO) {
+        log.info("reviewDTO: " + reviewDTO);
         try {
             CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Integer userId = userDetails.getUserId();
