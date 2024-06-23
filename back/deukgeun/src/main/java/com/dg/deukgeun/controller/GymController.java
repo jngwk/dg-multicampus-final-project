@@ -28,6 +28,7 @@ import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.service.GymImageService;
 import com.dg.deukgeun.service.GymService;
+import com.dg.deukgeun.service.ProductService;
 import com.dg.deukgeun.service.TrainerService;
 import com.dg.deukgeun.util.CustomFileUtil;
 
@@ -46,6 +47,8 @@ public class GymController {
     private GymImageService gymImageService;
     @Autowired
     private TrainerService trainerService;
+    @Autowired
+    private ProductService productService;
 
     // // GYM 회원가입
     // @PostMapping("/signUp")
@@ -147,8 +150,14 @@ public class GymController {
      * trainerImage : 트레이너 사진
      * gymId : 트레이너 소속의 gym Id
      * userName : 트레이너 이름
-     * }
-     *
+     * }]
+     * productList : [{
+     *  productId : 상품 아이디
+     *  price : 상품 가격
+     *  days : 상품 기간 (일수 예 : 30일, 60일 등)
+     *  productName : 상품명
+     *  ptCountTotal : pt일 경우 상품이 제공하는 pt 횟수
+     * }]
      */
     @GetMapping("/get/{gymId}")
     public GymResponseDTO get(@PathVariable Integer gymId) {
@@ -171,9 +180,8 @@ public class GymController {
         gymResponseDTO.setPrices(gymDTO.getPrices());
         gymResponseDTO.setUploadFileName(fileNames);
         gymResponseDTO.setUserId(gymDTO.getUserId());
-        log.info("before trainersCall");
         gymResponseDTO.setTrainersList(trainerService.getList(gymId));
-        log.info("after trainersCall");
+        gymResponseDTO.setProductList(productService.getList(gymId));
         return gymResponseDTO;
     }
 
