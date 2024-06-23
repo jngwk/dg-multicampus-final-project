@@ -162,7 +162,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
         {userData && (
           <div className="mt-6">
             <dl>
-              <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-10">
+              <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-5">
                 <dt className="text-sm font-normal text-gray-500">이름</dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                   {userData.userName}
@@ -170,7 +170,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
               </div>
               {/* TODO 비밀번호 유효성 검사 */}
               {/* {errors.password}를 표시해야함 (나머지는 다 구현됨) */}
-              <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-10">
+              <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-5">
                 <dt className="text-sm font-medium text-gray-500">비밀번호</dt>
                 <dd className="flex text-gray-900 sm:mt-0 sm:col-span-2">
                   <div className="w-full">
@@ -198,14 +198,14 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
                   </div>
                 </dd>
               </div>
-              <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-10">
+              <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-5">
                 <dt className="text-sm font-medium text-gray-500">E-mail</dt>
                 <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                   {userData.email}
                 </dd>
               </div>
               {/* 주소 */}
-              <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-10">
+              <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-5">
                 <dt className="text-sm font-medium text-gray-500">주소</dt>
                 <dd className="flex text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                   <input
@@ -228,7 +228,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
                 </dd>
               </div>
               {/* 상세주소 */}
-              <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-10">
+              <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-5">
                 <dt className="text-sm font-medium text-gray-500">상세 주소</dt>
                 <dd className="flex text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                   <input
@@ -241,7 +241,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
                   />
                 </dd>
               </div>
-              <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-10">
+              <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-5">
                 {/* 일반 회원 */}
                 {userData.role === "ROLE_GENERAL" && (
                   <>
@@ -261,7 +261,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
                         </>
                       ) : (
                         <p
-                          className="max-w-[190px] overflow-hidden text-ellipsis whitespace-nowrap text-gray-500 cursor-pointer hover:underline hover:underline-offset-4"
+                          className="max-w-[190px] overflow-hidden text-ellipsis whitespace-nowrap text-gray-500 cursor-pointer underline underline-offset-2 hover:text-gray-700"
                           onClick={() => customNavigate("/gymSearch")}
                         >
                           헬스장을 등록해주세요!

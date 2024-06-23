@@ -12,7 +12,7 @@ const AlertModal = ({ headerEmoji, line1, line2, button1, button2 }) => {
         <div>
           <span className="text-5xl">{headerEmoji}</span>
         </div>
-        <div className="text-center flex flex-col justify-center gap-10 md:p-16 text-lg">
+        <div className="text-center flex flex-col justify-center gap-10 md:py-16 md:px-8 text-lg">
           <span>{line1}</span>
           {line2 && <span>{line2}</span>}
         </div>

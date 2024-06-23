@@ -223,9 +223,7 @@ function ShowChatList({ chatList, userData }) {
     }
     const showDate =
       i === 0 ||
-      (currentDate &&
-        nextChat &&
-        !isSameDay(currentDate, parseISO(prevTimestamp)));
+      (currentDate && !isSameDay(currentDate, parseISO(prevTimestamp)));
 
     return (
       <div key={i}>
