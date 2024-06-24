@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Map, MapMarker, useMap } from "react-kakao-maps-sdk";
-import TextArea from "../components/shared/TextArea";
+import { Map, MapMarker } from "react-kakao-maps-sdk";
 import Input from "../components/shared/Input";
-import Button from "../components/shared/Button";
 import { getGymList, searchGyms } from "../api/gymApi";
 import { Scrollbar } from "react-scrollbars-custom";
 import useCustomNavigate from "../hooks/useCustomNavigate";
-import ModalLayout from "./modals/ModalLayout";
-import useChat from "../hooks/useChat";
-import AlertModal from "./modals/AlertModal";
+import ChatModal from "./modals/ChatModal";
+import { useLocation } from "react-router-dom";
 const { kakao } = window;
 
 const GymSearchMap = () => {
@@ -20,16 +17,15 @@ const GymSearchMap = () => {
     errMsg: null,
     isLoading: true,
   });
-  const [searchWord, setSearchWord] = useState("");
+  const location = useLocation();
+  const [searchWord, setSearchWord] = useState(location.state.searchWord || "");
+  const [filter, setFilter] = useState(location.state.filter || "location");
   const [coords, setCoords] = useState([]);
   const [map, setMap] = useState();
   const [gyms, setGyms] = useState([]);
   const [selectedGym, setSelectedGym] = useState([]);
   const [useCurrentLoc, setUseCurrentLoc] = useState(false);
-  const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
   const [isChatModalVisible, setIsChatModalVisible] = useState(false);
-  const { chatMessage, setChatMessage, sendMessageHttp, findOrCreateChatRoom } =
-    useChat();
   const customNavigate = useCustomNavigate();
 
   useEffect(() => {
@@ -61,8 +57,12 @@ const GymSearchMap = () => {
         isLoading: false,
       }));
     }
-    getGyms();
-  }, []);
+    if (searchWord) {
+      handleSearch();
+    } else {
+      getGyms();
+    }
+  }, [sessionStorage.getItem("isLoggedIn")]);
 
   const getGyms = async () => {
     try {
@@ -111,30 +111,6 @@ const GymSearchMap = () => {
     } catch (error) {
       console.error("Error fetching gym list:", error);
     }
-
-    // const ps = new kakao.maps.services.Places();
-    // ps.keywordSearch(
-    //   searchWord,
-    //   (data, status, _pagination) => {
-    //     if (status === kakao.maps.services.Status.OK) {
-    //       // const bounds = new kakao.maps.LatLngBounds();
-    //       const newCoords = [];
-
-    //       for (let i = 0; i < data.length; i++) {
-    //         newCoords.push({
-    //           content: (
-    //             <div style={{ color: "#000" }}>{data[i].place_name}</div>
-    //           ),
-    //           latlng: { lat: data[i].y, lng: data[i].x },
-    //         });
-    //         // bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
-    //       }
-    //       setCoords(newCoords);
-    //       // map.setBounds(bounds);
-    //     }
-    //   },
-    //   { useMapCenter: true }
-    // );
   };
 
   const handleLoadedGyms = async (res) => {
@@ -210,29 +186,13 @@ const GymSearchMap = () => {
     setIsChatModalVisible(true);
   };
 
-  const handleHideChatModal = () => {
-    setSelectedGym();
-    setIsChatModalVisible(false);
-  };
-
-  const handleSendButton = async () => {
-    // 채팅 메시지 보내기
-    try {
-      const newChatRoom = await findOrCreateChatRoom(selectedGym.user.userId);
-      console.log("newChatRoom", newChatRoom);
-      if (newChatRoom) {
-        const res = await sendMessageHttp(newChatRoom);
-        console.log("sendMessageHttp res", res);
-      }
-      setIsAlertModalVisible(true);
-    } catch (error) {
-      console.error("error sending contact message", error);
+  const toggleChatModal = () => {
+    if (isChatModalVisible) {
+      setSelectedGym();
+      setIsChatModalVisible(false);
+    } else {
+      setIsChatModalVisible(true);
     }
-  };
-
-  const handleAlertModalButton = () => {
-    setIsAlertModalVisible(false);
-    setIsChatModalVisible(false);
   };
   return (
     <div className="relative w-full h-full">
@@ -270,8 +230,18 @@ const GymSearchMap = () => {
               id="filter"
               className="bg-transparent w-[90%] text-sm text-center px-3 outline-none rounded-md focus:border-2 focus:border-peach-fuzz active:border-peach-fuzz"
             >
-              <option value="location">내 위치에서 가까운</option>
-              <option value="price">회원권 가격이 저렴한</option>
+              <option
+                selected={filter === "location" ? true : false}
+                value="location"
+              >
+                내 위치에서 가까운
+              </option>
+              <option
+                selected={filter === "price" ? true : false}
+                value="price"
+              >
+                회원권 가격이 저렴한
+              </option>
               {/* <option value="currentLoc">내 위치에서 가장 가까운...</option>
               <option value="currentLoc">내 위치에서 가장 가까운...</option> */}
             </select>
@@ -345,42 +315,7 @@ const GymSearchMap = () => {
         </div>
       </div>
       {isChatModalVisible && sessionStorage.getItem("isLoggedIn") && (
-        <ModalLayout toggleModal={handleHideChatModal}>
-          <div className="flex flex-col justify-center items-start gap-4">
-            <div className="mb-2">
-              <span className="text-3xl">헬스장 문의 🙋</span>
-            </div>
-            <div className=" flex flex-col justify-center text-lg gap-2">
-              <span>💪 {selectedGym.user.userName}</span>
-              <p className="before:content-['*'] before:text-red-500 text-sm text-gray-500">
-                문의하신 내용 및 답변은 '대화방'에서 확인하실 수 있습니다
-              </p>
-              <TextArea
-                label={"문의내용"}
-                value={chatMessage}
-                onChange={(e) => setChatMessage(e.target.value)}
-              />
-            </div>
-            <div className="flex justify-end items-center w-full">
-              <Button
-                label={"문의하기"}
-                color="bright-orange"
-                width="100px"
-                height="50px"
-                onClick={handleSendButton}
-              />
-            </div>
-          </div>
-        </ModalLayout>
-      )}
-      {isAlertModalVisible && (
-        <AlertModal
-          headerEmoji={"✅"}
-          line1={"메시지 전송이 완료됐습니다!"}
-          line2={"답변은 '대화방'에서 확인해주세요"}
-          button1={{ label: "확인", onClick: handleAlertModalButton }}
-          button2={{ label: "대화방", path: "/chat" }}
-        />
+        <ChatModal toggleModal={toggleChatModal} selectedGym={selectedGym} />
       )}
     </div>
   );
