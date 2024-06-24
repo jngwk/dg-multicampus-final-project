@@ -139,7 +139,6 @@ public class GymController {
      * introduce : 헬스장 소개
      * OperatingHours : 헬스장 운영시간
      * PhonNumber : 헬스장/헬스장 대표자 전화번호
-     * Prices : 등록/pt 가격 등 등록비용
      * UploadFileName : 헬스장 이미지 List,
      * * 이미지 이름만 불러올 뿐 이미지 자체를 불러오진 않으므로,
      * 미리 약속된 이미지 경로를 프론트에서 호출할 것.
@@ -194,7 +193,6 @@ public class GymController {
      * address : String,
      * detailAddress : String,
      * operatingHours : ?,
-     * prices : ?,
      * introduce : String,
      * approval : 0 or 1 or 2 or... I don't know...,
      * files : file array format
