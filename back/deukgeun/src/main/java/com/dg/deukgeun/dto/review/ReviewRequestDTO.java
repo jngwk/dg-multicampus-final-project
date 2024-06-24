@@ -1,8 +1,5 @@
 package com.dg.deukgeun.dto.review;
 
-import com.dg.deukgeun.entity.Gym;
-import com.dg.deukgeun.entity.Review;
-import com.dg.deukgeun.entity.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
-public class ReviewDTO {
+public class ReviewRequestDTO {
 
     private Integer id;
     private Integer gymId; // Gym의 id만을 저장할 필드
@@ -30,17 +27,9 @@ public class ReviewDTO {
     private String email;
 
     private LocalDateTime createdAt;
+    @Builder.Default
+    private List<MultipartFile> files = new ArrayList<>();
+    @Builder.Default
+    private List<String> uploadFileName = new ArrayList<>();
 
-    public ReviewDTO(Review review) {
-        this.id = review.getId();
-        this.gymId = review.getGymId(); // Gym의 id 가져오기
-        this.userId = review.getUserId();
-        this.rating = review.getRating();
-        this.comment = review.getComment();
-        this.createdAt = review.getCreatedAt();
-        this.userName = review.getUserName();
-        this.email = review.getEmail();
-    }
-
-    // other constructors, getters and setters
 }

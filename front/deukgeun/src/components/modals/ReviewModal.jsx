@@ -4,11 +4,10 @@ import ModalLayout from "./ModalLayout";
 import TextArea from "../shared/TextArea";
 import { IoMdPhotos } from "react-icons/io";
 import Button from "../shared/Button";
-import { addReview } from "../../api/reviewApi";
+import { addReview, uploadReviewImages } from "../../api/reviewApi";
 import Fallback from "../shared/Fallback";
 
 const ReviewModal = ({ toggleModal, gymId }) => {
-    
     const { userData, loading } = useAuth();
     const [formValues, setFormValues] = useState({
         gymId: parseInt(gymId, 10),
@@ -17,10 +16,12 @@ const ReviewModal = ({ toggleModal, gymId }) => {
         userId: 0,
         userName: "",
         email: "",
-        // reviewImg: "",
     });
+
+    const [images, setImages] = useState([]);
+
     useEffect(() => {
-        if(userData){
+        if (userData) {
             setFormValues((prevValues) => ({
                 ...prevValues,
                 userId: userData.userId,
@@ -28,25 +29,15 @@ const ReviewModal = ({ toggleModal, gymId }) => {
                 email: userData.email,
             }));
         }
-        
     }, [userData]);
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormValues({
             ...formValues,
             [name]: value,
         });
-        console.log(`Input changed: ${name} = ${value}`);
     };
-
-    // const handleImageChange = (e) => {
-    //   const file = e.target.files[0];
-    //   setFormValues({
-    //     ...formValues,
-    //     reviewImg: file,
-    //   });
-    //   console.log(`Image selected: ${file.name}`);
-    // };
 
     const handleRatingChange = (e) => {
         const { value } = e.target;
@@ -54,36 +45,52 @@ const ReviewModal = ({ toggleModal, gymId }) => {
             ...formValues,
             rating: parseInt(value, 10),
         });
-        console.log(`Rating changed: ${value}`);
+    };
+
+    const handleImageChange = (e) => {
+        const files = Array.from(e.target.files);
+        setImages(files);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const formData = {
-                ...formValues,
-                comment: formValues.comment,
-                rating: formValues.rating,
-                regDate: new Date().toISOString().split('T')[0],
-            }
-            console.log("Form data being submitted:", {
+            // Step 1: 리뷰 데이터 제출
+            const reviewData = {
                 gymId: formValues.gymId,
                 comment: formValues.comment,
                 rating: formValues.rating,
                 userId: userData.userId,
                 userName: userData.userName,
                 email: userData.email,
-            });
-            const res = await addReview(formData);
-            console.log("Response: ", res);
-            // toggleModal();
+                regDate: new Date().toISOString().split('T')[0],
+            };
+
+            const reviewRes = await addReview(reviewData);
+
+            if (reviewRes.RESULT === "SUCCESS") {
+                const reviewId = reviewRes.reviewId;
+
+                // Step 2: 이미지 업로드
+                if (images.length > 0) {
+                    const formData = new FormData();
+                    images.forEach((image, index) => {
+                        formData.append(`files`, image);
+                    });
+
+                    await uploadReviewImages(reviewId, formData);
+                }
+                toggleModal();
+            }
         } catch (error) {
             console.error("Failed to add review", error);
         }
     };
+
     if (loading) {
         return <Fallback />;
     }
+
     return (
         <ModalLayout toggleModal={toggleModal}>
             <form onSubmit={handleSubmit}>
@@ -94,14 +101,14 @@ const ReviewModal = ({ toggleModal, gymId }) => {
                             <div className="mt-2 w-16 border-b-2 border-grayish-red border-opacity-20"></div>
                         </div>
                         <label htmlFor="commentInput">후기를 작성해주세요.
-                        <TextArea
-                            label="후기를 작성해주세요."
-                            required={true}
-                            id="commentInput"
-                            name="comment"
-                            value={formValues.comment}
-                            onChange={handleInputChange}
-                        />
+                            <TextArea
+                                label="후기를 작성해주세요."
+                                required={true}
+                                id="commentInput"
+                                name="comment"
+                                value={formValues.comment}
+                                onChange={handleInputChange}
+                            />
                         </label>
                     </div>
                     <div className="mt-4">
@@ -122,15 +129,16 @@ const ReviewModal = ({ toggleModal, gymId }) => {
                     </div>
 
                     <div>
-                        {/* <label className="flex text-sm items-center cursor-pointer">
+                        <label className="flex text-sm items-center cursor-pointer">
                             <IoMdPhotos className="w-7 h-7 pr-1" />
                             파일 이미지 넣기
                             <input
                                 type="file"
                                 className="hidden"
                                 onChange={handleImageChange}
+                                multiple  // 여러 개의 파일 선택 가능하도록
                             />
-                        </label> */}
+                        </label>
                         <Button label="작성" width="100px" className={`float-right mt-2`} type="submit" />
                     </div>
                 </div>
