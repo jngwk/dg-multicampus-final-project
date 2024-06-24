@@ -12,10 +12,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dg.deukgeun.dto.ProductDTO;
 import com.dg.deukgeun.dto.gym.TrainerDTO;
 import com.dg.deukgeun.dto.personalTraining.PersonalTrainingDTO;
+import com.dg.deukgeun.dto.personalTraining.PersonalTrainingRequestDTO;
+import com.dg.deukgeun.dto.personalTraining.PersonalTrainingResponseDTO;
 import com.dg.deukgeun.security.CustomUserDetails;
+import com.dg.deukgeun.service.MembershipService;
 import com.dg.deukgeun.service.PersonalTrainingService;
+import com.dg.deukgeun.service.ProductService;
 import com.dg.deukgeun.service.TrainerService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,6 +31,8 @@ import lombok.RequiredArgsConstructor;
 public class PersonalTrainingController {
     private final PersonalTrainingService service;
     private final TrainerService trainerService;
+    private final ProductService productService;
+    private final MembershipService membershipService;
 
     //마찬가지로 매핑 타입에 따라 구분하기 쉽도록 메서드 이름을 짓겠습니다.
 
@@ -51,35 +58,64 @@ public class PersonalTrainingController {
     /*
      * 트레이너 이름(userName) : gymId를 활용해서 트레이너 이름들을 가져옴.
      * pt 등록 페이지의 경우 프론트에서는 트레이너  이름을 가지고
-     * 누구에게 pt를 받을 지 정해지므로 트레이너 이름을 불러올 필요가 있음 
+     * 누구에게 pt를 받을 지 정해지므로 트레이너 이름을 불러올 필요가 있음
+     * 상품 명 및 상품 가격 (product.productName, product.price) : 사용자가 어떤 상품을 살 지 알아야 하기 때문에 가격과 이름 로드 필요 
+     */
+    //로드되는 정보
+    /*
+     * trainerList : [{
+     *      trainerId, trainerCareer, ..., userName, ...
+     * }],
+     * productList : [{
+     *      productId, productName, price...
+     * }]
      */
     @GetMapping("/get/{gymId}")
-    public List<TrainerDTO> getTrainerName(@PathVariable(name="gymId") Integer gymId){
-        return trainerService.getList(gymId);
+    public PersonalTrainingResponseDTO getInformation(@PathVariable(name="gymId") Integer gymId){
+        PersonalTrainingResponseDTO personalTrainingResponseDTO = new PersonalTrainingResponseDTO();
+        personalTrainingResponseDTO.setTrainerList(trainerService.getList(gymId));
+        personalTrainingResponseDTO.setProductList(productService.getList(gymId));
+        return personalTrainingResponseDTO;
     }
 
     //pt 등록 기능
     //pt 등록 기능은 프론트에서 다음과 같은 정보를 받는다.
     /*
-     * trainerId : 트레이너 아이디 (Integer)
-     * regDate : 시작일 (LocalDate)
-     * expDate : 끝일 (LocalDate)
-     * ptCountTotal : 피티 횟수 (Integer)
-     * ptCountRemain : 남은 횟수 (Integer)
-     * ptContent : 운동 컨텐츠 (String)
-     * userPtReason : 피티사유 (String)
-     * userGender : 성별 (Integer)
-     * userAge : 나이 (Integer)
-     * userWorkoutDur :운동경력 (String)
-     */
+     * {
+     *      membershipDTO : {
+     *          gymId : pt를 받는 체육관 id,
+     *          regDate : string으로 받음. 시작일,
+     *          expDate : string으로 받음. 끝일,
+     *          userGender : 성별
+     *          userAge : 나이
+     *          userWorkoutDuration : 사용자의 운동 경력
+     *          productId : 신청한 상품 id
+     *      }
+     *      personalTrainingDTO : {
+     *          trainerId : pt를 하는 트레이너 id,
+     *          userPtReason : pt신청 사유
+     *      }
+     * }
+    */
     // userId 는 CustomUserDetails를 사용해서 접근
     // postman에서 작동 확인은 완료했으나, CustomUserDetails에 대한 테스트 필요.
     @PostMapping("/post")
-    public Map<String,Integer> post(@RequestBody PersonalTrainingDTO personalTrainingDTO){
+    public Map<String,Integer> post(@RequestBody PersonalTrainingRequestDTO personalTrainingRequestDTO){
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Integer userId = userDetails.getUserId();
-        personalTrainingDTO.setUserId(userId);
-        return Map.of("ptId",service.insert(personalTrainingDTO));
+        personalTrainingRequestDTO.getPersonalTrainingDTO().setUserId(userId);
+        personalTrainingRequestDTO.getMembershipDTO().setUserMemberReason(personalTrainingRequestDTO.getPersonalTrainingDTO().getUserPtReason());
+        
+        Integer membershipId = membershipService.register(personalTrainingRequestDTO.getMembershipDTO(), userId);
+        
+        ProductDTO productDTO = productService.get(personalTrainingRequestDTO.getMembershipDTO().getProductId());
+        
+        personalTrainingRequestDTO.getPersonalTrainingDTO().setPtCountTotal(productDTO.getPtCountTotal());
+        personalTrainingRequestDTO.getPersonalTrainingDTO().setPtCountRemain(productDTO.getPtCountTotal());
+        personalTrainingRequestDTO.getPersonalTrainingDTO().setPtContent(productDTO.getProductName());
+        personalTrainingRequestDTO.getPersonalTrainingDTO().setMembershipId(membershipId);
+        
+        return Map.of("ptId",service.insert(personalTrainingRequestDTO.getPersonalTrainingDTO()));
     }
 
 }

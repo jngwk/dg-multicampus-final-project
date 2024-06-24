@@ -41,6 +41,13 @@ public class ProductService {
         return dtoList;
     }
 
+    public ProductDTO get(Integer productId){
+        Optional<Product> result = productRepository.findById(productId);
+        Product product = result.orElseThrow();
+        ProductDTO dto = modelMapper.map(product,ProductDTO.class);
+        return dto;
+    }
+
     public Map<String,String> insertList (List<ProductDTO> dtoList){
         List<Product> productList = new ArrayList<>();
         for(int i=0;i<dtoList.size();i++){
