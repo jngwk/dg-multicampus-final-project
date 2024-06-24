@@ -341,7 +341,11 @@ const SignUpPage = () => {
             required={role === "gym" ? true : false}
             error={errors.address}
             readOnly={true}
-            feature="검색"
+            feature={
+              <div className="-translate-y-1">
+                <box-icon name="search" color="#bdbdbd" size="s"></box-icon>
+              </div>
+            }
             featureOnClick={() => setIsAddressModalVisible(true)}
             featureEnableOnLoad={true}
           />

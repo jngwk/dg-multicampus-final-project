@@ -1,7 +1,6 @@
 import React from "react";
-import { useAuth } from "../context/AuthContext";
-import Fallback from "../components/shared/Fallback";
+import Hero from "../components/main/Hero";
 
 export default function Main() {
-  return <div>Main</div>;
+  return <Hero />;
 }
