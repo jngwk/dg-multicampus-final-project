@@ -1,15 +1,16 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { BiCommentDetail } from "react-icons/bi";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { IoSearchOutline } from "react-icons/io5";
-import { LiaUserEditSolid } from "react-icons/lia";
+import { AiOutlineUser } from "react-icons/ai"; // Corrected import for AiOutlineUser
 import Bprofile from "../../assets/blank_profile.png";
 import useValidation from "../../hooks/useValidation";
 import Button from "../shared/Button";
 import ModalLayout from "./ModalLayout";
+import { userInfo, uploadImage, getImage, updateImage } from "../../api/userInfoApi";
 
-const MyInfo = ({ toggleModal, userData }) => {
-  const [imageUrl, setImageUrl] = useState(null);
+const UserInfo = ({ toggleModal, userData }) => {
+  const [userImage, setUserImage] = useState(null);
   const fileInput = useRef(null);
   const [passwordType, setPasswordType] = useState({
     type: "password",
@@ -18,9 +19,21 @@ const MyInfo = ({ toggleModal, userData }) => {
   const [newPassword, setNewPassword] = useState("");
   const { errors, validateInput } = useValidation();
 
-  // Fetch user info when component mounts
+  useEffect(() => {
+    const fetchUserImage = async () => {
+      try {
+        const images = await getImage();
+        if (images) {
+          setUserImage(images.userImage);
+        }
+      } catch (error) {
+        console.error("Error fetching user image:", error);
+      }
+    };
 
-  // password type 변경하는 함수
+    fetchUserImage();
+  }, []);
+
   const handlePasswordType = () => {
     setPasswordType((prevState) => ({
       type: prevState.visible ? "password" : "text",
@@ -37,20 +50,39 @@ const MyInfo = ({ toggleModal, userData }) => {
     validateInput("password", e.target.value);
   };
 
-  // TODO 수정하기
-  const handleModify = () => {
+  const handleModify = async () => {
     toggleModal();
     console.log("수정 버튼 클릭: 정보 수정하기");
+
+    // Example: Update password if newPassword is not empty
+    if (newPassword) {
+      // Add your logic to update password using an API call
+      console.log("New password:", newPassword);
+    }
   };
 
-  const onChangeImage = () => {
-    const reader = new FileReader();
+  const onChangeImage = async () => {
     const file = fileInput.current.files[0];
-
-    reader.readAsDataURL(file);
-    reader.onloadend = () => {
-      setImageUrl(reader.result);
-    };
+    if (file) {
+      const formData = new FormData();
+      formData.append("imageFiles", file);
+  
+      try {
+        let response;
+        if (userImage === null) {
+          // If userImage doesn't exist (Bprofile is shown), upload a new image
+          response = await uploadImage(formData);
+        } else {
+          // If userImage exists, update the existing image
+          response = await updateImage(formData);
+        }
+  
+        console.log("Image upload/update response:", response);
+        setUserImage(URL.createObjectURL(file)); // Update user image state
+      } catch (error) {
+        console.error("Error uploading/updating image:", error);
+      }
+    }
   };
 
   return (
@@ -64,7 +96,8 @@ const MyInfo = ({ toggleModal, userData }) => {
             <div className="w-28 h-28 rounded-full">
               <img
                 className="w-full h-full rounded-full object-cover"
-                src={imageUrl ? imageUrl : Bprofile}
+                src={userImage || Bprofile}
+                alt="Profile"
               />
             </div>
             <input
@@ -78,7 +111,7 @@ const MyInfo = ({ toggleModal, userData }) => {
               className="cursor-pointer absolute bottom-2 right-0.5"
               onClick={handleButtonClick}
             >
-              <LiaUserEditSolid size={27} />
+              <AiOutlineUser size={27} />
             </button>
           </label>
         </div>
@@ -91,8 +124,6 @@ const MyInfo = ({ toggleModal, userData }) => {
                   {userData.userName}
                 </dd>
               </div>
-              {/* TODO 비밀번호 유효성 검사 */}
-              {/* {errors.password}를 표시해야함 (나머지는 다 구현됨) */}
               <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-10">
                 <dt className="text-sm font-medium text-gray-500">비밀번호</dt>
                 <dd className="flex text-gray-900 sm:mt-0 sm:col-span-2">
@@ -142,14 +173,13 @@ const MyInfo = ({ toggleModal, userData }) => {
                       헬스장을 등록해주세요!
                     </p>
                   )}
-
                   <BiCommentDetail className="mt-0.5 size-4 float-right" />
                 </dd>
               </div>
             </dl>
           </div>
         )}
-        {newPassword && (
+        {(newPassword || userImage !== null) && (
           <div className="pt-6 flex float-end">
             <div className="mr-2">
               <Button
@@ -167,4 +197,4 @@ const MyInfo = ({ toggleModal, userData }) => {
   );
 };
 
-export default MyInfo;
+export default UserInfo;

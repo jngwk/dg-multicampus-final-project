@@ -27,6 +27,11 @@ spring:
     #   prefix: "/WEB-INF/views/"
     #   suffix: ".jsp"
     #   # jsp를 구동하기위해 추가
+  web:
+    resources:
+      static-locations:
+        - classpath:/static/
+        - file:./images/
 
   thymeleaf:
     prefix: "classpath:/templates/"

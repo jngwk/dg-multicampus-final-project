@@ -4,12 +4,50 @@ import axios from "axios";
 // const prefix = `${API_SERVER_HOST}/api/user`;
 const prefix = `/api/user`; // proxy 사용
 
-export const userInfo = async (token) => {
+export const userInfo = async () => {
   try {
     const res = await axios.get(`${prefix}/userInfo`);
     return res.data.data;
   } catch (error) {
     console.error("Error fetching user info:", error);
+    throw error;
+  }
+};
+
+export const uploadImage = async (formData) => {
+  try {
+    const res = await axios.post(`${prefix}/uploadImage`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error uploading user image:", error);
+    throw error;
+  }
+};
+
+export const getImage = async () => {
+  try {
+    const res = await axios.get(`${prefix}/getImage`);
+    return res.data.data;
+  } catch (error) {
+    console.error("Error fetching user images:", error);
+    throw error;
+  }
+};
+
+export const updateImage = async (formData) => {
+  try {
+    const res = await axios.put(`${prefix}/updateImage`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error updating user image:", error);
     throw error;
   }
 };

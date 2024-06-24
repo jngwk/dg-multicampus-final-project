@@ -1,27 +1,24 @@
 package com.dg.deukgeun.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+
 import com.dg.deukgeun.dto.review.ReviewDTO;
+import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.entity.Review;
 import com.dg.deukgeun.entity.User;
-import com.dg.deukgeun.entity.Gym;
+import com.dg.deukgeun.repository.GymRepository;
 import com.dg.deukgeun.repository.ReviewRepository;
 import com.dg.deukgeun.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
-
-import com.dg.deukgeun.repository.GymRepository;
-
 import lombok.extern.log4j.Log4j2;
-import lombok.Data;
-
-import java.time.LocalDateTime;
-import java.util.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
-
-import java.util.stream.Collectors;
 
 @Log4j2
 @Service

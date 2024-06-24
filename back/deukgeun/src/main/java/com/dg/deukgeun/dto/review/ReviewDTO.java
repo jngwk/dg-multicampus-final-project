@@ -1,14 +1,12 @@
 package com.dg.deukgeun.dto.review;
 
-import com.dg.deukgeun.entity.Gym;
+import java.time.LocalDateTime;
+
 import com.dg.deukgeun.entity.Review;
-import com.dg.deukgeun.entity.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor

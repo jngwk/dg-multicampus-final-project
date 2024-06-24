@@ -15,12 +15,10 @@ import com.dg.deukgeun.repository.GymImageRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-@Log4j2
 public class GymImageService {
     private final ModelMapper modelMapper;
     @Autowired

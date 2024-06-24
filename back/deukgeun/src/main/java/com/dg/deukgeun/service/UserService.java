@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dg.deukgeun.dto.UserRole;
 import com.dg.deukgeun.dto.gym.GymLoginResponseDTO;
@@ -27,6 +28,7 @@ import com.dg.deukgeun.repository.GymRepository;
 import com.dg.deukgeun.repository.TrainerRepository;
 import com.dg.deukgeun.repository.UserRepository;
 import com.dg.deukgeun.security.JwtTokenProvider;
+import com.dg.deukgeun.util.CustomFileUtil;
 
 @Service
 public class UserService {
@@ -41,6 +43,8 @@ public class UserService {
     TrainerRepository trainerRepository;
     @Autowired
     EmailService emailService;
+    @Autowired
+    CustomFileUtil customFileUtil;
     // @Autowired
     // BCryptPasswordEncoder passwordEncoder;
 
@@ -77,7 +81,7 @@ public class UserService {
         return ResponseDTO.setSuccess("회원 생성에 성공했습니다.");
     }
 
-    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')")
+    @PreAuthorize("hasRole('ROLE_GYM')")
     public ResponseDTO<?> signUp(TrainerDTO trainerDTO, Integer userId) {
         String email = trainerDTO.getEmail();
         String password = trainerDTO.getPassword();
@@ -231,40 +235,6 @@ public class UserService {
         }
     }
 
-    // public ResponseDTO<UserWithTrainerDTO> getUserInfo(String email) {
-    // try {
-    // Optional<User> userOptional = userRepository.findByEmail(email);
-
-    // if (userOptional.isPresent()) {
-    // User userEntity = userOptional.get();
-    // // 사용자 비밀번호 필드를 빈 문자열로 설정하여 보안성을 유지
-    // userEntity.setPassword("");
-
-    // // 사용자가 트레이너인 경우
-    // if (UserRole.ROLE_TRAINER.equals(userEntity.getRole())) {
-    // Optional<Trainer> trainerOptional =
-    // trainerRepository.findByUser_UserId(userEntity.getUserId());
-    // if (trainerOptional.isPresent()) {
-    // Trainer trainerEntity = trainerOptional.get();
-    // UserWithTrainerDTO userWithTrainerDTO = new UserWithTrainerDTO(userEntity,
-    // trainerEntity);
-    // return ResponseDTO.setSuccessData("사용자 정보를 조회했습니다.", userWithTrainerDTO);
-    // } else {
-    // return ResponseDTO.setFailed("해당 이메일로 가입된 트레이너를 찾을 수 없습니다.");
-    // }
-    // }
-
-    // // 사용자가 일반 사용자인 경우
-    // return ResponseDTO.setSuccessData("사용자 정보를 조회했습니다.", new
-    // UserWithTrainerDTO(userEntity, null));
-    // } else {
-    // return ResponseDTO.setFailed("해당 이메일로 가입된 사용자를 찾을 수 없습니다.");
-    // }
-    // } catch (Exception e) {
-    // return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
-    // }
-    // }
-
     public ResponseDTO<?> updateUser(UpdateUserDTO dto) {
         Integer userId = dto.getUserId();
 
@@ -325,45 +295,4 @@ public class UserService {
             return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
         }
     }
-
-    // public ResponseDTO<?> requestPasswordReset(String email) {
-    //     try {
-    //         User user = userRepository.findByEmail(email).orElse(null);
-    //         if (user == null) {
-    //             return ResponseDTO.setFailed("입력하신 이메일로 등록된 계정이 존재하지 않습니다.");
-    //         }
-
-    //         // Generate reset token
-    //         String resetToken = tokenProvider.createToken(user.getUserId(), email, user.getRole(), user.getUserName(), 3600); // 1 hour expiry
-    //         emailService.sendResetPasswordEmail(email, resetToken);
-
-    //         return ResponseDTO.setSuccess("비밀번호 재설정 이메일이 발송되었습니다.");
-    //     } catch (Exception e) {
-    //         return ResponseDTO.setFailed("비밀번호 재설정 요청 처리 중 오류가 발생하였습니다.");
-    //     }
-    // }
-
-    // public ResponseDTO<?> resetPassword(String token, String newPassword) {
-    //     try {
-    //         if (tokenProvider.validateToken(token)) {
-    //             Integer userId = tokenProvider.getUserIdFromToken(token);
-    //             User user = userRepository.findByUserId(userId).orElse(null);
-
-    //             if (user == null) {
-    //                 return ResponseDTO.setFailed("유효하지 않은 토큰입니다.");
-    //             }
-
-    //             String hashedPassword = passwordEncoder.encode(newPassword);
-    //             user.setPassword(hashedPassword);
-    //             userRepository.save(user);
-
-    //             return ResponseDTO.setSuccess("비밀번호가 성공적으로 변경되었습니다.");
-    //         } else {
-    //             return ResponseDTO.setFailed("유효하지 않은 토큰입니다.");
-    //         }
-    //     } catch (Exception e) {
-    //         return ResponseDTO.setFailed("비밀번호 재설정 처리 중 오류가 발생하였습니다.");
-    //     }
-    // }
-    
 }

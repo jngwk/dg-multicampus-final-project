@@ -82,7 +82,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // CSRF 보호를 비활성화합니다.
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리를 Stateless로 설정합니다.
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/user/login", "/api/qna", "/api/qna/**", "/api/user/logout", "/api/chart" ,"/api/search").permitAll() // 이 API는 인증 없이 접근 가능하도록 설정합니다.
+                        .requestMatchers("/api/user/login", "/api/qna", "/api/qna/**", "/api/user/logout", "/api/chart" ,"/api/search", "/api/user/putImage", "/api/user/getImage", "/api/user/uploadImage", "/api/user/updateImage").permitAll() // 이 API는 인증 없이 접근 가능하도록 설정합니다.
                         .requestMatchers("/api/user/signUp/gym","/api/user/signUp/general", "/api/user/sendCode", "/api/gym/crNumberCheck").anonymous() // 비회원만 가능        
                         .requestMatchers("/api/user/userInfo", "/ws/**").hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM")
                         .requestMatchers("/api/user/workoutSession/**").hasAnyAuthority("ROLE_GENERAL")

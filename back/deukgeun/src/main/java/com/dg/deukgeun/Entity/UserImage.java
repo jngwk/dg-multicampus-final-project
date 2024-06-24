@@ -1,5 +1,4 @@
 package com.dg.deukgeun.entity;
-// written by Gachudon
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -10,13 +9,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="gym_image")
+@Table(name="user_image")
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GymImage {
+public class UserImage {
     @Id
-    private String gymImage;
-    private Integer gymId;
+    private String userImage;
+    private Integer userId;
 }
