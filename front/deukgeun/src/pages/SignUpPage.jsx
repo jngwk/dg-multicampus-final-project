@@ -11,6 +11,7 @@ import {
 import AlertModal from "../components/modals/AlertModal";
 import useValidation from "../hooks/useValidation";
 import AddressModal from "../components/modals/AddressModal";
+import CustomParticles from "../components/shared/CustomParticles";
 
 // 회원 정보
 const initUserData = {
@@ -204,6 +205,7 @@ const SignUpPage = () => {
 
   return (
     <>
+      <CustomParticles />
       {/* sm:translate-y-[20%] mt-3*/}
       <div className="w-fit h-fit mx-auto sm:mt-0">
         <span className="block text-center text-6xl my-10 hover:animate-wave cursor-grab">
