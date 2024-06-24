@@ -47,8 +47,6 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
     private ChatRoomRepository chatRoomRepository;
 
     // 메시지 발행
-    // @PreAuthorize("(hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') ||
-    // hasRole('ROLE_TRAINER')) && (#chatMessage.senderId == principal.userId)")
     public void sendMessage(ChatMessage chatMessage) {
         log.info("@@@@@@@@@@@@@@@@@@@@@@@@@ sendMessage service");
         log.info("Sending message using chatService:" + chatMessage);
@@ -65,10 +63,6 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
     }
 
     // 메시지 구독
-    // @PreAuthorize("(hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') ||
-    // hasRole('ROLE_TRAINER')) && " +
-    // "(#chatMessage.senderId == principal.userId || #chatMessage.receiverId ==
-    // principal.userId)")
     @RabbitListener(queues = { "${rabbitmq.queue.name}" }) // 특정 queue로 메시지를 보냄
     public void receiveMessage(ChatMessage chatMessage) {
 

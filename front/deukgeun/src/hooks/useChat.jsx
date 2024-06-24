@@ -6,6 +6,7 @@ import {
   getChatRooms,
   getAvailableUsers,
   getChatRoom,
+  sendMessageViaHttp,
 } from "../api/chatApi";
 import { useAuth } from "../context/AuthContext";
 import axiosInstance from "../api/axiosInstance";
@@ -151,10 +152,11 @@ const useChat = () => {
 
   // 채팅방 생성
   const findOrCreateChatRoom = async (selectedUserId) => {
-    toggleAvailableUsersModal();
+    if (toggleAvailableUsersModal !== null) toggleAvailableUsersModal();
     try {
       const newChatRoom = await getChatRoom(selectedUserId);
       setChatRoom(newChatRoom);
+      return newChatRoom;
     } catch (error) {
       console.error("Error creating chat room", error);
       throw error;
@@ -182,6 +184,26 @@ const useChat = () => {
     console.log("From useChat", isAvailableUsersModalVisible);
   };
 
+  // http로 메시지 보내기
+  const sendMessageHttp = async (chatRoom) => {
+    try {
+      const receiver =
+        chatRoom.users[0].userId === userData.userId
+          ? chatRoom.users[1]
+          : chatRoom.users[0];
+      const messageToSend = {
+        chatRoom: chatRoom,
+        sender: userData,
+        receiver: receiver,
+        timestamp: new Date().toISOString(),
+        message: chatMessage,
+      };
+      sendMessageViaHttp(messageToSend);
+    } catch (error) {
+      console.error("sendMessageHttp error", error);
+    }
+  };
+
   return {
     // state
     stompClientRef,
@@ -202,6 +224,7 @@ const useChat = () => {
     findOrCreateChatRoom,
     loadAvailableUsers,
     sendMessage,
+    sendMessageHttp,
     toggleAvailableUsersModal,
   };
 };

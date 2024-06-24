@@ -10,12 +10,13 @@ import org.springframework.data.repository.query.Param;
 import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.entity.User;
 
-
 public interface GymRepository extends JpaRepository<Gym, Integer> {
     Optional<Gym> findByUser(User user);
-    
+
     @Query("SELECT g FROM Gym g WHERE "
             + "REPLACE(LOWER(g.gymName), ' ', '') LIKE LOWER(CONCAT('%', :keyword, '%')) "
             + "OR REPLACE(LOWER(g.address), ' ', '') LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Gym> searchGyms(@Param("keyword") String keyword);
+
+    Optional<Gym> findByCrNumber(String crNumber);
 }

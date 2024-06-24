@@ -167,4 +167,14 @@ public class GymService {
         return gymRepository.findAll();
     }
     // gachudon brench end
+
+    public List<Gym> searchGyms(String searchWord) {
+        String processedSearchWord = searchWord.replaceAll("\\s+", "").toLowerCase();
+        return gymRepository.searchGyms(processedSearchWord);
+    }
+
+    public Boolean crNumberDuplicateCheck(String crNumber) {
+        return gymRepository.findByCrNumber(crNumber).isPresent();
+
+    }
 }

@@ -186,7 +186,7 @@ const arrayToDate = (arr) => {
 function ShowChatList({ chatList, userData }) {
   return chatList.map((chat, i) => {
     //마지막 시간만 보이도록 구현
-    // console.log(chat);
+    console.log(i, chat);
     let currentTimestamp = chat.timestamp;
     if (Array.isArray(currentTimestamp)) {
       currentTimestamp = arrayToDate(currentTimestamp).toISOString();
@@ -208,7 +208,11 @@ function ShowChatList({ chatList, userData }) {
     const nextTime = nextTimestamp
       ? format(parseISO(nextTimestamp), "HH:mm")
       : null;
-    const showTime = !nextTime || nextTime !== currentTime;
+    // console.log(chatList[i + 1]);
+    const showTime =
+      (nextChat && chat.sender.userId !== nextChat.sender.userId) ||
+      !nextTime ||
+      nextTime !== currentTime;
 
     const prevChat = chatList[i - 1];
     let prevTimestamp = prevChat ? prevChat.timestamp : null;
@@ -219,9 +223,7 @@ function ShowChatList({ chatList, userData }) {
     }
     const showDate =
       i === 0 ||
-      (currentDate &&
-        nextChat &&
-        !isSameDay(currentDate, parseISO(prevTimestamp)));
+      (currentDate && !isSameDay(currentDate, parseISO(prevTimestamp)));
 
     return (
       <div key={i}>

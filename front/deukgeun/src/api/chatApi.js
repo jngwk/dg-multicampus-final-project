@@ -51,3 +51,15 @@ export const getChatRoom = async (selectedUserId) => {
     throw error;
   }
 };
+
+export const sendMessageViaHttp = async (message) => {
+  try {
+    console.log("message", message);
+    const res = await axios.post(`${prefix}/sendMessage`, message);
+    console.log("sendMessage", res);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching sending message", error);
+    throw error;
+  }
+};

@@ -64,6 +64,11 @@ export default function ChatRoom() {
     setChatRoom(room);
   };
 
+  const handleNewChatClick = async (receiverId) => {
+    const newChatRoom = await findOrCreateChatRoom(receiverId);
+    console.log("newChatRoom @@@@@@@@", newChatRoom);
+    handleChatListClick(newChatRoom);
+  };
   // console.log("from chat Room", isAvailableUsersModalVisible);
 
   if (loading) {
@@ -137,7 +142,7 @@ export default function ChatRoom() {
           availableUsers={availableUsers}
           userData={userData}
           toggleModal={toggleAvailableUsersModal}
-          handleButtonClick={findOrCreateChatRoom}
+          handleButtonClick={handleNewChatClick}
         />
       )}
     </div>

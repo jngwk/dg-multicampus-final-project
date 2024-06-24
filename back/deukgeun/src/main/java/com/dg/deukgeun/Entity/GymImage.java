@@ -12,14 +12,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="gym_image")
+@Table(name = "gym_image")
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class GymImage {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private String gymImage;
     private Integer gymId;
 }
