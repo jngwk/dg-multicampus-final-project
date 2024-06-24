@@ -1,0 +1,60 @@
+//센터이미지 업로드박스
+import React, { useState } from "react";
+import { RiFolderUploadFill } from "react-icons/ri";
+
+const Logo = () => (
+  <RiFolderUploadFill className="w-24 h-24 pointer-events-none" />
+);
+
+const UploadBox = ({ onChange }) => {
+  const [previewSrcList, setPreviewSrcList] = useState([]);
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files).slice(0, 12 - previewSrcList.length); // 최대 12장까지만 추가
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewSrcList((prev) => [...prev, reader.result]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleRemovePreview = (index) => {
+    setPreviewSrcList((prev) => prev.filter((_, i) => i !== index));
+    // Call the onChange callback to update parent component state
+    const updatedFiles = previewSrcList.filter((_, i) => i !== index);
+    onChange(updatedFiles);
+  };
+
+  return (
+    <div className="w-full pb-3 overflow-y-hidden overflow-x-auto flex flex-nowrap gap-4 scrollbar">
+      <div className="flex-shrink-0 w-fit h-fit">
+        <label className="flex flex-col justify-center items-center w-44 h-36 bg-white rounded-md border border-gray-400 border-dashed p-4 overflow-hidden cursor-pointer hover:border-bright-orange">
+          <input type="file" className="hidden" onChange={handleFileChange} multiple />
+          <Logo />
+          <p className="font-medium text-sm my-3 pre-line">
+            클릭 혹은 파일을 <br />
+            이곳에 드롭하세요.
+          </p>
+          <p className="m-0 text-xs">파일당 최대 3MB</p>
+        </label>
+      </div>
+      {previewSrcList.map((src, index) => (
+        <div key={index} className="flex-shrink-0 w-fit h-fit relative">
+          <div className="flex flex-col justify-center items-center w-44 h-36 bg-white rounded-md border border-gray-400 p-2 overflow-hidden">
+            <img src={src} alt="미리보기" className="w-24 h-24 object-cover" />
+            <button
+              className="absolute top-0 right-1 p-1 rounded-full text-red-300 hover:bg-red-500 hover:text-white transition duration-300"
+              onClick={() => handleRemovePreview(index)}
+            >
+              X
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default UploadBox;
