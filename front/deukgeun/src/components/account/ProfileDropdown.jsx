@@ -33,8 +33,9 @@ const ProfileDropdown = () => {
           <li className="profile-dropdown-list" onClick={toggleModal}>
             <box-icon name="id-card" color="#ffbe98" size="sm"></box-icon>
             <span className="ml-3">
-              {userData.role === "ROLE_GENERAL" ||
-                (userData.role === "ROLE_TRAINER" && "내 정보")}
+              {(userData.role === "ROLE_GENERAL" ||
+                userData.role === "ROLE_TRAINER") &&
+                "내 정보"}
               {userData.role === "ROLE_GYM" && "헬스장 정보"}
             </span>
           </li>
