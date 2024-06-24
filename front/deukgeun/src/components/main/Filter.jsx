@@ -34,6 +34,7 @@ const Filter = ({
             );
           }}
           eraseSpeed={250}
+          typingDelay={1000}
         />
         {/* <div style={{ width: underlineWidth }} className="absolute right-0">
           <img src={curvedUnderline} alt="underline" />
