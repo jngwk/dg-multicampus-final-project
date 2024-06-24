@@ -15,6 +15,7 @@ export default function Input({
   featureOnClick, // 버튼 onClick 함수
   featureEnableOnLoad = false, // 유효성 검사 없이 버튼 눌러도 되는지
   placeholder = "",
+  onChange,
   ...props
 }) {
   const [focus, setFocus] = useState(false);
@@ -64,6 +65,7 @@ export default function Input({
         value={value}
         step={step}
         placeholder={placeholder}
+        onChange={onChange}
         {...props}
       />
       <label

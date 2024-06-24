@@ -50,7 +50,7 @@ export default function Header() {
 
   return (
     // 헤더 중앙 정렬
-    <div className="flex justify-center items-center">
+    <div className="h-[10dvh] flex justify-center items-center">
       <div className="flex justify-between items-center w-5/6 px-5 border-b-2 border-black">
         <img
           onClick={() => navigate("/")}

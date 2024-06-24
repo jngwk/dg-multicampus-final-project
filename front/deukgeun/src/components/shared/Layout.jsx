@@ -5,7 +5,7 @@ const Layout = ({ children }) => {
   return (
     <div>
       <Header />
-      <div className="flex justify-center p-10 min-h-[80dvh] w-5/6 mx-auto">
+      <div className="flex flex-col justify-center min-h-[90dvh] w-full">
         {children}
       </div>
     </div>

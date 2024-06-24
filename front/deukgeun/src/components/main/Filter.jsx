@@ -2,9 +2,15 @@ import React from "react";
 import curvedUnderline from "../../assets/curved-underline.png";
 import ReactTypingEffect from "react-typing-effect";
 
-const Filter = ({ label, emoji, underlineWidth }) => {
+const Filter = ({
+  label,
+  emoji,
+  underlineWidth,
+  rotated = true,
+  className,
+}) => {
   return (
-    <div className="flex items-center gap-3">
+    <div className={`flex items-center gap-3 ${className}`}>
       <div className="relative">
         {/* <span className="text-5xl font-normal tracking-tighter">{label}</span> */}
         <ReactTypingEffect
@@ -33,7 +39,7 @@ const Filter = ({ label, emoji, underlineWidth }) => {
           <img src={curvedUnderline} alt="underline" />
         </div> */}
       </div>
-      <div className="rotate-12 inline-block">
+      <div className={`${rotated && "rotate-12"} inline-block`}>
         <span className="text-6xl">{emoji}</span>
       </div>
     </div>
