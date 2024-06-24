@@ -80,18 +80,25 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // CSRF 보호를 비활성화합니다.
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리를 Stateless로 설정합니다.
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리를
+                                                                                                              // Stateless로
+                                                                                                              // 설정합니다.
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/user/login", "/api/qna", "/api/qna/**", "/api/user/logout", "/api/chart" ,"/api/search", "/api/user/putImage", "/api/user/getImage", "/api/user/uploadImage", "/api/user/updateImage").permitAll() // 이 API는 인증 없이 접근 가능하도록 설정합니다.
-                        .requestMatchers("/api/user/signUp/gym","/api/user/signUp/general", "/api/user/sendCode", "/api/gym/crNumberCheck").anonymous() // 비회원만 가능        
-                        .requestMatchers("/api/user/userInfo", "/ws/**").hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM")
+                        .requestMatchers("/api/user/login", "/api/qna", "/api/qna/**", "/api/user/logout", "/api/chart" ,"/api/search", "/api/user/putImage", "/api/user/getImage", "/api/user/uploadImage", "/api/user/updateImage",
+                        "/api/gym/search/**", "/api/gym/get/**",
+                        "/api/gym/getList", "/api/gym/getListWithPaging").permitAll() // 이 API는 인증 없이 접근 가능하도록 설정합니다.
+                        .requestMatchers("/api/user/signUp/gym","/api/user/signUp/general", "/api/user/sendCode", "/api/gym/crNumberCheck", "/api/user/emailCheck/*").anonymous() // 비회원만 가능        
+                        .requestMatchers("/api/user/userInfo", "/ws/**").hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM", "ROLE_TRAINER")
                         .requestMatchers("/api/user/workoutSession/**").hasAnyAuthority("ROLE_GENERAL")
-                        .requestMatchers("/api/membership/register").hasAuthority("ROLE_GENERAL") 
-                        .requestMatchers("/api/membership/stats", "/api/membership/stats/**", "/api/user/signUp/trainer","/api/trainers/update/**").hasAnyAuthority("ROLE_GYM")
+                        .requestMatchers("/api/membership/register").hasAuthority("ROLE_GENERAL")
+                        .requestMatchers("/api/membership/stats", "/api/membership/stats/**",
+                                "/api/user/signUp/trainer", "/api/trainers/update/**")
+                        .hasAnyAuthority("ROLE_GYM")
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/reviews/delete/**", "api/reviews/update/**").hasAnyAuthority("ROLE_GENERAL","ROLE_ADMIN")
-                        .requestMatchers("/api/reviews/add").hasAnyAuthority("ROLE_GENERAL")
+                        .requestMatchers("/api/reviews/registerReview").hasAuthority("ROLE_GENERAL")
                         .requestMatchers("/api/reviews/reviewList/**").permitAll()
+                        .requestMatchers("/api/trainers/update/**").hasAuthority("ROLE_TRAINER")
                         .anyRequest().authenticated()) // 그 외 모든 요청은 인증이 필요합니다
 
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider, customUserDetailsService),
@@ -118,7 +125,6 @@ public class SecurityConfig {
 
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 Integer userId = jwtTokenProvider.getUserIdFromToken(token); // userId만 추출
-
 
                 /*
                  * userId로 만든 detailsService를 사용해 customUserDetails를 정의

@@ -14,6 +14,7 @@ const CalendarInputForm = ({
   isInputFormVisible,
   toggleInputForm,
   workoutsLoading,
+  deleteWorkouts,
 }) => {
   const { computeTime, getTime } = useCustomDate();
 
@@ -29,9 +30,11 @@ const CalendarInputForm = ({
       { workoutName: "", workoutSet: "", workoutRep: "", workoutWeight: "" },
     ],
   });
+  const [deletedWorkouts, setDeletedWorkouts] = useState([]);
 
   // 날짜/이벤트 선택시 폼에 반영
   useEffect(() => {
+    setDeletedWorkouts([]);
     if (selectedEvent) {
       setFormValues({
         ...selectedEvent.extendedProps,
@@ -104,14 +107,47 @@ const CalendarInputForm = ({
     });
   };
 
+  const handleDeleteWorkout = (index, id) => {
+    // TODO handle delete workout
+    const updatedWorkouts = formValues.workouts.filter((_, i) => i !== index);
+    setFormValues({
+      ...formValues,
+      workouts: updatedWorkouts,
+    });
+    if (id) {
+      setDeletedWorkouts((prev) => [...prev, id]);
+    }
+  };
+
   const handleSubmit = (e) => {
-    console.log("handleSubmit");
-    selectedEvent ? updateEvent(formValues) : addEvent(formValues);
+    // console.log(
+    //   "handleSubmit: ",
+    //   selectedEvent.id || selectedEvent.extendedProps.workoutSessionId
+    // );
+    if (selectedEvent) {
+      if (deletedWorkouts) {
+        deleteWorkouts(deletedWorkouts);
+      }
+      updateEvent(
+        formValues,
+        selectedEvent.id || selectedEvent.extendedProps.workoutSessionId
+      );
+    } else {
+      addEvent(formValues);
+    }
+    // selectedEvent
+    //   ? updateEvent(
+    //       formValues,
+    //       selectedEvent.id || selectedEvent.extendedProps.workoutSessionId
+    //     )
+    //   : addEvent(formValues);
   };
 
   const handleDelete = () => {
     console.log("handleDelete");
-    deleteEvent();
+    deleteEvent(
+      selectedEvent.id || selectedEvent.extendedProps.workoutSessionId
+    );
   };
 
   return (
@@ -162,35 +198,54 @@ const CalendarInputForm = ({
             <Loader />
           ) : (
             formValues.workouts.map((workout, index) => (
-              <div key={index}>
-                <hr />
-                <Input
-                  label="운동"
-                  name="workoutName"
-                  value={workout.workoutName || ""}
-                  onChange={(e) => handleWorkoutChange(index, e)}
-                />
-                <Input
-                  label="SET"
-                  name="workoutSet"
-                  type="number"
-                  value={workout.workoutSet || ""}
-                  onChange={(e) => handleWorkoutChange(index, e)}
-                />
-                <Input
-                  label="REP"
-                  name="workoutRep"
-                  type="number"
-                  value={workout.workoutRep || ""}
-                  onChange={(e) => handleWorkoutChange(index, e)}
-                />
-                <Input
-                  label="무게(KG)"
-                  name="workoutWeight"
-                  type="number"
-                  value={workout.workoutWeight || ""}
-                  onChange={(e) => handleWorkoutChange(index, e)}
-                />
+              <div
+                key={index}
+                id={workout.workoutId || ""}
+                className="flex gap-2 items-center"
+              >
+                <div className="w-[240px]">
+                  <hr />
+                  <Input
+                    label="운동"
+                    name="workoutName"
+                    value={workout.workoutName || ""}
+                    onChange={(e) => handleWorkoutChange(index, e)}
+                  />
+                  <div className="flex justify-between">
+                    <Input
+                      label="SET"
+                      name="workoutSet"
+                      type="number"
+                      value={workout.workoutSet || ""}
+                      onChange={(e) => handleWorkoutChange(index, e)}
+                      width="28%"
+                    />
+                    <Input
+                      label="REP"
+                      name="workoutRep"
+                      type="number"
+                      value={workout.workoutRep || ""}
+                      onChange={(e) => handleWorkoutChange(index, e)}
+                      width="28%"
+                    />
+                    <Input
+                      label="무게(KG)"
+                      name="workoutWeight"
+                      type="number"
+                      value={workout.workoutWeight || ""}
+                      onChange={(e) => handleWorkoutChange(index, e)}
+                      width="36%"
+                    />
+                  </div>
+                </div>
+                <div
+                  className="w-6 h-[100px] border border-gray-400 opacity-0 hover:opacity-100 transition-opacity flex justify-center items-center cursor-pointer rounded-md bg-gray-50"
+                  onClick={() =>
+                    handleDeleteWorkout(index, workout.workoutId || "")
+                  }
+                >
+                  <box-icon name="x" color="#bdbdbd"></box-icon>
+                </div>
               </div>
             ))
           )}

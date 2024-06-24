@@ -41,4 +41,7 @@ public class GymImageService {
         }
         return dtoList;
     }
+    public void remove(String gymImage){
+        gymImageRepository.deleteById(gymImage);
+    }
 }

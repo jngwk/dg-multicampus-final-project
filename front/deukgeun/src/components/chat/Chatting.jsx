@@ -25,9 +25,8 @@ const Chatting = ({
   messagesLoading, // 대화 내역 로딩 상태
   sendMessage,
   userData, // 메세지 전송
+  chatReceiver,
 }) => {
-  const [text, setText] = useState(""); //입력할 chat
-  const [chat, setChat] = useState([]); //입력한 chat기록
   const messageEndRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false); //userInfo Open/Close
   const windowSize = useWindowSize();
@@ -71,9 +70,9 @@ const Chatting = ({
               <FaAngleLeft className="m-3" size="22" />
             </button>
             <span className="text-sm font-medium">
-              {" "}
+              {/* 헬스장 이름 추가 */}
               <span className="inline-block">등록된 헬스장 이름</span> |{" "}
-              <span className="inline-block">회원 이름</span>{" "}
+              <span className="inline-block">{chatReceiver.userName}</span>
             </span>
             <button
               className="hidden lg:block ml-auto m-1"
@@ -87,7 +86,7 @@ const Chatting = ({
             </button>
           </div>
 
-          <article className="flex-grow w-full h-[70%] overflow-y-auto scrollbar-hide sm:hover:scrollbar-default">
+          <article className="flex-grow w-full h-[70%] overflow-y-auto">
             {messagesLoading ? (
               <div className="w-full h-full flex justify-center items-center">
                 <Loader />
@@ -97,7 +96,7 @@ const Chatting = ({
                 <section>
                   {<ShowChatList chatList={messages} userData={userData} />}
                 </section>
-                <div ref={messageEndRef}></div>{" "}
+                <div ref={messageEndRef}></div>
               </>
             )}
           </article>
@@ -134,7 +133,9 @@ const Chatting = ({
                 src={profileImg}
                 alt="profile"
               />
-              <div className="text-sm font-semibold p-3"> 최OO 회원님 </div>
+              <div className="text-sm font-semibold p-3">
+                {chatReceiver.userName}
+              </div>
             </div>
 
             <div className="p-3 text-sm">
@@ -149,14 +150,14 @@ const Chatting = ({
                 <MdAttachEmail className="mr-10" size="28" />
                 <div className="flex-col">
                   <p className="text-sm">이메일</p>
-                  <p className="text-xs">Choi123@naver.com</p>
+                  <p className="text-xs">{chatReceiver.email}</p>
                 </div>
               </div>
               <div className="flex items-center whitespace-pre-line m-2 p-2">
                 <FaMapLocationDot className="mr-10" size="28" />
                 <div className="flex-col">
                   <p className="text-sm">주소</p>
-                  <p className="text-xs">서울특별시 강남구</p>
+                  <p className="text-xs">{chatReceiver.address}</p>
                 </div>
               </div>
             </div>
@@ -167,12 +168,29 @@ const Chatting = ({
   );
 };
 
+// array 타입인 날짜를 변경
+const arrayToDate = (arr) => {
+  if (Array.isArray(arr) && arr.length >= 6) {
+    return new Date(
+      arr[0], // year
+      arr[1] - 1, // month
+      arr[2], // day
+      arr[3], // hour
+      arr[4], // minute
+      arr[5] // second
+    );
+  }
+  return null;
+};
+
 function ShowChatList({ chatList, userData }) {
   return chatList.map((chat, i) => {
     //마지막 시간만 보이도록 구현
-
+    console.log(i, chat);
     let currentTimestamp = chat.timestamp;
-    if (currentTimestamp && typeof currentTimestamp !== "string") {
+    if (Array.isArray(currentTimestamp)) {
+      currentTimestamp = arrayToDate(currentTimestamp).toISOString();
+    } else if (currentTimestamp && typeof currentTimestamp !== "string") {
       currentTimestamp = new Date(currentTimestamp).toISOString();
     }
 
@@ -181,22 +199,31 @@ function ShowChatList({ chatList, userData }) {
 
     const nextChat = chatList[i + 1];
     let nextTimestamp = nextChat ? nextChat.timestamp : null;
-    if (nextTimestamp && typeof nextTimestamp !== "string") {
-      // console.log("nextTimestamp", nextTimestamp.toISOString());
+    if (Array.isArray(nextTimestamp)) {
+      nextTimestamp = arrayToDate(nextTimestamp).toISOString();
+    } else if (nextTimestamp && typeof nextTimestamp !== "string") {
       nextTimestamp = new Date(nextTimestamp).toISOString();
     }
 
     const nextTime = nextTimestamp
       ? format(parseISO(nextTimestamp), "HH:mm")
       : null;
-    const showTime = !nextTime || nextTime !== currentTime;
+    // console.log(chatList[i + 1]);
+    const showTime =
+      (nextChat && chat.sender.userId !== nextChat.sender.userId) ||
+      !nextTime ||
+      nextTime !== currentTime;
 
+    const prevChat = chatList[i - 1];
+    let prevTimestamp = prevChat ? prevChat.timestamp : null;
+    if (Array.isArray(prevTimestamp)) {
+      prevTimestamp = arrayToDate(prevTimestamp).toISOString();
+    } else if (prevTimestamp && typeof prevTimestamp !== "string") {
+      prevTimestamp = new Date(prevTimestamp).toISOString();
+    }
     const showDate =
       i === 0 ||
-      (currentDate &&
-        nextTimestamp &&
-        !isSameDay(currentDate, parseISO(chatList[i - 1].timestamp)));
-    // console.log("@@@@@@@@@@@", currentDate, currentTimestamp);
+      (currentDate && !isSameDay(currentDate, parseISO(prevTimestamp)));
 
     return (
       <div key={i}>
@@ -204,41 +231,37 @@ function ShowChatList({ chatList, userData }) {
           <div className="text-xs font-thin">
             <span className="flex justify-center">
               <Clock
-                date={currentDate}
+                date={currentTimestamp}
                 className="w-1/5 min-w-32 my-2 text-center rounded-xl bg-grayish-red text-white"
-                format={" YYYY년 MM월 DD일 "}
+                format={"YYYY년 MM월 DD일"}
                 ticking={false}
                 timezone={"Asia/Seoul"}
               />
             </span>
           </div>
         )}
-        <div>
-          <article>
-            <div
-              className={`flex ${
-                chat.sender.userId === userData.userId
-                  ? "flex-end"
-                  : "flex-start"
-              } items-end justify-end p-1`}
-            >
-              {showTime && (
-                <span>
-                  <Clock
-                    date={currentDate}
-                    className="current_time text-xs"
-                    format={"A hh:mm"}
-                    ticking={false}
-                    timezone={"Asia/Seoul"}
-                  />
-                </span>
-              )}
-              <p className="ml-3 px-6 py-2 rounded-xl bg-grayish-red bg-opacity-20 max-w-xs max-h-fit min-h-[32px] text-xs">
-                {chat.message}
-              </p>
-            </div>
-          </article>
-        </div>
+        <article>
+          <div
+            className={`flex items-end justify-end p-1 ${
+              chat.sender.userId !== userData.userId && "flex-row-reverse"
+            }`}
+          >
+            {showTime && (
+              <span>
+                <Clock
+                  date={currentTimestamp}
+                  className="current_time text-xs"
+                  format={"HH:mm"}
+                  ticking={false}
+                  timezone={"Asia/Seoul"}
+                />
+              </span>
+            )}
+            <p className="mx-3 px-6 py-2 rounded-xl bg-grayish-red bg-opacity-20 max-w-xs max-h-fit min-h-[32px] text-xs">
+              {chat.message}
+            </p>
+          </div>
+        </article>
       </div>
     );
   });

@@ -13,9 +13,10 @@ export default function ChatRoom() {
   const [isMainVisible, setIsMainVisible] = useState(true); // 메인화면 보이는지
   const [isChatListVisible, setIsChatListVisible] = useState(true); // 채팅방 목록 보이는지
   const [isChatVisible, setIsChatVisible] = useState(false); // 채팅 보이는지
+  const [chatReceiver, setChatReceiver] = useState("");
+  const [latestMessages, setLatestMessages] = useState([]);
   const windowSize = useWindowSize(); // 반응형을 위한 custom hook
   const {
-    stompClientRef,
     messages,
     chatRooms,
     chatRoom,
@@ -26,11 +27,9 @@ export default function ChatRoom() {
     isAvailableUsersModalVisible,
     messagesLoading,
     availableUsersLoading,
-    token,
     loading,
     userData,
     findOrCreateChatRoom,
-    loadAvailableUsers,
     sendMessage,
     toggleAvailableUsersModal,
   } = useChat();
@@ -59,9 +58,17 @@ export default function ChatRoom() {
       setIsChatVisible(true);
       setIsChatListVisible(false);
     }
+    setChatReceiver(
+      room.users[0].userId === userData.userId ? room.users[1] : room.users[0]
+    );
     setChatRoom(room);
   };
 
+  const handleNewChatClick = async (receiverId) => {
+    const newChatRoom = await findOrCreateChatRoom(receiverId);
+    console.log("newChatRoom @@@@@@@@", newChatRoom);
+    handleChatListClick(newChatRoom);
+  };
   // console.log("from chat Room", isAvailableUsersModalVisible);
 
   if (loading) {
@@ -125,6 +132,7 @@ export default function ChatRoom() {
             messagesLoading={messagesLoading}
             sendMessage={sendMessage}
             userData={userData}
+            chatReceiver={chatReceiver}
           />
         )}
       </div>
@@ -134,7 +142,7 @@ export default function ChatRoom() {
           availableUsers={availableUsers}
           userData={userData}
           toggleModal={toggleAvailableUsersModal}
-          handleButtonClick={findOrCreateChatRoom}
+          handleButtonClick={handleNewChatClick}
         />
       )}
     </div>

@@ -5,15 +5,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.dg.deukgeun.dto.review.ReviewDTO;
-import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.entity.Review;
 import com.dg.deukgeun.entity.User;
-import com.dg.deukgeun.repository.GymRepository;
 import com.dg.deukgeun.repository.ReviewRepository;
 import com.dg.deukgeun.repository.UserRepository;
 
@@ -26,28 +25,50 @@ public class ReviewService {
 
     @Autowired
     private ReviewRepository reviewRepository;
-
+    @Autowired
+    private ModelMapper modelMapper;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private GymRepository gymRepository;
-
+    
     @PreAuthorize("hasRole('ROLE_GENERAL')")
-    public Review saveReview(ReviewDTO reviewDTO, Integer userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found for userId: " + userId));
-        Gym gym = gymRepository.findById(reviewDTO.getGymId()).orElseThrow(() -> new RuntimeException("Gym not found"));
-        Review review = new Review();
-        log.info(user.getUserId());
-        review.setGymId(gym.getGymId());
-        review.setUserId(user.getUserId());
-        review.setUserName(user.getUserName());
-        review.setEmail(user.getEmail());
-        review.setRating(reviewDTO.getRating());
-        review.setComment(reviewDTO.getComment());
-        review.setCreatedAt(LocalDateTime.now());
+    public Integer registerReview(ReviewDTO reviewDTO) {
+        log.info("Registering ReviewDTO...");
+    
+        Review review = modelMapper.map(reviewDTO, Review.class);
+        log.info("Mapped Review: {}", review);
 
-        return reviewRepository.save(review);
+        if (reviewDTO.getUserId() != null) {
+            log.info("UserId from ReviewDTO: {}", reviewDTO.getUserId());
+        
+            Optional<User> userResult = userRepository.findByUserId(reviewDTO.getUserId());
+            if (userResult.isPresent()) {
+                User user = userResult.get();
+                log.info("User found: {}", user);
+
+                review.setUserId(user.getUserId());
+                review.setUserName(user.getUserName());
+                review.setEmail(user.getEmail());
+             
+                review.setGymId(reviewDTO.getGymId());
+                review.setRating(reviewDTO.getRating());
+                review.setComment(reviewDTO.getComment());
+            } else {
+                log.warn("User with userId {} not found", reviewDTO.getUserId());
+            }
+        
+            if (review.getCreatedAt() == null) {
+                review.setCreatedAt(LocalDateTime.now());
+            }
+        } else {
+            log.warn("UserId in ReviewDTO is null");
+        }
+
+        Review saveReview = reviewRepository.save(review);
+        log.info("Review saved: {}", saveReview);
+
+        return saveReview.getId();
     }
+
     public List<ReviewDTO> getReviewsByGymId(Integer gymId) {
         return reviewRepository.findByGymId(gymId).stream()
                 .map(review -> new ReviewDTO(review))

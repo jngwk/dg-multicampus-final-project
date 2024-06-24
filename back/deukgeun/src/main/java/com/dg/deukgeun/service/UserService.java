@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.dg.deukgeun.dto.UserRole;
 import com.dg.deukgeun.dto.gym.GymLoginResponseDTO;
@@ -86,7 +85,6 @@ public class UserService {
         String email = trainerDTO.getEmail();
         String password = trainerDTO.getPassword();
 
-
         // Check if email already exists
         if (userRepository.existsByEmail(email)) {
             return ResponseDTO.setFailed("중복된 Email 입니다.");
@@ -111,7 +109,7 @@ public class UserService {
         } catch (Exception e) {
             return ResponseDTO.setFailed("사용자 정보를 저장하는 도중 오류가 발생했습니다.");
         }
-      
+
         // Find Gym by userId
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
@@ -137,7 +135,6 @@ public class UserService {
         } catch (Exception e) {
             return ResponseDTO.setFailed("트레이너 정보를 저장하는 도중 오류가 발생했습니다.");
         }
-        
 
         return ResponseDTO.setSuccess("트레이너 생성에 성공했습니다.");
     }
@@ -245,16 +242,22 @@ public class UserService {
                 User user = userOptional.get();
 
                 // Update the user information
-                user.setUserName(dto.getUserName());
-                user.setEmail(dto.getEmail());
                 user.setAddress(dto.getAddress());
                 user.setDetailAddress(dto.getDetailAddress());
+
+                String password = dto.getPassword();
+                // Hash the password
+                if (!password.equals("")) {
+                    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                    String hashedPassword = passwordEncoder.encode(password);
+                    user.setPassword(hashedPassword);
+                }
 
                 // Save the updated user entity
                 userRepository.save(user);
 
                 // If user is a trainer, update trainer information as well
-                if ("ROLE_TRAINER".equals(user.getRole())) {
+                if ("ROLE_TRAINER".equals(user.getRole().toString())) {
                     Optional<Trainer> trainerOptional = trainerRepository.findByUser_UserId(user.getUserId());
                     if (trainerOptional.isPresent()) {
                         Trainer trainer = trainerOptional.get();
@@ -280,7 +283,7 @@ public class UserService {
         try {
             // Check if the adminEmail belongs to an ADMIN user
             Optional<User> adminOptional = userRepository.findById(adminId);
-            if (adminOptional.isPresent() && "ADMIN".equals(adminOptional.get().getRole())) {
+            if (adminOptional.isPresent() && "ADMIN".equals(adminOptional.get().getRole().toString())) {
                 // Fetch all users with role USER
                 List<User> users = userRepository.findByRole("USER");
                 // For security reasons, set the password field to an empty string
@@ -295,4 +298,50 @@ public class UserService {
             return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
         }
     }
+
+    public Boolean emailDuplicateCheck(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
+    // public ResponseDTO<?> requestPasswordReset(String email) {
+    // try {
+    // User user = userRepository.findByEmail(email).orElse(null);
+    // if (user == null) {
+    // return ResponseDTO.setFailed("입력하신 이메일로 등록된 계정이 존재하지 않습니다.");
+    // }
+
+    // // Generate reset token
+    // String resetToken = tokenProvider.createToken(user.getUserId(), email,
+    // user.getRole(), user.getUserName(), 3600); // 1 hour expiry
+    // emailService.sendResetPasswordEmail(email, resetToken);
+
+    // return ResponseDTO.setSuccess("비밀번호 재설정 이메일이 발송되었습니다.");
+    // } catch (Exception e) {
+    // return ResponseDTO.setFailed("비밀번호 재설정 요청 처리 중 오류가 발생하였습니다.");
+    // }
+    // }
+
+    // public ResponseDTO<?> resetPassword(String token, String newPassword) {
+    // try {
+    // if (tokenProvider.validateToken(token)) {
+    // Integer userId = tokenProvider.getUserIdFromToken(token);
+    // User user = userRepository.findByUserId(userId).orElse(null);
+
+    // if (user == null) {
+    // return ResponseDTO.setFailed("유효하지 않은 토큰입니다.");
+    // }
+
+    // String hashedPassword = passwordEncoder.encode(newPassword);
+    // user.setPassword(hashedPassword);
+    // userRepository.save(user);
+
+    // return ResponseDTO.setSuccess("비밀번호가 성공적으로 변경되었습니다.");
+    // } else {
+    // return ResponseDTO.setFailed("유효하지 않은 토큰입니다.");
+    // }
+    // } catch (Exception e) {
+    // return ResponseDTO.setFailed("비밀번호 재설정 처리 중 오류가 발생하였습니다.");
+    // }
+    // }
+
 }

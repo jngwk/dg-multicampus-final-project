@@ -51,14 +51,19 @@ public class WorkoutSessionService {
 
     public void modify(WorkoutSessionDTO workoutSessionDTO) {
         Optional<WorkoutSession> result = workoutSessionRepository.findById(workoutSessionDTO.getWorkoutSessionId());
+
         WorkoutSession workoutSession = result.orElseThrow();
+        // log.info("result", workoutSessionDTO.toString());
         workoutSession.setBodyWeight(workoutSessionDTO.getBodyWeight());
         workoutSession.setContent(workoutSessionDTO.getContent());
         workoutSession.setMemo(workoutSessionDTO.getMemo());
         workoutSession.setPtSessionId(workoutSessionDTO.getPtSessionId());
         workoutSession.setUserId(workoutSessionDTO.getUserId());
+        // log.info("userId???", workoutSessionDTO.getUserId());
         workoutSession.setWorkoutDate(workoutSessionDTO.getWorkoutDate());
         workoutSession.setWorkoutSessionId(workoutSessionDTO.getWorkoutSessionId());
+        workoutSession.setStartTime(workoutSessionDTO.getStartTime());
+        workoutSession.setEndTime(workoutSessionDTO.getEndTime());
         workoutSessionRepository.save(workoutSession);
     }
 

@@ -26,6 +26,7 @@ import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.dto.user.UpdateUserDTO;
 import com.dg.deukgeun.dto.user.UserImageDTO;
 import com.dg.deukgeun.dto.user.UserSignUpDTO;
+import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.entity.VerificationCode;
 import com.dg.deukgeun.repository.UserRepository;
 import com.dg.deukgeun.security.CustomUserDetails;
@@ -135,8 +136,11 @@ public class UserController {
     // return userService.getUserInfo(userId);
     // }
 
-    @PutMapping("/update/{userId}")
-    public ResponseDTO<?> updateUser(@PathVariable Integer userId, @RequestBody UpdateUserDTO updateUserDTO) {
+    @PutMapping("/update")
+    public ResponseDTO<?> updateUser(@RequestBody UpdateUserDTO updateUserDTO) {
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        updateUserDTO.setUserId(userDetails.getUserId());
         return userService.updateUser(updateUserDTO);
     }
 
@@ -152,6 +156,11 @@ public class UserController {
             }
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token not found");
+    }
+
+    @PostMapping("/emailCheck/duplicate")
+    public Boolean emailDuplicateCheck(@RequestBody User requestBody) {
+        return userService.emailDuplicateCheck(requestBody.getEmail());
     }
 
     // @PostMapping("/reqPwReset")

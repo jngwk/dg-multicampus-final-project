@@ -1,4 +1,9 @@
 import { useState, useRef, useEffect } from "react";
+import {
+  checkDuplicateEmail,
+  checkDuplicateCRNumber,
+  checkCrNumber,
+} from "../api/signUpApi";
 
 const useValidation = () => {
   const [errors, setErrors] = useState({});
@@ -10,17 +15,27 @@ const useValidation = () => {
 
   const validateUserName = (userName, tempErrors) => {
     // console.log("Validating userName: ", userName); // Debugging
-    if (!/^[가-힣]+$/.test(userName)) {
-      tempErrors.userName = "이름은 한글로만 입력해주세요";
-    }
+    // if (!/^[가-힣]+$/.test(userName)) {
+    //   tempErrors.userName = "이름은 한글로만 입력해주세요";
+    // }
     return tempErrors.userName !== "";
   };
 
-  const validateEmail = (email, tempErrors) => {
+  const validateEmail = async (email, tempErrors) => {
     // console.log("Validating email: ", email); // Debugging
     if (!/\S+@\S+\.\S+/.test(email)) {
       tempErrors.email = "유효한 이메일 주소를 입력해주세요";
+    } else {
+      try {
+        const isDuplicate = await checkDuplicateEmail(email);
+        console.log("is duplicate", isDuplicate);
+        if (!isDuplicate) return;
+        tempErrors.email = "이미 가입된 이메일입니다";
+      } catch (error) {
+        console.error(error);
+      }
     }
+    console.log(tempErrors.email);
     return tempErrors.email !== "";
   };
   // const validateEmailVerification = (verified, tempErrors) => {
@@ -48,6 +63,17 @@ const useValidation = () => {
     return tempErrors.confirmPassword !== "";
   };
 
+  const validateCRNumber = async (crNumber, tempErrors) => {
+    try {
+      const isDuplicate = await checkDuplicateCRNumber(crNumber);
+      if (isDuplicate) {
+        tempErrors.crNumber = "이미 가입된 번호입니다";
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const validateNotEmpty = (field, value, tempErrors) => {
     // console.log(`Validating ${field}: `, value); // Debugging
     if (!value) {
@@ -56,7 +82,12 @@ const useValidation = () => {
     return tempErrors[field] !== "";
   };
 
-  const validateInput = (field, value, password = "", verified = true) => {
+  const validateInput = async (
+    field,
+    value,
+    password = "",
+    verified = true
+  ) => {
     setErrors((prevErrors) => {
       const { [field]: removedError, ...restErrors } = prevErrors;
       return restErrors;
@@ -69,16 +100,17 @@ const useValidation = () => {
         validateUserName(value, tempErrors);
         break;
       case "email":
-        validateEmail(value, tempErrors);
+        await validateEmail(value, tempErrors);
         !verified && (tempErrors.email = "이메일 인증이 완료되지 않았습니다.");
         break;
       case "password":
         validatePassword(value, tempErrors);
         break;
       case "confirmPassword":
-        // console.log(password, field, value);
         validateConfirmPassword(password, value, tempErrors);
         break;
+      // case "crNumber":
+      //   await validateCRNumber(value, tempErrors);
       default:
         validateNotEmpty(field, value, tempErrors);
         break;
@@ -96,6 +128,7 @@ const useValidation = () => {
     !verified && (tempErrors.email = "이메일 인증이 완료되지 않았습니다.");
     validatePassword(userData.password, tempErrors);
     validateConfirmPassword(userData.password, confirmPassword, tempErrors);
+    // if (userData.crNumebr) validateCRNumber(userData.crNumebr);
     Object.entries(userData).forEach(([key, value]) => {
       if (key === "address" || key === "detailAddress") return;
       validateNotEmpty(key, value, tempErrors);

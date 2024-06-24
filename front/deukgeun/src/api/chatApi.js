@@ -1,9 +1,9 @@
 import axiosInstance from "./axiosInstance";
 import axios from "axios";
 
-// export const API_SERVER_HOST = "http://localhost:8282";
-// const prefix = `${API_SERVER_HOST}/chat`;
-const prefix = `/chat`; // proxy 사용
+export const API_SERVER_HOST = "http://localhost:8282";
+const prefix = `${API_SERVER_HOST}/chat`;
+// const prefix = `/chat`; // proxy 사용
 
 export const getChatHistory = async (chatRoomId) => {
   try {
@@ -48,6 +48,18 @@ export const getChatRoom = async (selectedUserId) => {
     return res.data;
   } catch (error) {
     console.error("Error fetching chat rooms", error);
+    throw error;
+  }
+};
+
+export const sendMessageViaHttp = async (message) => {
+  try {
+    console.log("message", message);
+    const res = await axios.post(`${prefix}/sendMessage`, message);
+    console.log("sendMessage", res);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching sending message", error);
     throw error;
   }
 };

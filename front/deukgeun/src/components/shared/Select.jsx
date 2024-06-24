@@ -1,26 +1,22 @@
 import React, { useState } from "react";
 
-export default function Input({
+export default function Select({
   label, // 이름
-  type = "text", // 타입
   className, // input element 추가 스타일
   height = "44px", // 높이
   width = "240px", // 너비
-  value = "", // 값
-  step, // type=time에만 해당 (증가/감소치)
   required = false, // required
   error = "", // 에러 메세지 (빨간색으로 하단에 표시)
   message = "", // 메세지 (초록색으로 하단에 표시)
-  feature = "", // input 우측에 표시되는 버튼 이름
-  featureOnClick, // 버튼 onClick 함수
-  featureEnableOnLoad = false, // 유효성 검사 없이 버튼 눌러도 되는지
-  placeholder = "",
+  children,
   ...props
 }) {
   const [focus, setFocus] = useState(false);
 
   const handleFocus = () => setFocus(true);
-  const handleBlur = () => setFocus(false);
+  //   const handleBlur = () => setFocus(false);
+
+  const handleOnClick = (e) => console.log(e.target.event);
 
   const getBorderColor = () => {
     if (error) return "border-red-500";
@@ -34,11 +30,11 @@ export default function Input({
     return focus ? "text-peach-fuzz" : "text-gray-400";
   };
 
-  const getLabelPosition = () => {
-    if (type === "time" || type === "date" || focus || value)
-      return "left-2 -top-2 text-xs";
-    return "left-4 top-3 text-sm";
-  };
+  //   const getLabelPosition = () => {
+  //     if (type === "time" || type === "date" || focus || value)
+  //       return "left-2 -top-2 text-xs";
+  //     return "left-4 top-3 text-sm";
+  //   };
 
   const getLabelAfter = () => {
     if (required) {
@@ -54,20 +50,19 @@ export default function Input({
       } transition-all ease-out duration-300`}
       style={{ width }}
     >
-      <input
+      <select
         style={{ height }}
-        type={type}
-        className={`py-3 px-4 block w-full appearance-none bg-transparent border rounded-lg
+        className={`py-3 px-4 block w-full appearance-none bg-transparent border rounded-lg cursor-pointer 
         ${getBorderColor()} focus:border-2 focus:outline-none focus:ring-0 text-sm peer ${className} `}
         onFocus={handleFocus}
-        onBlur={handleBlur}
-        value={value}
-        step={step}
-        placeholder={placeholder}
+        onClick={(e) => handleOnClick(e)}
+        on
         {...props}
-      />
+      >
+        {children}
+      </select>
       <label
-        className={`bg-white absolute transition-all duration-200 ease-in-out pointer-events-none  ${getLabelPosition()} ${getLabelColor()} ${getLabelAfter()}`}
+        className={`bg-white absolute transition-all duration-200 ease-in-out pointer-events-none  left-2 -top-2 text-xs ${getLabelColor()} ${getLabelAfter()}`}
       >
         {label}
       </label>
@@ -80,21 +75,14 @@ export default function Input({
       >
         {error || message}
       </p>
-      {feature && (
-        <span
-          className={`absolute underline underline-offset-2 text-[10px] right-2 top-[14px] text-gray-500 ${
-            featureEnableOnLoad
-              ? "cursor-pointer hover:text-peach-fuzz"
-              : !error &&
-                !message &&
-                value &&
-                "cursor-pointer hover:text-peach-fuzz"
-          }`}
-          onClick={featureOnClick}
-        >
-          {feature}
-        </span>
-      )}
+      <div className="absolute underline underline-offset-2 text-[10px] right-2 top-[12px] flex justify-center items-center pointer-events-none ">
+        <box-icon
+          name="down-arrow"
+          type="solid"
+          color="#616161"
+          size="xs"
+        ></box-icon>
+      </div>
     </div>
   );
 }

@@ -77,7 +77,7 @@ const LoginModal = ({ toggleModal }) => {
           sessionStorage.getItem("isLoggedIn")
         );
         toggleModal(); // 로그인 성공시 팝업 닫음
-        customNavigate("/"); // 메인으로 이동
+        customNavigate("/", { replace: true }); // 메인으로 이동
         fetchUserData(); // 유저 데이터 가져오기
         if (loading) {
           return <Fallback />;
