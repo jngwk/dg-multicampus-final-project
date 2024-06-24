@@ -1,4 +1,7 @@
 package com.dg.deukgeun.entity;
+import com.dg.deukgeun.dto.ProductDTO;
+import com.dg.deukgeun.repository.GymRepository;
+
 //작성자 : 허승돈
 //수정자 : 허승돈
 import jakarta.persistence.Entity;
@@ -31,4 +34,12 @@ public class Product {
     private Integer days;
     private String productName;
     private Integer ptCountTotal;
+
+    public Product(ProductDTO dto){
+        this.gym = new Gym();
+        this.price = dto.getPrice();
+        this.days = dto.getDays();
+        this.productName = dto.getProductName();
+        this.ptCountTotal = dto.getPtCountTotal();
+    }
 }

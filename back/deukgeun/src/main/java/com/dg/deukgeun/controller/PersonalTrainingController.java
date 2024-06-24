@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dg.deukgeun.dto.TrainerDTO;
+import com.dg.deukgeun.dto.gym.TrainerDTO;
 import com.dg.deukgeun.dto.personalTraining.PersonalTrainingDTO;
 import com.dg.deukgeun.security.CustomUserDetails;
 import com.dg.deukgeun.service.PersonalTrainingService;

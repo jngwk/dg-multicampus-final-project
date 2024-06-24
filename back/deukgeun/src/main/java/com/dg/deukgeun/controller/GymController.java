@@ -198,6 +198,13 @@ public class GymController {
      * introduce : String,
      * approval : 0 or 1 or 2 or... I don't know...,
      * files : file array format
+     * productList : [{
+     *  productId : 상품 아이디
+     *  price : 상품 가격
+     *  days : 상품 기간 (일수 예 : 30일, 60일 등)
+     *  productName : 상품명
+     *  ptCountTotal : pt일 경우 상품이 제공하는 pt 횟수
+     * }]
      * }
      * 
      * Json/FormData 포멧에 맞게 Entity를 만들고 IO가 잘 이루어지는 지 확인할 것
@@ -229,6 +236,8 @@ public class GymController {
         for (int i = 0; i < uploadFileNames.size(); i++) {
             gymImageDTOList.add(new GymImageDTO(uploadFileNames.get(i), gymId));
         }
+        
+        productService.insertList(gymRequestDTO.getProductList());
 
         gymImageService.insertList(gymImageDTOList);
 
