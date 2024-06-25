@@ -9,4 +9,5 @@ import com.dg.deukgeun.entity.Product;
 
 public interface ProductRepository extends JpaRepository<Product,Integer>{
     public List<Product> findAllBygymGymId(Integer gymId);
+    public void deleteBygymGymId(Integer gymId);
 }

@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.dg.deukgeun.api.CRNumberCheckApi;
 import com.dg.deukgeun.dto.PageRequestDTO;
 import com.dg.deukgeun.dto.PageResponseDTO;
+import com.dg.deukgeun.dto.ProductDTO;
 import com.dg.deukgeun.dto.gym.GymDTO;
 import com.dg.deukgeun.dto.gym.GymImageDTO;
 import com.dg.deukgeun.dto.gym.GymRequestDTO;
@@ -259,18 +260,24 @@ public class GymController {
      * address : String,
      * detailAddress : String,
      * operatingHours : ?,
-     * prices : ?,
      * introduce : String,
-     * approval : 0 or 1 or 2 or... I don't know...
+     * productList : [{
+     *      productId : Integer,
+     *      gymId : Integer,
+     *      days : Integer,
+     *      productName : String,
+     *      ptCountTotal : Integer, nullable
+     * }]
      * }
      * 파일은 받지 않는다.
      * 이미지 파일의 경우 수정 없이 삭제/추가만 기능하는 것으로 조정
+     * 상품 정보의 경우 입력받은 productList를 참고해서 같은 gymId의 모든 상품 정보를
+     * 삭제하고, 다시 저장하는 형태로 저장.
      */
     @PutMapping("/put/{gymId}")
     public Map<String, String> modify(@PathVariable(name = "gymId") Integer gymId,
             @RequestBody GymRequestDTO gymRequestDTO) {
         GymDTO gymDTO = new GymDTO();
-
         gymDTO.setAddress(gymRequestDTO.getAddress());
         // gymDTO.setApproval(gymRequestDTO.getApproval());
         gymDTO.setCrNumber(gymRequestDTO.getCrNumber());
@@ -280,9 +287,10 @@ public class GymController {
         gymDTO.setIntroduce(gymRequestDTO.getIntroduce());
         gymDTO.setOperatingHours(gymRequestDTO.getOperatingHours());
         gymDTO.setPhoneNumber(gymRequestDTO.getPhoneNumber());
-
         log.info("Modify: " + gymDTO);
         gymService.modify(gymDTO);
+        productService.deleteByGymId(gymId);
+        productService.insertList(gymRequestDTO.getProductList());
         return Map.of("RESULT", "SUCCESS");
     }
 

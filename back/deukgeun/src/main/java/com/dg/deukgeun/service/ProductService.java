@@ -60,4 +60,8 @@ public class ProductService {
         productRepository.saveAll(productList);
         return Map.of("RESULT","SUCCESS");
     }
+
+    public void deleteByGymId(Integer gymId){
+        productRepository.deleteBygymGymId(gymId);
+    }
 }
