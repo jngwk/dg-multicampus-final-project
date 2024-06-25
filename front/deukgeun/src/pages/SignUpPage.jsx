@@ -205,168 +205,172 @@ const SignUpPage = () => {
 
   return (
     <>
-      <CustomParticles />
       {/* sm:translate-y-[20%] mt-3*/}
-      <div className="w-fit h-fit mx-auto sm:mt-0">
-        <span className="block text-center text-6xl my-10 hover:animate-wave cursor-grab">
-          👋
-        </span>
-        <div className="flex gap-[1px]">
-          <Button
-            label="일반"
-            width="170px"
-            height="52px"
-            name="general"
-            onClick={toggleRole}
-            className={`${getButtonFontWeight("general")}`}
-            color={`${getButtonColor("general")}`}
-          />
-          <Button
-            label="헬스장"
-            width="170px"
-            height="52px"
-            name="gym"
-            onClick={toggleRole}
-            className={`${getButtonFontWeight("gym")}`}
-            color={`${getButtonColor("gym")}`}
-          />
-        </div>
-        <div className="flex flex-col items-center justify-center">
-          <Input
-            label={role === "general" ? "이름" : "헬스장 이름 (지점명 포함)"}
-            width="340px"
-            name="userName"
-            value={userData.userName}
-            onChange={handleUserDataChange}
-            required={true}
-            error={errors.userName}
-          />
-          {role === "gym" && (
-            <>
-              <Input
-                label="대표자명"
-                width="340px"
-                name="gymName"
-                value={gymData.gymName}
-                onChange={handleGymDataChange}
-                required={true}
-                error={errors.gymName}
-              />
-              <Input
-                label="사업자등록 번호"
-                width="340px"
-                name="crNumber"
-                value={gymData.crNumber}
-                onChange={handleCrNumberChange}
-                required={true}
-                maxLength={"10"}
-                error={
-                  errors.crNumber ||
-                  (isCrNumberValid === false && "등록된 정보가 없는 번호입니다")
-                }
-                message={isCrNumberValid && "확왼됐습니다"}
-                feature="인증하기"
-                featureOnClick={verifyGym}
-              />
-            </>
-          )}
-          <Input
-            label="이메일"
-            width="340px"
-            name="email"
-            value={userData.email}
-            onChange={handleEmailChange}
-            required={true}
-            error={errors.email}
-            feature="인증하기"
-            featureOnClick={sendCode}
-          />
-          <div
-            className={`${
-              !codeData.sent
-                ? "opacity-0 -translate-y-5 h-0"
-                : "opacity-1 translate-y-0"
-            } transition-all duration-700`}
-          >
-            <Input
-              label="인증번호"
-              width="340px"
-              name="inputCode"
-              value={codeData.inputCode}
-              onChange={handleInputCodeChange}
-              required={true}
-              readOnly={codeData.verified}
-              error={
-                codeData.verified === false && "인증번호가 일치하지 않습니다."
-              }
-              message={codeData.verified && "인증이 완료 되었습니다."}
+      <div className="mx-auto sm:mt-0">
+        <div>
+          <span className="block text-center text-6xl my-10 hover:animate-wave cursor-grab">
+            👋
+          </span>
+          <div className="flex justify-center gap-[1px]">
+            <Button
+              label="일반"
+              width="170px"
+              height="52px"
+              name="general"
+              onClick={toggleRole}
+              className={`${getButtonFontWeight("general")}`}
+              color={`${getButtonColor("general")}`}
+            />
+            <Button
+              label="헬스장"
+              width="170px"
+              height="52px"
+              name="gym"
+              onClick={toggleRole}
+              className={`${getButtonFontWeight("gym")}`}
+              color={`${getButtonColor("gym")}`}
             />
           </div>
-          <Input
-            label="비밀번호"
-            type="password"
-            width="340px"
-            name="password"
-            value={userData.password}
-            onChange={handleUserDataChange}
-            required={true}
-            error={errors.password}
-          />
-          <Input
-            label="비밀번호 확인"
-            type="password"
-            width="340px"
-            name="confirmPassword"
-            value={confirmPassword}
-            onChange={handleConfirmPasswordChange}
-            required={true}
-            error={errors.confirmPassword}
-          />
-          {role === "gym" && (
+          <div className="flex flex-col items-center justify-center">
             <Input
-              label="전화번호"
-              type="phone"
+              label={role === "general" ? "이름" : "헬스장 이름 (지점명 포함)"}
               width="340px"
-              name="phoneNumber"
-              value={gymData.phoneNumber}
-              onChange={handleGymDataChange}
+              name="userName"
+              value={userData.userName}
+              onChange={handleUserDataChange}
               required={true}
-              error={errors.phoneNumber}
+              error={errors.userName}
             />
-          )}
-          <Input
-            label="주소"
-            width="340px"
-            name="address"
-            value={userData.address}
-            onChange={handleUserDataChange}
-            required={role === "gym" ? true : false}
-            error={errors.address}
-            readOnly={true}
-            feature={
-              <div className="-translate-y-1">
-                <box-icon name="search" color="#bdbdbd" size="s"></box-icon>
-              </div>
-            }
-            featureOnClick={() => setIsAddressModalVisible(true)}
-            featureEnableOnLoad={true}
-          />
-          <Input
-            label="세부주소"
-            width="340px"
-            name="detailAddress"
-            value={userData.detailAddress}
-            onChange={handleUserDataChange}
-            required={role === "gym" ? true : false}
-            error={errors.detailAddress}
-          />
+            {role === "gym" && (
+              <>
+                <Input
+                  label="대표자명"
+                  width="340px"
+                  name="gymName"
+                  value={gymData.gymName}
+                  onChange={handleGymDataChange}
+                  required={true}
+                  error={errors.gymName}
+                />
+                <Input
+                  label="사업자등록 번호"
+                  width="340px"
+                  name="crNumber"
+                  value={gymData.crNumber}
+                  onChange={handleCrNumberChange}
+                  required={true}
+                  maxLength={"10"}
+                  error={
+                    errors.crNumber ||
+                    (isCrNumberValid === false &&
+                      "등록된 정보가 없는 번호입니다")
+                  }
+                  message={isCrNumberValid && "확왼됐습니다"}
+                  feature="인증하기"
+                  featureOnClick={verifyGym}
+                />
+              </>
+            )}
+            <Input
+              label="이메일"
+              width="340px"
+              name="email"
+              value={userData.email}
+              onChange={handleEmailChange}
+              required={true}
+              error={errors.email}
+              feature="인증하기"
+              featureOnClick={sendCode}
+            />
+            <div
+              className={`${
+                !codeData.sent
+                  ? "opacity-0 -translate-y-5 h-0"
+                  : "opacity-1 translate-y-0"
+              } transition-all duration-700`}
+            >
+              <Input
+                label="인증번호"
+                width="340px"
+                name="inputCode"
+                value={codeData.inputCode}
+                onChange={handleInputCodeChange}
+                required={true}
+                readOnly={codeData.verified}
+                error={
+                  codeData.verified === false && "인증번호가 일치하지 않습니다."
+                }
+                message={codeData.verified && "인증이 완료 되었습니다."}
+              />
+            </div>
+            <Input
+              label="비밀번호"
+              type="password"
+              width="340px"
+              name="password"
+              value={userData.password}
+              onChange={handleUserDataChange}
+              required={true}
+              error={errors.password}
+            />
+            <Input
+              label="비밀번호 확인"
+              type="password"
+              width="340px"
+              name="confirmPassword"
+              value={confirmPassword}
+              onChange={handleConfirmPasswordChange}
+              required={true}
+              error={errors.confirmPassword}
+            />
+            {role === "gym" && (
+              <Input
+                label="전화번호"
+                type="phone"
+                width="340px"
+                name="phoneNumber"
+                value={gymData.phoneNumber}
+                onChange={handleGymDataChange}
+                required={true}
+                error={errors.phoneNumber}
+              />
+            )}
+            <Input
+              label="주소"
+              width="340px"
+              name="address"
+              value={userData.address}
+              onChange={handleUserDataChange}
+              required={role === "gym" ? true : false}
+              error={errors.address}
+              readOnly={true}
+              feature={
+                <div className="-translate-y-1">
+                  <box-icon name="search" color="#bdbdbd" size="s"></box-icon>
+                </div>
+              }
+              featureOnClick={() => setIsAddressModalVisible(true)}
+              featureEnableOnLoad={true}
+            />
+            <Input
+              label="세부주소"
+              width="340px"
+              name="detailAddress"
+              value={userData.detailAddress}
+              onChange={handleUserDataChange}
+              required={role === "gym" ? true : false}
+              error={errors.detailAddress}
+            />
+          </div>
+          <div className="text-center">
+            <Button
+              label="회원가입"
+              width="340px"
+              height="52px"
+              onClick={handleSubmit}
+            />
+          </div>
         </div>
-        <Button
-          label="회원가입"
-          width="340px"
-          height="52px"
-          onClick={handleSubmit}
-        />
       </div>
       {isAlertModalVisible && (
         <AlertModal
@@ -378,7 +382,11 @@ const SignUpPage = () => {
           //   path: "/",
           //   option: "{state:{isAlertModalVisible: true}}",
           // }}
-          button2={{ label: "메인으로", path: "/", option: { replace: true } }}
+          button2={{
+            label: "메인으로",
+            path: "/",
+            option: { replace: true },
+          }}
         />
       )}
       {isAddressModalVisible && (
