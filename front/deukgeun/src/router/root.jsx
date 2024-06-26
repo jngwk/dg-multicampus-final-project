@@ -3,7 +3,7 @@ import { Outlet, createBrowserRouter } from "react-router-dom";
 import Fallback from "../components/shared/Fallback";
 import Layout from "../components/shared/Layout";
 import CustomParticles from "../components/shared/CustomParticles";
-
+import { LoginModalProvider } from "../context/LoginModalContext";
 // import QuillEditor from "../components/shared/QuillEditor";
 
 const Main = lazy(() => import("../pages/Main"));
@@ -38,9 +38,11 @@ const root = createBrowserRouter([
       //   </PageTransitionWrapper>
       // </Layout>
       <Suspense fallback={<Fallback />}>
-        <Layout>
-          <Outlet />
-        </Layout>
+        <LoginModalProvider>
+          <Layout>
+            <Outlet />
+          </Layout>
+        </LoginModalProvider>
       </Suspense>
     ),
     children: [

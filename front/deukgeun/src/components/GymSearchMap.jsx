@@ -6,6 +6,7 @@ import { Scrollbar } from "react-scrollbars-custom";
 import useCustomNavigate from "../hooks/useCustomNavigate";
 import ChatModal from "./modals/ChatModal";
 import { useLocation } from "react-router-dom";
+import { useLoginModalContext } from "../context/LoginModalContext";
 const { kakao } = window;
 
 const GymSearchMap = () => {
@@ -30,6 +31,7 @@ const GymSearchMap = () => {
   const [selectedGym, setSelectedGym] = useState([]);
   const [useCurrentLoc, setUseCurrentLoc] = useState(false);
   const [isChatModalVisible, setIsChatModalVisible] = useState(false);
+  const { toggleLoginModal } = useLoginModalContext();
   const customNavigate = useCustomNavigate();
 
   useEffect(() => {
@@ -297,11 +299,22 @@ const GymSearchMap = () => {
                       </button>
                       <button
                         className="border border-gray-500 py-2 px-4 text-xs rounded-md bg-grayish-red/30 hover:border-grayish-red hover:bg-grayish-red hover:text-white transition-all"
-                        onClick={() => handleContactButton(gym)}
+                        onClick={() =>
+                          sessionStorage.getItem("isLoggedIn")
+                            ? handleContactButton(gym)
+                            : toggleLoginModal()
+                        }
                       >
                         문의하기
                       </button>
-                      <button className="border border-gray-500 py-2 px-4 text-xs text-gray-800 rounded-md bg-bright-orange/50 hover:border-bright-orange/80 hover:bg-bright-orange/80 hover:text-white transition-all">
+                      <button
+                        className="border border-gray-500 py-2 px-4 text-xs text-gray-800 rounded-md bg-bright-orange/50 hover:border-bright-orange/80 hover:bg-bright-orange/80 hover:text-white transition-all"
+                        onClick={() =>
+                          sessionStorage.getItem("isLoggedIn")
+                            ? ""
+                            : toggleLoginModal()
+                        }
+                      >
                         등록하기
                       </button>
                     </div>
