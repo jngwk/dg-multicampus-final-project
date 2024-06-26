@@ -211,30 +211,35 @@ const CalendarInputForm = ({
                     value={workout.workoutName || ""}
                     onChange={(e) => handleWorkoutChange(index, e)}
                   />
-                  <Input
-                    label="SET"
-                    name="workoutSet"
-                    type="number"
-                    value={workout.workoutSet || ""}
-                    onChange={(e) => handleWorkoutChange(index, e)}
-                  />
-                  <Input
-                    label="REP"
-                    name="workoutRep"
-                    type="number"
-                    value={workout.workoutRep || ""}
-                    onChange={(e) => handleWorkoutChange(index, e)}
-                  />
-                  <Input
-                    label="무게(KG)"
-                    name="workoutWeight"
-                    type="number"
-                    value={workout.workoutWeight || ""}
-                    onChange={(e) => handleWorkoutChange(index, e)}
-                  />
+                  <div className="flex justify-between">
+                    <Input
+                      label="SET"
+                      name="workoutSet"
+                      type="number"
+                      value={workout.workoutSet || ""}
+                      onChange={(e) => handleWorkoutChange(index, e)}
+                      width="28%"
+                    />
+                    <Input
+                      label="REP"
+                      name="workoutRep"
+                      type="number"
+                      value={workout.workoutRep || ""}
+                      onChange={(e) => handleWorkoutChange(index, e)}
+                      width="28%"
+                    />
+                    <Input
+                      label="무게(KG)"
+                      name="workoutWeight"
+                      type="number"
+                      value={workout.workoutWeight || ""}
+                      onChange={(e) => handleWorkoutChange(index, e)}
+                      width="36%"
+                    />
+                  </div>
                 </div>
                 <div
-                  className="w-6 h-[200px] border border-gray-400 opacity-0 hover:opacity-100 transition-opacity flex justify-center items-center cursor-pointer rounded-md bg-gray-50"
+                  className="w-6 h-[100px] border border-gray-400 opacity-0 hover:opacity-100 transition-opacity flex justify-center items-center cursor-pointer rounded-md bg-gray-50"
                   onClick={() =>
                     handleDeleteWorkout(index, workout.workoutId || "")
                   }

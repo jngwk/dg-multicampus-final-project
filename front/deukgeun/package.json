@@ -36,6 +36,7 @@
     "react-quill": "^2.0.0",
     "react-router-dom": "^6.23.1",
     "react-scripts": "^5.0.1",
+    "react-scrollbars-custom": "^4.1.1",
     "react-transition-group": "^4.4.5",
     "sockjs-client": "^1.6.1",
     "tailwind-scrollbar-hide": "^1.1.7",

@@ -21,6 +21,7 @@ import com.dg.deukgeun.dto.user.LoginDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.dto.user.UpdateUserDTO;
 import com.dg.deukgeun.dto.user.UserSignUpDTO;
+import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.entity.VerificationCode;
 import com.dg.deukgeun.repository.UserRepository;
 import com.dg.deukgeun.security.CustomUserDetails;
@@ -80,7 +81,8 @@ public class UserController {
     public ResponseDTO<?> registerGym(@RequestBody GymSignUpDTO requestBody) {
         return gymService.signUp(requestBody);
     }
-     // trainer 회원가입
+
+    // trainer 회원가입
     @PostMapping("/signUp/trainer")
     public ResponseDTO<?> registerTrainer(@RequestBody TrainerDTO requestBody) {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
@@ -118,15 +120,17 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-
     // @GetMapping("/userInfo")
     // public ResponseDTO<?> getUserInfo(HttpServletRequest request) {
     // Integer userId = (Integer) request.getAttribute("userId");
     // return userService.getUserInfo(userId);
     // }
 
-    @PutMapping("/update/{userId}")
-    public ResponseDTO<?> updateUser(@PathVariable Integer userId, @RequestBody UpdateUserDTO updateUserDTO) {
+    @PutMapping("/update")
+    public ResponseDTO<?> updateUser(@RequestBody UpdateUserDTO updateUserDTO) {
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        updateUserDTO.setUserId(userDetails.getUserId());
         return userService.updateUser(updateUserDTO);
     }
 
@@ -144,16 +148,23 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token not found");
     }
 
+    @PostMapping("/emailCheck/duplicate")
+    public Boolean emailDuplicateCheck(@RequestBody User requestBody) {
+        return userService.emailDuplicateCheck(requestBody.getEmail());
+    }
+
     // @PostMapping("/reqPwReset")
-    // public ResponseEntity<ResponseDTO<?>> requestPasswordReset(@RequestBody Map<String, String> request) {
-    //     String email = request.get("email");
-    //     return ResponseEntity.ok(userService.requestPasswordReset(email));
+    // public ResponseEntity<ResponseDTO<?>> requestPasswordReset(@RequestBody
+    // Map<String, String> request) {
+    // String email = request.get("email");
+    // return ResponseEntity.ok(userService.requestPasswordReset(email));
     // }
 
     // @PostMapping("/resetPw")
-    // public ResponseEntity<ResponseDTO<?>> resetPassword(@RequestBody Map<String, String> request) {
-    //     String token = request.get("token");
-    //     String newPassword = request.get("newPassword");
-    //     return ResponseEntity.ok(userService.resetPassword(token, newPassword));
+    // public ResponseEntity<ResponseDTO<?>> resetPassword(@RequestBody Map<String,
+    // String> request) {
+    // String token = request.get("token");
+    // String newPassword = request.get("newPassword");
+    // return ResponseEntity.ok(userService.resetPassword(token, newPassword));
     // }
 }

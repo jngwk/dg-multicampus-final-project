@@ -65,9 +65,9 @@ export default function Header() {
             <>
               <div className="cursor-pointer flex justify-center items-center">
                 <box-icon
-                  name="user-rectangle"
+                  name="user-circle"
                   type="solid"
-                  color="#737373"
+                  color="#687280"
                   size="md"
                   ref={badge}
                   onClick={toggleProfileDropdown}

@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from "react";
 import { Outlet, createBrowserRouter } from "react-router-dom";
 import Fallback from "../components/shared/Fallback";
 import Layout from "../components/shared/Layout";
+
 // import QuillEditor from "../components/shared/QuillEditor";
 
 const Main = lazy(() => import("../pages/Main"));
@@ -10,7 +11,6 @@ const Calendar = lazy(() => import("../pages/CalendarPage"));
 const SignUpChoice = lazy(() => import("../pages/SignUpChoicePage"));
 const SignUpForm = lazy(() => import("../pages/SignUpPage"));
 const QnaForm = lazy(() => import("../pages/QnaForm"));
-const ChatTest = lazy(() => import("../components/chat/ChatTest"));
 const MemberList = lazy(() => import("../pages/MemberList"));
 const GymSearch = lazy(() => import("../pages/GymSearchPage"));
 
@@ -19,7 +19,6 @@ const CenterTrainerList = lazy(() => import("../pages/CenterTrainerList"));
 const CenterMemberList = lazy(() => import("../pages/CenterMemberList"));
 const MembershipStats = lazy(() => import("../pages/MembershipStats"));
 const SignUpTrainerPage = lazy(() => import("../pages/SignUpTrainerPage"));
-const SearchGymPage = lazy(() => import("../pages/SearchGymPage"));
 const CenterView = lazy(() => import("../pages/CenterView"));
 const ReviewForm = lazy(() => import("../test/ReviewForm"));
 const ReviewList = lazy(() => import("../test/ReviewList"));
@@ -84,20 +83,12 @@ const root = createBrowserRouter([
         element: <MemberList />,
       },
       {
-        path: "chatTest",
-        element: <ChatTest />,
-      },
-      {
         path: "gymSearch",
         element: <GymSearch />,
       },
       {
         path: "trainer",
         element: <SignUpTrainerPage />,
-      },
-      {
-        path: "search",
-        element: <SearchGymPage />,
       },
       {
         path: "centerView",
@@ -108,11 +99,7 @@ const root = createBrowserRouter([
         element: <ReviewForm />,
       },
       {
-        path: "ReviewList",
-        element: <ReviewList gymId={1} />,
-      },
-      {
-        path: "MemberRegister",
+        path: "memberRegister",
         element: <MemberRegister />,
       },
       {

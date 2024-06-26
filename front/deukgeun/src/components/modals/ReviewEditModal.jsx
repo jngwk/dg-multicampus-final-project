@@ -2,23 +2,21 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import ModalLayout from "./ModalLayout";
 import TextArea from "../shared/TextArea";
-import { IoMdPhotos } from "react-icons/io";
 import Button from "../shared/Button";
-import { addReview, uploadReviewImages } from "../../api/reviewApi";
+import { updateReview } from "../../api/reviewApi";
 import Fallback from "../shared/Fallback";
 
-const ReviewModal = ({ toggleModal, gymId }) => {
+const ReviewEditModal = ({ toggleModal, gymId, review, onUpdateReview }) => {
     const { userData, loading } = useAuth();
     const [formValues, setFormValues] = useState({
         gymId: parseInt(gymId, 10),
-        comment: "",
-        rating: 0,
-        userId: 0,
-        userName: "",
-        email: "",
+        comment: review.comment,
+        rating: review.rating,
+        userId: review.userId,
+        userName: review.userName,
+        email: review.email,
+        id: review.id,
     });
-
-    const [images, setImages] = useState([]);
 
     useEffect(() => {
         if (userData) {
@@ -47,43 +45,20 @@ const ReviewModal = ({ toggleModal, gymId }) => {
         });
     };
 
-    const handleImageChange = (e) => {
-        const files = Array.from(e.target.files);
-        setImages(files);
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // Step 1: 리뷰 데이터 제출
-            const reviewData = {
-                gymId: formValues.gymId,
+            const formData = {
+                ...formValues,
                 comment: formValues.comment,
                 rating: formValues.rating,
-                userId: userData.userId,
-                userName: userData.userName,
-                email: userData.email,
                 regDate: new Date().toISOString().split('T')[0],
             };
-
-            const reviewRes = await addReview(reviewData);
-
-            if (reviewRes.RESULT === "SUCCESS") {
-                const reviewId = reviewRes.reviewId;
-
-                // Step 2: 이미지 업로드
-                if (images.length > 0) {
-                    const formData = new FormData();
-                    images.forEach((image, index) => {
-                        formData.append(`files`, image);
-                    });
-
-                    await uploadReviewImages(reviewId, formData);
-                }
-                toggleModal();
-            }
+            const res = await updateReview(formData);
+            onUpdateReview(formData);
+            toggleModal();
         } catch (error) {
-            console.error("Failed to add review", error);
+            console.error("Failed to update review", error);
         }
     };
 
@@ -97,18 +72,18 @@ const ReviewModal = ({ toggleModal, gymId }) => {
                 <div className="flex flex-col h-96">
                     <div className="flex flex-col gap-1 justify-center items-center">
                         <div className="mb-2 font-semibold text-xl">
-                            리뷰작성
+                            리뷰 수정
                             <div className="mt-2 w-16 border-b-2 border-grayish-red border-opacity-20"></div>
                         </div>
                         <label htmlFor="commentInput">후기를 작성해주세요.
-                            <TextArea
-                                label="후기를 작성해주세요."
-                                required={true}
-                                id="commentInput"
-                                name="comment"
-                                value={formValues.comment}
-                                onChange={handleInputChange}
-                            />
+                        <TextArea
+                            label="후기를 작성해주세요."
+                            required={true}
+                            id="commentInput"
+                            name="comment"
+                            value={formValues.comment}
+                            onChange={handleInputChange}
+                        />
                         </label>
                     </div>
                     <div className="mt-4">
@@ -127,19 +102,8 @@ const ReviewModal = ({ toggleModal, gymId }) => {
                             ))}
                         </div>
                     </div>
-
                     <div>
-                        <label className="flex text-sm items-center cursor-pointer">
-                            <IoMdPhotos className="w-7 h-7 pr-1" />
-                            파일 이미지 넣기
-                            <input
-                                type="file"
-                                className="hidden"
-                                onChange={handleImageChange}
-                                multiple  // 여러 개의 파일 선택 가능하도록
-                            />
-                        </label>
-                        <Button label="작성" width="100px" className={`float-right mt-2`} type="submit" />
+                        <Button label="수정" width="100px" className={`float-right mt-2`} type="submit" />
                     </div>
                 </div>
             </form>
@@ -147,4 +111,4 @@ const ReviewModal = ({ toggleModal, gymId }) => {
     );
 };
 
-export default ReviewModal;
+export default ReviewEditModal;

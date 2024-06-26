@@ -6,7 +6,7 @@ import UserInfo from "../modals/UserInfo";
 import Loader from "../shared/Loader";
 
 const ProfileDropdown = () => {
-  const { userData, removeCookieAndLogOut, loading } = useAuth();
+  const { userData, setUserData, removeCookieAndLogOut, loading } = useAuth();
   const customNavigate = useCustomNavigate();
   const { isModalVisible, toggleModal } = useModal();
 
@@ -16,7 +16,7 @@ const ProfileDropdown = () => {
   };
 
   return (
-    <div className="relative border border-gray-400 w-52 h-fit rounded-lg p-3 bg-white shadow-sm z-40">
+    <div className="relative border border-gray-200 w-52 h-fit rounded-lg p-3 bg-white shadow-md z-40 transition-all">
       <div className="border-b-[0.5px] border-gray-400 p-2">
         {/* 사용자 이름 표시 */}
         {loading ? (
@@ -33,24 +33,32 @@ const ProfileDropdown = () => {
           <li className="profile-dropdown-list" onClick={toggleModal}>
             <box-icon name="id-card" color="#ffbe98" size="sm"></box-icon>
             <span className="ml-3">
-              {userData.role === "ROLE_GENERAL" && "내 정보"}
+              {userData.role === "ROLE_GENERAL" ||
+                (userData.role === "ROLE_TRAINER" && "내 정보")}
               {userData.role === "ROLE_GYM" && "헬스장 정보"}
             </span>
           </li>
           {isModalVisible ? (
-            <UserInfo toggleModal={toggleModal} userData={userData} />
+            <UserInfo
+              toggleModal={toggleModal}
+              userData={userData}
+              setUserData={setUserData}
+            />
           ) : (
             ""
           )}
-          {userData.role === "ROLE_GENERAL" && (
-            <li
-              className="profile-dropdown-list"
-              onClick={() => customNavigate("/calendar")}
-            >
-              <box-icon name="calendar" color="#ffbe98" size="sm"></box-icon>
-              <span className="ml-3">운동일지</span>
-            </li>
-          )}
+          {userData.role === "ROLE_GENERAL" ||
+            (userData.role === "ROLE_TRAINER" && (
+              <li
+                className="profile-dropdown-list"
+                onClick={() => customNavigate("/calendar")}
+              >
+                <box-icon name="calendar" color="#ffbe98" size="sm"></box-icon>
+                <span className="ml-3">
+                  {userData.role === "ROLE_GENERAL" ? "운동일지" : "캘린더"}
+                </span>
+              </li>
+            ))}
           {userData.role === "ROLE_GYM" && (
             <>
               <li
