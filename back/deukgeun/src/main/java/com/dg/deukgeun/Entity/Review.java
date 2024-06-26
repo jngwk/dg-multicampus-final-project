@@ -20,10 +20,10 @@ import lombok.Setter;
 @Table(name = "reviews")
 @Builder
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Review {
 
     @Id
@@ -48,5 +48,4 @@ public class Review {
     @Builder.Default
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
-
 }

@@ -1,24 +1,17 @@
-package com.dg.deukgeun.entity;
+package com.dg.deukgeun.dto.personalTraining;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import java.sql.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name="personal_training")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PersonalTraining {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class PersonalTrainingDTO {
     private Integer ptId;
     private Integer userId;
     private Integer trainerId;

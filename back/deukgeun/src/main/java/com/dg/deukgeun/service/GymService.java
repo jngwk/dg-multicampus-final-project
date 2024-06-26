@@ -91,7 +91,6 @@ public class GymService {
         gym.setAddress(dto.getAddress());
         gym.setDetailAddress(dto.getDetailAddress());
         gym.setOperatingHours(dto.getOperatingHours());
-        gym.setPrices(dto.getPrices());
         gym.setIntroduce(dto.getIntroduce());
         // gym.setApproval(dto.getApproval());
 
@@ -134,7 +133,6 @@ public class GymService {
         gym.setIntroduce(gymDTO.getIntroduce());
         gym.setOperatingHours(gymDTO.getOperatingHours());
         gym.setPhoneNumber(gymDTO.getPhoneNumber());
-        gym.setPrices(gymDTO.getPrices());
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
 

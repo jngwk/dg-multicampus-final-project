@@ -89,7 +89,7 @@ public class SecurityConfig {
                         "/api/gym/getList", "/api/gym/getListWithPaging").permitAll() // 이 API는 인증 없이 접근 가능하도록 설정합니다.
                         .requestMatchers("/api/user/signUp/gym","/api/user/signUp/general", "/api/user/sendCode", "/api/gym/crNumberCheck", "/api/user/emailCheck/*").anonymous() // 비회원만 가능        
                         .requestMatchers("/api/user/userInfo", "/ws/**").hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM", "ROLE_TRAINER")
-                        .requestMatchers("/api/user/workoutSession/**").hasAnyAuthority("ROLE_GENERAL")
+                        .requestMatchers("/api/user/workoutSession/**", "/api/personalTraining/get/**", "/api/personalTraining/post").hasAnyAuthority("ROLE_GENERAL")
                         .requestMatchers("/api/membership/register").hasAuthority("ROLE_GENERAL")
                         .requestMatchers("/api/membership/stats", "/api/membership/stats/**",
                                 "/api/user/signUp/trainer", "/api/trainers/update/**")

@@ -10,6 +10,8 @@ import java.util.ArrayList;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.dg.deukgeun.dto.ProductDTO;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -22,11 +24,12 @@ public class GymRequestDTO {
     private String address;
     private String detailAddress;
     private String operatingHours;
-    private String prices;
     private String introduce;
     // private Integer approval;
     @Builder.Default
     private List<MultipartFile> files = new ArrayList<>();
     @Builder.Default
     private List<String> uploadFileName = new ArrayList<>();
+    @Builder.Default
+    private List<ProductDTO> productList = new ArrayList<>();
 }

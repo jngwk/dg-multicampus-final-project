@@ -5,11 +5,13 @@ import java.time.LocalDateTime;
 import com.dg.deukgeun.entity.Review;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@Builder
 @NoArgsConstructor
 public class ReviewDTO {
 
@@ -22,8 +24,6 @@ public class ReviewDTO {
     private String email;
 
     private LocalDateTime createdAt;
-
-    // Constructors, Getters, and Setters
 
     public ReviewDTO(Review review) {
         this.id = review.getId();

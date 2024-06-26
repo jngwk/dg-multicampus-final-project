@@ -21,4 +21,6 @@ public class MembershipDTO {
     
     //filter
     private String userGender;
+
+    private Integer productId;
 }

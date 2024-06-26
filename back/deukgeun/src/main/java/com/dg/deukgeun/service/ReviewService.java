@@ -7,12 +7,21 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import com.dg.deukgeun.dto.PageRequestDTO;
+import com.dg.deukgeun.dto.PageResponseDTO;
 import com.dg.deukgeun.dto.review.ReviewDTO;
+import com.dg.deukgeun.dto.review.ReviewResponseDTO;
 import com.dg.deukgeun.entity.Review;
+import com.dg.deukgeun.entity.ReviewImage;
 import com.dg.deukgeun.entity.User;
+import com.dg.deukgeun.repository.ReviewImageRepository;
 import com.dg.deukgeun.repository.ReviewRepository;
 import com.dg.deukgeun.repository.UserRepository;
 
@@ -26,14 +35,18 @@ public class ReviewService {
     @Autowired
     private ReviewRepository reviewRepository;
     @Autowired
+    private ReviewImageRepository reviewImageRepository;
+
+    @Autowired
     private ModelMapper modelMapper;
     @Autowired
     private UserRepository userRepository;
+
     
     @PreAuthorize("hasRole('ROLE_GENERAL')")
     public Integer registerReview(ReviewDTO reviewDTO) {
         log.info("Registering ReviewDTO...");
-    
+
         Review review = modelMapper.map(reviewDTO, Review.class);
         log.info("Mapped Review: {}", review);
 
@@ -68,12 +81,37 @@ public class ReviewService {
 
         return saveReview.getId();
     }
-
-    public List<ReviewDTO> getReviewsByGymId(Integer gymId) {
-        return reviewRepository.findByGymId(gymId).stream()
-                .map(review -> new ReviewDTO(review))
-                .collect(Collectors.toList());
+    public ReviewDTO get(Integer reviewId) {
+        Optional<Review> result = reviewRepository.findById(reviewId);
+        Review review = result.orElseThrow();
+        ReviewDTO dto = modelMapper.map(review, ReviewDTO.class);
+        return dto;
     }
+
+
+    public List<ReviewResponseDTO> getReviewsByGymId(Integer gymId) {
+        List<Review> reviews = reviewRepository.findByGymId(gymId);
+        return reviews.stream().map(review -> {
+            List<ReviewImage> reviewImages = reviewImageRepository.findByReviewId(review.getId());
+            List<String> imageNames = reviewImages.stream()
+                                                  .map(ReviewImage::getReviewImage)
+                                                  .collect(Collectors.toList());
+
+            return ReviewResponseDTO.builder()
+                    .id(review.getId())
+                    .gymId(review.getGymId())
+                    .userId(review.getUserId())
+                    .rating(review.getRating())
+                    .comment(review.getComment())
+                    .userName(review.getUserName())
+                    .email(review.getEmail())
+                    .images(imageNames)
+                    .createdAt(review.getCreatedAt())
+                    .build();
+        }).collect(Collectors.toList());
+
+    }
+
     @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_ADMIN')")
     public void deleteReview(Integer reviewId, Integer userId) {
         Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
@@ -108,5 +146,19 @@ public class ReviewService {
             System.out.println("Review not found");
         }
     }
-    
+    public PageResponseDTO<ReviewDTO> listWithPaging(PageRequestDTO pageRequestDTO) {
+        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(),
+                Sort.by("gymId").descending());
+        Page<Review> result = reviewRepository.findAll(pageable);
+        List<ReviewDTO> dtoList = result.getContent().stream()
+                .map(review -> modelMapper.map(review, ReviewDTO.class))
+                .collect(Collectors.toList());
+        long totalCount = result.getTotalElements();
+        PageResponseDTO<ReviewDTO> responseDTO = PageResponseDTO.<ReviewDTO>withAll()
+                .dtoList(dtoList)
+                .pageRequestDTO(pageRequestDTO)
+                .totalCount(totalCount)
+                .build();
+        return responseDTO;
+    }
 }
