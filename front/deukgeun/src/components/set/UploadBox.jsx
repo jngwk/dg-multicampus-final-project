@@ -1,6 +1,7 @@
 //센터이미지 업로드박스
 import React, { useState } from "react";
 import { RiFolderUploadFill } from "react-icons/ri";
+import { PiXCircle } from "react-icons/pi";
 
 const Logo = () => (
   <RiFolderUploadFill className="w-24 h-24 pointer-events-none" />
@@ -45,10 +46,10 @@ const UploadBox = ({ onChange }) => {
           <div className="flex flex-col justify-center items-center w-44 h-36 bg-white rounded-md border border-gray-400 p-2 overflow-hidden">
             <img src={src} alt="미리보기" className="w-24 h-24 object-cover" />
             <button
-              className="absolute top-0 right-1 p-1 rounded-full text-red-300 hover:bg-red-500 hover:text-white transition duration-300"
+              className="w-4 h-4 flex justify-center items-center absolute top-1 right-1 rounded-full text-red-300 hover:bg-red-300 hover:text-white transition duration-300"
               onClick={() => handleRemovePreview(index)}
             >
-              X
+              <PiXCircle/>
             </button>
           </div>
         </div>
