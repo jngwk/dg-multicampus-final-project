@@ -2,6 +2,7 @@ import React from "react";
 import curvedUnderline from "../../assets/curved-underline.png";
 import ReactTypingEffect from "react-typing-effect";
 
+// https://www.npmjs.com/package/react-typing-effect
 const Filter = ({
   label,
   emoji,

@@ -18,32 +18,34 @@ const Hero = () => {
   return (
     <div className="relative w-full h-[90dvh] flex justify-center items-center">
       <div className="h-[40%] flex flex-col gap-11">
-        {/* 가격 필터 */}
-        {filter === "price" && (
-          <Filter
-            label={"가격이 저렴한"}
-            emoji={"💳"}
-            // underlineWidth={"140px"}
-          />
-        )}
-        {/* 위치 필터 */}
-        {filter === "location" && (
-          <Filter
-            label={"나한테 가까운"}
-            emoji={"🚶"}
-            rotated={false}
-            // underlineWidth={"140px"}
-          />
-        )}
-        {/* 위치 필터 */}
-        {filter === "hours" && (
-          <Filter
-            label={"24시간 운영하는"}
-            emoji={"🌃"}
-            rotated={false}
-            // underlineWidth={"140px"}
-          />
-        )}
+        <div className="pointer-events-none select-none">
+          {/* 가격 필터 */}
+          {filter === "price" && (
+            <Filter
+              label={"가격이 저렴한"}
+              emoji={"💳"}
+              // underlineWidth={"140px"}
+            />
+          )}
+          {/* 위치 필터 */}
+          {filter === "location" && (
+            <Filter
+              label={"나한테 가까운"}
+              emoji={"🚶"}
+              rotated={false}
+              // underlineWidth={"140px"}
+            />
+          )}
+          {/* 위치 필터 */}
+          {filter === "hours" && (
+            <Filter
+              label={"24시간 운영하는"}
+              emoji={"🌃"}
+              rotated={false}
+              // underlineWidth={"140px"}
+            />
+          )}
+        </div>
         <div className="flex flex-col gap-2">
           <Input
             width="400px"
@@ -85,7 +87,9 @@ const Hero = () => {
         </div>
       </div>
       <div className="absolute bottom-0 flex flex-col justify-center items-center gap-3 opacity-70">
-        <span className="text-grayish-red text-lg font-bold">Scroll Down</span>
+        <span className="text-grayish-red text-lg font-bold select-none">
+          Scroll Down
+        </span>
         <div className="animate-bounce">
           <box-icon size="lg" color="#9f8d8d" name="chevrons-down"></box-icon>
         </div>
