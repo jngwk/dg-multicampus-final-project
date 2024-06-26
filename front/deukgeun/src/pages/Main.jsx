@@ -8,7 +8,7 @@ export default function Main() {
   return (
     <>
       <CustomParticles />
-      <div className="snap-y snap-mandatory h-screen">
+      <div className="snap-y snap-mandatory h-screen z-0">
         <Hero /> <Section />
       </div>
     </>

@@ -7,6 +7,10 @@
   src: url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap");
 }
 
+body {
+  @apply font-sans;
+}
+
 .profile-dropdown-list {
   @apply px-2 my-4 opacity-85 hover:opacity-100 hover:cursor-pointer hover:transition ease-in-out duration-100 flex items-center;
 }
