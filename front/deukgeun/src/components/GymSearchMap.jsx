@@ -234,6 +234,10 @@ const GymSearchMap = () => {
     setIsAlertModalVisible(false);
     setIsChatModalVisible(false);
   };
+
+  const handleRegistertButton = () => {
+    
+  }
   return (
     <div className="relative w-full h-full">
       <Map
@@ -326,7 +330,10 @@ const GymSearchMap = () => {
                       >
                         문의하기
                       </button>
-                      <button className="border border-gray-500 py-2 px-4 text-xs text-gray-800 rounded-md bg-bright-orange/50 hover:border-bright-orange/80 hover:bg-bright-orange/80 hover:text-white transition-all">
+                      <button 
+                        className="border border-gray-500 py-2 px-4 text-xs text-gray-800 rounded-md bg-bright-orange/50 hover:border-bright-orange/80 hover:bg-bright-orange/80 hover:text-white transition-all"
+                        onClick={() => customNavigate("/memberregister", { state : {gym : gym}})}
+                      >
                         등록하기
                       </button>
                     </div>

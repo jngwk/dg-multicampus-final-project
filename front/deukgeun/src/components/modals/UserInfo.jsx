@@ -106,7 +106,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
     if (errors.password) return;
     try {
       const data = { ...fullAddress, password: newPassword };
-      const res = updateUserInfo(data);
+      const res = await updateUserInfo(data);
       setUserData({
         address: fullAddress.address,
         detailAddress: fullAddress.detailAddress,

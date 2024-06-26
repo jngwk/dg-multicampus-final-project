@@ -24,6 +24,8 @@ const ReviewForm = lazy(() => import("../test/ReviewForm"));
 const ReviewList = lazy(() => import("../test/ReviewList"));
 const MemberRegister = lazy(() => import("../pages/MemberRegister"));
 const TrainerUpdateForm = lazy(() => import("../test/TrainerUpdateForm"));
+const PtRegister = lazy(() => import("../pages/PtRegister")); 
+
 const root = createBrowserRouter([
   {
     path: "/",
@@ -104,8 +106,12 @@ const root = createBrowserRouter([
         element: <TrainerUpdateForm/>,
       },
       {
-        path: "memberRegister",
+        path: "MemberRegister",
         element: <MemberRegister />,
+      },
+      {
+        path: "PtRegister",
+        element: <PtRegister />,
       },
     ],
   },
