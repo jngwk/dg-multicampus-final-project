@@ -18,8 +18,12 @@ const GymSearchMap = () => {
     isLoading: true,
   });
   const location = useLocation();
-  const [searchWord, setSearchWord] = useState(location.state.searchWord || "");
-  const [filter, setFilter] = useState(location.state.filter || "location");
+  const [filter, setFilter] = useState(
+    location.state ? location.state.filter : "location"
+  );
+  const [searchWord, setSearchWord] = useState(
+    location.state ? location.state.searchWord : ""
+  );
   const [coords, setCoords] = useState([]);
   const [map, setMap] = useState();
   const [gyms, setGyms] = useState([]);
@@ -142,9 +146,10 @@ const GymSearchMap = () => {
 
       const results = await Promise.all(promises);
       if (results.length === 1) {
+        console.log("@@@@ results", results);
         setState((prev) => ({
           ...prev,
-          center: { lat: results.latlng.lat, lng: results.latlng.lng },
+          center: { lat: results[0].latlng.lat, lng: results[0].latlng.lng },
         }));
       }
       results.forEach((result, index) => {

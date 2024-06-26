@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from "react";
 import { Outlet, createBrowserRouter } from "react-router-dom";
 import Fallback from "../components/shared/Fallback";
 import Layout from "../components/shared/Layout";
+import CustomParticles from "../components/shared/CustomParticles";
 
 // import QuillEditor from "../components/shared/QuillEditor";
 
@@ -60,17 +61,32 @@ const root = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <SignUpChoice />,
+            element: (
+              <>
+                <CustomParticles />
+                <SignUpChoice />
+              </>
+            ),
           },
           {
             path: "form",
-            element: <SignUpForm />,
+            element: (
+              <>
+                <CustomParticles />
+                <SignUpForm />
+              </>
+            ),
           },
         ],
       },
       {
         path: "qna",
-        element: <QnaForm />,
+        element: (
+          <>
+            <CustomParticles />
+            <QnaForm />
+          </>
+        ),
       },
       {
         path: "stats",
