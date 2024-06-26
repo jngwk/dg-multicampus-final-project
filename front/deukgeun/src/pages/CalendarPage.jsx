@@ -271,7 +271,7 @@ const CalendarPage = () => {
     return <Fallback />;
   }
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full flex">
       <div className="xl:w-9/12 p-8 slide">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}

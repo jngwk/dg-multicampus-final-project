@@ -165,6 +165,7 @@ const ChatTest = () => {
     try {
       const newChatRoom = await getChatRoom(selectedUserId);
       setChatRoom(newChatRoom);
+      return newChatRoom;
     } catch (error) {
       console.error("Error creating chat room", error);
       throw error;

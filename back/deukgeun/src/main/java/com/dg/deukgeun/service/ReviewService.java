@@ -1,7 +1,12 @@
 package com.dg.deukgeun.service;
 
+import com.dg.deukgeun.dto.PageRequestDTO;
+import com.dg.deukgeun.dto.PageResponseDTO;
+import com.dg.deukgeun.dto.gym.GymDTO;
 import com.dg.deukgeun.dto.review.ReviewDTO;
+import com.dg.deukgeun.dto.review.ReviewResponseDTO;
 import com.dg.deukgeun.entity.Review;
+import com.dg.deukgeun.entity.ReviewImage;
 import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.repository.ReviewRepository;
@@ -10,16 +15,29 @@ import com.dg.deukgeun.repository.UserRepository;
 import jakarta.transaction.Transactional;
 
 import com.dg.deukgeun.repository.GymRepository;
+import com.dg.deukgeun.repository.ReviewImageRepository;
 
 import lombok.extern.log4j.Log4j2;
 import lombok.Data;
 
+
+import java.io.IOException;
+import java.nio.file.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.stream.Collectors;
 
@@ -29,33 +47,84 @@ public class ReviewService {
 
     @Autowired
     private ReviewRepository reviewRepository;
+    @Autowired
+    private ReviewImageRepository reviewImageRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private GymRepository gymRepository;
 
+    
     @PreAuthorize("hasRole('ROLE_GENERAL')")
-    public Review saveReview(ReviewDTO reviewDTO, Integer userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found for userId: " + userId));
-        Gym gym = gymRepository.findById(reviewDTO.getGymId()).orElseThrow(() -> new RuntimeException("Gym not found"));
-        Review review = new Review();
-        log.info(user.getUserId());
-        review.setGymId(gym.getGymId());
-        review.setUserId(user.getUserId());
-        review.setUserName(user.getUserName());
-        review.setEmail(user.getEmail());
-        review.setRating(reviewDTO.getRating());
-        review.setComment(reviewDTO.getComment());
-        review.setCreatedAt(LocalDateTime.now());
+    public Integer registerReview(ReviewDTO reviewDTO) {
+        log.info("Registering ReviewDTO...");
 
-        return reviewRepository.save(review);
+        Review review = modelMapper.map(reviewDTO, Review.class);
+        log.info("Mapped Review: {}", review);
+
+        if (reviewDTO.getUserId() != null) {
+            log.info("UserId from ReviewDTO: {}", reviewDTO.getUserId());
+        
+            Optional<User> userResult = userRepository.findByUserId(reviewDTO.getUserId());
+            if (userResult.isPresent()) {
+                User user = userResult.get();
+                log.info("User found: {}", user);
+
+                review.setUserId(user.getUserId());
+                review.setUserName(user.getUserName());
+                review.setEmail(user.getEmail());
+             
+                review.setGymId(reviewDTO.getGymId());
+                review.setRating(reviewDTO.getRating());
+                review.setComment(reviewDTO.getComment());
+            } else {
+                log.warn("User with userId {} not found", reviewDTO.getUserId());
+            }
+        
+            if (review.getCreatedAt() == null) {
+                review.setCreatedAt(LocalDateTime.now());
+            }
+        } else {
+            log.warn("UserId in ReviewDTO is null");
+        }
+
+        Review saveReview = reviewRepository.save(review);
+        log.info("Review saved: {}", saveReview);
+
+        return saveReview.getId();
     }
-    public List<ReviewDTO> getReviewsByGymId(Integer gymId) {
-        return reviewRepository.findByGymId(gymId).stream()
-                .map(review -> new ReviewDTO(review))
-                .collect(Collectors.toList());
+    public ReviewDTO get(Integer reviewId) {
+        Optional<Review> result = reviewRepository.findById(reviewId);
+        Review review = result.orElseThrow();
+        ReviewDTO dto = modelMapper.map(review, ReviewDTO.class);
+        return dto;
     }
+
+
+    public List<ReviewResponseDTO> getReviewsByGymId(Integer gymId) {
+        List<Review> reviews = reviewRepository.findByGymId(gymId);
+        return reviews.stream().map(review -> {
+            List<ReviewImage> reviewImages = reviewImageRepository.findByReviewId(review.getId());
+            List<String> imageNames = reviewImages.stream()
+                                                  .map(ReviewImage::getReviewImage)
+                                                  .collect(Collectors.toList());
+
+            return ReviewResponseDTO.builder()
+                    .id(review.getId())
+                    .gymId(review.getGymId())
+                    .userId(review.getUserId())
+                    .rating(review.getRating())
+                    .comment(review.getComment())
+                    .userName(review.getUserName())
+                    .email(review.getEmail())
+                    .images(imageNames)
+                    .createdAt(review.getCreatedAt())
+                    .build();
+        }).collect(Collectors.toList());
+
+    }
+
     @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_ADMIN')")
     public void deleteReview(Integer reviewId, Integer userId) {
         Optional<Review> reviewOptional = reviewRepository.findById(reviewId);
@@ -90,5 +159,19 @@ public class ReviewService {
             System.out.println("Review not found");
         }
     }
-    
+    public PageResponseDTO<ReviewDTO> listWithPaging(PageRequestDTO pageRequestDTO) {
+        Pageable pageable = PageRequest.of(pageRequestDTO.getPage() - 1, pageRequestDTO.getSize(),
+                Sort.by("gymId").descending());
+        Page<Review> result = reviewRepository.findAll(pageable);
+        List<ReviewDTO> dtoList = result.getContent().stream()
+                .map(review -> modelMapper.map(review, ReviewDTO.class))
+                .collect(Collectors.toList());
+        long totalCount = result.getTotalElements();
+        PageResponseDTO<ReviewDTO> responseDTO = PageResponseDTO.<ReviewDTO>withAll()
+                .dtoList(dtoList)
+                .pageRequestDTO(pageRequestDTO)
+                .totalCount(totalCount)
+                .build();
+        return responseDTO;
+    }
 }
