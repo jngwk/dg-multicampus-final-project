@@ -1,8 +1,8 @@
 import axios from "axios";
 
-export const API_SERVER_HOST = "http://localhost:8282";
-const prefix = `${API_SERVER_HOST}/api/gym`;
-// const prefix = `/api/gym`; // proxy 사용
+// export const API_SERVER_HOST = "http://localhost:8282";
+// const prefix = `${API_SERVER_HOST}/api/gym`;
+const prefix = `/api/gym`; // proxy 사용
 
 export const getGymList = async () => {
   try {
@@ -23,6 +23,18 @@ export const searchGyms = async (searchWord) => {
     return res.data;
   } catch (error) {
     console.error("Error in searchGyms", error);
+    throw error;
+  }
+};
+
+export const getTrainerAndProducts = async (gymId) => {
+  try {
+    console.log(gymId);
+    const res = await axios.get(`${prefix}/get/${gymId}`);
+    console.log("getTrainerAndProducts", res);
+    return res.data;
+  } catch (error) {
+    console.error("Error in getTrainerAndProducts", error);
     throw error;
   }
 };

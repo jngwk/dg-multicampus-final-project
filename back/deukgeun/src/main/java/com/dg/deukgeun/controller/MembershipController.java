@@ -16,6 +16,7 @@ import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.entity.Membership;
 import com.dg.deukgeun.security.CustomUserDetails;
 import com.dg.deukgeun.service.MembershipService;
+import com.dg.deukgeun.service.ProductService;
 
 
 @RestController
@@ -24,6 +25,8 @@ public class MembershipController {
 
     @Autowired
     private MembershipService membershipService;
+    @Autowired
+    private ProductService productService;
 
     @PostMapping("/register")
     public ResponseDTO<?> registerMembership(@RequestBody MembershipDTO membershipDTO) {
