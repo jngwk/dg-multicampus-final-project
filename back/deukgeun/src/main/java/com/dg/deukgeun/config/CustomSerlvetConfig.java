@@ -12,7 +12,8 @@ public class CustomSerlvetConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
 
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000", "https://unpkg.com/boxicons@2.1.4/svg")
+                .allowedOrigins("http://223.130.157.92:30000",
+                        "https://unpkg.com/boxicons@2.1.4/svg")
                 .allowedMethods("HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .exposedHeaders("*")

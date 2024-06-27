@@ -71,7 +71,7 @@ const Chatting = ({
             </button>
             <span className="text-sm font-medium">
               {/* 헬스장 이름 추가 */}
-              <span className="inline-block">등록된 헬스장 이름</span> |{" "}
+              {/* <span className="inline-block">등록된 헬스장 이름</span> |{" "} */}
               <span className="inline-block">{chatReceiver.userName}</span>
             </span>
             <button

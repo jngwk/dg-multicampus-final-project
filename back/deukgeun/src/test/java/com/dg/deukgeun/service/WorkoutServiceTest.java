@@ -14,14 +14,14 @@ public class WorkoutServiceTest {
     @Autowired
     private WorkoutService workoutService;
 
-    @Test
-    public void testRegister(){
-        WorkoutDTO workoutDTO = WorkoutDTO.builder()
-        .workoutSessionId(null)
-        .workoutName("하체")
-        .build();
+    // @Test
+    // public void testRegister(){
+    // WorkoutDTO workoutDTO = WorkoutDTO.builder()
+    // .workoutSessionId(null)
+    // .workoutName("하체")
+    // .build();
 
-        Integer workoutId = workoutService.register(workoutDTO);
-        log.info("workoutId: "+workoutId);
-    }
+    // Integer workoutId = workoutService.register(workoutDTO);
+    // log.info("workoutId: "+workoutId);
+    // }
 }

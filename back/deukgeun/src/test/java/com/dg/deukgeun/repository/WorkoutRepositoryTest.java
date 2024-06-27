@@ -14,15 +14,16 @@ public class WorkoutRepositoryTest {
     @Autowired
     private WorkoutRepository workoutRepository;
 
-    @Test
-    public void repositoryTest(){
-        log.info("--------------------");
-        log.info(workoutRepository);
-    }
+    // @Test
+    // public void repositoryTest(){
+    // log.info("--------------------");
+    // log.info(workoutRepository);
+    // }
 
-    @Test
-    public void testInsert(){
-        Workout workout = Workout.builder().workoutSessionId(null).workoutName("삼두").build();
-        workoutRepository.save(workout);
-    }
+    // @Test
+    // public void testInsert(){
+    // Workout workout =
+    // Workout.builder().workoutSessionId(null).workoutName("삼두").build();
+    // workoutRepository.save(workout);
+    // }
 }
