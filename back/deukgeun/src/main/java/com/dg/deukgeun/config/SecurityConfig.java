@@ -94,13 +94,14 @@ public class SecurityConfig {
                         .anonymous() // 비회원만 가능
                         .requestMatchers("/api/user/userInfo", "/ws/**").hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM")
                         .requestMatchers("/api/user/workoutSession/**").hasAnyAuthority("ROLE_GENERAL")
-                        .requestMatchers("/api/membership/register").hasAuthority("ROLE_GENERAL")
+                        .requestMatchers("/api/user/workoutSession/**", "/api/personalTraining/get/**", "/api/personalTraining/post").hasAnyAuthority("ROLE_GENERAL")
+                        .requestMatchers("/api/membership/register","/api/membership/findMembership","/api/membership/findPT").hasAuthority("ROLE_GENERAL")
                         .requestMatchers("/api/membership/stats", "/api/membership/stats/**",
                                 "/api/user/signUp/trainer", "/api/trainers/update/**")
                         .hasAnyAuthority("ROLE_GYM")
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/reviews/delete/**", "api/reviews/update/**").hasAnyAuthority("ROLE_GENERAL","ROLE_ADMIN")
-                        .requestMatchers("/api/reviews/registerReview", "api/reviews/uploadImages/**", "api/reviews/insertImage/**", "api/reviews/deleteImage/**", "api/verifyPayment/**","verify/**").hasAuthority("ROLE_GENERAL")
+                        .requestMatchers("/api/reviews/registerReview", "api/reviews/uploadImages/**", "api/reviews/insertImage/**", "api/reviews/deleteImage/**","api/payment/verify/**").hasAuthority("ROLE_GENERAL")
                         .requestMatchers("/api/trainers/update/**").hasAuthority("ROLE_TRAINER")
                         
                         .anyRequest().authenticated()) // 그 외 모든 요청은 인증이 필요합니다

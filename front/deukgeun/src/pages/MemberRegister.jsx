@@ -50,14 +50,14 @@ const MemberRegister = () => {
   const [expDate, setExpDate] = useState(new Date()); //만료일
   const [userMemberReason, setUserMemberReason] = useState("PT");
   const [userWorkoutDuration, setUserWorkoutDuration] = useState(1);
-  const [productId, setProductId] = useState(
-    gym.productList && gym.productList.length > 0 ? gym.productList[0].productId : "");
+  // const [productId, setProductId] = useState(
+  //   gym.productList && gym.productList.length > 0 ? gym.productList[0].productId : "");
   const customNavigate = useCustomNavigate();
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [impUid, setImpUid] = useState(""); // 여기에 imp_uid를 저장합니다.
   const [merchantUid, setMerchantUid] = useState("");
   const { requestPayment, verifyPayment, loading, error } = useIamport();
-
+  const [productId, setProductId] = useState("1");
 
   const { fetchUserData } = useAuth();
 

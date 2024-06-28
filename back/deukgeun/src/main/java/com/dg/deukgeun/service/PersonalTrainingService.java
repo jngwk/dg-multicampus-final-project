@@ -6,11 +6,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.dg.deukgeun.dto.personalTraining.PersonalTrainingDTO;
 import com.dg.deukgeun.entity.PersonalTraining;
 import com.dg.deukgeun.repository.PersonalTrainingRepository;
+import com.dg.deukgeun.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +26,11 @@ import lombok.RequiredArgsConstructor;
 public class PersonalTrainingService {
     private final ModelMapper modelMapper;
     private final PersonalTrainingRepository personalTrainingRepository;
+    @Autowired
+    UserRepository userRepository;
 
     //서비스를 구분하기 쉽도록 메서드의 이름은 각각 대응되는 mysql 쿼리 이름으로 적어두겠습니다.
-    // @PreAuthorize("hasRole('ROLE_GENERAL')")
+    @PreAuthorize("(hasRole('ROLE_GENERAL')) && #userId == principal.userId")
     public Integer insert(PersonalTrainingDTO personalTrainingDTO){
         PersonalTraining personalTraining = modelMapper.map(personalTrainingDTO,PersonalTraining.class);
         PersonalTraining savedPersonalTraining = personalTrainingRepository.save(personalTraining);
@@ -66,5 +71,19 @@ public class PersonalTrainingService {
     //pt 정보 삭제 메서드
     public void delete(Integer ptId){
         personalTrainingRepository.deleteById(ptId);
+    }
+
+    //pt가 존재하는지 확인용
+    @PreAuthorize("(hasRole('ROLE_GENERAL')) && #userId == principal.userId")
+    public Optional<PersonalTrainingDTO> findPT(Integer userId) {
+        List<PersonalTraining> PT = personalTrainingRepository.findByUserId(userId);
+
+        if (!PT.isEmpty()) {
+            PersonalTraining firstTraining = PT.get(0); // For example, return the first training found
+            PersonalTrainingDTO personalTrainingDTO = modelMapper.map(firstTraining, PersonalTrainingDTO.class);
+            return Optional.of(personalTrainingDTO);
+        }
+
+        return Optional.empty();
     }
 }
