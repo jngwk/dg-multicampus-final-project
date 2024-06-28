@@ -19,6 +19,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -72,7 +73,9 @@ dependencies {
     //Hibernate 모듈 설정
     //Hibernate 모듈을 Jackson에 추가하여 Jackson이 Hibernate 프록시를 처리할 수 있게 하는 방법
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
-
+    
+    //결제기능을 위한 iamPort 설정
+    implementation 'com.github.iamport:iamport-rest-client-java:0.2.3'
 }
 
 tasks.named('test') {

@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -86,13 +87,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/user/login", "/api/qna", "/api/qna/**", "/api/user/logout", "/api/chart",
                                 "/api/gym/search/**", "/api/gym/get/**",
-                                "/api/gym/getList", "/api/gym/getListWithPaging")
+                                "/api/gym/getList", "/api/gym/getListWithPaging","/api/reviews/reviewList/**")
                         .permitAll() // 이 API는 인증 없이 접근 가능하도록 설정합니다.
                         .requestMatchers("/api/user/signUp/gym", "/api/user/signUp/general", "/api/user/sendCode",
                                 "/api/gym/crNumberCheck/*", "/api/gym/crNumberCheck", "/api/user/emailCheck/*")
                         .anonymous() // 비회원만 가능
-                        .requestMatchers("/api/user/userInfo", "/ws/**")
-                        .hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM", "ROLE_TRAINER")
+                        .requestMatchers("/api/user/userInfo", "/ws/**").hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM")
                         .requestMatchers("/api/user/workoutSession/**").hasAnyAuthority("ROLE_GENERAL")
                         .requestMatchers("/api/membership/register").hasAuthority("ROLE_GENERAL")
                         .requestMatchers("/api/membership/stats", "/api/membership/stats/**",
@@ -100,9 +100,9 @@ public class SecurityConfig {
                         .hasAnyAuthority("ROLE_GYM")
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/reviews/delete/**", "api/reviews/update/**").hasAnyAuthority("ROLE_GENERAL","ROLE_ADMIN")
-                        .requestMatchers("/api/reviews/registerReview").hasAuthority("ROLE_GENERAL")
-                        .requestMatchers("/api/reviews/reviewList/**").permitAll()
+                        .requestMatchers("/api/reviews/registerReview", "api/reviews/uploadImages/**", "api/reviews/insertImage/**", "api/reviews/deleteImage/**", "api/verifyPayment/**","verify/**").hasAuthority("ROLE_GENERAL")
                         .requestMatchers("/api/trainers/update/**").hasAuthority("ROLE_TRAINER")
+                        
                         .anyRequest().authenticated()) // 그 외 모든 요청은 인증이 필요합니다
 
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider, customUserDetailsService),
@@ -186,4 +186,11 @@ public class SecurityConfig {
             return null;
         }
     }
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication()
+            .withUser("user").password("{noop}password").roles("GENERAL");
+    }
+    
 }

@@ -36,7 +36,7 @@ spring:
 com:
   conan:
     upload:
-      path: upload
+      path: images
 
 server:
   port: 8282
@@ -77,3 +77,6 @@ mail:
         auth: true
         starttls:
           enable: true
+iamport:
+  key: 7383144861344372
+  secret: JbLmUseDFSoqpSadCWEGVwXv8BGwiduXEZ4CQwp3b8FuxjA66clAEv28uAN8wE3dRkIKZl8rJM7bNh7z
