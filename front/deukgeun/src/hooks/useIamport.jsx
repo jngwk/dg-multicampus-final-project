@@ -62,7 +62,7 @@ const useIamport = () => {
     }
   };
 
-  return { verifyPayment, loading, error };
+  return {requestPayment, verifyPayment, loading, error };
 };
 
 export default useIamport;
