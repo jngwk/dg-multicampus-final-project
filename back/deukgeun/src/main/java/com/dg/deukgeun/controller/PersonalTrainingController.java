@@ -2,7 +2,9 @@ package com.dg.deukgeun.controller;
 //작성자 : 허승돈
 
 import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dg.deukgeun.dto.ProductDTO;
+import com.dg.deukgeun.dto.personalTraining.PersonalTrainingDTO;
 import com.dg.deukgeun.dto.personalTraining.PersonalTrainingRequestDTO;
 import com.dg.deukgeun.dto.personalTraining.PersonalTrainingResponseDTO;
 import com.dg.deukgeun.security.CustomUserDetails;
@@ -100,6 +103,7 @@ public class PersonalTrainingController {
     public Map<String,Integer> post(@RequestBody PersonalTrainingRequestDTO personalTrainingRequestDTO){
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Integer userId = userDetails.getUserId();
+        System.out.println(personalTrainingRequestDTO);
         personalTrainingRequestDTO.getPersonalTrainingDTO().setUserId(userId);
         personalTrainingRequestDTO.getMembershipDTO().setUserMemberReason(personalTrainingRequestDTO.getPersonalTrainingDTO().getUserPtReason());
         
@@ -115,4 +119,17 @@ public class PersonalTrainingController {
         return Map.of("ptId",service.insert(personalTrainingRequestDTO.getPersonalTrainingDTO()));
     }
 
+    @GetMapping("/findPT")
+    public ResponseEntity<?> checkPersonalTraining() {
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userDetails.getUserId();
+
+        Optional<PersonalTrainingDTO> pt = service.findPT(userId);
+
+        if (pt.isPresent()) {
+            return ResponseEntity.ok(pt.get());
+        } else {
+            return ResponseEntity.ok(null);
+        }
+    }
 }

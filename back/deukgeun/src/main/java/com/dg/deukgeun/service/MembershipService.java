@@ -43,10 +43,10 @@ public class MembershipService {
             return ResponseDTO.setFailed("사용자 또는 헬스장을 찾을 수 없습니다.");
         }
         //허승돈 수정 종료
-        // Optional<Membership> existingMembership = membershipRepository.findByUser(user);
-        // if (existingMembership.isPresent()) {
-        //     return ResponseDTO.setFailed("이미 등록된 회원입니다.");
-        // }
+        Optional<Membership> existingMembership = membershipRepository.findByUser(user);
+        if (existingMembership.isPresent()) {
+            return ResponseDTO.setFailed("이미 등록된 회원입니다.");
+        }
 
         Membership membership = new Membership();
         membership.setUser(user);
@@ -114,4 +114,13 @@ public class MembershipService {
         return Collections.emptyList(); // Return an empty list if no memberships found
     }
 
+    //멤버십이 존재하는지 확인용
+    @PreAuthorize("(hasRole('ROLE_GENERAL')) &&" + "#userId == principal.userId")
+    public Optional<Membership> findMembership(Integer userId) {
+        User user = userRepository.findByUserId(userId).orElse(null);
+        if (user != null) {
+            return membershipRepository.findByUser(user);
+        }
+        return Optional.empty(); // Return empty optional if user not found
+    }
 }
