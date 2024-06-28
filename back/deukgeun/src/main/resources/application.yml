@@ -39,7 +39,7 @@ com:
       path: upload
 
 server:
-  port: 30000
+  port: 8080
 
 # rabbitmq 값을 dynamic하게 사용하기 위한 값
 rabbitmq:

@@ -1,0 +1,13 @@
+services:
+#   springboot:
+#     build: ./back/deukgeun
+#     container_name: deukgeun-be-container
+#     ports:
+#       - "30000:8080"
+  react:
+    build: ./front/deukgeun
+    container_name: deukgeun-front-container
+    ports:
+      - "30115:80"
+    # depends_on:
+    #   - springboot
