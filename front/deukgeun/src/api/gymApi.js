@@ -27,14 +27,14 @@ export const searchGyms = async (searchWord) => {
   }
 };
 
-export const getTrainerAndProducts = async (gymId) => {
+export const GymInfo = async (gymId) => {
   try {
     console.log(gymId);
     const res = await axios.get(`${prefix}/get/${gymId}`);
-    console.log("getTrainerAndProducts", res);
+    console.log("GymInfo", res);
     return res.data;
   } catch (error) {
-    console.error("Error in getTrainerAndProducts", error);
+    console.error("Error in GymInfo", error);
     throw error;
   }
 };

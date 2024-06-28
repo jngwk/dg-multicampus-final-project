@@ -14,12 +14,12 @@ export const registerPT = async (PTData) => {
   }
 };
 
-export const getTrainerAndProducts = async (gymId) => {
-    try {
-      const res = await axios.get(`${prefix}/get/${gymId}`);
-      return res.data;
-    } catch (error) {
-      console.error('Error fetching stats data:', error);
-      throw error;
-    }
-  };
+export const findPT = async () => {
+  try {
+    const res = await axios.get(`${prefix}/findPT`);
+    return res.data;
+  } catch (error) {
+    console.error('Error findPT data:', error);
+    throw error;
+  }
+};

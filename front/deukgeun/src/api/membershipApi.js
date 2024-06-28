@@ -23,3 +23,12 @@ export const getMembershipStats = async () => {
     throw error;
   }
 };
+export const findMembership = async () => {
+  try {
+    const res = await axios.get(`${prefix}/findMembership`);
+    return res.data;
+  } catch (error) {
+    console.error('Error findMembership data:', error);
+    throw error;
+  }
+};

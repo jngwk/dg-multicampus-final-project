@@ -256,8 +256,6 @@ const PtRegister = () => {
     }
   };
   
-  
-
   const handleConfirmClick = async () => {
     setIsAlertModalVisible(false);
     await fetchUserData();
