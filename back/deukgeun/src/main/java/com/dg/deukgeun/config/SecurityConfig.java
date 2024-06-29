@@ -102,7 +102,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/reviews/delete/**", "api/reviews/update/**").hasAnyAuthority("ROLE_GENERAL","ROLE_ADMIN")
                         .requestMatchers("/api/reviews/registerReview").hasAuthority("ROLE_GENERAL")
                         .requestMatchers("/api/reviews/reviewList/**").permitAll()
-                        .requestMatchers("/api/trainers/update/**").hasAuthority("ROLE_TRAINER")
+                        .requestMatchers("/api/trainers/update/**", "/api/ptSession/**").hasAuthority("ROLE_TRAINER")
                         .anyRequest().authenticated()) // 그 외 모든 요청은 인증이 필요합니다
 
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider, customUserDetailsService),
