@@ -207,47 +207,63 @@ const PtRegister = () => {
       const updateRes = await updateUserInfo(userData);
       console.log(updateRes);
   
-      const membershipData = {
-        ...userData,
-        userGender,
-        userAge,
-        regDate: formatDate(regDate),
-        expDate: formatDate(expDate),
-        selectedPeriod,
-        gymId: gym.gymId,
-        userMemberReason,
-        userWorkoutDuration,
-        productId,
-      };
-      console.log(membershipData);
+      // const membershipData = {
+      //   ...userData,
+      //   userGender,
+      //   userAge,
+      //   regDate: formatDate(regDate),
+      //   expDate: formatDate(expDate),
+      //   selectedPeriod,
+      //   gymId: gym.gymId,
+      //   userMemberReason,
+      //   userWorkoutDuration,
+      //   productId,
+      // };
+      // console.log(membershipData);
       
-      // Register membership and get the membershipId from the response
-      const membershipResponse = await registerMembership(membershipData);
-      const membership = await findMembership();
-      const membershipId = membership.membershipId; 
+      // // Register membership and get the membershipId from the response
+      // const membershipResponse = await registerMembership(membershipData);
+      // const membership = await findMembership();
+      // const membershipId = membership.membershipId; 
   
       // Find the selected product to get ptCountTotal
       const selectedProduct = gym.productList.find(product => product.productName === selectedPeriod);
   
-      const PTData = {
-        userId : userData.userId,
-        membershipId,
-        ptContent: selectedPeriod,
-        ptCountRemain: selectedProduct.ptCountTotal,
-        ptCountTotal: selectedProduct.ptCountTotal,
-        trainerId,
-        userPtReason: userMemberReason
-      };
+      // const PTData = {
+      //   userId : userData.userId,
+      //   membershipId,
+      //   ptContent: selectedPeriod,
+      //   ptCountRemain: selectedProduct.ptCountTotal,
+      //   ptCountTotal: selectedProduct.ptCountTotal,
+      //   trainerId,
+      //   userPtReason: userMemberReason
+      // };
       const ptRequestData = {
-        membershipDTO: membershipData,
-        personalTrainingDTO: PTData
+        membershipDTO: {
+          ...userData,
+          userGender,
+          userAge,
+          regDate: formatDate(regDate),
+          expDate: formatDate(expDate),
+          selectedPeriod,
+          gymId: gym.gymId,
+          userMemberReason,
+          userWorkoutDuration,
+          productId},
+        personalTrainingDTO: {
+          userId : userData.userId,
+          // membershipId,
+          ptContent: selectedPeriod,
+          ptCountRemain: selectedProduct.ptCountTotal,
+          ptCountTotal: selectedProduct.ptCountTotal,
+          trainerId}
       }
       console.log(ptRequestData);
       // Register PT
       const PTResponse = await registerPT(ptRequestData);
       
       
-      console.log("Membership registered successfully:", membershipResponse);
+      // console.log("Membership registered successfully:", membershipResponse);
       console.log("PT registered successfully:", PTResponse);
   
       setIsAlertModalVisible(true);
