@@ -24,6 +24,7 @@ public class PtSession{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer ptSessionId;
     private Integer ptId;
+    private Integer trainerId;
     private String memo;
     private LocalDate ptDate;
     private LocalTime startTime;

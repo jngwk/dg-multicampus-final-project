@@ -1,5 +1,7 @@
 package com.dg.deukgeun.controller;
+
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 //작성자 : 허승돈
@@ -34,9 +36,10 @@ public class PtSessionController {
     private final WorkoutSessionService workoutSessionService;
     
     //pt 일정 등록
-    /* pt 일정 등록을 위해 필요한 정보는 다음과 같다.
+    /** pt 일정 등록을 위해 필요한 정보는 다음과 같다.
      * {
      *      ptId : personal_training 테이블의 pt_id.
+     *      trainerId : pt를 하는 trainer의 userId (from trainer table)
      *      ptDate : yyyy-MM-dd 포멧의 LocalDate. pt를 실행하는 날짜
      *      startTime : HH:mm 포멧의 LocalTime. pt 시작시간.
      *      endTime : HH:mm 포멧. pt 끝시간.
@@ -73,10 +76,10 @@ public class PtSessionController {
         return Map.of("ptSessionId",ptSessionId);
     }
     //pt 일정 불러오기
-    /* pt 일정을 불러오기 위해 필요한 정보 : startDate, endDate, format = yyyy-MM-dd
+    /** pt 일정을 불러오기 위해 필요한 정보 : startDate, endDate, format = yyyy-MM-dd
      * 리턴해주는 pt 일정 정보 포멧
      * {
-     *      ptSessionList : [{ptSessionId, ptId, memo, ptDate, startTime,
+     *      ptSessionList : [{ptSessionId, ptId, trainerId, memo, ptDate, startTime,
      *          endTime, color},...],
      *      personalTrainingList : [{ptId, userId, trainerId, ptCountTotal,
      *          ptCountRemain, ptContent, userPtReason, membershipId},...]
@@ -97,6 +100,39 @@ public class PtSessionController {
             ptSessionResponseDTO.setPersonalTrainingList(personalTrainingList);
             ptSessionResponseDTO.setPtSessionList(ptSessionList);
             return ptSessionResponseDTO;
-        }
-    
+    }
+
+    //pt 캘린더 일정 수정
+    /** 일정 정보 수정을 위해 다음과 같은 정보를 파라미터로 받는다.
+     * {
+     *      ptId : Integer. personal_training 테이블의 FK
+     *      trainerId : Integer, trainer의 userId
+     *      memo : String : 트레이너가 직접 입력한 메모 string
+     *      ptDate : yyyy-MM-dd 포멧의 날짜 정보
+     *      startTime : HH:mm 포멧의 LocalTime. pt 시작시간.
+     *      endTime : HH:mm 포멧. pt 끝시간.
+     *      color : String. 6자리 색상 코드를 저장한다 (ex. ffffff:흰색, ff0000:빨간색)
+     * }
+     * // ptsession의 수정 정보가 적용되면, workoutSession 테이블의 일정도 수정한다.
+    */
+    @PutMapping("/put/{ptSessionId}")
+    public Map<String,String> put(@PathVariable(name="ptSessionId")Integer ptSessionId,@RequestBody PtSessionDTO ptSessionDTO){
+        ptSessionDTO.setPtSessionId(ptSessionId);
+        ptSessionService.update(ptSessionDTO);
+        workoutSessionService.updateByPtSession(ptSessionDTO);
+        
+        return Map.of("RESULT","SUCCESS");
+    }
+
+    //pt 캘린더 일정 삭제
+    //pt 에서 일정을 삭제시, personalTraining 에서 remain +1, workoutSession 일정도 삭제
+    @DeleteMapping("/delete/{ptSessionId}")
+    public Map<String,String> delete(@PathVariable(name = "ptSessionId") Integer ptSessionId){
+        PtSessionDTO ptSessionDTO = ptSessionService.selectById(ptSessionId);
+        ptSessionService.delete(ptSessionId);
+        personalTrainingService.plusRemain(ptSessionDTO.getPtId());
+        workoutSessionService.deleteByPtSession(ptSessionId);
+
+        return Map.of("RESULT","SUCESS");
+    }
 }
