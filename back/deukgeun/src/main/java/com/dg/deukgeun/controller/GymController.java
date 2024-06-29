@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.tags.shaded.org.apache.xpath.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,10 +24,10 @@ import com.dg.deukgeun.dto.gym.GymRequestDTO;
 import com.dg.deukgeun.dto.gym.GymResponseDTO;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
-
 import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.service.GymImageService;
 import com.dg.deukgeun.service.GymService;
+import com.dg.deukgeun.service.ProductService;
 import com.dg.deukgeun.service.TrainerService;
 import com.dg.deukgeun.util.CustomFileUtil;
 
@@ -48,6 +46,8 @@ public class GymController {
     private GymImageService gymImageService;
     @Autowired
     private TrainerService trainerService;
+    @Autowired
+    private ProductService productService;
 
     // // GYM 회원가입
     // @PostMapping("/signUp")
@@ -143,7 +143,6 @@ public class GymController {
      * introduce : 헬스장 소개
      * OperatingHours : 헬스장 운영시간
      * PhonNumber : 헬스장/헬스장 대표자 전화번호
-     * Prices : 등록/pt 가격 등 등록비용
      * UploadFileName : 헬스장 이미지 List,
      * * 이미지 이름만 불러올 뿐 이미지 자체를 불러오진 않으므로,
      * 미리 약속된 이미지 경로를 프론트에서 호출할 것.
@@ -154,8 +153,14 @@ public class GymController {
      * trainerImage : 트레이너 사진
      * gymId : 트레이너 소속의 gym Id
      * userName : 트레이너 이름
-     * }
-     *
+     * }]
+     * productList : [{
+     *  productId : 상품 아이디
+     *  price : 상품 가격
+     *  days : 상품 기간 (일수 예 : 30일, 60일 등)
+     *  productName : 상품명
+     *  ptCountTotal : pt일 경우 상품이 제공하는 pt 횟수
+     * }]
      */
     @GetMapping("/get/{gymId}")
     public GymResponseDTO get(@PathVariable Integer gymId) {
@@ -175,12 +180,10 @@ public class GymController {
         gymResponseDTO.setIntroduce(gymDTO.getIntroduce());
         gymResponseDTO.setOperatingHours(gymDTO.getOperatingHours());
         gymResponseDTO.setPhoneNumber(gymDTO.getPhoneNumber());
-        gymResponseDTO.setPrices(gymDTO.getPrices());
         gymResponseDTO.setUploadFileName(fileNames);
         gymResponseDTO.setUserId(gymDTO.getUserId());
-        log.info("before trainersCall");
         gymResponseDTO.setTrainersList(trainerService.getList(gymId));
-        log.info("after trainersCall");
+        gymResponseDTO.setProductList(productService.getList(gymId));
         return gymResponseDTO;
     }
 
@@ -194,10 +197,16 @@ public class GymController {
      * address : String,
      * detailAddress : String,
      * operatingHours : ?,
-     * prices : ?,
      * introduce : String,
      * approval : 0 or 1 or 2 or... I don't know...,
      * files : file array format
+     * productList : [{
+     *  productId : 상품 아이디
+     *  price : 상품 가격
+     *  days : 상품 기간 (일수 예 : 30일, 60일 등)
+     *  productName : 상품명
+     *  ptCountTotal : pt일 경우 상품이 제공하는 pt 횟수
+     * }]
      * }
      * 
      * Json/FormData 포멧에 맞게 Entity를 만들고 IO가 잘 이루어지는 지 확인할 것
@@ -221,7 +230,6 @@ public class GymController {
         gymDTO.setIntroduce(gymRequestDTO.getIntroduce());
         gymDTO.setOperatingHours(gymRequestDTO.getOperatingHours());
         gymDTO.setPhoneNumber(gymRequestDTO.getPhoneNumber());
-        gymDTO.setPrices(gymRequestDTO.getPrices());
         gymDTO.setUserId(gymRequestDTO.getUserId());
 
         int gymId = gymService.insert(gymDTO);
@@ -230,6 +238,8 @@ public class GymController {
         for (int i = 0; i < uploadFileNames.size(); i++) {
             gymImageDTOList.add(new GymImageDTO(uploadFileNames.get(i), gymId));
         }
+        
+        productService.insertList(gymRequestDTO.getProductList());
 
         gymImageService.insertList(gymImageDTOList);
 
@@ -246,18 +256,24 @@ public class GymController {
      * address : String,
      * detailAddress : String,
      * operatingHours : ?,
-     * prices : ?,
      * introduce : String,
-     * approval : 0 or 1 or 2 or... I don't know...
+     * productList : [{
+     *      productId : Integer,
+     *      gymId : Integer,
+     *      days : Integer,
+     *      productName : String,
+     *      ptCountTotal : Integer, nullable
+     * }]
      * }
      * 파일은 받지 않는다.
      * 이미지 파일의 경우 수정 없이 삭제/추가만 기능하는 것으로 조정
+     * 상품 정보의 경우 입력받은 productList를 참고해서 같은 gymId의 모든 상품 정보를
+     * 삭제하고, 다시 저장하는 형태로 저장.
      */
     @PutMapping("/put/{gymId}")
     public Map<String, String> modify(@PathVariable(name = "gymId") Integer gymId,
             @RequestBody GymRequestDTO gymRequestDTO) {
         GymDTO gymDTO = new GymDTO();
-
         gymDTO.setAddress(gymRequestDTO.getAddress());
         // gymDTO.setApproval(gymRequestDTO.getApproval());
         gymDTO.setCrNumber(gymRequestDTO.getCrNumber());
@@ -267,10 +283,10 @@ public class GymController {
         gymDTO.setIntroduce(gymRequestDTO.getIntroduce());
         gymDTO.setOperatingHours(gymRequestDTO.getOperatingHours());
         gymDTO.setPhoneNumber(gymRequestDTO.getPhoneNumber());
-        gymDTO.setPrices(gymRequestDTO.getPrices());
-
         log.info("Modify: " + gymDTO);
         gymService.modify(gymDTO);
+        productService.deleteByGymId(gymId);
+        productService.insertList(gymRequestDTO.getProductList());
         return Map.of("RESULT", "SUCCESS");
     }
 

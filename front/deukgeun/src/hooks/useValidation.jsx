@@ -35,7 +35,7 @@ const useValidation = () => {
         console.error(error);
       }
     }
-    console.log(tempErrors.email);
+    // console.log(tempErrors.email);
     return tempErrors.email !== "";
   };
   // const validateEmailVerification = (verified, tempErrors) => {
@@ -135,7 +135,7 @@ const useValidation = () => {
     });
     validateNotEmpty("confirmPassword", confirmPassword, tempErrors);
     setErrors(tempErrors);
-    console.log("유효성 검사 후 에러: ", tempErrors); // Debugging
+    // console.log("유효성 검사 후 에러: ", tempErrors); // Debugging
     return Object.keys(tempErrors).length === 0;
   };
 

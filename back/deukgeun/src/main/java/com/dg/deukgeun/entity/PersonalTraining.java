@@ -1,7 +1,5 @@
 package com.dg.deukgeun.entity;
 
-import java.sql.Date;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,12 +22,9 @@ public class PersonalTraining {
     private Integer ptId;
     private Integer userId;
     private Integer trainerId;
-    private Date regDate;
-    private Date expDate;
     private int ptCountTotal;
     private int ptCountRemain;
     private String ptContent;
-    private Integer userGender;
-    private Integer userAge;
-    private String userWorkoutDur;
+    private String userPtReason;
+    private Integer membershipId;
 }

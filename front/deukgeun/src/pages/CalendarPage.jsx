@@ -209,7 +209,8 @@ const CalendarPage = () => {
 
         return formatFormValues(updatedFormValues, event.id);
       }
-
+      console.log("load workout");
+      handleEventClick(info);
       return event;
     });
 
@@ -271,7 +272,7 @@ const CalendarPage = () => {
     return <Fallback />;
   }
   return (
-    <div className="w-full h-full flex">
+    <div className="w-full h-full flex justify-center items-center">
       <div className="xl:w-9/12 p-8 slide">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -299,18 +300,27 @@ const CalendarPage = () => {
           height={"80dvh"}
         />
       </div>
-      <div className="mt-4">
-        <CalendarInputForm
-          addEvent={addEvent}
-          updateEvent={updateEvent}
-          deleteEvent={deleteEvent}
-          selectedDate={selectedDate}
-          selectedEvent={selectedEvent}
-          isInputFormVisible={isInputFormVisible}
-          toggleInputForm={toggleInputForm}
-          workoutsLoading={workoutsLoading}
-          deleteWorkouts={deleteWorkouts}
-        />
+      <div className="flex justify-center h-[65dvh] items-center border-2 border-r-0 rounded-tr-none rounded-br-none border-peach-fuzz rounded-md py-5">
+        <div onClick={toggleInputForm} className="cursor-pointer p-5">
+          ||
+        </div>
+        <div
+          className={`relative ${
+            isInputFormVisible ? "w-[300px]" : "w-0"
+          }  overflow-hidden transition-all ease-in-out duration-1000`}
+        >
+          <CalendarInputForm
+            addEvent={addEvent}
+            updateEvent={updateEvent}
+            deleteEvent={deleteEvent}
+            selectedDate={selectedDate}
+            selectedEvent={selectedEvent}
+            isInputFormVisible={isInputFormVisible}
+            toggleInputForm={toggleInputForm}
+            workoutsLoading={workoutsLoading}
+            deleteWorkouts={deleteWorkouts}
+          />
+        </div>
       </div>
       {/* <Button label="전체 삭제" onClick={handleDeleteAll} /> */}
     </div>

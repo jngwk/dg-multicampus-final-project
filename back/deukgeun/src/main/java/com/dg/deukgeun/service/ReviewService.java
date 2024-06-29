@@ -1,45 +1,32 @@
 package com.dg.deukgeun.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+
 import com.dg.deukgeun.dto.PageRequestDTO;
 import com.dg.deukgeun.dto.PageResponseDTO;
-import com.dg.deukgeun.dto.gym.GymDTO;
 import com.dg.deukgeun.dto.review.ReviewDTO;
 import com.dg.deukgeun.dto.review.ReviewResponseDTO;
 import com.dg.deukgeun.entity.Review;
 import com.dg.deukgeun.entity.ReviewImage;
 import com.dg.deukgeun.entity.User;
-import com.dg.deukgeun.entity.Gym;
+import com.dg.deukgeun.repository.ReviewImageRepository;
 import com.dg.deukgeun.repository.ReviewRepository;
 import com.dg.deukgeun.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
-
-import com.dg.deukgeun.repository.GymRepository;
-import com.dg.deukgeun.repository.ReviewImageRepository;
-
 import lombok.extern.log4j.Log4j2;
-import lombok.Data;
-
-
-import java.io.IOException;
-import java.nio.file.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.stream.Collectors;
 
 @Log4j2
 @Service
