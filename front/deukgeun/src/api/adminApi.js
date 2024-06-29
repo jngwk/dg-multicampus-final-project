@@ -1,7 +1,9 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
 
-const prefix = `/api/admin`; // proxy 사용
+export const API_SERVER_HOST = "http://localhost:8282";
+const prefix = `${API_SERVER_HOST}/api/admin`;
+// const prefix = `/api/admin`; // proxy 사용
 
 
 export const usersList = async (page = 1, size= 10) => {

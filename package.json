@@ -1,9 +1,14 @@
 {
   "dependencies": {
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.4.0",
     "axios": "^1.7.2",
     "js-cookie": "^3.0.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-live-clock": "^6.1.22",
     "react-spinners": "^0.13.8",
+    "react-typing-effect": "^2.0.5",
     "tailwind-scrollbar-hide": "^1.1.7"
   }
 }

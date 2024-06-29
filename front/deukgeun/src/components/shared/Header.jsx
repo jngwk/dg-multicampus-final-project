@@ -6,9 +6,12 @@ import ProfileDropdown from "../account/ProfileDropdown";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Fallback from "./Fallback";
+import Bprofile from "../../assets/blank_profile.png";
+import { userInfo, uploadImage, getImage, updateImage } from "../../api/userInfoApi";
 
 // console.log(logo);
 export default function Header() {
+  const [userImage, setUserImage] = useState(null);
   const { userData, loading } = useAuth();
   const location = useLocation();
   const { isModalVisible, toggleModal } = useModal();
@@ -22,6 +25,20 @@ export default function Header() {
     setIsProfileDropdownVisible(false);
   }, [location]);
 
+  useEffect(() => {
+    const fetchUserImage = async () => {
+      try {
+        const images = await getImage();
+        if (images) {
+          setUserImage(images.userImage);
+        }
+      } catch (error) {
+        console.error("Error fetching user image:", error);
+      }
+    };
+
+    fetchUserImage();
+  }, []);
   useEffect(() => {
     const closeWhenClickedOutside = (e) => {
       if (
@@ -63,15 +80,16 @@ export default function Header() {
           <button onClick={() => navigate("/qna")}>문의하기</button>
           {sessionStorage.getItem("isLoggedIn") ? (
             <>
-              <div className="cursor-pointer flex justify-center items-center">
-                <box-icon
-                  name="user-circle"
-                  type="solid"
-                  color="#687280"
-                  size="md"
-                  ref={badge}
-                  onClick={toggleProfileDropdown}
-                ></box-icon>
+              <div
+                className="cursor-pointer flex justify-center items-center"
+                ref={badge}
+                onClick={toggleProfileDropdown}
+              >
+                <img
+                  src={`./images/${userImage}` || Bprofile}
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full object-cover"
+                />
               </div>
               {/* User type 지정해서 안에 메뉴 변경 */}
               <div ref={dropdown} className="absolute right-0 top-10">
