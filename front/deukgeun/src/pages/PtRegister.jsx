@@ -44,13 +44,21 @@ const PtRegister = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isTraineDropdownOpen, setIsTrainerDropdownOpen] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState(
-    gym.productList && gym.productList.length > 0 ? gym.productList[0].productName : ""); //선택상품
+    gym.productList && gym.productList.length > 0
+      ? gym.productList[0].productName
+      : ""
+  ); //선택상품
+  const [selectedProductPrice, setSelectedProductPrice] = useState(
+    gym.productList && gym.productList.length > 0 ? gym.productList[0].price : 0
+  );
   const [selectedTrainer, setSelectedTrainer] = useState(
-    gym.trainersList && gym.trainersList.length > 0 ? gym.trainersList[0].userName : ""); 
+    gym.trainersList && gym.trainersList.length > 0
+      ? gym.trainersList[0].userName
+      : ""
+  );
   const { validateInput } = useValidation();
-  
 
-  const {userData, setUserData} = useAuth();
+  const { userData, setUserData } = useAuth();
   const [userGender, setUserGender] = useState("남자"); //성별
   const [userAge, setUserAge] = useState(20); //나이
   const [selectedTime, setSelectedTime] = useState(); //선택한 PT시간 (PTSession에 StartTime, EndTime)
@@ -59,11 +67,16 @@ const PtRegister = () => {
   const [userMemberReason, setUserMemberReason] = useState("PT");
   const [userWorkoutDuration, setUserWorkoutDuration] = useState(1);
   const [productId, setProductId] = useState(
-    gym.productList && gym.productList.length > 0 ? gym.productList[0].productId : "");
+    gym.productList && gym.productList.length > 0
+      ? gym.productList[0].productId
+      : ""
+  );
   const [trainerId, setTrainerId] = useState(
-    gym.trainersList && gym.trainersList.length > 0 ? gym.trainersList[0].trainerId : "");
-    
-    
+    gym.trainersList && gym.trainersList.length > 0
+      ? gym.trainersList[0].trainerId
+      : ""
+  );
+
   const customNavigate = useCustomNavigate();
   const { fetchUserData } = useAuth();
 
@@ -98,7 +111,6 @@ const PtRegister = () => {
   const handleChangeWorkoutDuration = (event) => {
     setUserWorkoutDuration(event.target.value);
   };
-
 
   const ageOptions = [];
   for (let age = 14; age <= 90; age++) {
@@ -149,25 +161,25 @@ const PtRegister = () => {
 
   const onClickPeriod = (e) => {
     const { value } = e.target;
-    const selectedProduct = gym.productList.find((product) => product.productName === value);
+    const selectedProduct = gym.productList.find(
+      (product) => product.productName === value
+    );
     setSelectedPeriod(value);
+    setSelectedProductPrice(selectedProduct.price);
     setProductId(selectedProduct.productId);
     setDateRange(selectedProduct);
     setIsDropdownOpen(); // 드롭다운 닫기
   };
 
-
   const onClickTrainer = (e) => {
     const { value } = e.target;
-    const selectedTrainer = gym.trainersList.find((trainer) => trainer.userName === value);
+    const selectedTrainer = gym.trainersList.find(
+      (trainer) => trainer.userName === value
+    );
     setSelectedTrainer(value);
     setTrainerId(selectedTrainer.trainerId);
     toggleTrainerDropdown(); // 드롭다운 닫기
   };
-
-  
-
-  
 
   const setDateRange = (product) => {
     const today = new Date();
@@ -175,15 +187,15 @@ const PtRegister = () => {
     endDate.setDate(endDate.getDate() + product.days);
     setExpDate(endDate);
   };
-  
 
   useEffect(() => {
     if (gym.productList && gym.productList.length > 0) {
-      const initialProduct = gym.productList.find((product) => product.productName === selectedPeriod);
+      const initialProduct = gym.productList.find(
+        (product) => product.productName === selectedPeriod
+      );
       setDateRange(initialProduct);
     }
   }, [regDate, selectedPeriod, gym.productList]);
-  
 
   const handleRegDateChange = (date) => {
     const today = new Date();
@@ -192,7 +204,9 @@ const PtRegister = () => {
       return;
     } else {
       setRegDate(date);
-      const selectedProduct = gym.productList.find((product) => product.productName === selectedPeriod);
+      const selectedProduct = gym.productList.find(
+        (product) => product.productName === selectedPeriod
+      );
       setDateRange(selectedProduct);
     }
   };
@@ -206,76 +220,61 @@ const PtRegister = () => {
     try {
       const updateRes = await updateUserInfo(userData);
       console.log(updateRes);
-  
-      // const membershipData = {
-      //   ...userData,
-      //   userGender,
-      //   userAge,
-      //   regDate: formatDate(regDate),
-      //   expDate: formatDate(expDate),
-      //   selectedPeriod,
-      //   gymId: gym.gymId,
-      //   userMemberReason,
-      //   userWorkoutDuration,
-      //   productId,
-      // };
-      // console.log(membershipData);
-      
-      // // Register membership and get the membershipId from the response
-      // const membershipResponse = await registerMembership(membershipData);
-      // const membership = await findMembership();
-      // const membershipId = membership.membershipId; 
-  
+
+      const membershipData = {
+        ...userData,
+        userGender,
+        userAge,
+        regDate: formatDate(regDate),
+        expDate: formatDate(expDate),
+        selectedPeriod,
+        gymId: gym.gymId,
+        userMemberReason,
+        userWorkoutDuration,
+        productId,
+      };
+      console.log(membershipData);
+
+      // Register membership and get the membershipId from the response
+      const membershipResponse = await registerMembership(membershipData);
+      const membership = await findMembership();
+      const membershipId = membership.membershipId;
+
       // Find the selected product to get ptCountTotal
-      const selectedProduct = gym.productList.find(product => product.productName === selectedPeriod);
-  
-      // const PTData = {
-      //   userId : userData.userId,
-      //   membershipId,
-      //   ptContent: selectedPeriod,
-      //   ptCountRemain: selectedProduct.ptCountTotal,
-      //   ptCountTotal: selectedProduct.ptCountTotal,
-      //   trainerId,
-      //   userPtReason: userMemberReason
-      // };
+      const selectedProduct = gym.productList.find(
+        (product) => product.productName === selectedPeriod
+      );
+
+      const PTData = {
+        userId: userData.userId,
+        membershipId,
+        ptContent: selectedPeriod,
+        ptCountRemain: selectedProduct.ptCountTotal,
+        ptCountTotal: selectedProduct.ptCountTotal,
+        trainerId,
+        userPtReason: userMemberReason,
+      };
       const ptRequestData = {
-        membershipDTO: {
-          ...userData,
-          userGender,
-          userAge,
-          regDate: formatDate(regDate),
-          expDate: formatDate(expDate),
-          selectedPeriod,
-          gymId: gym.gymId,
-          userMemberReason,
-          userWorkoutDuration,
-          productId},
-        personalTrainingDTO: {
-          userId : userData.userId,
-          // membershipId,
-          ptContent: selectedPeriod,
-          ptCountRemain: selectedProduct.ptCountTotal,
-          ptCountTotal: selectedProduct.ptCountTotal,
-          trainerId}
-      }
-      console.log(ptRequestData);
+        membershipDTO: membershipData,
+        personalTrainingDTO: PTData,
+      };
+      console.log(PTData);
       // Register PT
       const PTResponse = await registerPT(ptRequestData);
-      
-      
-      // console.log("Membership registered successfully:", membershipResponse);
+
+      console.log("Membership registered successfully:", membershipResponse);
       console.log("PT registered successfully:", PTResponse);
-  
+
       setIsAlertModalVisible(true);
     } catch (error) {
       console.error("Failed to register membership or PT:", error);
     }
   };
-  
+
   const handleConfirmClick = async () => {
     setIsAlertModalVisible(false);
     await fetchUserData();
-    customNavigate("/centerView", { state: {gym: gym}, replace: true });
+    customNavigate("/centerView", { state: { gym: gym }, replace: true });
   };
 
   return (
@@ -287,7 +286,7 @@ const PtRegister = () => {
         />
         <div className="flex flex-row items-center">
           <div
-            className={`m-10 max-h-[700px] transition-max-height duration-500 overflow-hidden ${
+            className={`m-10 max-h-[600px] transition-max-height duration-500 overflow-hidden ${
               isExpanded ? "h-[700px]" : "h-[400px]"
             } w-[800px] space-x-10 px-20 justify-center rounded-lg flex items-center border-2 border-peach-fuzz`}
           >
@@ -332,7 +331,11 @@ const PtRegister = () => {
                             <li
                               key={product.productId}
                               className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
-                              onClick={() => onClickPeriod({ target: { value: product.productName } })}
+                              onClick={() =>
+                                onClickPeriod({
+                                  target: { value: product.productName },
+                                })
+                              }
                             >
                               {product.productName}
                             </li>
@@ -358,10 +361,14 @@ const PtRegister = () => {
                         <ul className="absolute w-full border border-gray-400 rounded-lg list-none z-10 bg-white">
                           {gym.trainersList.map((trainer) => (
                             <li
-                            key={trainer.trainerId}
-                            className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
-                            onClick={() => onClickTrainer({ target: { value: trainer.userName } })}
-                          >
+                              key={trainer.trainerId}
+                              className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
+                              onClick={() =>
+                                onClickTrainer({
+                                  target: { value: trainer.userName },
+                                })
+                              }
+                            >
                               {trainer.userName}
                             </li>
                           ))}
@@ -371,42 +378,42 @@ const PtRegister = () => {
                   </div>
                   <div className="flex flex-row items-center space-x-4">
                     {/* 시작일 */}
-                    
+
                     <div className="relative">
-                    <label
+                      <label
                         className={`absolute w-16 right-27 -top-4 px-2 text-xs pointer-events-none text-gray-400`}
                       >
                         등록일
                       </label>
-                <CustomDatePicker
-                label="등록일"
-                selectedDate={regDate}
-                handleDateChange={handleRegDateChange}
-              />
-                </div>
+                      <CustomDatePicker
+                        label="등록일"
+                        selectedDate={regDate}
+                        handleDateChange={handleRegDateChange}
+                      />
+                    </div>
                     <span>-</span>
                     {/* 만료일 */}
                     <div className="relative">
-                    <label
+                      <label
                         className={`absolute w-16 right-27 -top-4 px-2 text-xs pointer-events-none text-gray-400`}
                       >
                         만료일
                       </label>
-                <CustomDatePicker
-                label="만료일"
-                selectedDate={expDate}
-                handleDateChange={handleExpDateChange}
-              />
-                </div>
+                      <CustomDatePicker
+                        label="만료일"
+                        selectedDate={expDate}
+                        handleDateChange={handleExpDateChange}
+                      />
+                    </div>
                   </div>
                   {isExpanded && (
                     <div className="flex flex-col items-center space-y-4 w-full">
-                      <label
-                        className={`absolute -top-2 px-2 text-xs pointer-events-none text-gray-400`}
-                      >
-                        신청사유
-                      </label>
                       <div className="relative">
+                        <label
+                          className={`absolute -top-2 px-2 text-xs pointer-events-none text-gray-400`}
+                        >
+                          신청사유
+                        </label>
                         <select
                           onFocus={handleMemberReasonFocus}
                           onBlur={handleMemberReasonBlur}
@@ -553,53 +560,59 @@ const PtRegister = () => {
                   </div>
                   {isExpanded && (
                     <div>
-                    <div className="flex flex-col items-center space-y-4 w-full">
-                      <label
-                        className={`absolute right-28 -top-2 px-2 text-xs pointer-events-none text-gray-400`}
-                      >
-                        운동경력(선택)
-                      </label>
-                      <div className="relative">
-                        <select
-                          onFocus={handleWorkoutDurationFocus}
-                          onBlur={handleWorkoutDurationBlur}
-                          type="button"
-                          className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
-                            userWorkoutDurationFocus
-                              ? "border-peach-fuzz"
-                              : "border-gray-400"
-                          } focus:border-2 focus:outline-none text-sm peer my-2 `}
-                          value={userWorkoutDuration}
-                          onChange={handleChangeWorkoutDuration}
-                        >
-                          {WorkoutDurationOptions}
-                        </select>
-                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                          {!userWorkoutDurationFocus ? (
-                            <FaChevronDown className="text-gray-400" />
-                          ) : (
-                            <FaChevronUp className="text-gray-400" />
-                          )}
+                      <div className="flex flex-col items-center space-y-4 w-full">
+                        <div className="relative">
+                          <label
+                            className={`absolute right-30 -top-2 px-2 text-xs pointer-events-none text-gray-400`}
+                          >
+                            운동경력(선택)
+                          </label>
+                          <select
+                            onFocus={handleWorkoutDurationFocus}
+                            onBlur={handleWorkoutDurationBlur}
+                            type="button"
+                            className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
+                              userWorkoutDurationFocus
+                                ? "border-peach-fuzz"
+                                : "border-gray-400"
+                            } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                            value={userWorkoutDuration}
+                            onChange={handleChangeWorkoutDuration}
+                          >
+                            {WorkoutDurationOptions}
+                          </select>
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            {!userWorkoutDurationFocus ? (
+                              <FaChevronDown className="text-gray-400" />
+                            ) : (
+                              <FaChevronUp className="text-gray-400" />
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex float-end">
+                        {/* @@@@@@@@@상품 가격 표시 */}
+                        {/* @@@@@@@@@상품 가격 표시 */}
+                        {/* @@@@@@@@@상품 가격 표시 */}
+                        {/* @@@@@@@@@상품 가격 표시 */}
+                        <div>{selectedProductPrice}원</div>
+                        <div className="mr-2">
+                          <Button
+                            width="120px"
+                            color="peach-fuzz"
+                            label="등록"
+                            onClick={handleModify}
+                          />
                         </div>
                       </div>
                     </div>
-                    <div className="flex float-end">
-                    <div className="mr-2">
-                      <Button
-                        width="120px"
-                        color="peach-fuzz"
-                        label="등록"
-                        onClick={handleModify}
-                      />
-                    </div>
-                  </div>
-                  </div>
                   )}
                 </div>
               </div>
             </div>
           </div>
         </div>
+
         {!isExpanded && (
           <button onClick={toggleExpand}>
             <FaAngleDoubleDown className="mx-auto animate-bounce" />
@@ -608,8 +621,8 @@ const PtRegister = () => {
       </div>
       {isExpanded && (
         //임시로 넣어둠 ( 누르면 결제창 이동)
-        
-              <button>
+
+        <button>
           <FaAngleDoubleRight className=" mx-auto animate-[propel_3s_infinite]" />
         </button>
       )}

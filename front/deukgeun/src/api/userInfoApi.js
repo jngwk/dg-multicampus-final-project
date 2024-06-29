@@ -7,7 +7,6 @@ const prefix = `${API_SERVER_HOST}/api/user`;
 export const userInfo = async () => {
   try {
     const res = await axios.get(`${prefix}/userInfo`);
-    console.log(res);
     return res.data.data;
   } catch (error) {
     console.error("Error fetching user info:", error);
@@ -49,6 +48,7 @@ export const updateImage = async (formData) => {
     return res.data;
   } catch (error) {
     console.error("Error updating user image:", error);
+    throw error;
   }
 };
 

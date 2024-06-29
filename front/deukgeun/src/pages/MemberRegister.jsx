@@ -15,6 +15,7 @@ import { updateUserInfo } from "../api/userInfoApi";
 import { useLocation } from "react-router-dom";
 import useCustomNavigate from "../hooks/useCustomNavigate";
 import Button from "../components/shared/Button";
+import useIamport from "../hooks/useIamport";
 
 const MemberRegister = () => {
   const location = useLocation();
@@ -38,10 +39,16 @@ const MemberRegister = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState(
-    gym.productList && gym.productList.length > 0 ? gym.productList[0].productName : ""); //선택상품
+    gym.productList && gym.productList.length > 0
+      ? gym.productList[0].productName
+      : ""
+  ); //선택상품
+  const [selectedProductPrice, setSelectedProductPrice] = useState(
+    gym.productList && gym.productList.length > 0 ? gym.productList[0].price : 0
+  );
   const { validateInput } = useValidation();
 
-  const {userData, setUserData} = useAuth();
+  const { userData, setUserData } = useAuth();
   const [userGender, setUserGender] = useState("남자"); //성별
   const [userAge, setUserAge] = useState(20); //나이
   const [regDate, setRegDate] = useState(new Date()); //시작일
@@ -49,8 +56,15 @@ const MemberRegister = () => {
   const [userMemberReason, setUserMemberReason] = useState("PT");
   const [userWorkoutDuration, setUserWorkoutDuration] = useState(1);
   const [productId, setProductId] = useState(
-    gym.productList && gym.productList.length > 0 ? gym.productList[0].productId : "");
+    gym.productList && gym.productList.length > 0
+      ? gym.productList[0].productId
+      : ""
+  );
   const customNavigate = useCustomNavigate();
+  const [paymentStatus, setPaymentStatus] = useState(null);
+  const [impUid, setImpUid] = useState(""); // 여기에 imp_uid를 저장합니다.
+  const [merchantUid, setMerchantUid] = useState("");
+  const { requestPayment, verifyPayment, loading, error } = useIamport();
 
   const { fetchUserData } = useAuth();
 
@@ -107,13 +121,15 @@ const MemberRegister = () => {
 
   const onClickPeriod = (e) => {
     const { value } = e.target;
-    const selectedProduct = gym.productList.find(product => product.productName === value);
+    const selectedProduct = gym.productList.find(
+      (product) => product.productName === value
+    );
     setSelectedPeriod(value);
+    setSelectedProductPrice(selectedProduct.price);
     setProductId(selectedProduct.productId);
     setDateRange(selectedProduct);
     toggleDropdown();
   };
-  
 
   const setDateRange = (product) => {
     const today = new Date();
@@ -121,15 +137,15 @@ const MemberRegister = () => {
     endDate.setDate(endDate.getDate() + product.days);
     setExpDate(endDate);
   };
-  
 
   useEffect(() => {
     if (gym.productList && gym.productList.length > 0) {
-      const initialProduct = gym.productList.find(product => product.productName === selectedPeriod);
+      const initialProduct = gym.productList.find(
+        (product) => product.productName === selectedPeriod
+      );
       setDateRange(initialProduct);
     }
   }, [regDate, selectedPeriod, gym.productList]);
-  
 
   const handleRegDateChange = (date) => {
     const today = new Date();
@@ -144,21 +160,43 @@ const MemberRegister = () => {
       setDateRange(selectedProduct);
     }
   };
-  
 
   const handleExpDateChange = (date) => {
     setExpDate(date);
   };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const handleModify = async () => {
+    const paymentData = {
+      amount: 100,
+      buyer_email: userData.email,
+      buyer_name: userData.userName,
+      merchantUid: `mid_${new Date().getTime()}`,
+    };
+
+    try {
+      const paymentResponse = await requestPayment(paymentData);
+      console.log("Payment response:", paymentResponse);
+
+      if (paymentResponse.success) {
+        setImpUid(paymentResponse.impUid);
+        await handleModify(paymentResponse); // 결제 성공 후 회원 정보 수정 처리
+      } else {
+        console.log("Payment failed:", paymentResponse.error_msg);
+      }
+    } catch (error) {
+      console.error("Payment process failed:", error);
+    }
+  };
+  const handleModify = async (paymentResponse) => {
     try {
       if (!location.state) {
         console.log("no gym");
         return;
       }
-  
+
       const updateRes = await updateUserInfo(userData);
-  
+
       const membershipData = {
         ...userData,
         userGender,
@@ -170,12 +208,14 @@ const MemberRegister = () => {
         userMemberReason,
         userWorkoutDuration,
         productId,
+        impUid: paymentResponse.impUid,
+        merchantUid: paymentResponse.merchantUid,
       };
-  
+
       // Register membership
       const res = await registerMembership(membershipData);
       console.log("Membership registered successfully:", res);
-  
+
       // Set alert modal visible
       setIsAlertModalVisible(true);
     } catch (error) {
@@ -186,7 +226,7 @@ const MemberRegister = () => {
   const handleConfirmClick = async () => {
     setIsAlertModalVisible(false);
     await fetchUserData();
-    customNavigate("/centerView", { state: {gym: gym}, replace: true });
+    customNavigate("/centerView", { state: { gym: gym }, replace: true });
   };
 
   return (
@@ -304,11 +344,11 @@ const MemberRegister = () => {
               <div className="flex flex-row space-x-6 relative items-center justify-between">
                 {/* 헬스권  */}
                 <div className="dropdown relative">
-                <label
-                className={`absolute right-30 -top-4 px-2 text-xs pointer-events-none text-gray-400`}
-              >
-                  상품이름
-                </label>
+                  <label
+                    className={`absolute right-30 -top-4 px-2 text-xs pointer-events-none text-gray-400`}
+                  >
+                    상품이름
+                  </label>
                   <button
                     onClick={toggleDropdown}
                     className="w-[120px] flex justify-between items-center border border-gray-400 rounded-lg p-2 "
@@ -322,10 +362,13 @@ const MemberRegister = () => {
                         <li
                           key={product.productId}
                           className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
-                          onClick={() => onClickPeriod({ target: { value: product.productName } })}
+                          onClick={() =>
+                            onClickPeriod({
+                              target: { value: product.productName },
+                            })
+                          }
                         >
                           {product.productName}
-                          
                         </li>
                       ))}
                     </ul>
@@ -333,40 +376,40 @@ const MemberRegister = () => {
                 </div>
                 {/* 등록일 만료일 */}
                 <div className="relative">
-                <label
-                        className={`absolute w-16 right-27 -top-4 px-2 text-xs pointer-events-none text-gray-400`}
-                      >
-                        등록일
-                      </label>
-                <CustomDatePicker
-                label="등록일"
-                selectedDate={regDate}
-                handleDateChange={handleRegDateChange}
-              />
+                  <label
+                    className={`absolute w-16 right-27 -top-4 px-2 text-xs pointer-events-none text-gray-400`}
+                  >
+                    등록일
+                  </label>
+                  <CustomDatePicker
+                    label="등록일"
+                    selectedDate={regDate}
+                    handleDateChange={handleRegDateChange}
+                  />
                 </div>
                 <span>-</span>
                 <div className="relative">
-                <label
-                        className={`absolute w-16 right-27 -top-4 px-2 text-xs pointer-events-none text-gray-400`}
-                      >
-                        만료일
-                      </label>
-                <CustomDatePicker
-                label="만료일"
-                selectedDate={expDate}
-                handleDateChange={handleExpDateChange}
-              />
+                  <label
+                    className={`absolute w-16 right-27 -top-4 px-2 text-xs pointer-events-none text-gray-400`}
+                  >
+                    만료일
+                  </label>
+                  <CustomDatePicker
+                    label="만료일"
+                    selectedDate={expDate}
+                    handleDateChange={handleExpDateChange}
+                  />
                 </div>
               </div>
 
               {/* 신청사유 */}
-              
+
               <div className="relative">
-              <label
-                className={`absolute -top-2 px-2 text-xs pointer-events-none text-gray-400`}
-              >
-                신청사유
-              </label>
+                <label
+                  className={`absolute -top-2 px-2 text-xs pointer-events-none text-gray-400`}
+                >
+                  신청사유
+                </label>
                 <select
                   onFocus={handleMemberReasonFocus}
                   onBlur={handleMemberReasonBlur}
@@ -393,15 +436,15 @@ const MemberRegister = () => {
                   )}
                 </div>
               </div>
-              
+
               <div className="relative">
                 {/* 운동경력(선택) */}
-              <label
-                className={`absolute right-30 -top-2 px-2 text-xs pointer-events-none text-gray-400`}
-              >
-                운동경력(선택)
-              </label>
-                
+                <label
+                  className={`absolute right-30 -top-2 px-2 text-xs pointer-events-none text-gray-400`}
+                >
+                  운동경력(선택)
+                </label>
+
                 <select
                   onFocus={handleWorkoutDurationFocus}
                   onBlur={handleWorkoutDurationBlur}
@@ -425,12 +468,17 @@ const MemberRegister = () => {
                 </div>
               </div>
               <div className="flex float-end">
+                {/* @@@@@@@@@상품 가격 표시 */}
+                {/* @@@@@@@@@상품 가격 표시 */}
+                {/* @@@@@@@@@상품 가격 표시 */}
+                {/* @@@@@@@@@상품 가격 표시 */}
+                <div>{selectedProductPrice}원</div>
                 <div className="mr-2">
                   <Button
                     width="120px"
                     color="peach-fuzz"
                     label="등록"
-                    onClick={handleModify}
+                    onClick={handleSubmit}
                   />
                 </div>
               </div>
@@ -450,7 +498,7 @@ const MemberRegister = () => {
           line1={"헬스장 등록이 완료습니다!"}
           button2={{
             label: "확인",
-            onClick:handleConfirmClick,
+            onClick: handleConfirmClick,
           }}
         />
       )}

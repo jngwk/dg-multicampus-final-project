@@ -18,6 +18,8 @@ import com.dg.deukgeun.repository.GymRepository;
 import com.dg.deukgeun.repository.MembershipRepository;
 import com.dg.deukgeun.repository.ProductRepository;
 import com.dg.deukgeun.repository.UserRepository;
+import com.siot.IamportRestClient.response.IamportResponse;
+import com.siot.IamportRestClient.response.Payment;
 
 @Service
 public class MembershipService {
@@ -30,6 +32,8 @@ public class MembershipService {
     GymRepository gymRepository;
     @Autowired
     ProductRepository productRepository;
+    @Autowired
+    IamportService iamportService;
 
     @PreAuthorize("(hasRole('ROLE_GENERAL')) &&" + "#userId == principal.userId")
     public ResponseDTO<?> registerMembership(MembershipDTO membershipDTO, Integer userId) {
@@ -67,6 +71,23 @@ public class MembershipService {
         }
     }
 
+     // IAMPORT와의 결제 인증이 완료된 후 회원권 등록을 처리하는 메서드
+    public ResponseDTO<?> processMembershipRegistrationAfterPayment(MembershipDTO membershipDTO, Integer userId, String impUid) {
+        try {
+            // IAMPORT 결제 인증
+            IamportResponse<Payment> response = iamportService.verifyPayment(impUid);
+            Payment payment = response.getResponse();
+
+            if (payment != null && "paid".equals(payment.getStatus())) {
+                // 결제 인증 성공, 회원권 등록 진행
+                return registerMembership(membershipDTO, userId);
+            } else {
+                return ResponseDTO.setFailed("결제 인증에 실패하였습니다.");
+            }
+        } catch (Exception e) {
+            return ResponseDTO.setFailed("결제 인증 중 오류가 발생하였습니다.");
+        }
+    }
     //허승돈 작성
     public Integer register(MembershipDTO membershipDTO, Integer userId) {
         User user = userRepository.findByUserId(userId).orElse(null);
