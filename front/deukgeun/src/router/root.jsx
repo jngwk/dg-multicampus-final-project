@@ -3,6 +3,7 @@ import { Outlet, createBrowserRouter } from "react-router-dom";
 import Fallback from "../components/shared/Fallback";
 import Layout from "../components/shared/Layout";
 
+
 // import QuillEditor from "../components/shared/QuillEditor";
 
 const Main = lazy(() => import("../pages/Main"));
@@ -10,6 +11,7 @@ const Chat = lazy(() => import("../pages/ChatRoom"));
 const Calendar = lazy(() => import("../pages/CalendarPage"));
 const SignUpChoice = lazy(() => import("../pages/SignUpChoicePage"));
 const SignUpForm = lazy(() => import("../pages/SignUpPage"));
+const FindPassword = lazy(()=> import("../components/modals/FindPassword"));
 const QnaForm = lazy(() => import("../pages/QnaForm"));
 const MemberList = lazy(() => import("../pages/MemberList"));
 const GymSearch = lazy(() => import("../pages/GymSearchPage"));
@@ -69,6 +71,10 @@ const root = createBrowserRouter([
             element: <SignUpForm />,
           },
         ],
+      },
+      {
+        path: "find-password",
+        element: <FindPassword />,
       },
       {
         path: "qna",
