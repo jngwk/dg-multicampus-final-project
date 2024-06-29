@@ -279,9 +279,9 @@ const PtRegister = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center relative">
+      <div className="flex flex-col my-10 items-center relative">
         <GiArchiveRegister
-          className="absolute left-20 w-20 h-20 bg-white"
+          className="absolute left-96 w-20 h-20 bg-white"
           color="#9F8D8D"
         />
         <div className="flex flex-row items-center">
@@ -407,7 +407,7 @@ const PtRegister = () => {
                     </div>
                   </div>
                   {isExpanded && (
-                    <div className="flex flex-col items-center space-y-4 w-full">
+                    <div className="flex">
                       <div className="relative">
                         <label
                           className={`absolute -top-2 px-2 text-xs pointer-events-none text-gray-400`}
@@ -559,9 +559,9 @@ const PtRegister = () => {
                     </div>
                   </div>
                   {isExpanded && (
-                    <div>
-                      <div className="flex flex-col items-center space-y-4 w-full">
-                        <div className="relative">
+                    <>
+                      <div className="flex">
+                        <div className="relative ">
                           <label
                             className={`absolute right-30 -top-2 px-2 text-xs pointer-events-none text-gray-400`}
                           >
@@ -590,13 +590,13 @@ const PtRegister = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex float-end">
+                      <div className="flex flex-row items-center float-end">
                         {/* @@@@@@@@@상품 가격 표시 */}
                         {/* @@@@@@@@@상품 가격 표시 */}
                         {/* @@@@@@@@@상품 가격 표시 */}
                         {/* @@@@@@@@@상품 가격 표시 */}
-                        <div>{selectedProductPrice}원</div>
-                        <div className="mr-2">
+                        <div >{selectedProductPrice}원</div>
+                        <div className="ml-3">
                           <Button
                             width="120px"
                             color="peach-fuzz"
@@ -605,7 +605,7 @@ const PtRegister = () => {
                           />
                         </div>
                       </div>
-                    </div>
+                    </>
                   )}
                 </div>
               </div>
@@ -618,14 +618,15 @@ const PtRegister = () => {
             <FaAngleDoubleDown className="mx-auto animate-bounce" />
           </button>
         )}
-      </div>
-      {isExpanded && (
-        //임시로 넣어둠 ( 누르면 결제창 이동)
 
-        <button>
-          <FaAngleDoubleRight className=" mx-auto animate-[propel_3s_infinite]" />
+
+        {isExpanded && (
+          <button className="mt-2 text-lg text-grayish-red hover:border-b hover:border-gray-400 hover:font-semibold mx-auto animate-bounce" >
+          <box-icon name='wallet-alt' color="#9F8D8D" size="sm"></box-icon>
+            결제하기
         </button>
-      )}
+        )}
+      </div>
       {isAddressModalVisible && (
         <AddressModal
           userData={userData}
