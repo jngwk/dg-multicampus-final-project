@@ -1,7 +1,16 @@
 import React from "react";
-import { useAuth } from "../context/AuthContext";
-import Fallback from "../components/shared/Fallback";
+import Hero from "../components/main/Hero";
+import CustomParticles from "../components/shared/CustomParticles";
+import Section from "../components/main/Section";
 
+// https://github.com/tsparticles/react
 export default function Main() {
-  return <div>Main</div>;
+  return (
+    <>
+      <CustomParticles />
+      <div className="snap-y snap-mandatory h-screen z-0">
+        <Hero /> <Section />
+      </div>
+    </>
+  );
 }

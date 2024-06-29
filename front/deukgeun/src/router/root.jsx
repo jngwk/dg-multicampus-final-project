@@ -2,8 +2,13 @@ import React, { Suspense, lazy } from "react";
 import { Outlet, createBrowserRouter } from "react-router-dom";
 import Fallback from "../components/shared/Fallback";
 import Layout from "../components/shared/Layout";
+<<<<<<< HEAD
 
 
+=======
+import CustomParticles from "../components/shared/CustomParticles";
+import { LoginModalProvider } from "../context/LoginModalContext";
+>>>>>>> develop
 // import QuillEditor from "../components/shared/QuillEditor";
 
 const Main = lazy(() => import("../pages/Main"));
@@ -41,9 +46,11 @@ const root = createBrowserRouter([
       //   </PageTransitionWrapper>
       // </Layout>
       <Suspense fallback={<Fallback />}>
-        <Layout>
-          <Outlet />
-        </Layout>
+        <LoginModalProvider>
+          <Layout>
+            <Outlet />
+          </Layout>
+        </LoginModalProvider>
       </Suspense>
     ),
     children: [
@@ -64,11 +71,21 @@ const root = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <SignUpChoice />,
+            element: (
+              <>
+                <CustomParticles />
+                <SignUpChoice />
+              </>
+            ),
           },
           {
             path: "form",
-            element: <SignUpForm />,
+            element: (
+              <>
+                <CustomParticles />
+                <SignUpForm />
+              </>
+            ),
           },
         ],
       },
@@ -78,7 +95,12 @@ const root = createBrowserRouter([
       },
       {
         path: "qna",
-        element: <QnaForm />,
+        element: (
+          <>
+            <CustomParticles />
+            <QnaForm />
+          </>
+        ),
       },
       {
         path: "stats",
@@ -105,12 +127,21 @@ const root = createBrowserRouter([
         element: <ReviewForm />,
       },
       {
+<<<<<<< HEAD
         path: "memberRegister",
         element: <MemberRegister />,
+=======
+        path: "ReviewList",
+        element: <ReviewList gymId={1}/>,
+>>>>>>> develop
       },
       {
         path: "TrainerUpdateForm",
-        element: <TrainerUpdateForm />,
+        element: <TrainerUpdateForm/>,
+      },
+      {
+        path: "MemberRegister",
+        element: <MemberRegister />,
       },
       {
         path: "PtRegister",

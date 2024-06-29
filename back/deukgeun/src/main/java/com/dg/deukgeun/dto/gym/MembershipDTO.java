@@ -2,9 +2,11 @@ package com.dg.deukgeun.dto.gym;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class MembershipDTO {
@@ -21,4 +23,8 @@ public class MembershipDTO {
     
     //filter
     private String userGender;
+
+    private Integer productId;
+    
+    private String impUid;
 }
