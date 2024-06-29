@@ -34,8 +34,8 @@ const Review = () => {
             </div>
 
             {/* 리뷰 내용 */}
-            <div className="w-full  h-[500px] p-5 flex justify-center rounded-lg bg-grayish-red bg-opacity-20 border-2 border-grayish-red">
-                <div className="w-[1100px] flex justify-center flex-wrap overflow-y-auto scrollbar-hide">
+            <div className="w-full h-[500px] p-5 mb-10 flex justify-center bg-grayish-red bg-opacity-20 border-y border-grayish-red">
+                <div className="w-full flex justify-center flex-wrap overflow-y-auto scrollbar-hide">
                     <ReviewContent />
                 </div>
             </div>

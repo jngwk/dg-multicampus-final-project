@@ -2,13 +2,8 @@ import React, { Suspense, lazy } from "react";
 import { Outlet, createBrowserRouter } from "react-router-dom";
 import Fallback from "../components/shared/Fallback";
 import Layout from "../components/shared/Layout";
-<<<<<<< HEAD
-
-
-=======
 import CustomParticles from "../components/shared/CustomParticles";
 import { LoginModalProvider } from "../context/LoginModalContext";
->>>>>>> develop
 // import QuillEditor from "../components/shared/QuillEditor";
 
 const Main = lazy(() => import("../pages/Main"));
@@ -127,13 +122,8 @@ const root = createBrowserRouter([
         element: <ReviewForm />,
       },
       {
-<<<<<<< HEAD
         path: "memberRegister",
         element: <MemberRegister />,
-=======
-        path: "ReviewList",
-        element: <ReviewList gymId={1}/>,
->>>>>>> develop
       },
       {
         path: "TrainerUpdateForm",
