@@ -18,6 +18,7 @@ import {
   updateUserInfo,
 } from "../../api/userInfoApi";
 import AlertModal from "./AlertModal";
+import { findMembership } from "../../api/membershipApi";
 
 const MyInfo = ({ toggleModal, userData, setUserData }) => {
   const initFullAddress = {
@@ -37,6 +38,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
   const [isModified, setIsModified] = useState(false);
   const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
+  const [membership, setMembership] = useState("");
   const customNavigate = useCustomNavigate();
   const { fetchUserData } = useAuth();
 
@@ -59,6 +61,18 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
     setIsModified(false);
     setNewPassword("");
     setFullAddress(initFullAddress);
+
+    const getRegisteredGym = async () => {
+      try {
+        const data = await findMembership();
+        console.log("user modal findMembership", data);
+        setMembership(data);
+      } catch (error) {
+        console.error("Error in userInfo modal finding membership", error);
+        throw error;
+      }
+    };
+    getRegisteredGym();
   }, []);
 
   useEffect(() => {
@@ -153,9 +167,8 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
             <p>내 정보</p>
           </div>
           <div className="text-sm pb-5 cursor-pointer hover:underline hover:underline-offset-4">
-            {(userData.role === "ROLE_GYM" || userData.role === "ROLE_TRAINER") && (
-              <p>상세정보</p>
-            )}
+            {(userData.role === "ROLE_GYM" ||
+              userData.role === "ROLE_TRAINER") && <p>상세정보</p>}
           </div>
         </div>
         <div className="userEdit-img flex justify-center items-center">
@@ -213,7 +226,10 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
                     )}
                   </div>
                   <div>
-                    <span onClick={handlePasswordType} className="cursor-pointer">
+                    <span
+                      onClick={handlePasswordType}
+                      className="cursor-pointer"
+                    >
                       {passwordType.visible ? <FaRegEye /> : <FaRegEyeSlash />}
                     </span>
                   </div>
@@ -264,18 +280,39 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
                 {userData.role === "ROLE_GENERAL" && (
                   <>
                     <dt className="text-sm font-medium text-gray-500">
-                      등록된 헬스장
+                      회원권
                     </dt>
                     <dd className="flex justify-between mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                      {userData.gym ? (
+                      {membership ? (
                         <>
-                          <p className="max-w-[190px] overflow-hidden text-ellipsis whitespace-nowrap">
-                            {userData.gym} (만료일: {userData.gymExpiry})
+                          <p className="max-w-[190px] overflow-hidden text-wrap whitespace-nowrap">
+                            <span
+                              className="cursor-pointer hover:text-gray-700"
+                              onClick={() =>
+                                customNavigate("/gymSearch", {
+                                  state: {
+                                    searchWord: membership.gym.user.userName,
+                                  },
+                                })
+                              }
+                            >
+                              {membership.gym.user.userName}{" "}
+                            </span>
+                            <br />
+                            <span
+                              className="cursor-pointer hover:text-gray-700"
+                              onClick={() =>
+                                // TODO 회원권 연장으로 이동
+                                customNavigate("/gymSearch", {
+                                  state: {
+                                    searchWord: membership.gym.user.userName,
+                                  },
+                                })
+                              }
+                            >
+                              (만료일: {membership.expDate})
+                            </span>
                           </p>
-                          <IoSearchOutline
-                            className="size-4 sm:mt-0.5 float-right"
-                            onClick={() => setIsAddressModalVisible(true)}
-                          />
                         </>
                       ) : (
                         <p
