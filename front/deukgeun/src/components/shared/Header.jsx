@@ -1,25 +1,30 @@
 import logo from "../../assets/dg_logo.png";
 import LoginModal from "../modals/LoginModal";
-import { useModal } from "../../hooks/useModal";
 import { useAuth } from "../../context/AuthContext";
 import ProfileDropdown from "../account/ProfileDropdown";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Fallback from "./Fallback";
 import Bprofile from "../../assets/blank_profile.png";
-import { userInfo, uploadImage, getImage, updateImage } from "../../api/userInfoApi";
+import {
+  userInfo,
+  uploadImage,
+  getImage,
+  updateImage,
+} from "../../api/userInfoApi";
+import { useLoginModalContext } from "../../context/LoginModalContext";
 
 // console.log(logo);
 export default function Header() {
   const [userImage, setUserImage] = useState(null);
   const { userData, loading } = useAuth();
   const location = useLocation();
-  const { isModalVisible, toggleModal } = useModal();
   const [isProfileDropdownVisible, setIsProfileDropdownVisible] =
     useState(false);
   const badge = useRef(null);
   const dropdown = useRef(null);
   const navigate = useNavigate();
+  const { toggleLoginModal } = useLoginModalContext();
 
   useEffect(() => {
     setIsProfileDropdownVisible(false);
@@ -67,7 +72,7 @@ export default function Header() {
 
   return (
     // 헤더 중앙 정렬
-    <div className="flex justify-center items-center">
+    <div className="relative h-[10dvh] flex justify-center items-center">
       <div className="flex justify-between items-center w-5/6 px-5 border-b-2 border-black">
         <img
           onClick={() => navigate("/")}
@@ -102,8 +107,7 @@ export default function Header() {
             </>
           ) : (
             <>
-              <button onClick={toggleModal}>로그인</button>
-              {isModalVisible ? <LoginModal toggleModal={toggleModal} /> : ""}
+              <button onClick={toggleLoginModal}>로그인</button>
             </>
           )}
         </div>

@@ -15,6 +15,7 @@ export default function Input({
   featureOnClick, // 버튼 onClick 함수
   featureEnableOnLoad = false, // 유효성 검사 없이 버튼 눌러도 되는지
   placeholder = "",
+  onChange,
   ...props
 }) {
   const [focus, setFocus] = useState(false);
@@ -57,13 +58,14 @@ export default function Input({
       <input
         style={{ height }}
         type={type}
-        className={`py-3 px-4 block w-full appearance-none bg-transparent border rounded-lg
+        className={`py-3 px-4 block w-full appearance-none bg-white border rounded-lg
         ${getBorderColor()} focus:border-2 focus:outline-none focus:ring-0 text-sm peer ${className} `}
         onFocus={handleFocus}
         onBlur={handleBlur}
         value={value}
         step={step}
         placeholder={placeholder}
+        onChange={onChange}
         {...props}
       />
       <label
