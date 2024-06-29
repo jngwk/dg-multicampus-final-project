@@ -13,8 +13,9 @@ import com.dg.deukgeun.entity.User;
 public interface GymRepository extends JpaRepository<Gym, Integer> {
     Optional<Gym> findByUser(User user);
 
-    @Query("SELECT g FROM Gym g WHERE "
-            + "REPLACE(LOWER(g.gymName), ' ', '') LIKE LOWER(CONCAT('%', :keyword, '%')) "
+    @Query("SELECT g FROM Gym g JOIN g.user u WHERE "
+            + "REPLACE(LOWER(u.userName), ' ', '') LIKE LOWER(CONCAT('%', :keyword, '%')) "
+            + "OR REPLACE(LOWER(g.gymName), ' ', '') LIKE LOWER(CONCAT('%', :keyword, '%')) "
             + "OR REPLACE(LOWER(g.address), ' ', '') LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Gym> searchGyms(@Param("keyword") String keyword);
 

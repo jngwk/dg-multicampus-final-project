@@ -113,6 +113,7 @@ const GymSearchMap = () => {
     if (!searchWord) return;
     try {
       const res = await searchGyms(searchWord);
+      // console.log("handleSearch in gym search map", res);
       handleLoadedGyms(res);
     } catch (error) {
       console.error("Error fetching gym list:", error);
