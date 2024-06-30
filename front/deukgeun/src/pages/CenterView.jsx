@@ -9,11 +9,13 @@ import { findMembership } from "../api/membershipApi";
 import { findPT } from "../api/ptApi";
 
 import { GymInfo } from "../api/gymApi";
+import { useLoginModalContext } from "../context/LoginModalContext";
 
 const CenterView = () => {
   const [gymData, setGymData] = useState(null);
   const [isMembershipAlreadyRegistered, setIsMembershipAlreadyRegistered] = useState(false);
   const [isPTAlreadyRegistered, setIsPTAlreadyRegistered] = useState(false);
+  const { toggleLoginModal } = useLoginModalContext();
   const customNavigate = useCustomNavigate();
   const location = useLocation();
   const gymId = location.state?.gym?.gymId || "";
@@ -100,13 +102,21 @@ const CenterView = () => {
                 width="120px"
                 color="peach-fuzz"
                 label="헬스권 등록"
-                onClick={handleMembershipInfo}
+                onClick={() =>
+                  sessionStorage.getItem("isLoggedIn")
+                    ? handleMembershipInfo
+                    : toggleLoginModal()
+                }
               />
         <Button
                 width="120px"
                 color="peach-fuzz"
                 label="PT 등록"
-                onClick={handlePTInfo}
+                onClick={() =>
+                  sessionStorage.getItem("isLoggedIn")
+                    ? handlePTInfo
+                    : toggleLoginModal()
+                }
               />
         <div className="flex flex-col space-y-56">
           <TrainerInfo />
