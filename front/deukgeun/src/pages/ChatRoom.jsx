@@ -19,6 +19,7 @@ export default function ChatRoom() {
   const {
     messages,
     chatRooms,
+    setChatRooms,
     chatRoom,
     setChatRoom,
     chatMessage,
@@ -44,6 +45,23 @@ export default function ChatRoom() {
       isMainVisible ? setIsChatVisible(false) : setIsChatVisible(true);
     }
   }, [windowSize.width, windowSize.height]);
+
+  // useEffect(() => {
+  //   if (messages.length > 0) {
+  //     const updatedRooms = [...chatRooms];
+  //     const currentRoomIndex = updatedRooms.findIndex(
+  //       (room) => room.id === chatRoom.id
+  //     );
+  //     if (currentRoomIndex !== -1 || currentRoomIndex !== 0) {
+  //       // updatedRooms[currentRoomIndex].latestMessage =
+  //       //   messages[messages.length - 1].message;
+  //       // updatedRooms.sort((a, b) =>
+  //       //   a.latestMessageTimestamp > b.latestMessageTimestamp ? -1 : 1
+  //       // );
+  //       setChatRooms([chatRoom, ...updatedRooms]);
+  //     }
+  //   }
+  // }, [chatRoom]);
 
   // 반응형을 위한 함수
   const getChatListDisplay = () => {
@@ -91,7 +109,8 @@ export default function ChatRoom() {
           <div
             className={`${getChatListDisplay()} w-4/5 md:w-1/5 min-w-[260px] mx-8 border-none rounded-lg bg-peach-fuzz bg-opacity-20`}
           >
-            <div className="flex-col space-y-4 overflow-y-auto overflow-x-hidden w-full h-full px-4 py-2 scrollbar-hide hover:scrollbar-default">
+            <div className="flex-col space-y-4 overflow-y-auto overflow-x-hidden w-full h-full px-4 py-2 scrollbar-hide ">
+              {/* hover:scrollbar-default */}
               {chatRooms &&
                 (chatRooms.length > 0 ? (
                   chatRooms.map((room, index) => (
@@ -102,11 +121,13 @@ export default function ChatRoom() {
                     >
                       {room.users.length === 2 && (
                         <Chatlist
-                          user={
+                          userName={
                             room.users[0].userId === userData.userId
-                              ? room.users[1]
-                              : room.users[0]
+                              ? room.users[1].userName
+                              : room.users[0].userName
                           }
+                          latestMessage={room.latestMessage}
+                          room={room}
                         />
                       )}
                     </div>

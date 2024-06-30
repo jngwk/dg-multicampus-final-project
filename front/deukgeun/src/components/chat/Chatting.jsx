@@ -186,7 +186,7 @@ const arrayToDate = (arr) => {
 function ShowChatList({ chatList, userData }) {
   return chatList.map((chat, i) => {
     //마지막 시간만 보이도록 구현
-    console.log(i, chat);
+    // console.log(i, chat);
     let currentTimestamp = chat.timestamp;
     if (Array.isArray(currentTimestamp)) {
       currentTimestamp = arrayToDate(currentTimestamp).toISOString();

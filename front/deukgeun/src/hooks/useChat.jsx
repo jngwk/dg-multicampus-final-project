@@ -61,7 +61,7 @@ const useChat = () => {
     loadChatHistory();
     loadChatRooms();
     connect();
-  }, [loading, userData, chatRoom, token]);
+  }, [loading, userData, chatRoom.id, token]);
 
   // 소켓 연결
   const connect = (token) => {
@@ -93,11 +93,27 @@ const useChat = () => {
   // 메시지 수신
   const onMessageReceived = (payload) => {
     const message = JSON.parse(payload.body);
-    console.log("msg received", message);
+    console.log("msg received", message.message);
+
+    // Update the specific chat room with the latest message
+    setChatRooms((prevChatRooms) => {
+      return prevChatRooms.map((room) => {
+        if (room.id === message.chatRoom.id) {
+          return { ...room, latestMessage: message.message };
+        }
+        return room;
+      });
+    });
+
     if (!chatRooms.find((room) => room.id === message.chatRoom.id)) {
-      setChatRooms([...chatRooms, message.chatRoom]);
+      setChatRooms([message.chatRoom, ...chatRooms]);
     }
     setMessages((prevMessages) => [...prevMessages, message]);
+    console.log("set latest message @@@");
+    // Update the current chat room if it's the same room
+    if (chatRoom.id === message.chatRoom.id) {
+      setChatRoom({ ...chatRoom, latestMessage: message.message });
+    }
   };
 
   // 메시지 발신
@@ -143,6 +159,7 @@ const useChat = () => {
   const loadChatRooms = async () => {
     try {
       const chatRoomsList = await getChatRooms();
+      console.log("chatRoomsList from use Chat", chatRoomsList);
       setChatRooms(chatRoomsList);
     } catch (error) {
       console.error("Error loading chat rooms", error);
@@ -209,6 +226,7 @@ const useChat = () => {
     stompClientRef,
     messages,
     chatRooms,
+    setChatRooms,
     chatRoom,
     setChatRoom,
     chatMessage,
