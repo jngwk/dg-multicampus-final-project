@@ -1,3 +1,5 @@
+//헬스장 정보설정
+
 import React, { useState } from "react";
 import useValidation from "../hooks/useValidation";
 import Input from "../components/shared/Input";
@@ -6,6 +8,7 @@ import TextArea from "../components/shared/TextArea";
 import UploadBox from "../components/set/UploadBox";
 import { FaArrowRightLong, FaCircleMinus } from "react-icons/fa6";
 import Button from "../components/shared/Button";
+import useCustomNavigate from "../hooks/useCustomNavigate";
 
 // 회원 정보
 const initGymData = {
@@ -22,6 +25,8 @@ const initGymData = {
 };
 
 const Gymset = () => {
+  const customNavigate = useCustomNavigate();
+    
   const [GymData, setGymData] = useState(initGymData);
   const [healthProducts, setHealthProducts] = useState([]);
   const [newHealthProduct, setNewHealthProduct] = useState({ productName: "", days: "", price: "" });
@@ -146,11 +151,17 @@ const Gymset = () => {
     setPTProducts(updatedPTProducts);
   };
 
+  const handleTrainerRegisterClick = () => {
+    customNavigate("/trainerRegister");
+};
+
   return (
     <>
-      <div className="space-y-8 relative">
+      <div className="space-y-8 relative flex items-center justify-center my-10">
         <div className="flex flex-col space-y-6">
-          <p className="font-extrabold text-2xl pb-7">헬스권 정보 설정</p>
+          <p className="font-extrabold text-2xl pb-4 flex flex-row items-center">
+          <box-icon name='cog' size='40px' color='#9f8d8d'></box-icon>
+          헬스권 정보 설정</p>
           <div className="py-10 px-7 mx-6 rounded-lg flex flex-col space-y-4 w-[1000px] h-fit border border-peach-fuzz">
             {/* 업체명 */}
             <div className="flex flex-row space-x-44">
@@ -403,11 +414,13 @@ const Gymset = () => {
             </div>
           </div>
         </div>
-        <button className="pb-4 flex flex-row items-center font-semibold absolute right-0">
+      </div>
+      <button className="pb-4 flex flex-row items-center font-semibold absolute right-44"
+      onClick={handleTrainerRegisterClick}
+      >
           트레이너 정보 등록 
           <FaArrowRightLong className="w-6 h-8 ml-3 animate-[propel_3s_infinite] "/>
-        </button>
-      </div>
+      </button>
       {isAddressModalVisible && (
         <AddressModal
           GymData={GymData}
