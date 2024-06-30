@@ -109,7 +109,7 @@ const AvailableUsersModal = ({
               </div>
               <hr className="mb-6"></hr>
               <p className="before:content-['*'] before:mr-0.5 before:text-red-500 text-center text-sm text-gray-700">
-                회원님과 연관 된 회원 목록입니다.
+                회원님과 연관 된 회원 목록이 표시됩니다.
               </p>
             </>
           )}
