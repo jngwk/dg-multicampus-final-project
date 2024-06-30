@@ -1,5 +1,6 @@
 package com.dg.deukgeun.service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -15,9 +16,17 @@ import org.springframework.stereotype.Service;
 
 import com.dg.deukgeun.entity.ChatMessage;
 import com.dg.deukgeun.entity.ChatRoom;
+import com.dg.deukgeun.entity.Gym;
+import com.dg.deukgeun.entity.Membership;
+import com.dg.deukgeun.entity.PersonalTraining;
+import com.dg.deukgeun.entity.Trainer;
 import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.ChatMessageRepository;
 import com.dg.deukgeun.repository.ChatRoomRepository;
+import com.dg.deukgeun.repository.GymRepository;
+import com.dg.deukgeun.repository.MembershipRepository;
+import com.dg.deukgeun.repository.PersonalTrainingRepository;
+import com.dg.deukgeun.repository.TrainerRepository;
 import com.dg.deukgeun.repository.UserRepository;
 
 import lombok.extern.log4j.Log4j2;
@@ -45,6 +54,18 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
 
     @Autowired
     private ChatRoomRepository chatRoomRepository;
+
+    @Autowired
+    private MembershipRepository membershipRespository;
+
+    @Autowired
+    private PersonalTrainingRepository ptRepository;
+
+    @Autowired
+    private GymRepository gymRepository;
+
+    @Autowired
+    private TrainerRepository trainerRepository;
 
     // 메시지 발행
     public void sendMessage(ChatMessage chatMessage) {
@@ -126,8 +147,74 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
     }
 
     @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')")
-    public List<User> getAvailableUsers() {
-        return userRepository.findAll();
+    public List<User> getAvailableUsers(Integer userId) {
+        Optional<User> userOpt = userRepository.findById(userId);
+
+        User user = userOpt.orElseThrow(() -> new IllegalArgumentException("User not found"));
+        String role = user.getRole().toString();
+        List<User> users = new ArrayList<>();
+
+        // 일반 회원
+        if (role.equals("ROLE_GENERAL")) {
+            // 가입된 헬스장 찾기
+            Optional<Membership> membershipOpt = membershipRespository.findByUser(user);
+            // 가입된 헬스장이 있으면
+            if (membershipOpt.isPresent()) {
+                users.add(membershipOpt.get().getGym().getUser());
+
+                // 회원권에 PT가 포합되어 있으면
+                if (membershipOpt.get().getProduct().getPtCountTotal() > 0) {
+                    Optional<PersonalTraining> ptOpt = ptRepository.findByUser(user);
+
+                    // 연결된 트레이너
+                    users.add(ptOpt.get().getTrainer().getUser());
+                }
+            }
+
+            return users;
+        }
+        // 헬스장 회원
+        else if (role.equals("ROLE_GYM")) {
+            Integer gymId = gymRepository.findByUser(user).get().getGymId();
+
+            // 가입한 회원
+            List<Membership> memberships = membershipRespository
+                    .findAllByGym_GymId(gymId);
+
+            memberships.forEach(membership -> {
+                users.add(membership.getUser());
+            });
+
+            // 등록된 트레이너
+            List<Trainer> trainers = trainerRepository.findAllByGym_GymId(gymId);
+            trainers.forEach(trainer -> {
+                users.add(trainer.getUser());
+            });
+            return users;
+
+        }
+        // 트레이너 회원
+        else if (role.equals("ROLE_TRAINER")) {
+            // 속해있는 헬스장
+            Trainer trainer = trainerRepository.findByUser_UserId(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("Trainer not found"));
+            Gym trainerGym = trainer.getGym();
+            users.add(trainerGym.getUser());
+
+            // 같은 헬스장 소속 트레이너
+            trainerRepository.findAllByGym_GymId(trainerGym.getGymId()).forEach(trainerInSameGym -> {
+                users.add(trainerInSameGym.getUser());
+            });
+
+            // 연결된 회원
+            List<PersonalTraining> pts = ptRepository.findAllByTrainer(trainer)
+                    .orElseThrow((() -> new IllegalArgumentException("PT not found")));
+            pts.forEach(pt -> {
+                users.add(pt.getUser());
+            });
+            return users;
+        }
+        return null;
     }
 
 }

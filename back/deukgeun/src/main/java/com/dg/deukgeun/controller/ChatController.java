@@ -68,7 +68,10 @@ public class ChatController {
     // TODO 회원과 관련된 헬스장 / 트레이너만 불러오기로 수정
     @GetMapping("/availableUsers")
     public List<User> getAvailableUsers() {
-        List<User> users = chatService.getAvailableUsers();
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer userId = userDetails.getUserId();
+        List<User> users = chatService.getAvailableUsers(userId);
         return users;
     }
 

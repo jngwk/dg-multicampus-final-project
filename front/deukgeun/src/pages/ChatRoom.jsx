@@ -98,8 +98,8 @@ export default function ChatRoom() {
       <div className="w-full max-w-[1400px] py-5">
         <div className="md:flex items-center pb-2">
           <IoChatbubbles color="#ffbe98" size="56" />
-          <span className="font-semibold text-2xl mx-3 "> 득-근 CHAT </span>
-          <button>
+          <span className="font-semibold text-2xl mx-3 "> 대화방 </span>
+          <button onClick={toggleAvailableUsersModal}>
             <IoAddCircle color="#E6E6E6" size="28" />
           </button>
         </div>

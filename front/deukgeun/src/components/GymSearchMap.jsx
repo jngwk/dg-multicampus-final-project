@@ -203,6 +203,12 @@ const GymSearchMap = () => {
     }
   };
 
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   // const handleAlertModalButton = () => {
   //   setIsAlertModalVisible(false);
   //   setIsChatModalVisible(false);
@@ -266,6 +272,7 @@ const GymSearchMap = () => {
               value={searchWord}
               placeholder="검색어를 입력하세요..."
               onChange={(e) => setSearchWord(e.target.value)}
+              onKeyPress={handleKeyPress}
               width="90%"
               feature={
                 <div className="-translate-y-1">

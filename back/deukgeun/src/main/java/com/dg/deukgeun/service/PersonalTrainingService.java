@@ -72,7 +72,7 @@ public class PersonalTrainingService {
 
     // pt 데이터를 조회하는 입장 : 트레이너
     public List<PersonalTrainingDTO> selectByTrainer(Integer trainerId) {
-        List<PersonalTraining> result = personalTrainingRepository.findByTrainerId(trainerId);
+        List<PersonalTraining> result = personalTrainingRepository.findByTrainer_TrainerId(trainerId);
         List<PersonalTrainingDTO> dtoList = new ArrayList<>();
         for (int i = 0; i < result.size(); i++) {
             dtoList.add(modelMapper.map(result.get(i), PersonalTrainingDTO.class));
@@ -82,7 +82,7 @@ public class PersonalTrainingService {
 
     // pt 데이터를 조회하는 입장 : 개인 유저
     public List<PersonalTrainingDTO> selectByUser(Integer userId) {
-        List<PersonalTraining> result = personalTrainingRepository.findByUserId(userId);
+        List<PersonalTraining> result = personalTrainingRepository.findAllByUser_UserId(userId);
         List<PersonalTrainingDTO> dtoList = new ArrayList<>();
         for (int i = 0; i < result.size(); i++) {
             dtoList.add(modelMapper.map(result.get(i), PersonalTrainingDTO.class));
@@ -109,7 +109,7 @@ public class PersonalTrainingService {
     // pt가 존재하는지 확인용
     @PreAuthorize("(hasRole('ROLE_GENERAL')) && #userId == principal.userId")
     public Optional<PersonalTrainingDTO> findPT(Integer userId) {
-        List<PersonalTraining> PT = personalTrainingRepository.findByUserId(userId);
+        List<PersonalTraining> PT = personalTrainingRepository.findAllByUser_UserId(userId);
 
         if (!PT.isEmpty()) {
             PersonalTraining firstTraining = PT.get(0); // For example, return the first training found
