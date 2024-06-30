@@ -26,6 +26,7 @@ import com.dg.deukgeun.dto.user.UpdateUserDTO;
 import com.dg.deukgeun.dto.user.UserImageDTO;
 import com.dg.deukgeun.dto.user.UserSignUpDTO;
 import com.dg.deukgeun.entity.VerificationCode;
+import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.UserRepository;
 import com.dg.deukgeun.security.CustomUserDetails;
 import com.dg.deukgeun.service.EmailService;
@@ -154,6 +155,11 @@ public class UserController {
             }
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token not found");
+    }
+
+    @PostMapping("/emailCheck/duplicate")
+    public Boolean emailDuplicateCheck(@RequestBody User requestBody) {
+        return userService.emailDuplicateCheck(requestBody.getEmail());
     }
 
     // @PostMapping("/reqPwReset")

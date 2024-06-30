@@ -31,6 +31,7 @@ const CalendarInputForm = ({
     ],
   });
   const [deletedWorkouts, setDeletedWorkouts] = useState([]);
+  const [date, setDate] = useState();
 
   // 날짜/이벤트 선택시 폼에 반영
   useEffect(() => {
@@ -47,6 +48,7 @@ const CalendarInputForm = ({
           },
         ],
       });
+      setDate(selectedEvent.extendedProps.workoutDate.split("-")[2]);
       console.log("selectedEvent", selectedEvent);
     } else if (selectedDate) {
       const selectedTime = selectedDate.split("T")[1];
@@ -63,7 +65,7 @@ const CalendarInputForm = ({
           },
         ],
       });
-      console.log("selectedTime: ", formValues.startTime);
+      setDate(selectedDate.split("T")[0].split("-")[2]);
     }
   }, [selectedDate, selectedEvent]);
 
@@ -151,126 +153,129 @@ const CalendarInputForm = ({
   };
 
   return (
-    <div className="xl:absolute xl:left-3/4 xl:top-56 h-4/6 w-72">
-      <span className="hover:cursor-pointer" onClick={toggleInputForm}>
-        보이기/숨기기
-      </span>
-      {isInputFormVisible && (
-        <div className="h-5/6 overflow-scroll overflow-x-hidden">
-          <Input
-            label="날짜"
-            name="workoutDate"
-            type="date"
-            value={formValues.workoutDate || ""}
-            onChange={handleChange}
-          />
-          <Input
-            label="시작 시간"
-            name="startTime"
-            type="time"
-            step="1800"
-            value={formValues.startTime || ""}
-            onChange={handleChange}
-          />
-          <Input
-            label="종료 시간"
-            name="endTime"
-            type="time"
-            step="1800"
-            value={formValues.endTime || ""}
-            onChange={handleChange}
-          />
-          <hr />
-          {/* <Input
+    <div className="h-4/6 w-72">
+      <div className="p-3 flex gap-1 items-end">
+        <div className="mb-1 h-4 w-1 bg-peach-fuzz"></div>
+        <div className="text-3xl ">
+          {date}
+          <span className="text-base ml-1">일</span>
+        </div>
+      </div>
+
+      <div className="h-[600px] w-80 px-2 overflow-y-auto overflow-x-hidden scrollbar-hide">
+        <Input
+          label="날짜"
+          name="workoutDate"
+          type="date"
+          value={formValues.workoutDate || ""}
+          onChange={handleChange}
+        />
+        <Input
+          label="시작 시간"
+          name="startTime"
+          type="time"
+          step="1800"
+          value={formValues.startTime || ""}
+          onChange={handleChange}
+        />
+        <Input
+          label="종료 시간"
+          name="endTime"
+          type="time"
+          step="1800"
+          value={formValues.endTime || ""}
+          onChange={handleChange}
+        />
+        <hr style={{ width: "240px" }} />
+        {/* <Input
             label="회원"
             name="client"
             value={formValues.client}
             onChange={handleChange}
           /> */}
-          <Input
-            label="제목"
-            name="content"
-            value={formValues.content || ""}
-            onChange={handleChange}
-          />
+        <Input
+          label="제목"
+          name="content"
+          value={formValues.content || ""}
+          onChange={handleChange}
+        />
 
-          {workoutsLoading ? (
-            <Loader />
-          ) : (
-            formValues.workouts.map((workout, index) => (
-              <div
-                key={index}
-                id={workout.workoutId || ""}
-                className="flex gap-2 items-center"
-              >
-                <div className="w-[240px]">
-                  <hr />
+        {workoutsLoading ? (
+          <Loader />
+        ) : (
+          formValues.workouts.map((workout, index) => (
+            <div
+              key={index}
+              id={workout.workoutId || ""}
+              className="flex gap-2 items-center"
+            >
+              <div className="w-[240px]">
+                <hr style={{ width: "240px" }} />
+                <Input
+                  label="운동"
+                  name="workoutName"
+                  value={workout.workoutName || ""}
+                  onChange={(e) => handleWorkoutChange(index, e)}
+                />
+                <div className="flex justify-between">
                   <Input
-                    label="운동"
-                    name="workoutName"
-                    value={workout.workoutName || ""}
+                    label="SET"
+                    name="workoutSet"
+                    type="number"
+                    value={workout.workoutSet || ""}
                     onChange={(e) => handleWorkoutChange(index, e)}
+                    width="28%"
                   />
-                  <div className="flex justify-between">
-                    <Input
-                      label="SET"
-                      name="workoutSet"
-                      type="number"
-                      value={workout.workoutSet || ""}
-                      onChange={(e) => handleWorkoutChange(index, e)}
-                      width="28%"
-                    />
-                    <Input
-                      label="REP"
-                      name="workoutRep"
-                      type="number"
-                      value={workout.workoutRep || ""}
-                      onChange={(e) => handleWorkoutChange(index, e)}
-                      width="28%"
-                    />
-                    <Input
-                      label="무게(KG)"
-                      name="workoutWeight"
-                      type="number"
-                      value={workout.workoutWeight || ""}
-                      onChange={(e) => handleWorkoutChange(index, e)}
-                      width="36%"
-                    />
-                  </div>
-                </div>
-                <div
-                  className="w-6 h-[100px] border border-gray-400 opacity-0 hover:opacity-100 transition-opacity flex justify-center items-center cursor-pointer rounded-md bg-gray-50"
-                  onClick={() =>
-                    handleDeleteWorkout(index, workout.workoutId || "")
-                  }
-                >
-                  <box-icon name="x" color="#bdbdbd"></box-icon>
+                  <Input
+                    label="REP"
+                    name="workoutRep"
+                    type="number"
+                    value={workout.workoutRep || ""}
+                    onChange={(e) => handleWorkoutChange(index, e)}
+                    width="28%"
+                  />
+                  <Input
+                    label="무게(KG)"
+                    name="workoutWeight"
+                    type="number"
+                    value={workout.workoutWeight || ""}
+                    onChange={(e) => handleWorkoutChange(index, e)}
+                    width="36%"
+                  />
                 </div>
               </div>
-            ))
-          )}
-          <Button label="+" onClick={handleAddWorkout} />
-          <hr />
-          <Input
-            label="몸무게(KG)"
-            name="bodyWeight"
-            type="number"
-            value={formValues.bodyWeight || ""}
-            onChange={handleChange}
-          />
-          <Input
-            label="메모"
-            name="memo"
-            value={formValues.memo || ""}
-            onChange={handleChange}
-          />
-          <Button
-            label={selectedEvent ? "수정" : "작성"}
-            onClick={handleSubmit}
-          />
-          {selectedEvent ? <Button label="삭제" onClick={handleDelete} /> : ""}
-        </div>
-      )}
+              <div
+                className="w-6 h-[100px] border border-gray-400 opacity-0 hover:opacity-100 transition-opacity flex justify-center items-center cursor-pointer rounded-md bg-gray-50"
+                onClick={() =>
+                  handleDeleteWorkout(index, workout.workoutId || "")
+                }
+              >
+                <box-icon name="x" color="#bdbdbd"></box-icon>
+              </div>
+            </div>
+          ))
+        )}
+        <Button label="+" onClick={handleAddWorkout} />
+        <hr style={{ width: "240px" }} />
+        <Input
+          label="몸무게(KG)"
+          name="bodyWeight"
+          type="number"
+          value={formValues.bodyWeight || ""}
+          onChange={handleChange}
+        />
+        <Input
+          label="메모"
+          name="memo"
+          value={formValues.memo || ""}
+          onChange={handleChange}
+        />
+        <Button
+          label={selectedEvent ? "수정" : "작성"}
+          onClick={handleSubmit}
+        />
+        {selectedEvent ? <Button label="삭제" onClick={handleDelete} /> : ""}
+      </div>
     </div>
   );
 };

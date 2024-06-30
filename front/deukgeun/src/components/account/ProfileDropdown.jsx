@@ -48,18 +48,18 @@ const ProfileDropdown = () => {
           ) : (
             ""
           )}
-          {userData.role === "ROLE_GENERAL" ||
-            (userData.role === "ROLE_TRAINER" && (
-              <li
-                className="profile-dropdown-list"
-                onClick={() => customNavigate("/calendar")}
-              >
-                <box-icon name="calendar" color="#ffbe98" size="sm"></box-icon>
-                <span className="ml-3">
-                  {userData.role === "ROLE_GENERAL" ? "운동일지" : "캘린더"}
-                </span>
-              </li>
-            ))}
+          {(userData.role === "ROLE_GENERAL" ||
+            userData.role === "ROLE_TRAINER") && (
+            <li
+              className="profile-dropdown-list"
+              onClick={() => customNavigate("/calendar")}
+            >
+              <box-icon name="calendar" color="#ffbe98" size="sm"></box-icon>
+              <span className="ml-3">
+                {userData.role === "ROLE_GENERAL" ? "운동일지" : "캘린더"}
+              </span>
+            </li>
+          )}
           {userData.role === "ROLE_GYM" && (
             <>
               <li
