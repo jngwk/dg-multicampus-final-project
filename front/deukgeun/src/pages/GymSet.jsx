@@ -152,7 +152,7 @@ const Gymset = () => {
   };
 
   const handleTrainerRegisterClick = () => {
-    customNavigate("/trainerRegister");
+    customNavigate("/trainerSet");
 };
 
   return (

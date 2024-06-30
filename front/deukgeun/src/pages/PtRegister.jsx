@@ -281,7 +281,7 @@ const PtRegister = () => {
     <>
       <div className="flex flex-col my-10 items-center relative">
         <GiArchiveRegister
-          className="absolute left-96 w-20 h-20 bg-white"
+          className="absolute left-1/4 w-20 h-20 z-50"
           color="#9F8D8D"
         />
         <div className="flex flex-row items-center">

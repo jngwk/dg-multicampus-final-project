@@ -7,6 +7,7 @@ import formatDate from "../components/shared/FormatDate";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { FaAngleDoubleRight } from "react-icons/fa";
 import { BsChevronDown } from "react-icons/bs";
+import { GiArchiveRegister } from "react-icons/gi";
 import TextArea from "../components/shared/TextArea";
 import { useAuth } from "../context/AuthContext";
 import { registerMembership } from "../api/membershipApi";
@@ -231,7 +232,13 @@ const MemberRegister = () => {
 
   return (
     <>
-      <div className="flex flex-row justify-center items-center mt-10">
+      <div className="flex flex-row justify-center items-center mt-10 relative ">
+        <GiArchiveRegister color="#9F8D8D"
+          className={` ${isExpanded
+            ? "absolute left-1/4 top-0 w-20 h-20 z-50"
+            : "absolute left-1/3 top-0 w-20 h-20 z-50"
+          } `}
+        />
         <div
           className={`m-10 ${isExpanded
               ? "w-[1000px] justify-center space-x-10 px-20 relative"
