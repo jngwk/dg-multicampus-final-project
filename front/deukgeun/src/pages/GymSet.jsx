@@ -6,13 +6,15 @@ import TextArea from "../components/shared/TextArea";
 import UploadBox from "../components/set/UploadBox";
 import { FaArrowRightLong, FaCircleMinus } from "react-icons/fa6";
 import Button from "../components/shared/Button";
+import { updateGym } from "../api/gymApi";
 
 // 회원 정보
 const initGymData = {
+  gymId: "",
   GymName: "",
   crNumber: "",
-  address: "",
-  detailAddress: "",
+  // address: "",
+  // detailAddress: "",
   phonNumber: "",
   SNSLink: "",
   OperatingHours: "",
@@ -145,6 +147,26 @@ const Gymset = () => {
     const updatedPTProducts = ptProducts.filter((_, i) => i !== index);
     setPTProducts(updatedPTProducts);
   };
+  const handleSubmit = async () => {
+    // Validate form data before submission
+    // You can add more validation logic here
+
+    // Prepare the data to be sent to the API
+    const gymDataToSubmit = {
+      ...GymData,
+      productList: [...healthProducts, ...ptProducts],
+    };
+
+    try {
+      const response = await updateGym(GymData.gymId, gymDataToSubmit);
+      if (response.RESULT === "SUCCESS") {
+        alert("Gym information updated successfully");
+      }
+    } catch (error) {
+      console.error("Error updating gym information:", error);
+      alert("Failed to update gym information");
+    }
+  };
 
   return (
     <>
@@ -176,7 +198,7 @@ const Gymset = () => {
                 onChange={handleGymDataChange}
               />
             </div>
-            {/* 주소 */}
+            {/* 주소
             <div className="flex flex-row space-x-48">
               <p className="mt-3">주소</p>
               <div className="flex flex-col">
@@ -201,7 +223,7 @@ const Gymset = () => {
                   onChange={handleGymDataChange}
                 />
               </div>
-            </div>
+            </div> */}
             {/* 전화번호 */}
             <div className="flex flex-row space-x-40">
               <p className="mt-3">전화번호</p>
@@ -400,6 +422,15 @@ const Gymset = () => {
                 required={true}
                 onChange={handleGymDataChange} 
               />
+            </div>
+             {/* Submit Button */}
+            <div className="flex justify-center mt-8">
+              <button
+                className="px-4 py-2 text-white bg-green-500 rounded hover:bg-green-700"
+                onClick={handleSubmit}
+              >
+                정보 수정
+              </button>
             </div>
           </div>
         </div>

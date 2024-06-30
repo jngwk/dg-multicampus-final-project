@@ -38,3 +38,16 @@ export const GymInfo = async (gymId) => {
     throw error;
   }
 };
+
+export const updateGym = async (gymId, gymData) => {
+  try {
+    const res = await axios.put(`${prefix}/put/${gymId}`, gymData);
+    console.log(`${prefix}/put/${gymId}`);
+    console.log("updateGym", res);
+    return res.data;
+  } catch (error) {
+    console.error("Error in updateGym", error);
+    throw error;
+  }
+};
+
