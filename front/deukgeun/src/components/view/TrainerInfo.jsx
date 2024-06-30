@@ -10,7 +10,7 @@ const TrainerInfo = () => {
     // 임시로 넣어두는 데이터
     const trainers = [
         {
-            trainerName: "김OO 트레이너",
+            userName: "김OO 트레이너",
             trainerImage: KimTrainer,
             //list형태를 위해 배열로
             trainerCareer: [ 
@@ -26,7 +26,7 @@ const TrainerInfo = () => {
             ],
         },
         {
-            trainerName: "최OO 트레이너",
+            userName: "최OO 트레이너",
             trainerImage: profileImg,
             trainerCareer: [
                 "국민대학교 대학원(운동처방전공)",
@@ -78,7 +78,7 @@ const TrainerInfo = () => {
 
 
             {/* 트레이너 정보 내용 */}
-                <div className="w-[1100px] h-full flex items-center">
+                <div className="w-full h-full flex items-center">
                     <div className="w-1/2 flex justify-center">
                         <img
                             className="w-2/4 h-3/4 rounded-lg object-cover shadow-lg "
@@ -91,7 +91,7 @@ const TrainerInfo = () => {
                             {trainers.map((trainer, index) => (
                                 <li key={index} className="list-none border-light-black border-b-2 border-opacity-40">
                                     <div className="flex justify-between items-center py-5 px-4">
-                                        <p className="font-semibold text-lg">{trainer.trainerName}</p>
+                                        <p className="font-semibold text-lg">{trainer.userName}</p>
                                         <button onClick={() => toggleOpen(index)}>
                                             {openIndex === index ? <FaMinus /> : <FaPlus />}
                                         </button>

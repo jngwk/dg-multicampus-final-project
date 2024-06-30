@@ -13,7 +13,7 @@ const Review = () => {
         <div>
             {/* 리뷰 작성 헤더 */}
             <div className="relative">
-                <div className="flex flex-col items-center text-center mb-10">
+                <div className="flex flex-col items-center text-center mb-5">
                     <div className="mb-2 font-semibold text-xl">
                         리뷰
                         <div className="mt-2 w-16 border-b-2 border-grayish-red border-opacity-20 "></div>
@@ -34,8 +34,8 @@ const Review = () => {
             </div>
 
             {/* 리뷰 내용 */}
-            <div className="w-full  h-[500px] p-5 flex justify-center rounded-lg bg-grayish-red bg-opacity-20 border-2 border-grayish-red">
-                <div className="w-[1100px] flex justify-center flex-wrap overflow-y-auto scrollbar-hide">
+            <div className="w-full h-[500px] p-5 mb-10 flex justify-center bg-grayish-red bg-opacity-20 border-y border-grayish-red">
+                <div className="w-full flex justify-center flex-wrap overflow-y-auto scrollbar-hide">
                     <ReviewContent />
                 </div>
             </div>

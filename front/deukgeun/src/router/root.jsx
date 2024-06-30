@@ -11,6 +11,7 @@ const Chat = lazy(() => import("../pages/ChatRoom"));
 const Calendar = lazy(() => import("../pages/CalendarPage"));
 const SignUpChoice = lazy(() => import("../pages/SignUpChoicePage"));
 const SignUpForm = lazy(() => import("../pages/SignUpPage"));
+const FindPassword = lazy(()=> import("../components/modals/FindPassword"));
 const QnaForm = lazy(() => import("../pages/QnaForm"));
 const MemberList = lazy(() => import("../pages/MemberList"));
 const GymSearch = lazy(() => import("../pages/GymSearchPage"));
@@ -26,6 +27,7 @@ const ReviewList = lazy(() => import("../test/ReviewList"));
 const MemberRegister = lazy(() => import("../pages/MemberRegister"));
 const TrainerUpdateForm = lazy(() => import("../test/TrainerUpdateForm"));
 const PtRegister = lazy(() => import("../pages/PtRegister")); 
+const GymSet = lazy(() => import("../pages/GymSet"));
 
 const root = createBrowserRouter([
   {
@@ -83,6 +85,10 @@ const root = createBrowserRouter([
         ],
       },
       {
+        path: "find-password",
+        element: <FindPassword />,
+      },
+      {
         path: "qna",
         element: (
           <>
@@ -116,8 +122,8 @@ const root = createBrowserRouter([
         element: <ReviewForm />,
       },
       {
-        path: "ReviewList",
-        element: <ReviewList gymId={1}/>,
+        path: "memberRegister",
+        element: <MemberRegister />,
       },
       {
         path: "TrainerUpdateForm",
@@ -130,6 +136,10 @@ const root = createBrowserRouter([
       {
         path: "PtRegister",
         element: <PtRegister />,
+      },
+      {
+        path: "GymSet",
+        element: <GymSet />,
       },
     ],
   },

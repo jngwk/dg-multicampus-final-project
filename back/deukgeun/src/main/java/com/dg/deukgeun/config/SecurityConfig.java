@@ -182,7 +182,7 @@ public class SecurityConfig {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-            .withUser("user").password("{noop}password").roles("GENERAL");
+                .withUser("user").password("{noop}password").roles("GENERAL");
     }
-    
+
 }
