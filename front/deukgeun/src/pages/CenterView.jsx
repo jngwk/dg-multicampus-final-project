@@ -22,11 +22,13 @@ import AlertModal from "../components/modals/AlertModal";
 import { findMembership } from "../api/membershipApi";
 import { findPT } from "../api/ptApi";
 import { GymInfo } from "../api/gymApi";
+import { useLoginModalContext } from "../context/LoginModalContext";
 
 const CenterView = () => {
   const [gymData, setGymData] = useState(null);
   const [isMembershipAlreadyRegistered, setIsMembershipAlreadyRegistered] = useState(false);
   const [isPTAlreadyRegistered, setIsPTAlreadyRegistered] = useState(false);
+  const { toggleLoginModal } = useLoginModalContext();
   const customNavigate = useCustomNavigate();
   const location = useLocation();
   const gymId = location.state?.gym?.gymId || "";
@@ -183,13 +185,21 @@ const CenterView = () => {
       {/* 헬스권/PT등록버튼 */}
       <div className="flex flex-col space-y-3">
         <button 
-        onClick={handleMembershipInfo}
+        onClick={() =>
+          sessionStorage.getItem("isLoggedIn")
+            ? handleMembershipInfo()
+            : toggleLoginModal()
+        }
         className=" flex flex-col justify-center items-center fixed bottom-32 right-16 w-20 h-20 rounded-full bg-[#4E4C4F] text-[11px] text-white hover:bg-opacity-45 hover:border-2 hover:border-stone-500">
           <BsPersonVcard color="white" size={33} />
           <p>회원권 등록</p>
         </button>
         <button 
-        onClick={handlePTInfo}
+        onClick={() =>
+          sessionStorage.getItem("isLoggedIn")
+            ? handlePTInfo()
+            : toggleLoginModal()
+        }
         className=" flex flex-col justify-center items-center fixed bottom-10 right-16 w-20 h-20 rounded-full bg-grayish-red text-[12px] text-white hover:bg-opacity-45 hover:border-2 hover:border-stone-500">
           <LiaChalkboardTeacherSolid color="white" size={38} />
           <p>PT 등록</p>
@@ -230,17 +240,25 @@ const CenterView = () => {
           ))}
         </ul>
         <Button
-          width="120px"
-          color="peach-fuzz"
-          label="헬스권 등록"
-          onClick={handleMembershipInfo}
-        />
+                width="120px"
+                color="peach-fuzz"
+                label="헬스권 등록"
+                onClick={() =>
+                  sessionStorage.getItem("isLoggedIn")
+                    ? handleMembershipInfo
+                    : toggleLoginModal()
+                }
+              />
         <Button
-          width="120px"
-          color="peach-fuzz"
-          label="PT 등록"
-          onClick={handlePTInfo}
-        />
+                width="120px"
+                color="peach-fuzz"
+                label="PT 등록"
+                onClick={() =>
+                  sessionStorage.getItem("isLoggedIn")
+                    ? handlePTInfo
+                    : toggleLoginModal()
+                }
+              />
         <div className="flex flex-col space-y-56">
           <TrainerInfo />
           <Review />
