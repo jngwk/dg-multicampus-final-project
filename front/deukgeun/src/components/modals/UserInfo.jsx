@@ -64,6 +64,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
 
     const getRegisteredGym = async () => {
       try {
+        if (userData.role !== "ROLE_GENERAL") return;
         const data = await findMembership();
         console.log("user modal findMembership", data);
         setMembership(data);
