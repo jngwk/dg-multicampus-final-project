@@ -3,7 +3,6 @@ import { Line } from 'react-chartjs-2';
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, TimeScale } from 'chart.js';
 import 'chartjs-adapter-date-fns';
 import Button from '../shared/Button';
-import { membershipStats } from '../../api/membershipApi';
 
 
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, TimeScale);
@@ -12,8 +11,6 @@ const TestChart = ({ stats }) => {
   const [filterType, setFilterType] = useState('전체');
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
-  const [membershipStats,setMembershipStats] = useState();
-
   
   useEffect(() => {
     if (stats.length > 0) {
