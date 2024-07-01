@@ -207,7 +207,7 @@ const CalendarInputForm = ({
       <div className="p-3 flex gap-1 items-end">
         <div
           className={`mb-1 h-4 w-1 ${
-            formValues.ptSessionId ? "bg-blue-300" : "bg-peach-fuzz"
+            formValues.ptSessionId ? "bg-blue-300" : "bg-green-200"
           }`}
         ></div>
         <div className="text-3xl ">
