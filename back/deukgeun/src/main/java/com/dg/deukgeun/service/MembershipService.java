@@ -39,14 +39,14 @@ public class MembershipService {
     public ResponseDTO<?> registerMembership(MembershipDTO membershipDTO, Integer userId) {
         User user = userRepository.findByUserId(userId).orElse(null);
         Gym gym = gymRepository.findById(membershipDTO.getGymId()).orElse(null);
-        //허승돈 수정
+        // 허승돈 수정
         Optional<Product> optionalProduct = productRepository.findById(membershipDTO.getProductId());
         Product product = optionalProduct.orElseThrow();
-        
-        if (user == null || gym == null || product==null) {
+
+        if (user == null || gym == null || product == null) {
             return ResponseDTO.setFailed("사용자 또는 헬스장을 찾을 수 없습니다.");
         }
-        //허승돈 수정 종료
+        // 허승돈 수정 종료
         Optional<Membership> existingMembership = membershipRepository.findByUser(user);
         if (existingMembership.isPresent()) {
             return ResponseDTO.setFailed("이미 등록된 회원입니다.");
@@ -71,8 +71,9 @@ public class MembershipService {
         }
     }
 
-     // IAMPORT와의 결제 인증이 완료된 후 회원권 등록을 처리하는 메서드
-    public ResponseDTO<?> processMembershipRegistrationAfterPayment(MembershipDTO membershipDTO, Integer userId, String impUid) {
+    // IAMPORT와의 결제 인증이 완료된 후 회원권 등록을 처리하는 메서드
+    public ResponseDTO<?> processMembershipRegistrationAfterPayment(MembershipDTO membershipDTO, Integer userId,
+            String impUid) {
         try {
             // IAMPORT 결제 인증
             IamportResponse<Payment> response = iamportService.verifyPayment(impUid);
@@ -88,7 +89,8 @@ public class MembershipService {
             return ResponseDTO.setFailed("결제 인증 중 오류가 발생하였습니다.");
         }
     }
-    //허승돈 작성
+
+    // 허승돈 작성
     public Integer register(MembershipDTO membershipDTO, Integer userId) {
         User user = userRepository.findByUserId(userId).orElse(null);
         Gym gym = gymRepository.findById(membershipDTO.getGymId()).orElse(null);
@@ -98,9 +100,10 @@ public class MembershipService {
             return -1;
         }
 
-        // Optional<Membership> existingMembership = membershipRepository.findByUser(user);
+        // Optional<Membership> existingMembership =
+        // membershipRepository.findByUser(user);
         // if (existingMembership.isPresent()) {
-        //     return ResponseDTO.setFailed("이미 등록된 회원입니다.");
+        // return ResponseDTO.setFailed("이미 등록된 회원입니다.");
         // }
 
         Membership membership = new Membership();
@@ -121,7 +124,7 @@ public class MembershipService {
             return -1;
         }
     }
-    //허승돈 작성 종료
+    // 허승돈 작성 종료
 
     @PreAuthorize("(hasRole('ROLE_GYM')) && #userId == principal.userId")
     public List<Membership> getMembershipStatsByGymUserId(Integer userId) {
@@ -129,13 +132,13 @@ public class MembershipService {
         if (user != null) {
             Optional<Gym> gym = gymRepository.findByUser(user);
             if (gym.isPresent()) {
-                return membershipRepository.findByGym_GymId(gym.get().getGymId());
+                return membershipRepository.findAllByGym_GymId(gym.get().getGymId());
             }
         }
         return Collections.emptyList(); // Return an empty list if no memberships found
     }
 
-    //멤버십이 존재하는지 확인용
+    // 멤버십이 존재하는지 확인용
     @PreAuthorize("(hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM')) && #userId == principal.userId")
     public Optional<Membership> findMembership(Integer userId) {
         User user = userRepository.findByUserId(userId).orElse(null);

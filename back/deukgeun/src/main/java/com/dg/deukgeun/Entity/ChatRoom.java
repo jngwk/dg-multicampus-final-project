@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,6 +38,9 @@ public class ChatRoom {
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ChatMessage> messages;
+
+    @Column(name = "latest_message")
+    private String latestMessage;
 
     // Constructor to accept id as a String
     public ChatRoom(String id) {
