@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import { Map, MapMarker, useMap } from "react-kakao-maps-sdk";
 
-
 import { CgDetailsMore } from "react-icons/cg";
 import { FaLocationDot } from "react-icons/fa6";
 import { PiPhoneListDuotone } from "react-icons/pi";

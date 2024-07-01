@@ -14,3 +14,33 @@ export const registerInquery = async (formValues) => {
     throw error;
   }
 };
+
+export const ListInquery = async () => {
+  try {
+    const res = await axios.get(`${prefix}/list`);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching inquiries:", error);
+    throw error;
+  }
+};
+
+export const updateInquiry = async (editedInquiry) => {
+  try {
+    const res = await axios.put(`${prefix}/update/${editedInquiry.id}`, editedInquiry);
+    return res.data; // Assuming your API returns updated inquiry data
+  } catch (error) {
+    console.error("Error updating inquiry:", error);
+    throw error;
+  }
+};
+
+export const deleteInquiryApi = async (inquiryId) => {
+  try {
+    const res = await axios.delete(`${prefix}/delete/${inquiryId}`);
+    return res.data; // Assuming your API returns confirmation of deletion
+  } catch (error) {
+    console.error("Error deleting inquiry:", error);
+    throw error;
+  }
+};

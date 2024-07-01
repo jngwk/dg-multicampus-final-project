@@ -12,7 +12,7 @@ const handleWheel = (e) => {
 
 const TableRow = ({ columns }) => {
     return (
-        <tr className="bg-white border-y-2 border-gray-200 text-sm text-center ">
+        <tr className="bg-white border border-gray-200 text-sm text-center ">
             {columns.map((column, index) => (
                 <td key={index} className="py-2 min-w-[50px] max-w-[200px] overflow-x-auto whitespace-nowrap scrollbar-hide" onWheel={handleWheel}>
                     {column}
