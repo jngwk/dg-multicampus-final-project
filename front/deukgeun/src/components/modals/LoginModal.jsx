@@ -3,7 +3,7 @@ import ModalLayout from "./ModalLayout";
 import logo from "../../assets/dg_logo_small.png";
 import Input from "../shared/Input";
 import Button from "../shared/Button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import useCustomNavigate from "../../hooks/useCustomNavigate";
 import { login } from "../../api/loginApi";
 import { useAuth } from "../../context/AuthContext";
@@ -13,14 +13,11 @@ const initErrors = { email: "", password: "", login: "" };
 
 const LoginModal = ({ toggleModal }) => {
   const customNavigate = useCustomNavigate();
+  const location = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState(initErrors);
   const { fetchUserData, loading } = useAuth();
-
-  useEffect(() => {
-    // console.log("Updated Errors: ", errors);
-  }, [errors]);
 
   const handleEmailChange = (e) => {
     const value = e.target.value;
@@ -77,7 +74,7 @@ const LoginModal = ({ toggleModal }) => {
           sessionStorage.getItem("isLoggedIn")
         );
         toggleModal(); // 로그인 성공시 팝업 닫음
-        customNavigate("/", { replace: true }); // 메인으로 이동
+        customNavigate(location.pathname, { replace: true }); // 원래 위치로 이동
         fetchUserData(); // 유저 데이터 가져오기
         if (loading) {
           return <Fallback />;
@@ -100,6 +97,12 @@ const LoginModal = ({ toggleModal }) => {
     toggleModal();
     customNavigate("/signUp");
   };
+
+  const handleFindPasswordClick = () => {
+    toggleModal();
+    customNavigate("/find-password");
+  };
+
   return (
     <ModalLayout toggleModal={toggleModal}>
       <img src={logo} alt="logo" width={120} className="mb-14" />
@@ -124,12 +127,12 @@ const LoginModal = ({ toggleModal }) => {
         )}
 
         {/* find-password 모달띄우기 */}
-        <Link
-          to="find-password"
+        <button
+          onClick={handleFindPasswordClick}
           className="text-right text-sm text-gray-500 hover:underline hover:underline-offset-4 hover:cursor-pointer hover:text-gray-600"
         >
           비밀번호를 잊으셨나요?
-        </Link>
+        </button>
 
         <br />
         <Button onClick={handleLogin} color="peach-fuzz" label="로그인" />
