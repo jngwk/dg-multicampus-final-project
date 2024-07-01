@@ -217,14 +217,22 @@ const CalendarInputForm = ({
       </div>
       <div className="h-[600px] w-80 px-2 overflow-y-auto overflow-x-hidden scrollbar-hide">
         {formValues.ptSessionId && (
-          <Input
-            label="트레이너"
-            name="trainer"
-            type="text"
-            value={formValues.trainer || ""}
-            onChange={handleChange}
-            readOnly
-          />
+          <>
+            <Input
+              label="헬스장"
+              name="gym"
+              type="text"
+              value={formValues.trainer.gym.user.userName || ""}
+              readOnly
+            />
+            <Input
+              label="트레이너"
+              name="trainer"
+              type="text"
+              value={formValues.trainer.user.userName || ""}
+              readOnly
+            />
+          </>
         )}
         <Input
           label="날짜"

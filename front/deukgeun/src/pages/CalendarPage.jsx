@@ -299,7 +299,10 @@ const CalendarPage = () => {
       <div className="xl:w-9/12 p-8 slide">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          initialView="dayGridMonth"
+          initialView={
+            userData.role === "ROLE_GENERAL" ? "dayGridMonth" : "timeGridWeek"
+          }
+          scrollTimeReset={false}
           titleFormat={(date) => customTitleFormat(date)}
           datesSet={loadWorkoutSessions}
           headerToolbar={{
