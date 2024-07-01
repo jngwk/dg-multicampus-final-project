@@ -7,6 +7,7 @@ import useCustomNavigate from "../hooks/useCustomNavigate";
 import ChatModal from "./modals/ChatModal";
 import { useLocation } from "react-router-dom";
 import { useLoginModalContext } from "../context/LoginModalContext";
+import { useAuth } from "../context/AuthContext";
 const { kakao } = window;
 
 const GymSearchMap = () => {
@@ -20,7 +21,7 @@ const GymSearchMap = () => {
   });
   const location = useLocation();
   const [filter, setFilter] = useState(
-    location.state ? location.state.filter : "location"
+    location.state ? location.state.filter : "default"
   );
   const [searchWord, setSearchWord] = useState(
     location.state ? location.state.searchWord : ""
@@ -33,8 +34,10 @@ const GymSearchMap = () => {
   const [isChatModalVisible, setIsChatModalVisible] = useState(false);
   const { toggleLoginModal } = useLoginModalContext();
   const customNavigate = useCustomNavigate();
+  // const { userData } = useAuth();
 
   useEffect(() => {
+    // 현재 위치 지도 표시
     if (navigator.geolocation) {
       setUseCurrentLoc(true);
       navigator.geolocation.getCurrentPosition(
@@ -69,6 +72,23 @@ const GymSearchMap = () => {
       getGyms();
     }
   }, [sessionStorage.getItem("isLoggedIn")]);
+
+  // useEffect(async () => {
+  //   // handleSearch -> keyWord + filter -> search
+  //   if (filter === "location") {
+  //     try {
+  //       const res = await searchGyms(
+  //         userData.address.split(" ")[0] + " " + userData.address.split(" ")[1]
+  //       );
+  //       // console.log("handleSearch in gym search map", res);
+  //       handleLoadedGyms(res);
+  //     } catch (error) {
+  //       console.error("Error fetching gym list:", error);
+  //     }
+  //   } else if (filter === "hours") {
+  //   } else if (filter === "price") {
+  //   }
+  // }, [filter]);
 
   const getGyms = async () => {
     try {
@@ -203,6 +223,10 @@ const GymSearchMap = () => {
     }
   };
 
+  const handleFilterClick = (e) => {
+    setFilter(e.target.value);
+  };
+
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       handleSearch();
@@ -251,20 +275,19 @@ const GymSearchMap = () => {
               id="filter"
               className="bg-transparent w-[90%] text-sm text-center px-3 outline-none rounded-md focus:border-2 focus:border-peach-fuzz active:border-peach-fuzz"
             >
-              <option
-                selected={filter === "location" ? true : false}
-                value="location"
-              >
+              <option onClick={(e) => handleFilterClick(e)} value="default">
+                필터를 선택해주세요
+              </option>
+              <option onClick={(e) => handleFilterClick(e)} value="location">
                 내 위치에서 가까운
               </option>
-              <option
-                selected={filter === "price" ? true : false}
-                value="price"
-              >
+              <option onClick={(e) => handleFilterClick(e)} value="price">
                 회원권 가격이 저렴한
               </option>
-              {/* <option value="currentLoc">내 위치에서 가장 가까운...</option>
-              <option value="currentLoc">내 위치에서 가장 가까운...</option> */}
+              <option onClick={(e) => handleFilterClick(e)} value="hours">
+                24시간 운영하는
+              </option>
+              {/* <option value="currentLoc">내 위치에서 가장 가까운...</option> */}
             </select>
             {/* TODO 검색 기능 추가 */}
             <Input

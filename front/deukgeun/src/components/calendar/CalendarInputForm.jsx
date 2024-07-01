@@ -155,7 +155,11 @@ const CalendarInputForm = ({
   return (
     <div className="h-4/6 w-72">
       <div className="p-3 flex gap-1 items-end">
-        <div className="mb-1 h-4 w-1 bg-peach-fuzz"></div>
+        <div
+          className={`mb-1 h-4 w-1 ${
+            formValues.ptSessionid ? "bg-blue-300" : "bg-peach-fuzz"
+          }`}
+        ></div>
         <div className="text-3xl ">
           {date}
           <span className="text-base ml-1">일</span>
@@ -163,6 +167,17 @@ const CalendarInputForm = ({
       </div>
 
       <div className="h-[600px] w-80 px-2 overflow-y-auto overflow-x-hidden scrollbar-hide">
+        {/* TODO PT session과 엮기 */}
+        {formValues.ptSessionid && (
+          <Input
+            label="트레이너"
+            name="trainer"
+            type="text"
+            value={formValues.ptSessionId || ""}
+            onChange={handleChange}
+            readOnly={true}
+          />
+        )}
         <Input
           label="날짜"
           name="workoutDate"
