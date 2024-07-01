@@ -44,3 +44,17 @@ export const deleteInquiryApi = async (inquiryId) => {
     throw error;
   }
 };
+
+export const sendVerificationEmail = async (email, answer) => {
+  try {
+    const response = await axios.post(`${prefix}/sendResponseEmail`, {
+      userEmail: email,
+      answer: answer,
+    });
+    console.log("Email sent successfully:", response);
+    return response.data;
+  } catch (error) {
+    console.error("Error sending email:", error);
+    throw error;
+  }
+};
