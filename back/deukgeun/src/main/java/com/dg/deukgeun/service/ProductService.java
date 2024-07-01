@@ -51,7 +51,7 @@ public class ProductService {
     public Map<String,String> insertList (List<ProductDTO> dtoList){
         List<Product> productList = new ArrayList<>();
         for(int i=0;i<dtoList.size();i++){
-            Product product = new Product(dtoList.get(i));
+            Product product = modelMapper.map(dtoList.get(i),Product.class);
             Optional<Gym> result = gymRepository.findById(dtoList.get(i).getGymId());
             Gym gym = result.orElseThrow();
             product.setGym(gym);

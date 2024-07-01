@@ -17,6 +17,8 @@ import {
   deleteWorkout,
 } from "../api/workoutSessionApi";
 import Fallback from "../components/shared/Fallback";
+import { useAuth } from "../context/AuthContext";
+import { registerPTSession } from "../api/ptSessionApi";
 
 // TODO 트레이나/일반 구분하기
 // security 설정해서 바꾸기
@@ -37,6 +39,7 @@ const CalendarPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [workoutsLoading, setWorkoutsLoading] = useState(false);
+  const { userData } = useAuth();
 
   // TODO DB에 새로운 event 저장
   // addEvent로 event 추가 후 events 업데이트가 되면 localStorage에 저장
@@ -97,9 +100,19 @@ const CalendarPage = () => {
   const addEvent = async (formValues) => {
     // events에 추가
     try {
-      const result = await registerWorkoutSession(formValues);
-      console.log(result);
-      const newEvent = formatFormValues(formValues, result.workoutSessionId);
+      var result = "";
+      if (userData.role === "ROLE_GENERAL") {
+        result = await registerWorkoutSession(formValues);
+        console.log("registering session as general", result);
+      } else if (userData.role === "ROLE_TRAINER") {
+        result = await registerPTSession(formValues);
+        console.log("registering session as trainer", result);
+      }
+      const newEvent = formatFormValues(
+        formValues,
+        result.workoutSessionId,
+        result.ptSession ? result.ptSession : ""
+      );
       setEvents((prevEvents) => [...prevEvents, newEvent]);
       setSelectedEvent(newEvent);
       // console.log("이벤트 추가: ", newEvent);
@@ -172,7 +185,7 @@ const CalendarPage = () => {
   const handleEventClick = (info) => {
     setSelectedEvent(info.event);
 
-    console.log("load workout");
+    console.log("load workout", info.event);
     loadWorkouts(info.event);
 
     setSelectedDate(null);
@@ -245,26 +258,36 @@ const CalendarPage = () => {
 
   // DB에서 받아온 data를 format
   const formatSessionToEvent = (session) => {
+    const color = session.ptSession ? "E6F4FF" : "#CFEB7F";
     return {
       id: session.workoutSessionId,
-      title: session.content,
+      title:
+        userData.role === "ROLE_GENERAL"
+          ? session.content
+          : session.ptSession.pt.user.userName,
       start: new Date(`${session.workoutDate}T${session.startTime}`),
       end: new Date(`${session.workoutDate}T${session.endTime}`),
-      color: "#ffbe98",
+      color: color,
       extendedProps: session,
     };
   };
 
   // formValue를 event 객체의 포맷과 동일하게 수정
-  const formatFormValues = (formValues, selectedEventId) => {
-    const id = selectedEventId ? selectedEventId : uuidv4();
+  const formatFormValues = (formValues, selectedEventId, ptSession = null) => {
+    const id = selectedEventId ? selectedEventId : "";
+    const color = formValues.ptSession ? "E6F4FF" : "#CFEB7F";
+    if (!ptSession) ptSession = formValues.ptSession;
+    console.log(formValues, selectedEventId, ptSession, id, color);
     return {
       id: id,
-      title: formValues.content,
+      title:
+        userData.role === "ROLE_GENERAL"
+          ? formValues.content
+          : formValues.ptSession.pt.user.userName,
       start: new Date(`${formValues.workoutDate}T${formValues.startTime}`),
       end: new Date(`${formValues.workoutDate}T${formValues.endTime}`),
-      color: "#ffbe98",
-      extendedProps: formValues,
+      color: color,
+      extendedProps: { ...formValues, ptSession: ptSession ? ptSession : null },
     };
   };
 
@@ -276,7 +299,10 @@ const CalendarPage = () => {
       <div className="xl:w-9/12 p-8 slide">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          initialView="dayGridMonth"
+          initialView={
+            userData.role === "ROLE_GENERAL" ? "dayGridMonth" : "timeGridWeek"
+          }
+          scrollTimeReset={false}
           titleFormat={(date) => customTitleFormat(date)}
           datesSet={loadWorkoutSessions}
           headerToolbar={{
@@ -319,6 +345,7 @@ const CalendarPage = () => {
             toggleInputForm={toggleInputForm}
             workoutsLoading={workoutsLoading}
             deleteWorkouts={deleteWorkouts}
+            role={userData.role}
           />
         </div>
       </div>
