@@ -97,6 +97,12 @@ const LoginModal = ({ toggleModal }) => {
     toggleModal();
     customNavigate("/signUp");
   };
+
+  const handleFindPasswordClick = () => {
+    toggleModal();
+    customNavigate("/find-password");
+  };
+
   return (
     <ModalLayout toggleModal={toggleModal}>
       <img src={logo} alt="logo" width={120} className="mb-14" />
@@ -121,12 +127,12 @@ const LoginModal = ({ toggleModal }) => {
         )}
 
         {/* find-password 모달띄우기 */}
-        <Link
-          to="find-password"
+        <button
+          onClick={handleFindPasswordClick}
           className="text-right text-sm text-gray-500 hover:underline hover:underline-offset-4 hover:cursor-pointer hover:text-gray-600"
         >
           비밀번호를 잊으셨나요?
-        </Link>
+        </button>
 
         <br />
         <Button onClick={handleLogin} color="peach-fuzz" label="로그인" />

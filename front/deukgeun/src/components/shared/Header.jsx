@@ -6,12 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Fallback from "./Fallback";
 import Bprofile from "../../assets/blank_profile.png";
-import {
-  userInfo,
-  uploadImage,
-  getImage,
-  updateImage,
-} from "../../api/userInfoApi";
+import { userInfo, uploadImage, getImage, updateImage } from "../../api/userInfoApi";
 import { useLoginModalContext } from "../../context/LoginModalContext";
 
 // console.log(logo);

@@ -139,7 +139,7 @@ public class MembershipService {
     }
 
     // 멤버십이 존재하는지 확인용
-    @PreAuthorize("(hasRole('ROLE_GENERAL')) &&" + "#userId == principal.userId")
+    @PreAuthorize("(hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM')) && #userId == principal.userId")
     public Optional<Membership> findMembership(Integer userId) {
         User user = userRepository.findByUserId(userId).orElse(null);
         if (user != null) {

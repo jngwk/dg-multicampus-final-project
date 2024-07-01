@@ -70,6 +70,15 @@ public class PersonalTrainingService {
         return savedPersonalTraining.getPtId();
     }
 
+    //ptId로 search가 필요할 때 사용
+    //ptSession에서 정보가 필요할 때 등
+    public PersonalTrainingDTO selectByptId(Integer ptId){
+        Optional<PersonalTraining> result = personalTrainingRepository.findById(ptId);
+        PersonalTraining personalTraining = result.orElseThrow();
+        PersonalTrainingDTO personalTrainingDTO = modelMapper.map(personalTraining,PersonalTrainingDTO.class);
+        return personalTrainingDTO;
+    }
+
     // pt 데이터를 조회하는 입장 : 트레이너
     public List<PersonalTrainingDTO> selectByTrainer(Integer trainerId) {
         List<PersonalTraining> result = personalTrainingRepository.findByTrainer_TrainerId(trainerId);
@@ -98,6 +107,15 @@ public class PersonalTrainingService {
         PersonalTraining personalTraining = result.orElseThrow();
 
         personalTraining.setPtCountRemain(personalTraining.getPtCountRemain() - 1);
+        personalTrainingRepository.save(personalTraining);
+    }
+
+    //pt에 남은 pt 수를 복구할 때, 즉, pt 일정이 취소되었을 때 사용
+    public void plusRemain(Integer ptId){
+        Optional<PersonalTraining> result = personalTrainingRepository.findById(ptId);
+        PersonalTraining personalTraining = result.orElseThrow();
+
+        personalTraining.setPtCountRemain(personalTraining.getPtCountRemain() + 1);
         personalTrainingRepository.save(personalTraining);
     }
 

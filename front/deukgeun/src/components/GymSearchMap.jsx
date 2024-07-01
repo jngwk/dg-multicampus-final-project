@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 import Input from "../components/shared/Input";
-import { getGymList, searchGyms } from "../api/gymApi";
+import { getGymList, searchGyms, GymInfo } from "../api/gymApi";
 import { Scrollbar } from "react-scrollbars-custom";
 import useCustomNavigate from "../hooks/useCustomNavigate";
 import ChatModal from "./modals/ChatModal";
@@ -232,6 +232,14 @@ const GymSearchMap = () => {
       handleSearch();
     }
   };
+  const handleRegister = async (gym) => {
+    try {
+      const data = await GymInfo(gym.gymId); // Fetch complete gym data
+      customNavigate("/memberregister", { state: { gym: data } });
+    } catch (error) {
+      console.error("Error fetching gym data:", error);
+    }
+  };
 
   // const handleAlertModalButton = () => {
   //   setIsAlertModalVisible(false);
@@ -354,9 +362,7 @@ const GymSearchMap = () => {
                         className="border border-gray-500 py-2 px-4 text-xs text-gray-800 rounded-md bg-bright-orange/50 hover:border-bright-orange/80 hover:bg-bright-orange/80 hover:text-white transition-all"
                         onClick={() =>
                           sessionStorage.getItem("isLoggedIn")
-                            ? customNavigate("/memberregister", {
-                                state: { gym: gym },
-                              })
+                            ? handleRegister(gym)
                             : toggleLoginModal()
                         }
                       >

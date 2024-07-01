@@ -19,5 +19,7 @@ public interface GymRepository extends JpaRepository<Gym, Integer> {
             + "OR REPLACE(LOWER(g.address), ' ', '') LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Gym> searchGyms(@Param("keyword") String keyword);
 
+    public Optional<Gym> findByUser_UserId(Integer userId);
+
     Optional<Gym> findByCrNumber(String crNumber);
 }

@@ -19,6 +19,7 @@ import {
 } from "../../api/userInfoApi";
 import AlertModal from "./AlertModal";
 import { findMembership } from "../../api/membershipApi";
+import { GymInfoByUserId } from "../../api/gymApi"; 
 
 const MyInfo = ({ toggleModal, userData, setUserData }) => {
   const initFullAddress = {
@@ -41,6 +42,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
   const [membership, setMembership] = useState("");
   const customNavigate = useCustomNavigate();
   const { fetchUserData } = useAuth();
+  const [gymInfo, setGymInfo] = useState(null);
 
   useEffect(() => {
     const fetchUserImage = async () => {
@@ -160,6 +162,16 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
     }
   };
 
+  const handleGymDetails = async () => {
+    try {
+      const gymData = await GymInfoByUserId(userData.userId); // userId를 사용하여 체육관 정보를 가져옵니다
+      setGymInfo(gymData);
+      // 체육관 정보를 사용하여 새 페이지로 이동합니다
+      customNavigate(`/GymInfo`); // 라우팅 설정에 따라 URL 구조를 조정해야 합니다
+    } catch (error) {
+      console.error("체육관 정보를 불러오는 중 오류 발생:", error);
+    }
+  };
   return (
     <ModalLayout toggleModal={toggleModal}>
       <div className="userEdit w-[90%]">
@@ -167,7 +179,10 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
           <div className="text-2xl font-extrabold pb-5">
             <p>내 정보</p>
           </div>
-          <div className="text-sm pb-5 cursor-pointer hover:underline hover:underline-offset-4">
+          <div
+            className="text-sm pb-5 cursor-pointer hover:underline hover:underline-offset-4"
+            onClick={handleGymDetails} // Click handler for 상세정보
+          >
             {(userData.role === "ROLE_GYM" ||
               userData.role === "ROLE_TRAINER") && <p>상세정보</p>}
           </div>
