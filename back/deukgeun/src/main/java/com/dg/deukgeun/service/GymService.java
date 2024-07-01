@@ -114,6 +114,14 @@ public class GymService {
         return dto;
     }
 
+    //gymInfo userId로 불러오기
+    public GymDTO getGymByUserId(Integer userId) {
+        Optional<Gym> result = gymRepository.findByUser_UserId(userId);
+        Gym gym = result.orElseThrow();
+        GymDTO dto = modelMapper.map(gym, GymDTO.class);
+        return dto;
+    }
+
     // 새로운 헬스장 정보 입력
     public Integer insert(GymDTO gymDTO) {
         log.info("--------------------");
@@ -128,7 +136,7 @@ public class GymService {
         Gym gym = result.orElseThrow();
         gym.setAddress(gymDTO.getAddress());
         gym.setCrNumber(gymDTO.getCrNumber());
-        gym.setDetailAddress(gymDTO.getDetailAddress());
+        // gym.setDetailAddress(gymDTO.getDetailAddress());
         gym.setGymName(gymDTO.getGymName());
         gym.setIntroduce(gymDTO.getIntroduce());
         gym.setOperatingHours(gymDTO.getOperatingHours());
@@ -136,9 +144,14 @@ public class GymService {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
 
+        String logMessage = "Modifying gym with ID: " + gym.getGymId();
+        System.out.println(logMessage);
         // 잘 실행될 지는 모르겠음 실행 후 확인 필요
-        User user = new User();
-        user.setUserId(userDetails.getUserId());
+        Optional<User> userResult = userRepository.findByUserId(userDetails.getUserId());
+        User user = userResult.get();
+        gym.getUser().setUserId(userDetails.getUserId());
+        //수정 시 role이 null로 설정되어 db에서 거부하는 에러 발생, 해결하기 위해 role을 부여
+        gym.getUser().setRole(user.getRole());
         gym.setUser(user);
         gymRepository.save(gym);
     }
