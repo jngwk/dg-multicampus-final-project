@@ -1,11 +1,5 @@
 package com.dg.deukgeun.dto;
 
-import java.time.LocalTime;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import java.time.LocalDate;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,11 +14,4 @@ public class PtSessionDTO {
     private Integer ptId;
     private Integer trainerId;
     private String memo;
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private LocalDate ptDate;
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "HH:mm")
-    private LocalTime startTime;
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "HH:mm")
-    private LocalTime endTime;
-    private String color;
 }

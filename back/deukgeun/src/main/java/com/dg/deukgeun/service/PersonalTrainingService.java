@@ -15,7 +15,10 @@ import com.dg.deukgeun.dto.personalTraining.PersonalTrainingDTO;
 import com.dg.deukgeun.dto.personalTraining.PersonalTrainingRequestDTO;
 import com.dg.deukgeun.entity.Membership;
 import com.dg.deukgeun.entity.PersonalTraining;
+import com.dg.deukgeun.entity.Trainer;
+import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.PersonalTrainingRepository;
+import com.dg.deukgeun.repository.TrainerRepository;
 import com.dg.deukgeun.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -32,7 +35,9 @@ public class PersonalTrainingService {
     private final MembershipService membershipService;
     private final ProductService productService;
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
+    @Autowired
+    private TrainerRepository trainerRepository;
 
     // 서비스를 구분하기 쉽도록 메서드의 이름은 각각 대응되는 mysql 쿼리 이름으로 적어두겠습니다.
     @PreAuthorize("(hasRole('ROLE_GENERAL')) && #userId == principal.userId")
@@ -70,12 +75,12 @@ public class PersonalTrainingService {
         return savedPersonalTraining.getPtId();
     }
 
-    //ptId로 search가 필요할 때 사용
-    //ptSession에서 정보가 필요할 때 등
-    public PersonalTrainingDTO selectByptId(Integer ptId){
+    // ptId로 search가 필요할 때 사용
+    // ptSession에서 정보가 필요할 때 등
+    public PersonalTrainingDTO selectByptId(Integer ptId) {
         Optional<PersonalTraining> result = personalTrainingRepository.findById(ptId);
         PersonalTraining personalTraining = result.orElseThrow();
-        PersonalTrainingDTO personalTrainingDTO = modelMapper.map(personalTraining,PersonalTrainingDTO.class);
+        PersonalTrainingDTO personalTrainingDTO = modelMapper.map(personalTraining, PersonalTrainingDTO.class);
         return personalTrainingDTO;
     }
 
@@ -110,8 +115,8 @@ public class PersonalTrainingService {
         personalTrainingRepository.save(personalTraining);
     }
 
-    //pt에 남은 pt 수를 복구할 때, 즉, pt 일정이 취소되었을 때 사용
-    public void plusRemain(Integer ptId){
+    // pt에 남은 pt 수를 복구할 때, 즉, pt 일정이 취소되었을 때 사용
+    public void plusRemain(Integer ptId) {
         Optional<PersonalTraining> result = personalTrainingRepository.findById(ptId);
         PersonalTraining personalTraining = result.orElseThrow();
 
@@ -125,16 +130,31 @@ public class PersonalTrainingService {
     }
 
     // pt가 존재하는지 확인용
-    @PreAuthorize("(hasRole('ROLE_GENERAL')) && #userId == principal.userId")
-    public Optional<PersonalTrainingDTO> findPT(Integer userId) {
+    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_TRAINER')")
+    public Optional<PersonalTraining> findPT(Integer userId) {
         List<PersonalTraining> PT = personalTrainingRepository.findAllByUser_UserId(userId);
 
         if (!PT.isEmpty()) {
             PersonalTraining firstTraining = PT.get(0); // For example, return the first training found
-            PersonalTrainingDTO personalTrainingDTO = modelMapper.map(firstTraining, PersonalTrainingDTO.class);
-            return Optional.of(personalTrainingDTO);
+            // PersonalTrainingDTO personalTrainingDTO = modelMapper.map(firstTraining,
+            // PersonalTrainingDTO.class);
+            return Optional.of(firstTraining);
         }
 
         return Optional.empty();
+    }
+
+    @PreAuthorize("(hasRole('ROLE_TRAINER')) && #userId == principal.userId")
+    public List<User> getUsersList(Integer userId) {
+        List<User> users = new ArrayList<>();
+        Trainer trainer = trainerRepository.findByUser_UserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Trainer not found"));
+        List<PersonalTraining> pts = personalTrainingRepository.findAllByTrainer(trainer)
+                .orElseThrow(() -> new IllegalArgumentException("Pts not found"));
+        pts.forEach(pt -> {
+            users.add(pt.getUser());
+        });
+        return users;
+
     }
 }

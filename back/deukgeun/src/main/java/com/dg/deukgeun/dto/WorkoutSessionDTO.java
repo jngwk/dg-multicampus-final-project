@@ -1,5 +1,7 @@
 package com.dg.deukgeun.dto;
 
+import com.dg.deukgeun.entity.PtSession;
+import com.dg.deukgeun.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDate;
@@ -17,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class WorkoutSessionDTO {
     private Integer workoutSessionId;
     private Integer userId;
-    private Integer ptSessionId;
+    private PtSession ptSession;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate workoutDate;
     private String content;
