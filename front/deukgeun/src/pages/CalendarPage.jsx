@@ -325,7 +325,7 @@ const CalendarPage = () => {
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView={
-            userData.role === "ROLE_GENERAL" ? "dayGridMonth" : "timeGridWeek"
+            userData?.role === "ROLE_GENERAL" ? "dayGridMonth" : "timeGridWeek"
           }
           scrollTimeReset={false}
           titleFormat={(date) => customTitleFormat(date)}
