@@ -1,28 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, TimeScale } from 'chart.js';
-import 'chartjs-adapter-date-fns'; // date-fns adapter import
+import 'chartjs-adapter-date-fns';
 import Button from '../shared/Button';
+import { membershipStats } from '../../api/membershipApi';
 
-// Chart.js component registration
+
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, TimeScale);
 
 const TestChart = ({ stats }) => {
-  const [filterType, setFilterType] = useState('전체'); // State to track filter type ('전체', '남성', '여성')
-  const [start, setStart] = useState(''); // State for start date
-  const [end, setEnd] = useState(''); // State for end date
+  const [filterType, setFilterType] = useState('전체');
+  const [start, setStart] = useState('');
+  const [end, setEnd] = useState('');
+  const [membershipStats,setMembershipStats] = useState();
 
-  // Initialize start and end dates based on stats data
+  
   useEffect(() => {
     if (stats.length > 0) {
       const earliestDate = new Date(Math.min(...stats.map(item => new Date(item.expDate))));
       const latestDate = new Date(Math.max(...stats.map(item => new Date(item.expDate))));
-      setStart(formatDate(earliestDate)); // Assuming formatDate is a function to format date as 'YYYY-MM-DD'
-      setEnd(formatDate(latestDate)); // Assuming formatDate is a function to format date as 'YYYY-MM-DD'
+      setStart(formatDate(earliestDate));
+      setEnd(formatDate(latestDate));
     }
   }, [stats]);
 
-  // Function to format date as 'YYYY-MM-DD'
+  
   const formatDate = (date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -30,16 +32,16 @@ const TestChart = ({ stats }) => {
     return `${year}-${month}-${day}`;
   };
 
-  // Function to count signups per expiration date
+ 
   const countSignupsPerExpDate = (stats, filter, startDate, endDate) => {
     const counts = {};
     stats.forEach(membership => {
       const expDate = new Date(membership.expDate);
       const year = expDate.getFullYear();
-      const month = expDate.getMonth() + 1; // getMonth() returns zero-based month
+      const month = expDate.getMonth() + 1;
       const combinedDate = `${year}-${month}`;
 
-      // Filter by start and end dates
+      
       const isInRange =
         (!startDate || expDate >= new Date(startDate)) &&
         (!endDate || expDate <= new Date(endDate));
@@ -56,37 +58,30 @@ const TestChart = ({ stats }) => {
     return counts;
   };
 
-  // Handler for filter change
   const handleFilterChange = (event) => {
     setFilterType(event.target.value);
   };
 
-  // Handler for start date change
   const handleStartDateChange = (event) => {
     setStart(event.target.value);
   };
 
-  // Handler for end date change
   const handleEndDateChange = (event) => {
     setEnd(event.target.value);
   };
 
-  // Handler for resetting filters
   const handleResetFilters = () => {
     setFilterType('전체');
     setStart(formatDate(new Date(Math.min(...stats.map(item => new Date(item.expDate))))));
     setEnd(formatDate(new Date(Math.max(...stats.map(item => new Date(item.expDate))))));
   };
 
-  // Calculate filtered signup counts
   const filteredSignupsCount = countSignupsPerExpDate(stats, filterType, start, end);
-  const sortedExpDates = Object.keys(filteredSignupsCount).sort((a, b) => new Date(a) - new Date(b)); // Sorted expiration dates array
-  const signupsData = sortedExpDates.map(date => filteredSignupsCount[date]); // Array of signup counts based on filter
+  const sortedExpDates = Object.keys(filteredSignupsCount).sort((a, b) => new Date(a) - new Date(b));
+  const signupsData = sortedExpDates.map(date => filteredSignupsCount[date]);
 
-  // Calculate max signup count
   const maxSignups = Math.max(...signupsData, 0);
 
-  // Chart data and options
   const chartData = {
     labels: sortedExpDates,
     datasets: [
@@ -104,28 +99,28 @@ const TestChart = ({ stats }) => {
   const chartOptions = {
     scales: {
       x: {
-        type: 'category', // Use 'category' scale for labels
+        type: 'category',
         title: {
           display: true,
-          text: '등록 날짜', // X-axis label
+          text: '등록 날짜',
         },
       },
       y: {
-        type: 'linear', // Use 'linear' scale for person count
+        type: 'linear',
         title: {
           display: true,
-          text: `가입자 수 (${filterType})`, // Y-axis label with filterType dynamically included
+          text: `가입자 수 (${filterType})`,
         },
         ticks: {
-          stepSize: 1, // Ensure y-axis ticks are whole numbers
+          stepSize: 1,
         },
-        suggestedMin: 0, // Ensure the y-axis starts from 0
-        suggestedMax: maxSignups + 1, // Set y-axis max to max value in data + 1
+        suggestedMin: 0,
+        suggestedMax: maxSignups + 1,
       },
     },
     plugins: {
       legend: {
-        display: true, // Display legend
+        display: true,
       },
     },
   };

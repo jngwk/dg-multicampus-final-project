@@ -17,8 +17,8 @@ const Hero = () => {
 
   return (
     <div className="relative w-full h-[90dvh] flex justify-center items-center">
-      <div className="h-[40%] flex flex-col gap-11">
-        <div className="pointer-events-none select-none">
+      <div className="h-[40%] flex flex-col items-center gap-11">
+        <div className="pointer-events-none select-none self-start">
           {/* 가격 필터 */}
           {filter === "price" && (
             <Filter

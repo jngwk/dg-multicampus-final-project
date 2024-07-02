@@ -1,7 +1,5 @@
 package com.dg.deukgeun.entity;
 
-import java.util.Set;
-
 import com.dg.deukgeun.dto.UserRole;
 import com.dg.deukgeun.dto.user.UserSignUpDTO;
 
@@ -12,7 +10,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,8 +18,8 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
-@Builder
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -42,8 +39,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
-
-
+    
     public User(UserSignUpDTO dto) {
         this.userId = dto.getUserId();
         this.userName = dto.getUserName();
@@ -53,22 +49,5 @@ public class User {
         this.role = dto.getRole();
         this.password = dto.getPassword();
     }
-
-    public static User toUserEntity(UserSignUpDTO userDTO) {
-        return User.builder()
-            .userId(userDTO.getUserId())
-            .userName(userDTO.getUserName())
-            .email(userDTO.getEmail())
-            .address(userDTO.getAddress())
-            .detailAddress(userDTO.getDetailAddress())
-            .password(userDTO.getPassword())
-            .role(userDTO.getRole())
-            .build();
-    }
-
-    public User(String userId) {
-        this.userId = Integer.parseInt(userId);
-    }
-
 
 }

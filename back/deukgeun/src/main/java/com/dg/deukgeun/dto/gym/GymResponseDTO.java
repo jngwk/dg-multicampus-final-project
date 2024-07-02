@@ -4,6 +4,8 @@ package com.dg.deukgeun.dto.gym;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.dg.deukgeun.dto.ProductDTO;
+
 // import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
@@ -25,7 +27,6 @@ public class GymResponseDTO {
     private String address;
     private String detailAddress;
     private String operatingHours;
-    private String prices;
     private String introduce;
     // private Integer approval;
     @Builder.Default
@@ -34,4 +35,8 @@ public class GymResponseDTO {
     // 트레이너 정보 List
     @Builder.Default
     private List<TrainerDTO> trainersList = new ArrayList<>();
+
+    // 상품명
+    @Builder.Default
+    private List<ProductDTO> productList = new ArrayList<>();
 }

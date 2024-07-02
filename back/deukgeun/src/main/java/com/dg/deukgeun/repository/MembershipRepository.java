@@ -12,5 +12,6 @@ import com.dg.deukgeun.entity.User;
 @Repository
 public interface MembershipRepository extends JpaRepository<Membership, Integer> {
     Optional<Membership> findByUser(User user);
-    List<Membership> findByGym_GymId(Integer gymId);
+
+    List<Membership> findAllByGym_GymId(Integer gymId);
 }

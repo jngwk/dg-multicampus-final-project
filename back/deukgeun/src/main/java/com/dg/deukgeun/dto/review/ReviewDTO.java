@@ -1,17 +1,17 @@
 package com.dg.deukgeun.dto.review;
 
-import com.dg.deukgeun.entity.Gym;
+import java.time.LocalDateTime;
+
 import com.dg.deukgeun.entity.Review;
-import com.dg.deukgeun.entity.User;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @AllArgsConstructor
+@Builder
 @NoArgsConstructor
 public class ReviewDTO {
 
@@ -24,8 +24,6 @@ public class ReviewDTO {
     private String email;
 
     private LocalDateTime createdAt;
-
-    // Constructors, Getters, and Setters
 
     public ReviewDTO(Review review) {
         this.id = review.getId();

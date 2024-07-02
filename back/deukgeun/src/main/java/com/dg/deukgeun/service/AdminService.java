@@ -1,10 +1,7 @@
 package com.dg.deukgeun.service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -15,9 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.dg.deukgeun.dto.page.PageRequestDTO;
 import com.dg.deukgeun.dto.page.PageResponseDTO;
-import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.entity.User;
-import com.dg.deukgeun.repository.GymRepository;
 import com.dg.deukgeun.repository.UserRepository;
 
 @Service
@@ -25,9 +20,6 @@ public class AdminService {
 
     @Autowired 
     UserRepository userRepository;
-
-    @Autowired
-    private GymRepository gymRepository;
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public PageResponseDTO<User> getAllUsers(Integer adminId, PageRequestDTO pageRequestDTO) {

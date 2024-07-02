@@ -2,22 +2,31 @@ import React, { useEffect, useRef, useState } from "react";
 import { BiCommentDetail } from "react-icons/bi";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { IoSearchOutline } from "react-icons/io5";
-import { LiaUserEditSolid } from "react-icons/lia";
+import { AiOutlineUser } from "react-icons/ai"; // Corrected import for AiOutlineUser
 import Bprofile from "../../assets/blank_profile.png";
 import useValidation from "../../hooks/useValidation";
 import Button from "../shared/Button";
 import ModalLayout from "./ModalLayout";
 import useCustomNavigate from "../../hooks/useCustomNavigate";
 import AddressModal from "./AddressModal";
-import { updateUserInfo } from "../../api/userInfoApi";
 import { useAuth } from "../../context/AuthContext";
+import {
+  userInfo,
+  uploadImage,
+  getImage,
+  updateImage,
+  updateUserInfo,
+} from "../../api/userInfoApi";
 import AlertModal from "./AlertModal";
+import { findMembership } from "../../api/membershipApi";
+import { GymInfoByUserId } from "../../api/gymApi"; 
 
 const MyInfo = ({ toggleModal, userData, setUserData }) => {
   const initFullAddress = {
     address: userData.address || "",
     detailAddress: userData.detailAddress || "",
   };
+  const [userImage, setUserImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
   const fileInput = useRef(null);
   const [passwordType, setPasswordType] = useState({
@@ -30,20 +39,49 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
   const [isModified, setIsModified] = useState(false);
   const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
+  const [membership, setMembership] = useState("");
   const customNavigate = useCustomNavigate();
   const { fetchUserData } = useAuth();
+  const [gymInfo, setGymInfo] = useState(null);
+
+  useEffect(() => {
+    const fetchUserImage = async () => {
+      try {
+        const images = await getImage();
+        if (images) {
+          setUserImage(images.userImage);
+        }
+      } catch (error) {
+        console.error("Error fetching user image:", error);
+      }
+    };
+
+    fetchUserImage();
+  }, []);
 
   useEffect(() => {
     setIsModified(false);
     setNewPassword("");
     setFullAddress(initFullAddress);
+
+    const getRegisteredGym = async () => {
+      try {
+        if (userData.role !== "ROLE_GENERAL") return;
+        const data = await findMembership();
+        console.log("user modal findMembership", data);
+        setMembership(data);
+      } catch (error) {
+        console.error("Error in userInfo modal finding membership", error);
+        throw error;
+      }
+    };
+    getRegisteredGym();
   }, []);
 
   useEffect(() => {
     checkIfModified();
   }, [newPassword, fullAddress]);
 
-  // password type 변경하는 함수
   const handlePasswordType = () => {
     setPasswordType((prevState) => ({
       type: prevState.visible ? "password" : "text",
@@ -62,7 +100,6 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
 
   const handleAddressChange = (e) => {
     const { name, value } = e.target;
-    // console.log(name, value);
     setFullAddress({
       ...fullAddress,
       [name]: value,
@@ -70,11 +107,6 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
   };
 
   const checkIfModified = () => {
-    // console.log(
-    //   newPassword !== "",
-    //   fullAddress.address !== userData.address,
-    //   fullAddress.detailAddress !== userData.detailAddress
-    // );
     if (
       !errors.password &&
       (newPassword !== "" ||
@@ -91,7 +123,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
     if (errors.password) return;
     try {
       const data = { ...fullAddress, password: newPassword };
-      const res = updateUserInfo(data);
+      const res = await updateUserInfo(data);
       setUserData({
         address: fullAddress.address,
         detailAddress: fullAddress.detailAddress,
@@ -101,7 +133,6 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
     } catch (error) {
       console.error(error);
     }
-    // console.log("수정 버튼 클릭: 정보 수정하기");
   };
 
   const handleConfirmClick = async () => {
@@ -109,16 +140,38 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
     await fetchUserData();
   };
 
-  const onChangeImage = () => {
-    const reader = new FileReader();
+  const onChangeImage = async () => {
     const file = fileInput.current.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("imageFiles", file);
 
-    reader.readAsDataURL(file);
-    reader.onloadend = () => {
-      setImageUrl(reader.result);
-    };
+      try {
+        let response;
+        if (userImage === null) {
+          response = await uploadImage(formData);
+        } else {
+          response = await updateImage(formData);
+        }
+
+        console.log("Image upload/update response:", response);
+        setUserImage(URL.createObjectURL(file));
+      } catch (error) {
+        console.error("Error uploading/updating image:", error);
+      }
+    }
   };
 
+  const handleGymDetails = async () => {
+    try {
+      const gymData = await GymInfoByUserId(userData.userId); // userId를 사용하여 체육관 정보를 가져옵니다
+      setGymInfo(gymData);
+      // 체육관 정보를 사용하여 새 페이지로 이동합니다
+      customNavigate(`/GymInfo`); // 라우팅 설정에 따라 URL 구조를 조정해야 합니다
+    } catch (error) {
+      console.error("체육관 정보를 불러오는 중 오류 발생:", error);
+    }
+  };
   return (
     <ModalLayout toggleModal={toggleModal}>
       <div className="userEdit w-[90%]">
@@ -126,8 +179,10 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
           <div className="text-2xl font-extrabold pb-5">
             <p>내 정보</p>
           </div>
-          <div className="text-sm pb-5 cursor-pointer hover:underline hover:underline-offset-4">
-            {/* 헬스장 회원 / 트레이너 회원 */}
+          <div
+            className="text-sm pb-5 cursor-pointer hover:underline hover:underline-offset-4"
+            onClick={handleGymDetails} // Click handler for 상세정보
+          >
             {(userData.role === "ROLE_GYM" ||
               userData.role === "ROLE_TRAINER") && <p>상세정보</p>}
           </div>
@@ -137,7 +192,8 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
             <div className="w-28 h-28 rounded-full">
               <img
                 className="w-full h-full rounded-full object-cover"
-                src={imageUrl ? imageUrl : Bprofile}
+                src={userImage || Bprofile}
+                alt="Profile"
               />
             </div>
             <input
@@ -158,7 +214,6 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
           </label>
         </div>
 
-        {/* <div className="border-b border-gray-300 h-5 w-5/6 mx-auto" /> */}
         {userData && (
           <div className="mt-6">
             <dl>
@@ -168,8 +223,6 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
                   {userData.userName}
                 </dd>
               </div>
-              {/* TODO 비밀번호 유효성 검사 */}
-              {/* {errors.password}를 표시해야함 (나머지는 다 구현됨) */}
               <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-5">
                 <dt className="text-sm font-medium text-gray-500">비밀번호</dt>
                 <dd className="flex text-gray-900 sm:mt-0 sm:col-span-2">
@@ -204,7 +257,6 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
                   {userData.email}
                 </dd>
               </div>
-              {/* 주소 */}
               <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-5">
                 <dt className="text-sm font-medium text-gray-500">주소</dt>
                 <dd className="flex text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -227,7 +279,6 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
                   </div>
                 </dd>
               </div>
-              {/* 상세주소 */}
               <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-5">
                 <dt className="text-sm font-medium text-gray-500">상세 주소</dt>
                 <dd className="flex text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -242,22 +293,42 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
                 </dd>
               </div>
               <div className="px-4 py-2 sm:grid sm:grid-cols-3 sm:gap-5">
-                {/* 일반 회원 */}
                 {userData.role === "ROLE_GENERAL" && (
                   <>
                     <dt className="text-sm font-medium text-gray-500">
-                      등록된 헬스장
+                      회원권
                     </dt>
                     <dd className="flex justify-between mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                      {userData.gym ? (
+                      {membership ? (
                         <>
-                          <p className="max-w-[190px] overflow-hidden text-ellipsis whitespace-nowrap">
-                            {userData.gym} (만료일: {userData.gymExpiry})
+                          <p className="max-w-[190px] overflow-hidden text-wrap whitespace-nowrap">
+                            <span
+                              className="cursor-pointer hover:text-gray-700"
+                              onClick={() =>
+                                customNavigate("/gymSearch", {
+                                  state: {
+                                    searchWord: membership.gym.user.userName,
+                                  },
+                                })
+                              }
+                            >
+                              {membership.gym.user.userName}{" "}
+                            </span>
+                            <br />
+                            <span
+                              className="cursor-pointer hover:text-gray-700"
+                              onClick={() =>
+                                // TODO 회원권 연장으로 이동
+                                customNavigate("/gymSearch", {
+                                  state: {
+                                    searchWord: membership.gym.user.userName,
+                                  },
+                                })
+                              }
+                            >
+                              (만료일: {membership.expDate})
+                            </span>
                           </p>
-                          <IoSearchOutline
-                            className="size-4 sm:mt-0.5 float-right"
-                            onClick={() => setIsAddressModalVisible(true)}
-                          />
                         </>
                       ) : (
                         <p
@@ -274,11 +345,10 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
             </dl>
           </div>
         )}
-        {isModified && (
+        {(newPassword || userImage !== null) && (
           <div className="flex float-end">
             <div className="mr-2">
               <Button
-                // height="30px"
                 width="120px"
                 color="peach-fuzz"
                 label="수정"

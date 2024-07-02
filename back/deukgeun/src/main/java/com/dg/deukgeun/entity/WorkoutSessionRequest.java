@@ -12,7 +12,7 @@ import lombok.Data;
 public class WorkoutSessionRequest {
     private Integer workoutSessionId;
     private Integer userId;
-    private Integer ptSessionId;
+    private PtSession ptSession;
     private LocalDate workoutDate;
     private String content;
     private Double bodyWeight;

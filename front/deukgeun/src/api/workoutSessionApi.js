@@ -1,9 +1,9 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
 
-// export const API_SERVER_HOST = "http://localhost:8282";
-// const prefix = `${API_SERVER_HOST}/api/workoutSession`;
-const prefix = `/api/workoutSession`; // proxy 사용
+export const API_SERVER_HOST = "http://localhost:8282";
+const prefix = `${API_SERVER_HOST}/api/workoutSession`;
+// const prefix = `/api/workoutSession`; // proxy 사용
 
 export const registerWorkoutSession = async (event) => {
   try {
@@ -23,6 +23,7 @@ export const registerWorkoutSession = async (event) => {
 };
 
 export const modifyWorkoutSession = async (event, eventId) => {
+  console.log("@@@@@@@@@@@@@", event);
   try {
     const res = await axios.put(`${prefix}/modify/${eventId}`, {
       workoutSessionId: eventId,
@@ -33,6 +34,7 @@ export const modifyWorkoutSession = async (event, eventId) => {
       startTime: event.startTime,
       endTime: event.endTime,
       workouts: event.workouts,
+      ptSession: event.ptSession,
     });
     return res.data;
   } catch (error) {
