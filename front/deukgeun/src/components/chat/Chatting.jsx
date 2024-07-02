@@ -30,7 +30,12 @@ const Chatting = ({
   const messageEndRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false); //userInfo Open/Close
   const windowSize = useWindowSize();
-  // cosnt [recipient, setRecipient ] = useState(chatRoom ? chatRoom.user.userId ?)
+  // const [recipient, setRecipient ] = useState(chatRoom ? chatRoom.user.userId ?)
+  const roles = {
+    ROLE_GENERAL: "회원",
+    ROLE_GYM: "헬스장",
+    ROLE_TRAINER: "트레이너",
+  };
 
   // Enter클릭으로 전송
   const handleKeyPress = (e) => {
@@ -69,11 +74,16 @@ const Chatting = ({
             <button id="backscreen" onClick={handleBackButtonClick}>
               <FaAngleLeft className="m-3" size="22" />
             </button>
-            <span className="text-sm font-medium">
-              {/* 헬스장 이름 추가 */}
-              <span className="inline-block">등록된 헬스장 이름</span> |{" "}
-              <span className="inline-block">{chatReceiver.userName}</span>
-            </span>
+            <div className="flex items-center gap-2">
+              {/* TODO 헬스장 이름 추가 */}
+              <span className="inline-block font-semibold">
+                {chatReceiver.userName}
+              </span>
+              {"|"}
+              <span className="inline-block text-sm text-gray-700">
+                {roles[chatReceiver.role]}
+              </span>
+            </div>
             <button
               className="hidden lg:block ml-auto m-1"
               onClick={() => setIsOpen(!isOpen)}
@@ -186,7 +196,7 @@ const arrayToDate = (arr) => {
 function ShowChatList({ chatList, userData }) {
   return chatList.map((chat, i) => {
     //마지막 시간만 보이도록 구현
-    console.log(i, chat);
+    // console.log(i, chat);
     let currentTimestamp = chat.timestamp;
     if (Array.isArray(currentTimestamp)) {
       currentTimestamp = arrayToDate(currentTimestamp).toISOString();

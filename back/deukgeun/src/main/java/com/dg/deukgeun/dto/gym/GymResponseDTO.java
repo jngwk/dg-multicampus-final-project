@@ -41,5 +41,6 @@ public class GymResponseDTO {
     private List<TrainerDTO> trainersList = new ArrayList<>();
 
     // 상품명
-    private List<ProductDTO> productList = new ArrayList();
+    @Builder.Default
+    private List<ProductDTO> productList = new ArrayList<>();
 }

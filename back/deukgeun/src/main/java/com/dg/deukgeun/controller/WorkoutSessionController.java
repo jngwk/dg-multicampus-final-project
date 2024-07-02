@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dg.deukgeun.dto.UserRole;
 import com.dg.deukgeun.dto.WorkoutDTO;
 import com.dg.deukgeun.dto.WorkoutSessionDTO;
 import com.dg.deukgeun.dto.WorkoutSessionReqeustDTO;
@@ -49,17 +50,18 @@ public class WorkoutSessionController {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         Integer userId = userDetails.getUserId();
-        // String[] days = yearMonth.split("-");
-        // Integer year = Integer.parseInt(days[0]);
-        // Integer month = Integer.parseInt(days[1]);
-        // LocalDate startDate = LocalDate.of(year, month, 1);
-        // // LocalDate startDate = LocalDate.parse(yearMonth + "-01");
-        // LocalDate endDate = startDate.plusMonths(2);
-        // startDate = startDate.minusMonths(1);
+        String authority = userDetails.getAuthorities().iterator().next().getAuthority();
 
-        // log.info("startDate: " + startDate);
-        // log.info("endDate: " + endDate);
-        return service.get(userId, LocalDate.parse(startDate), LocalDate.parse(endDate));
+        // 운동일지
+        if ("ROLE_GENERAL".equals(authority)) {
+            return service.get(userId, LocalDate.parse(startDate), LocalDate.parse(endDate));
+        }
+        // PT 캘린더
+        else if ("ROLE_TRAINER".equals(authority)) {
+            return service.getForTrainer(userId, LocalDate.parse(startDate), LocalDate.parse(endDate));
+        } else {
+            throw new IllegalArgumentException("Unknown authority: " + authority);
+        }
     }
 
     // workoutSession은 불러왔으니, 어떤 workoutSession을 클릭하면, 그 Id 정보를 가지고 있는 workout만 따로
@@ -95,7 +97,7 @@ public class WorkoutSessionController {
         workoutSessionDTO.setBodyWeight(workoutSessionRequest.getBodyWeight());
         workoutSessionDTO.setContent(workoutSessionRequest.getContent());
         workoutSessionDTO.setMemo(workoutSessionRequest.getMemo());
-        workoutSessionDTO.setPtSessionId(workoutSessionRequest.getPtSessionId());
+        workoutSessionDTO.setPtSession(workoutSessionRequest.getPtSession());
         workoutSessionDTO.setWorkoutDate(workoutSessionRequest.getWorkoutDate());
         workoutSessionDTO.setStartTime(workoutSessionRequest.getStartTime());
         workoutSessionDTO.setEndTime(workoutSessionRequest.getEndTime());
@@ -153,7 +155,7 @@ public class WorkoutSessionController {
         workoutSessionDTO.setContent(workoutSessionReqeustDTO.getContent());
         workoutSessionDTO.setEndTime(workoutSessionReqeustDTO.getEndTime());
         workoutSessionDTO.setMemo(workoutSessionReqeustDTO.getMemo());
-        workoutSessionDTO.setPtSessionId(workoutSessionReqeustDTO.getPtSessionId());
+        workoutSessionDTO.setPtSession(workoutSessionReqeustDTO.getPtSession());
         workoutSessionDTO.setStartTime(workoutSessionReqeustDTO.getStartTime());
         workoutSessionDTO.setWorkoutDate(workoutSessionReqeustDTO.getWorkoutDate());
 
