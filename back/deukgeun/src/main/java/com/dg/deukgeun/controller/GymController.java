@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ import com.dg.deukgeun.dto.gym.GymResponseDTO;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.entity.Gym;
+import com.dg.deukgeun.security.CustomUserDetails;
 import com.dg.deukgeun.service.GymImageService;
 import com.dg.deukgeun.service.GymService;
 import com.dg.deukgeun.service.ProductService;
@@ -186,6 +188,32 @@ public class GymController {
         gymResponseDTO.setProductList(productService.getList(gymId));
         return gymResponseDTO;
     }
+    //userId로 gym 정보 가져오기
+    @GetMapping("/getGymByUserId")
+    public GymResponseDTO getGymByUserId() {
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer userId = userDetails.getUserId();
+        GymDTO gymDTO = gymService.getGymByUserId(userId);
+        List<GymImageDTO> gymImageDTOList = gymImageService.getByGymId(gymDTO.getGymId());
+        List<String> fileNames = new ArrayList<>();
+        for (int i = 0; i < gymImageDTOList.size(); i++) {
+            fileNames.add(gymImageDTOList.get(i).getGymImage());
+        }
+        GymResponseDTO gymResponseDTO = new GymResponseDTO();
+        gymResponseDTO.setAddress(gymDTO.getAddress());
+        // gymResponseDTO.setApproval(gymDTO.getApproval());
+        gymResponseDTO.setCrNumber(gymDTO.getCrNumber());
+        gymResponseDTO.setDetailAddress(gymDTO.getDetailAddress());
+        gymResponseDTO.setGymId(gymDTO.getGymId());
+        gymResponseDTO.setGymName(gymDTO.getGymName());
+        gymResponseDTO.setIntroduce(gymDTO.getIntroduce());
+        gymResponseDTO.setOperatingHours(gymDTO.getOperatingHours());
+        gymResponseDTO.setPhoneNumber(gymDTO.getPhoneNumber());
+        gymResponseDTO.setUploadFileName(fileNames);
+        gymResponseDTO.setUserId(gymDTO.getUserId());
+        return gymResponseDTO;
+    }
 
     /*
      * 다음과 같은 형태로 Json/FormData 포멧을 넘겨받았을 때를 가정
@@ -285,7 +313,7 @@ public class GymController {
         gymDTO.setPhoneNumber(gymRequestDTO.getPhoneNumber());
         log.info("Modify: " + gymDTO);
         gymService.modify(gymDTO);
-        productService.deleteByGymId(gymId);
+        // productService.deleteByGymId(gymId);
         productService.insertList(gymRequestDTO.getProductList());
         return Map.of("RESULT", "SUCCESS");
     }

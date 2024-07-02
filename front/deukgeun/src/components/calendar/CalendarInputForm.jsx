@@ -3,8 +3,27 @@ import Button from "../shared/Button";
 import Input from "../shared/Input";
 import useCustomDate from "../../hooks/useCustomDate";
 import Loader from "../shared/Loader";
+import UserSearchModal from "../modals/UserSearchModal";
+import { getUsersList } from "../../api/ptApi";
+import { useAuth } from "../../context/AuthContext";
 
-// 캘린더 포맷이랑 일치하게 수정하기
+const initFormValues = {
+  ptSessionId: "",
+  ptUserId: "",
+  ptUserName: "",
+  trainer: "",
+  ptMemo: "",
+  workoutDate: "",
+  startTime: "",
+  endTime: "",
+  content: "",
+  bodyWeight: "",
+  memo: "",
+  workouts: [
+    { workoutName: "", workoutSet: "", workoutRep: "", workoutWeight: "" },
+  ],
+};
+
 const CalendarInputForm = ({
   addEvent,
   updateEvent,
@@ -15,30 +34,38 @@ const CalendarInputForm = ({
   toggleInputForm,
   workoutsLoading,
   deleteWorkouts,
+  role,
 }) => {
   const { computeTime, getTime } = useCustomDate();
+  const { userData } = useAuth();
 
-  const [formValues, setFormValues] = useState({
-    workoutDate: "",
-    startTime: "",
-    endTime: "",
-    // client: "",
-    content: "",
-    bodyWeight: "",
-    memo: "",
-    workouts: [
-      { workoutName: "", workoutSet: "", workoutRep: "", workoutWeight: "" },
-    ],
-  });
+  // Flattened initial state
+  const [formValues, setFormValues] = useState(initFormValues);
+
   const [deletedWorkouts, setDeletedWorkouts] = useState([]);
   const [date, setDate] = useState();
+  const [isUserSearchModalVisible, setIsUserSearchModalVisible] =
+    useState(false);
+  const [users, setUsers] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(false);
 
   // 날짜/이벤트 선택시 폼에 반영
   useEffect(() => {
     setDeletedWorkouts([]);
     if (selectedEvent) {
       setFormValues({
-        ...selectedEvent.extendedProps,
+        ptSessionId: selectedEvent.extendedProps.ptSession?.ptSessionId || "",
+        ptUserId: selectedEvent.extendedProps.ptSession?.pt?.user?.userId || "",
+        ptUserName:
+          selectedEvent.extendedProps.ptSession?.pt?.user?.userName || "",
+        trainer: selectedEvent.extendedProps.ptSession?.trainer || "",
+        ptMemo: selectedEvent.extendedProps.ptSession?.memo || "",
+        workoutDate: selectedEvent.extendedProps.workoutDate || "",
+        startTime: selectedEvent.extendedProps.startTime || "",
+        endTime: selectedEvent.extendedProps.endTime || "",
+        content: selectedEvent.extendedProps.content || "",
+        bodyWeight: selectedEvent.extendedProps.bodyWeight || "",
+        memo: selectedEvent.extendedProps.memo || "",
         workouts: selectedEvent.extendedProps.workouts || [
           {
             workoutName: "",
@@ -49,7 +76,6 @@ const CalendarInputForm = ({
         ],
       });
       setDate(selectedEvent.extendedProps.workoutDate.split("-")[2]);
-      console.log("selectedEvent", selectedEvent);
     } else if (selectedDate) {
       const selectedTime = selectedDate.split("T")[1];
       setFormValues({
@@ -69,31 +95,27 @@ const CalendarInputForm = ({
     }
   }, [selectedDate, selectedEvent]);
 
-  // workout 제외 나머지 input 수정시
+  // Input change handler
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues({
-      ...formValues, // 기존 state 가져오기
-      [name]: value, // state에서 name과 일치하는 value 수정
+      ...formValues,
+      [name]: value,
     });
   };
 
-  // workout 수정시
+  // Workout change handler
   const handleWorkoutChange = (index, e) => {
     const { name, value } = e.target;
-    const updatedWorkouts = [...formValues.workouts];
-    updatedWorkouts[index] = {
-      ...updatedWorkouts[index],
-      [name]: value,
-    };
+    const updatedWorkouts = formValues.workouts.map((workout, i) =>
+      i === index ? { ...workout, [name]: value } : workout
+    );
     setFormValues({
       ...formValues,
       workouts: updatedWorkouts,
     });
   };
 
-  // 새로운 workout input 추가
-  // TODO 빈 workout 예외 처리 필요
   const handleAddWorkout = () => {
     setFormValues({
       ...formValues,
@@ -110,7 +132,6 @@ const CalendarInputForm = ({
   };
 
   const handleDeleteWorkout = (index, id) => {
-    // TODO handle delete workout
     const updatedWorkouts = formValues.workouts.filter((_, i) => i !== index);
     setFormValues({
       ...formValues,
@@ -121,48 +142,98 @@ const CalendarInputForm = ({
     }
   };
 
-  const handleSubmit = (e) => {
-    // console.log(
-    //   "handleSubmit: ",
-    //   selectedEvent.id || selectedEvent.extendedProps.workoutSessionId
-    // );
+  const handleSubmit = () => {
+    const nestedFormValues = {
+      ptSession: {
+        ptSessionId: formValues.ptSessionId,
+        pt: {
+          user: {
+            userId: formValues.ptUserId,
+            userName: formValues.ptUserName,
+          },
+        },
+        trainer: formValues.trainer,
+        memo: formValues.ptMemo,
+      },
+      workoutDate: formValues.workoutDate,
+      startTime: formValues.startTime,
+      endTime: formValues.endTime,
+      content: formValues.content,
+      bodyWeight: formValues.bodyWeight,
+      memo: formValues.memo,
+      workouts: formValues.workouts,
+    };
+
     if (selectedEvent) {
-      if (deletedWorkouts) {
+      if (deletedWorkouts.length > 0) {
         deleteWorkouts(deletedWorkouts);
       }
       updateEvent(
-        formValues,
+        nestedFormValues,
         selectedEvent.id || selectedEvent.extendedProps.workoutSessionId
       );
     } else {
-      addEvent(formValues);
+      addEvent(nestedFormValues);
     }
-    // selectedEvent
-    //   ? updateEvent(
-    //       formValues,
-    //       selectedEvent.id || selectedEvent.extendedProps.workoutSessionId
-    //     )
-    //   : addEvent(formValues);
   };
 
-  const handleDelete = () => {
-    console.log("handleDelete");
-    deleteEvent(
+  const handleDelete = async () => {
+    await deleteEvent(
       selectedEvent.id || selectedEvent.extendedProps.workoutSessionId
     );
+    setFormValues(initFormValues);
+  };
+
+  const toggleUserSearchModal = () => {
+    if (!isUserSearchModalVisible) {
+      const fetchUsers = async () => {
+        try {
+          setUsersLoading(true);
+          const userList = await getUsersList();
+          setUsers(userList);
+        } catch (error) {
+          console.error("error fetching users in calendar input form", error);
+        } finally {
+          setUsersLoading(false);
+        }
+      };
+      fetchUsers();
+    }
+    setIsUserSearchModalVisible(!isUserSearchModalVisible);
   };
 
   return (
     <div className="h-4/6 w-72">
       <div className="p-3 flex gap-1 items-end">
-        <div className="mb-1 h-4 w-1 bg-peach-fuzz"></div>
+        <div
+          className={`mb-1 h-4 w-1 ${
+            formValues.ptSessionId ? "bg-blue-300" : "bg-green-200"
+          }`}
+        ></div>
         <div className="text-3xl ">
           {date}
           <span className="text-base ml-1">일</span>
         </div>
       </div>
-
       <div className="h-[600px] w-80 px-2 overflow-y-auto overflow-x-hidden scrollbar-hide">
+        {formValues.ptSessionId && (
+          <>
+            <Input
+              label="헬스장"
+              name="gym"
+              type="text"
+              value={formValues.trainer.gym.user.userName || ""}
+              readOnly
+            />
+            <Input
+              label="트레이너"
+              name="trainer"
+              type="text"
+              value={formValues.trainer.user.userName || ""}
+              readOnly
+            />
+          </>
+        )}
         <Input
           label="날짜"
           name="workoutDate"
@@ -187,19 +258,41 @@ const CalendarInputForm = ({
           onChange={handleChange}
         />
         <hr style={{ width: "240px" }} />
-        {/* <Input
-            label="회원"
-            name="client"
-            value={formValues.client}
-            onChange={handleChange}
-          /> */}
+        {role === "ROLE_TRAINER" && (
+          <>
+            <Input
+              label="회원 성함"
+              name="ptUserName"
+              type="text"
+              value={formValues.ptUserName || ""}
+              onChange={handleChange}
+              readOnly
+              feature={
+                <div className="-translate-y-1">
+                  <box-icon name="search" color="#bdbdbd" size="s"></box-icon>
+                </div>
+              }
+              featureOnClick={toggleUserSearchModal}
+              featureEnableOnLoad
+            />
+            {isUserSearchModalVisible && (
+              <UserSearchModal
+                toggleModal={toggleUserSearchModal}
+                userData={userData}
+                users={users}
+                usersLoading={usersLoading}
+                formValues={formValues}
+                setFormValues={setFormValues}
+              />
+            )}
+          </>
+        )}
         <Input
           label="제목"
           name="content"
           value={formValues.content || ""}
           onChange={handleChange}
         />
-
         {workoutsLoading ? (
           <Loader />
         ) : (
@@ -271,10 +364,10 @@ const CalendarInputForm = ({
           onChange={handleChange}
         />
         <Button
-          label={selectedEvent ? "수정" : "작성"}
+          label={selectedEvent ? "수정" : "등록"}
           onClick={handleSubmit}
         />
-        {selectedEvent ? <Button label="삭제" onClick={handleDelete} /> : ""}
+        {selectedEvent && <Button label="삭제" onClick={handleDelete} />}
       </div>
     </div>
   );

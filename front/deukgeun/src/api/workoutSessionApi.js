@@ -23,6 +23,7 @@ export const registerWorkoutSession = async (event) => {
 };
 
 export const modifyWorkoutSession = async (event, eventId) => {
+  console.log("@@@@@@@@@@@@@", event);
   try {
     const res = await axios.put(`${prefix}/modify/${eventId}`, {
       workoutSessionId: eventId,
@@ -33,6 +34,7 @@ export const modifyWorkoutSession = async (event, eventId) => {
       startTime: event.startTime,
       endTime: event.endTime,
       workouts: event.workouts,
+      ptSession: event.ptSession,
     });
     return res.data;
   } catch (error) {

@@ -1,6 +1,4 @@
-//헬스장 정보설정
-
-import React, { useState } from "react";
+import React, {useEffect ,useState } from "react";
 import useValidation from "../hooks/useValidation";
 import Input from "../components/shared/Input";
 import AddressModal from "../components/modals/AddressModal";
@@ -9,9 +7,12 @@ import UploadBox from "../components/set/UploadBox";
 import { FaArrowRightLong, FaCircleMinus } from "react-icons/fa6";
 import Button from "../components/shared/Button";
 import useCustomNavigate from "../hooks/useCustomNavigate";
+import {insertImage, deleteImage, GymInfo ,updateGym } from "../api/gymApi";
+import { useParams } from "react-router-dom";
 
 // 회원 정보
 const initGymData = {
+  gymId: "",
   GymName: "",
   crNumber: "",
   address: "",
@@ -22,21 +23,41 @@ const initGymData = {
   introduce: "",
   priceImage: null,
   imgList: [],
+  // healthProducts: [],
+  // ptPrdoucts: [],
 };
+
 
 const Gymset = () => {
   const customNavigate = useCustomNavigate();
     
+  const {gymId} =useParams();
   const [GymData, setGymData] = useState(initGymData);
-  const [healthProducts, setHealthProducts] = useState([]);
-  const [newHealthProduct, setNewHealthProduct] = useState({ productName: "", days: "", price: "" });
-  const [ptProducts, setPTProducts] = useState([]);
-  const [newPTProduct, setNewPTProduct] = useState({ productName: "", ptCountTotal: "", days: "", price: "" });
+  // const [healthProducts, setHealthProducts] = useState([]);
+  // const [newHealthProduct, setNewHealthProduct] = useState({ productName: "", days: "", price: "" });
+  // const [ptProducts, setPTProducts] = useState([]);
+  // const [newPTProduct, setNewPTProduct] = useState({ productName: "", ptCountTotal: "", days: "", price: "" });
   const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
-  const [healthErrors, setHealthErrors] = useState({});
-  const [ptErrors, setPTErrors] = useState({});
+  // const [healthErrors, setHealthErrors] = useState({});
+  // const [ptErrors, setPTErrors] = useState({});
   const { validateInput } = useValidation();
 
+  useEffect(() => {
+    if (gymId) {
+      fetchGymData(gymId);
+    }
+  }, [gymId]);
+
+  const fetchGymData = async (gymId) => {
+    try {
+      const gymData = await GymInfo(gymId); // replace with your actual function to fetch gym data
+      setGymData(gymData); // assuming gymData includes gymId
+      // setHealthProducts(gymData.healthProducts || []);
+      // setPTProducts(gymData.ptProducts || []);
+    } catch (error) {
+      console.error("Error fetching gym data:", error);
+    }
+  };
   const handleGymDataChange = (e) => {
     const { name, value } = e.target;
     setGymData({
@@ -47,84 +68,84 @@ const Gymset = () => {
     validateInput(name, value);
   };
 
-  const handleNewHealthProductChange = (e) => {
-    const { name, value } = e.target;
+  // const handleNewHealthProductChange = (e) => {
+  //   const { name, value } = e.target;
   
-    // 숫자가 아닌 경우에 대한 유효성 검사
-    const newErrors = {};
-    if (name === "days" && !/^\d+$/.test(value)) {
-      newErrors.days = "숫자만 입력하세요.";
-    }
+  //   // 숫자가 아닌 경우에 대한 유효성 검사
+  //   const newErrors = {};
+  //   if (name === "days" && !/^\d+$/.test(value)) {
+  //     newErrors.days = "숫자만 입력하세요.";
+  //   }
   
-    setNewHealthProduct({
-      ...newHealthProduct,
-      [name]: value,
-    });
+  //   setNewHealthProduct({
+  //     ...newHealthProduct,
+  //     [name]: value,
+  //   });
   
-    setHealthErrors(newErrors); // 오류 상태 업데이트
-  };
+  //   setHealthErrors(newErrors); // 오류 상태 업데이트
+  // };
 
-  const handleAddHealthProduct = () => {
-    const newErrors = {};
-    if (!newHealthProduct.productName) {
-      newErrors.productName = "상품이름을 입력하세요.";
-    }
-    if (!newHealthProduct.days) {
-      newErrors.days = "상품 기간을 입력하세요.";
-    }
-    if (!newHealthProduct.price) {
-      newErrors.price = "상품 가격을 입력하세요.";
-    }
+  // const handleAddHealthProduct = () => {
+  //   const newErrors = {};
+  //   if (!newHealthProduct.productName) {
+  //     newErrors.productName = "상품이름을 입력하세요.";
+  //   }
+  //   if (!newHealthProduct.days) {
+  //     newErrors.days = "상품 기간을 입력하세요.";
+  //   }
+  //   if (!newHealthProduct.price) {
+  //     newErrors.price = "상품 가격을 입력하세요.";
+  //   }
 
-    if (Object.keys(newErrors).length > 0) {
-      setHealthErrors(newErrors);
-      return;
-    }
+  //   if (Object.keys(newErrors).length > 0) {
+  //     setHealthErrors(newErrors);
+  //     return;
+  //   }
 
-    setHealthProducts([...healthProducts, newHealthProduct]);
-    setNewHealthProduct({ productName: "", days: "", price: "" });
-    setHealthErrors({});
-  };
+  //   setHealthProducts([...healthProducts, newHealthProduct]);
+  //   setNewHealthProduct({ productName: "", days: "", price: "" });
+  //   setHealthErrors({});
+  // };
 
-  const handleNewPTProductChange = (e) => {
-    const { name, value } = e.target;
-    const newErrors = {};
-    if (name === "days" && !/^\d+$/.test(value)) {
-      newErrors.days = "숫자만 입력하세요.";
-    } else if (name === "ptCountTotal" && !/^\d+$/.test(value)) {
-        newErrors.ptCountTotal = "숫자만 입력하세요.";
-    }
+  // const handleNewPTProductChange = (e) => {
+  //   const { name, value } = e.target;
+  //   const newErrors = {};
+  //   if (name === "days" && !/^\d+$/.test(value)) {
+  //     newErrors.days = "숫자만 입력하세요.";
+  //   } else if (name === "ptCountTotal" && !/^\d+$/.test(value)) {
+  //       newErrors.ptCountTotal = "숫자만 입력하세요.";
+  //   }
 
-    setNewPTProduct({
-      ...newPTProduct,
-      [name]: value,
-    });
-    setPTErrors(newErrors); // PT 오류 상태 업데이트
-  };
+  //   setNewPTProduct({
+  //     ...newPTProduct,
+  //     [name]: value,
+  //   });
+  //   setPTErrors(newErrors); // PT 오류 상태 업데이트
+  // };
 
-  const handleAddPTProduct = () => {
-    const newErrors = {};
-    if (!newPTProduct.productName) {
-      newErrors.productName = "상품이름을 입력하세요.";
-    }
-    if (!newPTProduct.ptCountTotal) {
-      newErrors.ptCountTotal = "PT 횟수를 입력하세요.";
-    }
-    if (!newPTProduct.days) {
-      newErrors.days = "상품 기간을 입력하세요.";
-    }
-    if (!newPTProduct.price) {
-      newErrors.price = "상품 가격을 입력하세요.";
-    }
+  // const handleAddPTProduct = () => {
+  //   const newErrors = {};
+  //   if (!newPTProduct.productName) {
+  //     newErrors.productName = "상품이름을 입력하세요.";
+  //   }
+  //   if (!newPTProduct.ptCountTotal) {
+  //     newErrors.ptCountTotal = "PT 횟수를 입력하세요.";
+  //   }
+  //   if (!newPTProduct.days) {
+  //     newErrors.days = "상품 기간을 입력하세요.";
+  //   }
+  //   if (!newPTProduct.price) {
+  //     newErrors.price = "상품 가격을 입력하세요.";
+  //   }
 
-    if (Object.keys(newErrors).length > 0) {
-      setPTErrors(newErrors);
-      return;
-    }
-    setPTProducts([...ptProducts, newPTProduct]);
-    setNewPTProduct({ productName: "", ptCountTotal: "", days: "", price: "" });
-    setPTErrors({});
-  };
+  //   if (Object.keys(newErrors).length > 0) {
+  //     setPTErrors(newErrors);
+  //     return;
+  //   }
+  //   setPTProducts([...ptProducts, newPTProduct]);
+  //   setNewPTProduct({ productName: "", ptCountTotal: "", days: "", price: "" });
+  //   setPTErrors({});
+  // };
 
   const handlePriceImageChange = (files) => {
     const priceImage = files[0];
@@ -134,21 +155,66 @@ const Gymset = () => {
     });
   };
 
-  const handleImgListChange = (files) => {
-    setGymData({
+  // const handleImgListChange = (files) => {
+  //   setGymData({
+  //     ...GymData,
+  //     imgList: files.slice(0, 12),
+  //   });
+  // };
+  const handleImgListChange = async (files) => {
+    try {
+      const response = await insertImage(GymData.gymId, files);
+      if (response.RESULT === 'SUCCESS') {
+        setGymData({
+          ...GymData,
+          imgList: [...GymData.imgList, ...files],
+        });
+      }
+    } catch (error) {
+      console.error('Error uploading images:', error);
+      alert('Failed to upload images');
+    }
+  };
+  const handleDeleteImage = async (image) => {
+    try {
+      const response = await deleteImage(image);
+      if (response.RESULT === 'SUCCESS') {
+        setGymData({
+          ...GymData,
+          imgList: GymData.imgList.filter((img) => img !== image),
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting image:', error);
+      alert('Failed to delete image');
+    }
+  }
+  // const handleDeleteHealthProduct = (index) => {
+  //   const updatedHealthProducts = healthProducts.filter((_, i) => i !== index);
+  //   setHealthProducts(updatedHealthProducts);
+  // };
+
+  // const handleDeletePTProduct = (index) => {
+  //   const updatedPTProducts = ptProducts.filter((_, i) => i !== index);
+  //   setPTProducts(updatedPTProducts);
+  // };
+  const handleSubmit = async () => {
+
+    const gymDataToSubmit = {
       ...GymData,
-      imgList: files.slice(0, 12),
-    });
-  };
+      // productList: [...healthProducts, ...ptProducts],
+    };
 
-  const handleDeleteHealthProduct = (index) => {
-    const updatedHealthProducts = healthProducts.filter((_, i) => i !== index);
-    setHealthProducts(updatedHealthProducts);
-  };
-
-  const handleDeletePTProduct = (index) => {
-    const updatedPTProducts = ptProducts.filter((_, i) => i !== index);
-    setPTProducts(updatedPTProducts);
+    console.log("Submitting gym data:", gymDataToSubmit);
+    try {
+      const response = await updateGym(GymData.gymId, gymDataToSubmit);
+      if (response.RESULT === "SUCCESS") {
+        alert("Gym information updated successfully");
+      }
+    } catch (error) {
+      console.error("Error updating gym information:", error);
+      alert("Failed to update gym information");
+    }
   };
 
   const handleTrainerRegisterClick = () => {
@@ -171,8 +237,7 @@ const Gymset = () => {
                 width="320px"
                 name="GymName"
                 value={GymData.GymName}
-                required={true}
-                onChange={handleGymDataChange}
+                readOnly={true}
               />
             </div>
             {/* 사업자 번호 */}
@@ -183,11 +248,12 @@ const Gymset = () => {
                 width="320px"
                 name="crNumber"
                 value={GymData.crNumber}
-                required={true}
-                onChange={handleGymDataChange}
+                readOnly={true}
+                // required={true}
+                // onChange={handleGymDataChange}
               />
             </div>
-            {/* 주소 */}
+            {/* 주소*/}
             <div className="flex flex-row space-x-48">
               <p className="mt-3">주소</p>
               <div className="flex flex-col">
@@ -208,8 +274,9 @@ const Gymset = () => {
                   width="320px"
                   name="detailAddress"
                   value={GymData.detailAddress}
-                  required={true}
-                  onChange={handleGymDataChange}
+                  // required={true}
+                  // onChange={handleGymDataChange}
+                  readOnly = {true}
                 />
               </div>
             </div>
@@ -250,7 +317,7 @@ const Gymset = () => {
                 onChange={handleGymDataChange}
               />
             </div>
-            {/* 헬스권 */}
+            {/* 헬스권
             <div className="flex flex-row space-x-36">
               <p className="mt-3 w-20 pre-line">헬스권 <br></br>상품 설정</p>
               <div className="flex flex-row space-x-5">
@@ -310,8 +377,8 @@ const Gymset = () => {
                   ))}
                 </div>
               </div>
-            </div>
-             {/* PT권 */}
+            </div> */}
+             {/* PT권
              <div className="flex flex-row space-x-36">
             <p className="mt-3 w-20 pre-line">PT권 <br></br>상품 설정</p>
               <div className="flex flex-row space-x-5">
@@ -380,7 +447,7 @@ const Gymset = () => {
                   ))}
                 </div>
               </div>
-            </div>
+            </div> */}
             {/* 가격표 이미지 */}
             <div className="flex flex-row space-x-40">
               <p className="mt-3 w-[73px]">가격표 이미지</p>
@@ -411,6 +478,15 @@ const Gymset = () => {
                 required={true}
                 onChange={handleGymDataChange} 
               />
+            </div>
+             {/* Submit Button */}
+            <div className="flex justify-center mt-8">
+              <button
+                className="px-4 py-2 text-white bg-green-500 rounded hover:bg-green-700"
+                onClick={handleSubmit}
+              >
+                정보 수정
+              </button>
             </div>
           </div>
         </div>
