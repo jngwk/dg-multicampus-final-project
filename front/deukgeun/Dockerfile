@@ -16,8 +16,16 @@ COPY . .
 # Build the React application
 RUN npm run build
 
+##############################
+
 # Use Nginx to serve the application
 FROM nginx:alpine
+
+# Remove default Nginx configuration
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copy custom Nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy the build files to the Nginx HTML directory
 COPY --from=build /app/build /usr/share/nginx/html
