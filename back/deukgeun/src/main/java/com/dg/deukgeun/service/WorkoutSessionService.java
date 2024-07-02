@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import com.dg.deukgeun.dto.PtSessionDTO;
 import com.dg.deukgeun.dto.WorkoutSessionDTO;
 import com.dg.deukgeun.entity.WorkoutSession;
 import com.dg.deukgeun.repository.WorkoutSessionRepository;
@@ -67,7 +68,22 @@ public class WorkoutSessionService {
         workoutSessionRepository.save(workoutSession);
     }
 
+    public void updateByPtSession(PtSessionDTO ptSessionDTO){
+        Optional<WorkoutSession> result = workoutSessionRepository.findByPtSessionId(ptSessionDTO.getPtSessionId());
+
+        WorkoutSession workoutSession = result.orElseThrow();
+        workoutSession.setEndTime(ptSessionDTO.getEndTime());
+        workoutSession.setStartTime(ptSessionDTO.getStartTime());
+        workoutSession.setWorkoutDate(ptSessionDTO.getPtDate());
+
+        workoutSessionRepository.save(workoutSession);
+    }
+
     public void remove(Integer workoutSessionId) {
         workoutSessionRepository.deleteById(workoutSessionId);
+    }
+
+    public void deleteByPtSession(Integer ptSessionId){
+        workoutSessionRepository.deleteByPtSessionId(ptSessionId);
     }
 }

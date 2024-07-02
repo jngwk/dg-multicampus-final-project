@@ -495,7 +495,7 @@ const MemberRegister = () => {
       {isAlertModalVisible && (
         <AlertModal
           headerEmoji={"✔️"}
-          line1={"헬스장 등록이 완료습니다!"}
+          line1={"헬스장 등록이 완료되었습니다!"}
           button2={{
             label: "확인",
             onClick: handleConfirmClick,

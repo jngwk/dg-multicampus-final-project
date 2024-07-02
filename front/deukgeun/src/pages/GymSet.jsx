@@ -148,7 +148,7 @@ const Gymset = () => {
 
   return (
     <>
-      <div className="space-y-8 relative">
+      <div className="space-y-8 relative overflow-x-hidden">
         <div className="flex flex-col space-y-6">
           <p className="font-extrabold text-2xl pb-7">헬스권 정보 설정</p>
           <div className="py-10 px-7 mx-6 rounded-lg flex flex-col space-y-4 w-[1000px] h-fit border border-peach-fuzz">
