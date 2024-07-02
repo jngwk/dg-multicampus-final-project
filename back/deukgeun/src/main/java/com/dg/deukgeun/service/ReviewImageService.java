@@ -13,12 +13,10 @@ import com.dg.deukgeun.repository.ReviewImageRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-@Log4j2
 public class ReviewImageService {
     private final ModelMapper modelMapper;
     @Autowired

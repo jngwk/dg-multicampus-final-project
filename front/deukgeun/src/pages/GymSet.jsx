@@ -17,9 +17,9 @@ const initGymData = {
   crNumber: "",
   address: "",
   detailAddress: "",
-  phonNumber: "",
+  phoneNumber: "",
   SNSLink: "",
-  OperatingHours: "",
+  operatingHours: "",
   introduce: "",
   priceImage: null,
   imgList: [],
@@ -182,9 +182,9 @@ const Gymset = () => {
         crNumber: GymData.crNumber,
         address: GymData.address,
         detailAddress: GymData.detailAddress,
-        phonNumber: GymData.phonNumber,
+        phoneNumber: GymData.phoneNumber,
         SNSLink: GymData.SNSLink,
-        OperatingHours: GymData.OperatingHours,
+        operatingHours: GymData.operatingHours,
         introduce: GymData.introduce,
       }
       const gymId = gymData.gymId;
@@ -260,9 +260,10 @@ const Gymset = () => {
               <Input
                 label="업체명"
                 width="320px"
-                name="GymName"
+                name="userName"
                 value={GymData.userName}
-                readOnly={true}
+                required={true}
+                onChange={handleGymDataChange}
               />
             </div>
             {/* 사업자 번호 */}
@@ -311,8 +312,8 @@ const Gymset = () => {
               <Input
                 label="센터 or 대표자 전화번호 ('-'입력) "
                 width="320px"
-                name="phonNumber"
-                value={GymData.phonNumber}
+                name="phoneNumber"
+                value={GymData.phoneNumber}
                 required={true}
                 onChange={handleGymDataChange}
               />
@@ -336,8 +337,8 @@ const Gymset = () => {
                 label="운영시간"
                 width="320px"
                 height="150px"
-                name="OperatingHours"
-                value={GymData.OperatingHours}
+                name="operatingHours"
+                value={GymData.operatingHours}
                 required={true}
                 onChange={handleGymDataChange}
               />

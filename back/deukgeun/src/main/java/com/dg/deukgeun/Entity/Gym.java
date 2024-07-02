@@ -1,5 +1,7 @@
 package com.dg.deukgeun.entity;
 
+import java.util.Set;
+
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 
 import jakarta.persistence.CascadeType;
@@ -8,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -37,6 +40,9 @@ public class Gym {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Product> products;
 
     public Gym(GymSignUpDTO dto) {
         this.user = new User();

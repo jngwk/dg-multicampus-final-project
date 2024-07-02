@@ -31,6 +31,7 @@ const GymSet = lazy(() => import("../pages/GymSet"));
 const TrainerSet = lazy(() => import("../pages/TrainerSet"));
 const QnaList = lazy(() => import("../pages/QnaList"));
 const GymInfo = lazy(()=> import("../pages/GymInfo"));
+const PtSessionRegister = lazy(() => import("../pages/PtSessionForm"));
 
 const root = createBrowserRouter([
   {
@@ -155,6 +156,10 @@ const root = createBrowserRouter([
       {
         path: "GymInfo",
         element: <GymInfo />,
+      },
+      {
+        path: "PtSessionRegister",
+        element: <PtSessionRegister />,
       },
     ],
   },

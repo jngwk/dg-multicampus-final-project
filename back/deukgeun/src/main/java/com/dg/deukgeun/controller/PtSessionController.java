@@ -1,7 +1,5 @@
 package com.dg.deukgeun.controller;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -164,5 +162,12 @@ public class PtSessionController {
         workoutSessionService.deleteByPtSession(ptSessionId);
 
         return Map.of("RESULT", "SUCESS");
+    }
+    
+    @GetMapping("/getPtSession")
+    public List<PtSessionDTO> getPtSessionsForCurrentUser() {
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Integer userId = userDetails.getUserId();
+        return ptSessionService.getPtSession(userId);
     }
 }
