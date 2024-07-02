@@ -4,6 +4,8 @@ package com.dg.deukgeun.dto.gym;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dg.deukgeun.dto.ProductDTO;
 
 // import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +31,8 @@ public class GymResponseDTO {
     private String operatingHours;
     private String introduce;
     // private Integer approval;
+    @Builder.Default
+    private List<MultipartFile> files = new ArrayList<>();
     @Builder.Default
     private List<String> uploadFileName = new ArrayList<>();
 

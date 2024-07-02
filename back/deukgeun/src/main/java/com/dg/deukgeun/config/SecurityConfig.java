@@ -91,7 +91,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/userInfo", "/ws/**","/api/membership/findMembership").hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM", "ROLE_TRAINER")
                         .requestMatchers("/api/user/workoutSession/**", "/api/personalTraining/get/**", "/api/personalTraining/post").hasAnyAuthority("ROLE_GENERAL")
                         .requestMatchers("/api/membership/register","/api/membership/findMembership","/api/membership/findPT").hasAuthority("ROLE_GENERAL")
-                        .requestMatchers("/api/membership/stats", "/api/membership/stats/**","/api/user/signUp/trainer", "/api/trainers/update/**","/api/gym/put/**","/api/gym/getGymByUserId").hasAnyAuthority("ROLE_GYM")
+                        .requestMatchers("/api/membership/stats", "/api/membership/stats/**","/api/user/signUp/trainer", "/api/trainers/update/**","/api/gym/put/**","/api/gym/getGymByUserId","/api/gym/insertImage/**").hasAnyAuthority("ROLE_GYM")
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/reviews/delete/**", "api/reviews/update/**").hasAnyAuthority("ROLE_GENERAL", "ROLE_ADMIN")
                         .requestMatchers("/api/reviews/registerReview", "api/reviews/uploadImages/**", "api/reviews/insertImage/**", "api/reviews/deleteImage/**","api/payment/verify/**").hasAuthority("ROLE_GENERAL")
