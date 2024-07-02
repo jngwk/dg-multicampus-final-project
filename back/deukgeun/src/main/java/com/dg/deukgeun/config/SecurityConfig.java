@@ -112,8 +112,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/reviews/registerReview", "api/reviews/uploadImages/**",
                                 "api/reviews/insertImage/**", "api/reviews/deleteImage/**", "api/payment/verify/**")
                         .hasAuthority("ROLE_GENERAL")
-                        .requestMatchers("/api/reviews/reviewList/**").permitAll()
-                        .requestMatchers("/api/trainers/update/**", "/api/ptSession/**", "/api/user/workoutSession/**",
+                        .requestMatchers("/api/reviews/reviewList/**", "/api/ptSession/**").permitAll()
+                        .requestMatchers("/api/trainers/update/**", "/api/user/workoutSession/**",
                                 "/api/workout/**")
                         .hasAuthority("ROLE_TRAINER")
                         .anyRequest().authenticated()) // 그 외 모든 요청은 인증이 필요합니다

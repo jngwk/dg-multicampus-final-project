@@ -126,7 +126,7 @@ public class MembershipService {
     }
     // 허승돈 작성 종료
 
-    @PreAuthorize("(hasRole('ROLE_GYM')) && #userId == principal.userId")
+    @PreAuthorize("(hasRole('ROLE_GYM'))")
     public List<Membership> getMembershipStatsByGymUserId(Integer userId) {
         User user = userRepository.findById(userId).orElse(null);
         if (user != null) {

@@ -59,6 +59,8 @@ const QnaForm = () => {
 
       // Optionally reset form after successful submission
       setFormValues(initState);
+
+
     } catch (error) {
       console.error("Error registering form data", error);
       // Handle error, e.g., show an error message to the user

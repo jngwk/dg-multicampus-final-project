@@ -4,9 +4,12 @@ import AddressModal from "../components/modals/AddressModal";
 import useValidation from "../hooks/useValidation";
 import CustomDatePicker from "../components/shared/DatePicker";
 import formatDate from "../components/shared/FormatDate";
+
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { FaAngleDoubleRight } from "react-icons/fa";
 import { BsChevronDown } from "react-icons/bs";
+import { GiArchiveRegister } from "react-icons/gi";
+
 import TextArea from "../components/shared/TextArea";
 import { useAuth } from "../context/AuthContext";
 import { registerMembership } from "../api/membershipApi";
@@ -34,7 +37,7 @@ const MemberRegister = () => {
   const handleWorkoutDurationFocus = () => setWorkoutDurationFocus(true);
   const handleWorkoutDurationBlur = () => setWorkoutDurationFocus(false);
 
-  // const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
+  const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -231,13 +234,18 @@ const MemberRegister = () => {
 
   return (
     <>
-      <div className="flex flex-row items-center">
+      <div className="flex flex-row justify-center items-center mt-10 relative ">
+        <GiArchiveRegister color="#9F8D8D"
+          className={` ${isExpanded
+            ? "absolute left-1/4 top-0 w-20 h-20 z-50"
+            : "absolute left-1/3 top-0 w-20 h-20 z-50"
+          } `}
+        />
         <div
-          className={`m-10 ${
-            isExpanded
-              ? "w-[1000px] justify-between space-x-10 px-20"
+          className={`m-10 ${isExpanded
+              ? "w-[1000px] justify-center space-x-10 px-20 relative"
               : "w-[500px] justify-center"
-          } h-[550px] rounded-lg flex items-center border-2 border-peach-fuzz`}
+            } h-[550px] rounded-lg flex items-center border-2 border-peach-fuzz`}
         >
           <div className="flex flex-col items-center space-y-6">
             <p className="font-semibold text-xl">헬스권 등록</p>
@@ -262,9 +270,8 @@ const MemberRegister = () => {
                   onFocus={handleGenderFocus}
                   onBlur={handleGenderBlur}
                   type="button"
-                  className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
-                    genderFocus ? "border-peach-fuzz" : "border-gray-400"
-                  } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                  className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${genderFocus ? "border-peach-fuzz" : "border-gray-400"
+                    } focus:border-2 focus:outline-none text-sm peer my-2 `}
                   value={userGender}
                   onChange={handleChangeGender}
                 >
@@ -290,9 +297,8 @@ const MemberRegister = () => {
                   onFocus={handleAgeFocus}
                   onBlur={handleAgeBlur}
                   type="button"
-                  className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
-                    ageFocus ? "border-peach-fuzz" : "border-gray-400"
-                  } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                  className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm  ${ageFocus ? "border-peach-fuzz" : "border-gray-400"
+                    } focus:border-2 focus:outline-none text-sm peer my-2 `}
                   value={userAge}
                   onChange={handleChangeAge}
                 >
@@ -326,7 +332,7 @@ const MemberRegister = () => {
               onChange={handleUserDataChange}
               readOnly={true}
               feature="검색"
-              // featureOnClick={() => setIsAddressModalVisible(true)}
+              featureOnClick={() => setIsAddressModalVisible(true)}
               featureEnableOnLoad={true}
               required={true}
             />
@@ -340,40 +346,41 @@ const MemberRegister = () => {
             />
           </div>
           {isExpanded && (
-            <div className="flex flex-col items-center space-y-4 w-full">
-              <div className="flex flex-row space-x-6 relative items-center justify-between">
-                {/* 헬스권  */}
-                <div className="dropdown relative">
-                  <label
-                    className={`absolute right-30 -top-4 px-2 text-xs pointer-events-none text-gray-400`}
-                  >
-                    상품이름
-                  </label>
-                  <button
-                    onClick={toggleDropdown}
-                    className="w-[120px] flex justify-between items-center border border-gray-400 rounded-lg p-2 "
-                  >
-                    {selectedPeriod}
-                    <BsChevronDown />
-                  </button>
-                  {isDropdownOpen && (
-                    <ul className="absolute w-full border border-gray-400 rounded-lg list-none z-10 bg-white">
-                      {gym.productList.map((product) => (
-                        <li
-                          key={product.productId}
-                          className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
-                          onClick={() =>
-                            onClickPeriod({
-                              target: { value: product.productName },
-                            })
-                          }
-                        >
-                          {product.productName}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
+            <div className="flex flex-col items-start space-y-7">
+              {/* 헬스권  */}
+              <div className="dropdown relative">
+                <label
+                  className={`absolute right-30 -top-4 px-2 text-xs pointer-events-none text-gray-400`}
+                >
+                  상품이름
+                </label>
+                <button
+                  onClick={toggleDropdown}
+                  className="w-[120px] h-11 flex justify-between items-center border border-gray-400 rounded-lg p-2 "
+                >
+                  {selectedPeriod}
+                  <BsChevronDown />
+                </button>
+                {isDropdownOpen && (
+                  <ul className="absolute w-full border border-gray-400 rounded-lg list-none z-10 bg-white">
+                    {gym.productList.map((product) => (
+                      <li
+                        key={product.productId}
+                        className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
+                        onClick={() =>
+                          onClickPeriod({
+                            target: { value: product.productName },
+                          })
+                        }
+                      >
+                        {product.productName}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <div className="flex flex-row space-x-3 relative items-center justify-between">
+
                 {/* 등록일 만료일 */}
                 <div className="relative">
                   <label
@@ -404,81 +411,81 @@ const MemberRegister = () => {
 
               {/* 신청사유 */}
 
-              <div className="relative">
-                <label
-                  className={`absolute -top-2 px-2 text-xs pointer-events-none text-gray-400`}
-                >
-                  신청사유
-                </label>
-                <select
-                  onFocus={handleMemberReasonFocus}
-                  onBlur={handleMemberReasonBlur}
-                  type="button"
-                  className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
-                    userMemberReasonFocus
-                      ? "border-peach-fuzz"
-                      : "border-gray-400"
-                  } focus:border-2 focus:outline-none text-sm peer my-2 `}
-                  value={userMemberReason}
-                  onChange={handleChangeMemberReason}
-                >
-                  <option value="PT">PT</option>
-                  <option value="다이어트">다이어트</option>
-                  <option value="건강">건강</option>
-                  <option value="바디프로필">바디프로필</option>
-                  <option value="체형관리">체형관리</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  {!userMemberReasonFocus ? (
-                    <FaChevronDown className="text-gray-400" />
-                  ) : (
-                    <FaChevronUp className="text-gray-400" />
-                  )}
+              <div className="flex flex-row space-x-4">
+                <div className="relative">
+                  <label
+                    className={`absolute -top-2  px-2 text-xs pointer-events-none text-gray-400`}
+                  >
+                    신청사유
+                  </label>
+                  <select
+                    onFocus={handleMemberReasonFocus}
+                    onBlur={handleMemberReasonBlur}
+                    type="button"
+                    className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userMemberReasonFocus
+                        ? "border-peach-fuzz"
+                        : "border-gray-400"
+                      } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                    value={userMemberReason}
+                    onChange={handleChangeMemberReason}
+                  >
+                    <option value="PT">PT</option>
+                    <option value="다이어트">다이어트</option>
+                    <option value="건강">건강</option>
+                    <option value="바디프로필">바디프로필</option>
+                    <option value="체형관리">체형관리</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    {!userMemberReasonFocus ? (
+                      <FaChevronDown className="text-gray-400" />
+                    ) : (
+                      <FaChevronUp className="text-gray-400" />
+                    )}
+                  </div>
+                </div>
+
+                <div className="relative">
+                  {/* 운동경력(선택) */}
+                  <label
+                    className={`absolute right-30 -top-2 px-2 text-xs pointer-events-none text-gray-400`}
+                  >
+                    운동경력(선택)
+                  </label>
+
+                  <select
+                    onFocus={handleWorkoutDurationFocus}
+                    onBlur={handleWorkoutDurationBlur}
+                    type="button"
+                    className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userWorkoutDurationFocus
+                        ? "border-peach-fuzz"
+                        : "border-gray-400"
+                      } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                    value={userWorkoutDuration}
+                    onChange={handleChangeWorkoutDuration}
+                  >
+                    {WorkoutDurationOptions}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    {!userWorkoutDurationFocus ? (
+                      <FaChevronDown className="text-gray-400" />
+                    ) : (
+                      <FaChevronUp className="text-gray-400" />
+                    )}
+                  </div>
                 </div>
               </div>
-
-              <div className="relative">
-                {/* 운동경력(선택) */}
-                <label
-                  className={`absolute right-30 -top-2 px-2 text-xs pointer-events-none text-gray-400`}
-                >
-                  운동경력(선택)
-                </label>
-
-                <select
-                  onFocus={handleWorkoutDurationFocus}
-                  onBlur={handleWorkoutDurationBlur}
-                  type="button"
-                  className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
-                    userWorkoutDurationFocus
-                      ? "border-peach-fuzz"
-                      : "border-gray-400"
-                  } focus:border-2 focus:outline-none text-sm peer my-2 `}
-                  value={userWorkoutDuration}
-                  onChange={handleChangeWorkoutDuration}
-                >
-                  {WorkoutDurationOptions}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  {!userWorkoutDurationFocus ? (
-                    <FaChevronDown className="text-gray-400" />
-                  ) : (
-                    <FaChevronUp className="text-gray-400" />
-                  )}
-                </div>
-              </div>
-              <div className="flex float-end">
+              <div className="flex flex-row items-center absolute right-10 bottom-10">
                 {/* @@@@@@@@@상품 가격 표시 */}
                 {/* @@@@@@@@@상품 가격 표시 */}
                 {/* @@@@@@@@@상품 가격 표시 */}
                 {/* @@@@@@@@@상품 가격 표시 */}
-                <div>{selectedProductPrice}원</div>
-                <div className="mr-2">
+                <div >{selectedProductPrice}원</div>
+                <div className="ml-3">
                   <Button
                     width="120px"
                     color="peach-fuzz"
                     label="등록"
-                    onClick={handleSubmit}
+                    onClick={handleModify}
                   />
                 </div>
               </div>
@@ -491,11 +498,23 @@ const MemberRegister = () => {
           </button>
         )}
       </div>
-
+      {isExpanded && (
+          <button className="flex items-center mb-10 text-lg text-grayish-red hover:border-b hover:border-gray-400 hover:font-semibold mx-auto animate-bounce" >
+          <box-icon name='wallet-alt' color="#9F8D8D" size="sm"></box-icon>
+            결제하기
+        </button>
+        )}
+      {isAddressModalVisible && (
+        <AddressModal
+          userData={userData}
+          setUserData={setUserData}
+          toggleModal={() => setIsAddressModalVisible(false)}
+        />
+      )}
       {isAlertModalVisible && (
         <AlertModal
           headerEmoji={"✔️"}
-          line1={"헬스장 등록이 완료습니다!"}
+          line1={"헬스장 등록이 완료되었습니다!"}
           button2={{
             label: "확인",
             onClick: handleConfirmClick,

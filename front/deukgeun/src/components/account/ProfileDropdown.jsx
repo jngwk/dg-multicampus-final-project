@@ -94,7 +94,8 @@ const ProfileDropdown = () => {
             <box-icon name="conversation" color="#ffbe98" size="sm"></box-icon>
             <span className="ml-3">대화방</span>
           </li>
-          <li className="profile-dropdown-list">
+          <li className="profile-dropdown-list"
+            onClick={() => customNavigate("/qnaList")}>
             <box-icon name="question-mark" color="#ffbe98" size="sm"></box-icon>
             <span className="ml-3">문의내역</span>
           </li>
