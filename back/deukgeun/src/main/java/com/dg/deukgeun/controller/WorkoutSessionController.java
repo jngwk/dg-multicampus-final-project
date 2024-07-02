@@ -149,7 +149,15 @@ public class WorkoutSessionController {
         WorkoutSessionDTO workoutSessionDTO = new WorkoutSessionDTO();
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
-        workoutSessionDTO.setUserId(userDetails.getUserId());
+        String authority = userDetails.getAuthorities().iterator().next().getAuthority();
+
+        // 운동일지
+        if ("ROLE_GENERAL".equals(authority)) {
+            workoutSessionDTO.setUserId(userDetails.getUserId());
+        } else if ("ROLE_TRAINER".equals(authority)) {
+            workoutSessionDTO.setUserId(workoutSessionReqeustDTO.getPtSession().getPt().getUser().getUserId());
+        }
+
         workoutSessionDTO.setWorkoutSessionId(workoutSessionId);
         workoutSessionDTO.setBodyWeight(workoutSessionReqeustDTO.getBodyWeight());
         workoutSessionDTO.setContent(workoutSessionReqeustDTO.getContent());
