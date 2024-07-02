@@ -196,20 +196,7 @@ const Gymset = () => {
           await insertImage(gymId, formData);
           const insertImageResponse = await insertImage(gymId, formData);
           console.log('insertImageResponse:', insertImageResponse);
-  
-          // // 이미지 업로드 성공 시
-          // if (insertImageResponse.RESULT === "SUCCESS") {
-          //   // GymData 업데이트
-          //   const newImageUrls = insertImageResponse.images;
-          //   setGymData({
-          //     ...GymData,
-          //     imgList: [...GymData.imgList, ...newImageUrls],
-          //   });
-          // } else {
-          //   // 이미지 업로드 실패 시 처리
-          //   console.error('Failed to upload images:', insertImageResponse);
-          //   alert('이미지 업로드에 실패했습니다.');
-          // }
+
         } else {
           // 이미지가 선택되지 않은 경우에 대한 처리
           console.log('No images selected for upload.');
@@ -224,59 +211,7 @@ const Gymset = () => {
       alert("Gym 정보 업데이트에 실패했습니다.");
     }
   };
-  // const handleImgListChange = (e) => {
-  //   const files = Array.from(e.target.files);
-  //   setImages(files);
-  // };
-  // // const handleImgListChange = async (files) => {
-  //   try {
-  //     const formData = new FormData();
-  //     files.forEach((file) => {
-  //       console.log(file);
-  //       formData.append("files", file);
-  //     });
-  //     console.log("FormData:", formData);
-  
-  //     const response = await insertImage(GymData.gymId, formData);
-  //     console.log("Server response:", response);
-  //     if (response.RESULT === "SUCCESS") {
-  //       setGymData((prevData) => {
-  //         console.log("Previous Data:", prevData);
-  
-  //         return {
-  //           ...prevData,
-  //           imgList: [...prevData.imgList, ...response.images],
-  //         };
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Error uploading images:", error);
-  //     alert("Failed to upload images");
-  //   }
-  // };
-  
-  // const handleImgListChange = async (files) => {
-  //   try {
-  //     const formData = new FormData();
-  //     files.forEach((file) => {
-  //       formData.append("imgList", file);
-  //     });
-  //     console.log('FormData', formData);
 
-  //     const response = await insertImage(GymData.gymId, formData);
-  //     console.log('Server response:', response); // 서버 응답을 로그에 출력합니다
-  //     if (response.RESULT === "SUCCESS") {
-  //       console.log("Images uploaded successfully:", response.images);
-  //       setGymData({
-  //         ...GymData,
-  //         imgList: [...GymData.imgList, ...response.images],
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.error("Error uploading images:", error);
-  //     alert("Failed to upload images");
-  //   }
-  // };
   const handleDeleteImage = async (image) => {
     try {
       const response = await deleteImage(image);
@@ -303,36 +238,7 @@ const Gymset = () => {
   //   setPTProducts(updatedPTProducts);
   // };
   
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     // 이미지를 서버에 업로드
-  //     const formData = new FormData();
-  //     if (GymData.priceImage) {
-  //       formData.append("priceImage", GymData.priceImage);
-  //     }// 가격표 이미지 추가
-  //     GymData.imgList.forEach((file) => {
-  //       formData.append("files", file); // 센터 이미지 배열 추가
-  //     });
-  
-  //     const imageUploadResponse = await insertImage(GymData.gymId, formData);
-  
-  //     // 이미지 업로드가 성공하면 나머지 데이터를 서버에 PUT 요청으로 업데이트
-  //     const updatedData = {
-  //       ...GymData,
-  //       imgList: imageUploadResponse.images, // 업로드된 이미지 정보를 데이터에 추가
-  //     };
-  
-  //     const updateResponse = await updateGym(GymData.gymId, updatedData);
-  //     console.log("updateGym", updateResponse);
-  //     // 서버로부터 받은 데이터 처리
-  //    // 성공적으로 업데이트된 데이터 반환
-  
-  //   } catch (error) {
-  //     console.error("Error in handleSubmit:", error);
-  //     throw new Error("Failed to update gym");
-  //   }
-  // };
+
   return (
     <>
       <div className="space-y-8 relative">
