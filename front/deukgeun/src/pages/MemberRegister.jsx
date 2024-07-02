@@ -4,10 +4,12 @@ import AddressModal from "../components/modals/AddressModal";
 import useValidation from "../hooks/useValidation";
 import CustomDatePicker from "../components/shared/DatePicker";
 import formatDate from "../components/shared/FormatDate";
+
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { FaAngleDoubleRight } from "react-icons/fa";
 import { BsChevronDown } from "react-icons/bs";
 import { GiArchiveRegister } from "react-icons/gi";
+
 import TextArea from "../components/shared/TextArea";
 import { useAuth } from "../context/AuthContext";
 import { registerMembership } from "../api/membershipApi";
@@ -35,7 +37,7 @@ const MemberRegister = () => {
   const handleWorkoutDurationFocus = () => setWorkoutDurationFocus(true);
   const handleWorkoutDurationBlur = () => setWorkoutDurationFocus(false);
 
-  // const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
+  const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -268,7 +270,7 @@ const MemberRegister = () => {
                   onFocus={handleGenderFocus}
                   onBlur={handleGenderBlur}
                   type="button"
-                  className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${genderFocus ? "border-peach-fuzz" : "border-gray-400"
+                  className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${genderFocus ? "border-peach-fuzz" : "border-gray-400"
                     } focus:border-2 focus:outline-none text-sm peer my-2 `}
                   value={userGender}
                   onChange={handleChangeGender}
@@ -295,7 +297,7 @@ const MemberRegister = () => {
                   onFocus={handleAgeFocus}
                   onBlur={handleAgeBlur}
                   type="button"
-                  className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${ageFocus ? "border-peach-fuzz" : "border-gray-400"
+                  className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm  ${ageFocus ? "border-peach-fuzz" : "border-gray-400"
                     } focus:border-2 focus:outline-none text-sm peer my-2 `}
                   value={userAge}
                   onChange={handleChangeAge}
@@ -330,7 +332,7 @@ const MemberRegister = () => {
               onChange={handleUserDataChange}
               readOnly={true}
               feature="검색"
-              // featureOnClick={() => setIsAddressModalVisible(true)}
+              featureOnClick={() => setIsAddressModalVisible(true)}
               featureEnableOnLoad={true}
               required={true}
             />
@@ -502,6 +504,13 @@ const MemberRegister = () => {
             결제하기
         </button>
         )}
+      {isAddressModalVisible && (
+        <AddressModal
+          userData={userData}
+          setUserData={setUserData}
+          toggleModal={() => setIsAddressModalVisible(false)}
+        />
+      )}
       {isAlertModalVisible && (
         <AlertModal
           headerEmoji={"✔️"}
