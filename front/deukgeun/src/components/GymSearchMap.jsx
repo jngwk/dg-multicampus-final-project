@@ -48,7 +48,10 @@ const GymSearchMap = () => {
     // 현재 위치 지도 표시
     if (mapLoading) return;
     console.log(location.state);
-    if (location.state.filter || location.state.searchWord) {
+    if (
+      location.state &&
+      (location.state.filter || location.state.searchWord)
+    ) {
       handleSearch();
       return;
     }
