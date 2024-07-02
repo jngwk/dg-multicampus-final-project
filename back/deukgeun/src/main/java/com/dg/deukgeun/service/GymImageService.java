@@ -15,7 +15,9 @@ import com.dg.deukgeun.repository.GymImageRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -30,6 +32,7 @@ public class GymImageService {
         for(int i = 0;i<dtoList.size();i++){
             gymImageList.add(modelMapper.map(dtoList.get(i),GymImage.class));
         }
+        log.info("Inserted {} gym images", gymImageList.size());
         gymImageRepository.saveAll(gymImageList);
     }
 

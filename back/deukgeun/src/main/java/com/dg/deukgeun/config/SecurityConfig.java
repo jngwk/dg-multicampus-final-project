@@ -104,7 +104,7 @@ public class SecurityConfig {
                         .hasAuthority("ROLE_GENERAL")
                         .requestMatchers("/api/membership/stats", "/api/membership/stats/**",
                                 "/api/user/signUp/trainer", "/api/trainers/update/**", "/api/gym/put/**",
-                                "/api/gym/getGymByUserId")
+                                "/api/gym/getGymByUserId", "/api/gym/insertImage/**", "/api/gym/getGymByUserId")
                         .hasAnyAuthority("ROLE_GYM")
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/reviews/delete/**", "api/reviews/update/**")

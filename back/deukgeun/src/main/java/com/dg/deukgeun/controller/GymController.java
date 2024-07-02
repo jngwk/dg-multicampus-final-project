@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +25,7 @@ import com.dg.deukgeun.dto.gym.GymImageDTO;
 import com.dg.deukgeun.dto.gym.GymRequestDTO;
 import com.dg.deukgeun.dto.gym.GymResponseDTO;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
+import com.dg.deukgeun.dto.review.ReviewImageDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.security.CustomUserDetails;
@@ -314,7 +316,7 @@ public class GymController {
         log.info("Modify: " + gymDTO);
         gymService.modify(gymDTO);
         // productService.deleteByGymId(gymId);
-        productService.insertList(gymRequestDTO.getProductList());
+        // productService.insertList(gymRequestDTO.getProductList());
         return Map.of("RESULT", "SUCCESS");
     }
 
@@ -335,18 +337,14 @@ public class GymController {
      */
     @PostMapping("/insertImage/{gymId}")
     public Map<String, String> insertImage(@PathVariable(name = "gymId") Integer gymId,
-            @RequestBody GymRequestDTO gymRequestDTO) {
+           @RequestPart("files") List<MultipartFile> files) {
         List<GymImageDTO> dtoList = new ArrayList<>();
-        List<MultipartFile> files = gymRequestDTO.getFiles();
         List<String> uploadFileNames = fileUtil.saveFile(files);
-        for (int i = 0; i < files.size(); i++) {
-            GymImageDTO dto = new GymImageDTO();
-            dto.setGymId(gymId);
-            dto.setGymImage(uploadFileNames.get(i));
-            dtoList.add(dto);
-        }
+         for (String fileName : uploadFileNames) {
+                dtoList.add(new GymImageDTO(fileName, gymId));
+            }
         gymImageService.insertList(dtoList);
-        return Map.of("RESULT", "SUCESS");
+        return Map.of("RESULT", "SUCCESS");
     }
 
     // 헬스장 이미지 삭제

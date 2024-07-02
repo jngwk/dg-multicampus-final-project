@@ -13,7 +13,7 @@ import { useParams } from "react-router-dom";
 // 회원 정보
 const initGymData = {
   gymId: "",
-  GymName: "",
+  userName: "",
   crNumber: "",
   address: "",
   detailAddress: "",
@@ -41,6 +41,8 @@ const Gymset = () => {
   // const [healthErrors, setHealthErrors] = useState({});
   // const [ptErrors, setPTErrors] = useState({});
   const { validateInput } = useValidation();
+  const [images, setImages] = useState([]);
+
 
   useEffect(() => {
     if (gymId) {
@@ -50,8 +52,13 @@ const Gymset = () => {
 
   const fetchGymData = async (gymId) => {
     try {
-      const gymData = await GymInfo(gymId); // replace with your actual function to fetch gym data
-      setGymData(gymData); // assuming gymData includes gymId
+      const gymData = await GymInfo(gymId);
+      console.log("Fetched gym data:", gymData);
+
+      setGymData({
+        ...gymData,
+        imgList: gymData.imgList || [], // Ensure imgList is an array
+      });
       // setHealthProducts(gymData.healthProducts || []);
       // setPTProducts(gymData.ptProducts || []);
     } catch (error) {
@@ -149,36 +156,71 @@ const Gymset = () => {
 
   const handlePriceImageChange = (files) => {
     const priceImage = files[0];
+    console.log("Price image selected:", priceImage);
     setGymData({
       ...GymData,
       priceImage: priceImage,
     });
+    
   };
 
-  // const handleImgListChange = (files) => {
-  //   setGymData({
-  //     ...GymData,
-  //     imgList: files.slice(0, 12),
-  //   });
-  // };
-  const handleImgListChange = async (files) => {
+  const handleImgListChange = (files) => {
+    const fileArray = Array.from(files);
+    console.log("Selected files:", fileArray);
+    setImages(fileArray.slice(0, 12));
+    setGymData({
+      ...GymData,
+      imgList: fileArray.slice(0, 12),
+    });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const response = await insertImage(GymData.gymId, files);
-      if (response.RESULT === 'SUCCESS') {
-        setGymData({
-          ...GymData,
-          imgList: [...GymData.imgList, ...files],
-        });
+      const gymData={
+        gymId: GymData.gymId,
+        userName: GymData.userName,
+        crNumber: GymData.crNumber,
+        address: GymData.address,
+        detailAddress: GymData.detailAddress,
+        phonNumber: GymData.phonNumber,
+        SNSLink: GymData.SNSLink,
+        OperatingHours: GymData.OperatingHours,
+        introduce: GymData.introduce,
+      }
+      const gymId = gymData.gymId;
+      const gymRes = await updateGym(gymId, gymData);
+      console.log('gymRes', gymRes);
+      if(gymRes.RESULT === "SUCCESS"){
+        if (images.length > 0) {
+          const formData = new FormData();
+          images.forEach((image, index) => {
+              formData.append('files', image);  // Use 'files' as the key
+          });
+          await insertImage(gymId, formData);
+          const insertImageResponse = await insertImage(gymId, formData);
+          console.log('insertImageResponse:', insertImageResponse);
+
+        } else {
+          // 이미지가 선택되지 않은 경우에 대한 처리
+          console.log('No images selected for upload.');
+        }
+      } else {
+        // Gym 정보 업데이트 실패 시 처리
+        console.error('Failed to update gym:', gymRes);
+        alert('Gym 정보 업데이트에 실패했습니다.');
       }
     } catch (error) {
-      console.error('Error uploading images:', error);
-      alert('Failed to upload images');
+      console.error("Failed to add gym", error);
+      alert("Gym 정보 업데이트에 실패했습니다.");
     }
   };
+
   const handleDeleteImage = async (image) => {
     try {
       const response = await deleteImage(image);
+      
       if (response.RESULT === 'SUCCESS') {
+        console.log("Image deleted successfully:", image);
         setGymData({
           ...GymData,
           imgList: GymData.imgList.filter((img) => img !== image),
@@ -198,24 +240,7 @@ const Gymset = () => {
   //   const updatedPTProducts = ptProducts.filter((_, i) => i !== index);
   //   setPTProducts(updatedPTProducts);
   // };
-  const handleSubmit = async () => {
-
-    const gymDataToSubmit = {
-      ...GymData,
-      // productList: [...healthProducts, ...ptProducts],
-    };
-
-    console.log("Submitting gym data:", gymDataToSubmit);
-    try {
-      const response = await updateGym(GymData.gymId, gymDataToSubmit);
-      if (response.RESULT === "SUCCESS") {
-        alert("Gym information updated successfully");
-      }
-    } catch (error) {
-      console.error("Error updating gym information:", error);
-      alert("Failed to update gym information");
-    }
-  };
+  
 
   const handleTrainerRegisterClick = () => {
     customNavigate("/trainerSet");
@@ -236,7 +261,7 @@ const Gymset = () => {
                 label="업체명"
                 width="320px"
                 name="GymName"
-                value={GymData.GymName}
+                value={GymData.userName}
                 readOnly={true}
               />
             </div>

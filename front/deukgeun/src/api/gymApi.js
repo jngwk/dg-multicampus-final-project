@@ -64,12 +64,7 @@ export const updateGym = async (gymId, gymData) => {
 };
 
 
-export const insertImage = async (gymId, files) => {
-  const formData = new FormData();
-  files.forEach(file => {
-    formData.append('files', file);
-  });
-
+export const insertImage = async (gymId, formData) => {
   try {
     const response = await axios.post(`${prefix}/insertImage/${gymId}`, formData, {
       headers: {

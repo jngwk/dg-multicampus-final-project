@@ -7,7 +7,7 @@ const Logo = () => (
   <RiFolderUploadFill className="w-24 h-24 pointer-events-none" />
 );
 
-const UploadBox = ({ onChange }) => {
+const UploadBox = ({name, required, onChange }) => {
   const [previewSrcList, setPreviewSrcList] = useState([]);
 
   const handleFileChange = (e) => {
@@ -19,6 +19,13 @@ const UploadBox = ({ onChange }) => {
       };
       reader.readAsDataURL(file);
     });
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append("files", file); // 'files'라는 이름으로 파일 추가
+    });
+
+    // 부모 컴포넌트로 변경된 파일 리스트 전달
+    onChange(formData.getAll('files'));
   };
 
   const handleRemovePreview = (index) => {
@@ -32,7 +39,7 @@ const UploadBox = ({ onChange }) => {
     <div className="w-full pb-3 overflow-y-hidden overflow-x-auto flex flex-nowrap gap-4 scrollbar">
       <div className="flex-shrink-0 w-fit h-fit">
         <label className="flex flex-col justify-center items-center w-44 h-36 bg-white rounded-md border border-gray-400 border-dashed p-4 overflow-hidden cursor-pointer hover:border-bright-orange">
-          <input type="file" className="hidden" onChange={handleFileChange} multiple />
+          <input type="file" name={name} required={required} accept="images/*" className="hidden" onChange={handleFileChange} multiple />
           <Logo />
           <p className="font-medium text-sm my-3 pre-line">
             클릭 혹은 파일을 <br />

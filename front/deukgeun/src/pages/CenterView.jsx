@@ -154,7 +154,7 @@ const CenterView = () => {
           </div>
 
           {/* 헬스장 사진 */}
-          <CenterImg />
+          <CenterImg gymId={gymId}/>
 
 
           {/* 헬스장 가격표 */}
