@@ -53,7 +53,7 @@ const Hero = () => {
           {/* 가격 필터 */}
           {filter === "general" && (
             <Filter
-              label={"득근에 등록된"}
+              label={"득근 파트너"}
               emoji={"💪"}
               // underlineWidth={"140px"}
             />
