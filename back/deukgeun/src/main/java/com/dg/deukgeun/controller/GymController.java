@@ -25,6 +25,7 @@ import com.dg.deukgeun.dto.gym.GymImageDTO;
 import com.dg.deukgeun.dto.gym.GymRequestDTO;
 import com.dg.deukgeun.dto.gym.GymResponseDTO;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
+import com.dg.deukgeun.dto.review.ReviewImageDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.security.CustomUserDetails;
@@ -319,6 +320,7 @@ public class GymController {
         gymDTO.setOperatingHours(gymRequestDTO.getOperatingHours());
         gymDTO.setSNSLink(gymRequestDTO.getSNSLink());
         gymDTO.setPhoneNumber(gymRequestDTO.getPhoneNumber());
+        gymDTO.setUserName(gymRequestDTO.getUserName());
         log.info("Modify: " + gymDTO);
         gymService.modify(gymDTO);
         // productService.deleteByGymId(gymId);
