@@ -394,20 +394,22 @@ const CalendarInputForm = ({
         )}
         <hr style={{ width: "240px" }} />
         <div className="mt-2">
+          <Button
+            label={selectedEvent ? "수정" : "등록"}
+            onClick={handleSubmit}
+          />
           {userData.role === "ROLE_TRAINER" && (
             <>
-              <Button
+              {/* <Button
                 label={selectedEvent ? "수정" : "등록"}
                 onClick={handleSubmit}
-              />
+              /> */}
               {selectedEvent && <Button label="삭제" onClick={handleDelete} />}
             </>
           )}
           {userData.role === "ROLE_GENERAL" && (
             <>
-              {selectedEvent && (
-                <Button label={"수정"} onClick={handleSubmit} />
-              )}
+              {/* {selectedEvent && <Button label="수정" onClick={handleSubmit} />} */}
               {selectedEvent && !formValues.ptSessionId && (
                 <Button label="삭제" onClick={handleDelete} />
               )}
