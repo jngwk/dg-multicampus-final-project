@@ -18,6 +18,7 @@ import com.dg.deukgeun.dto.ProductDTO;
 @NoArgsConstructor
 public class GymRequestDTO {
     private Integer userId;
+    private String userName;
     private String gymName;
     private String crNumber;
     private String phoneNumber;
@@ -25,6 +26,7 @@ public class GymRequestDTO {
     private String detailAddress;
     private String operatingHours;
     private String introduce;
+    private String SNSLink;
     // private Integer approval;
     @Builder.Default
     private List<MultipartFile> files = new ArrayList<>();

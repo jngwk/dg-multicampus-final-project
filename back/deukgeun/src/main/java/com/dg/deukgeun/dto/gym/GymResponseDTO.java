@@ -23,6 +23,7 @@ public class GymResponseDTO {
     // Gym
     private Integer gymId;
     private String gymName;
+    private String userName;
     private Integer userId;
     private String crNumber;
     private String phoneNumber;
@@ -30,6 +31,7 @@ public class GymResponseDTO {
     private String detailAddress;
     private String operatingHours;
     private String introduce;
+    private String SNSLink;
     // private Integer approval;
     @Builder.Default
     private List<MultipartFile> files = new ArrayList<>();

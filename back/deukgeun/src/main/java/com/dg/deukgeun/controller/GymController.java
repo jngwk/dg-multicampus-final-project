@@ -186,6 +186,8 @@ public class GymController {
         gymResponseDTO.setPhoneNumber(gymDTO.getPhoneNumber());
         gymResponseDTO.setUploadFileName(fileNames);
         gymResponseDTO.setUserId(gymDTO.getUserId());
+        gymResponseDTO.setUserName(gymDTO.getUserName());
+        gymResponseDTO.setSNSLink(gymDTO.getSNSLink());
         gymResponseDTO.setTrainersList(trainerService.getList(gymId));
         gymResponseDTO.setProductList(productService.getList(gymId));
         return gymResponseDTO;
@@ -214,6 +216,7 @@ public class GymController {
         gymResponseDTO.setPhoneNumber(gymDTO.getPhoneNumber());
         gymResponseDTO.setUploadFileName(fileNames);
         gymResponseDTO.setUserId(gymDTO.getUserId());
+        gymResponseDTO.setSNSLink(gymDTO.getSNSLink());
         return gymResponseDTO;
     }
 
@@ -261,6 +264,8 @@ public class GymController {
         gymDTO.setOperatingHours(gymRequestDTO.getOperatingHours());
         gymDTO.setPhoneNumber(gymRequestDTO.getPhoneNumber());
         gymDTO.setUserId(gymRequestDTO.getUserId());
+        gymDTO.setUserName(gymRequestDTO.getUserName());
+        gymDTO.setSNSLink(gymRequestDTO.getSNSLink());
 
         int gymId = gymService.insert(gymDTO);
 
@@ -310,8 +315,10 @@ public class GymController {
         gymDTO.setDetailAddress(gymRequestDTO.getDetailAddress());
         gymDTO.setGymId(gymId);
         gymDTO.setGymName(gymRequestDTO.getGymName());
+        gymDTO.setUserName(gymRequestDTO.getUserName());
         gymDTO.setIntroduce(gymRequestDTO.getIntroduce());
         gymDTO.setOperatingHours(gymRequestDTO.getOperatingHours());
+        gymDTO.setSNSLink(gymRequestDTO.getSNSLink());
         gymDTO.setPhoneNumber(gymRequestDTO.getPhoneNumber());
         log.info("Modify: " + gymDTO);
         gymService.modify(gymDTO);
