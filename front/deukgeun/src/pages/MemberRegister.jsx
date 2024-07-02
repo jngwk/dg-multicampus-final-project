@@ -235,7 +235,6 @@ const MemberRegister = () => {
   return (
     <>
       <div className="flex flex-row justify-center items-center mt-10 relative ">
-<<<<<<< HEAD
       <div className={` ${isExpanded
             ? "text-6xl absolute left-1/4 top-0"
             : "text-6xl absolute left-1/3 top-0"
@@ -245,22 +244,6 @@ const MemberRegister = () => {
             ? "w-[1000px] justify-center space-x-10 px-20 relative "
             : "w-[500px] justify-center"
             } h-[550px] flex items-center border-y-8 border-dotted border-peach-fuzz`}
-=======
-        <GiArchiveRegister
-          color="#9F8D8D"
-          className={` ${
-            isExpanded
-              ? "absolute left-1/4 top-0 w-20 h-20 z-50"
-              : "absolute left-1/3 top-0 w-20 h-20 z-50"
-          } `}
-        />
-        <div
-          className={`m-10 ${
-            isExpanded
-              ? "w-[1000px] justify-center space-x-10 px-20 relative"
-              : "w-[500px] justify-center"
-          } h-[550px] rounded-lg flex items-center border-2 border-peach-fuzz`}
->>>>>>> develop
         >
           <div className="flex flex-col items-center space-y-6">
             <p className="font-semibold text-xl">회원권 등록</p>
@@ -438,18 +421,10 @@ const MemberRegister = () => {
                     onFocus={handleMemberReasonFocus}
                     onBlur={handleMemberReasonBlur}
                     type="button"
-<<<<<<< HEAD
                     className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userMemberReasonFocus
                       ? "border-peach-fuzz"
                       : "border-gray-400"
                       } focus:border-2 focus:outline-none text-sm peer my-2 `}
-=======
-                    className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
-                      userMemberReasonFocus
-                        ? "border-peach-fuzz"
-                        : "border-gray-400"
-                    } focus:border-2 focus:outline-none text-sm peer my-2 `}
->>>>>>> develop
                     value={userMemberReason}
                     onChange={handleChangeMemberReason}
                   >
@@ -480,18 +455,10 @@ const MemberRegister = () => {
                     onFocus={handleWorkoutDurationFocus}
                     onBlur={handleWorkoutDurationBlur}
                     type="button"
-<<<<<<< HEAD
                     className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userWorkoutDurationFocus
                       ? "border-peach-fuzz"
                       : "border-gray-400"
                       } focus:border-2 focus:outline-none text-sm peer my-2 `}
-=======
-                    className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
-                      userWorkoutDurationFocus
-                        ? "border-peach-fuzz"
-                        : "border-gray-400"
-                    } focus:border-2 focus:outline-none text-sm peer my-2 `}
->>>>>>> develop
                     value={userWorkoutDuration}
                     onChange={handleChangeWorkoutDuration}
                   >
@@ -530,15 +497,6 @@ const MemberRegister = () => {
           </button>
         )}
       </div>
-<<<<<<< HEAD
-=======
-      {isExpanded && (
-        <button className="flex items-center mb-10 text-lg text-grayish-red hover:border-b hover:border-gray-400 hover:font-semibold mx-auto animate-bounce">
-          <box-icon name="wallet-alt" color="#9F8D8D" size="sm"></box-icon>
-          결제하기
-        </button>
-      )}
->>>>>>> develop
       {isAddressModalVisible && (
         <AddressModal
           userData={userData}
