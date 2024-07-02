@@ -106,7 +106,7 @@ const MemberRegister = () => {
   for (let WorkoutDuration = 1; WorkoutDuration <= 20; WorkoutDuration++) {
     WorkoutDurationOptions.push(
       <option key={WorkoutDuration} value={WorkoutDuration}>
-        {WorkoutDuration}
+        {WorkoutDuration}년
       </option>
     );
   }
@@ -168,7 +168,7 @@ const MemberRegister = () => {
     e.preventDefault();
 
     const paymentData = {
-      amount: 100,
+      amount: selectedProductPrice,
       buyer_email: userData.email,
       buyer_name: userData.userName,
       merchantUid: `mid_${new Date().getTime()}`,
@@ -231,16 +231,16 @@ const MemberRegister = () => {
 
   return (
     <>
-      <div className="flex flex-row items-center">
+      <div className="flex flex-row justify-center items-center w-full h-[90dvh]">
         <div
           className={`m-10 ${
             isExpanded
-              ? "w-[1000px] justify-between space-x-10 px-20"
-              : "w-[500px] justify-center"
-          } h-[550px] rounded-lg flex items-center border-2 border-peach-fuzz`}
+              ? "w-[1100px] justify-between space-x-32 px-20"
+              : "w-[500px] justify-between space-x-10 px-20"
+          } h-[550px] rounded-lg flex items-center border-2 border-peach-fuzz transition-all duration-1000 overflow-hidden ease-in-out`}
         >
           <div className="flex flex-col items-center space-y-6">
-            <p className="font-semibold text-xl">헬스권 등록</p>
+            <p className="font-semibold text-xl">회원권 등록</p>
             {/* 이름 */}
             <Input
               label="이름"
@@ -262,7 +262,7 @@ const MemberRegister = () => {
                   onFocus={handleGenderFocus}
                   onBlur={handleGenderBlur}
                   type="button"
-                  className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
+                  className={`h-11 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
                     genderFocus ? "border-peach-fuzz" : "border-gray-400"
                   } focus:border-2 focus:outline-none text-sm peer my-2 `}
                   value={userGender}
@@ -290,7 +290,7 @@ const MemberRegister = () => {
                   onFocus={handleAgeFocus}
                   onBlur={handleAgeBlur}
                   type="button"
-                  className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
+                  className={`h-11 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
                     ageFocus ? "border-peach-fuzz" : "border-gray-400"
                   } focus:border-2 focus:outline-none text-sm peer my-2 `}
                   value={userAge}
@@ -325,7 +325,11 @@ const MemberRegister = () => {
               value={userData.address}
               onChange={handleUserDataChange}
               readOnly={true}
-              feature="검색"
+              feature={
+                <div className="-translate-y-1">
+                  <box-icon name="search" color="#bdbdbd" size="s"></box-icon>
+                </div>
+              }
               // featureOnClick={() => setIsAddressModalVisible(true)}
               featureEnableOnLoad={true}
               required={true}
@@ -340,10 +344,10 @@ const MemberRegister = () => {
             />
           </div>
           {isExpanded && (
-            <div className="flex flex-col items-center space-y-4 w-full">
+            <div className="flex flex-col items-start justify-center space-y-6 w-full">
               <div className="flex flex-row space-x-6 relative items-center justify-between">
                 {/* 헬스권  */}
-                <div className="dropdown relative">
+                <div className="dropdown relative text-sm">
                   <label
                     className={`absolute right-30 -top-4 px-2 text-xs pointer-events-none text-gray-400`}
                   >
@@ -351,7 +355,7 @@ const MemberRegister = () => {
                   </label>
                   <button
                     onClick={toggleDropdown}
-                    className="w-[120px] flex justify-between items-center border border-gray-400 rounded-lg p-2 "
+                    className="w-[120px] h-[44px] flex justify-between items-center border border-gray-400 rounded-lg px-3"
                   >
                     {selectedPeriod}
                     <BsChevronDown />
@@ -361,7 +365,7 @@ const MemberRegister = () => {
                       {gym.productList.map((product) => (
                         <li
                           key={product.productId}
-                          className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
+                          className="px-3 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30 cursor-pointer"
                           onClick={() =>
                             onClickPeriod({
                               target: { value: product.productName },
@@ -401,78 +405,78 @@ const MemberRegister = () => {
                   />
                 </div>
               </div>
+              <div className="flex gap-4">
+                {/* 신청사유 */}
+                <div className="relative">
+                  <label
+                    className={`absolute -top-2 px-2 text-xs pointer-events-none text-gray-400`}
+                  >
+                    신청사유
+                  </label>
+                  <select
+                    onFocus={handleMemberReasonFocus}
+                    onBlur={handleMemberReasonBlur}
+                    type="button"
+                    className={`h-11 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
+                      userMemberReasonFocus
+                        ? "border-peach-fuzz"
+                        : "border-gray-400"
+                    } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                    value={userMemberReason}
+                    onChange={handleChangeMemberReason}
+                  >
+                    <option value="PT">PT</option>
+                    <option value="다이어트">다이어트</option>
+                    <option value="건강">건강</option>
+                    <option value="바디프로필">바디프로필</option>
+                    <option value="체형관리">체형관리</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    {!userMemberReasonFocus ? (
+                      <FaChevronDown className="text-gray-400" />
+                    ) : (
+                      <FaChevronUp className="text-gray-400" />
+                    )}
+                  </div>
+                </div>
 
-              {/* 신청사유 */}
+                <div className="relative">
+                  {/* 운동경력(선택) */}
+                  <label
+                    className={`absolute right-30 -top-2 px-2 text-xs pointer-events-none text-gray-400`}
+                  >
+                    운동경력(선택)
+                  </label>
 
-              <div className="relative">
-                <label
-                  className={`absolute -top-2 px-2 text-xs pointer-events-none text-gray-400`}
-                >
-                  신청사유
-                </label>
-                <select
-                  onFocus={handleMemberReasonFocus}
-                  onBlur={handleMemberReasonBlur}
-                  type="button"
-                  className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
-                    userMemberReasonFocus
-                      ? "border-peach-fuzz"
-                      : "border-gray-400"
-                  } focus:border-2 focus:outline-none text-sm peer my-2 `}
-                  value={userMemberReason}
-                  onChange={handleChangeMemberReason}
-                >
-                  <option value="PT">PT</option>
-                  <option value="다이어트">다이어트</option>
-                  <option value="건강">건강</option>
-                  <option value="바디프로필">바디프로필</option>
-                  <option value="체형관리">체형관리</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  {!userMemberReasonFocus ? (
-                    <FaChevronDown className="text-gray-400" />
-                  ) : (
-                    <FaChevronUp className="text-gray-400" />
-                  )}
+                  <select
+                    onFocus={handleWorkoutDurationFocus}
+                    onBlur={handleWorkoutDurationBlur}
+                    type="button"
+                    className={`h-11 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
+                      userWorkoutDurationFocus
+                        ? "border-peach-fuzz"
+                        : "border-gray-400"
+                    } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                    value={userWorkoutDuration}
+                    onChange={handleChangeWorkoutDuration}
+                  >
+                    {WorkoutDurationOptions}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    {!userWorkoutDurationFocus ? (
+                      <FaChevronDown className="text-gray-400" />
+                    ) : (
+                      <FaChevronUp className="text-gray-400" />
+                    )}
+                  </div>
                 </div>
               </div>
-
-              <div className="relative">
-                {/* 운동경력(선택) */}
-                <label
-                  className={`absolute right-30 -top-2 px-2 text-xs pointer-events-none text-gray-400`}
-                >
-                  운동경력(선택)
-                </label>
-
-                <select
-                  onFocus={handleWorkoutDurationFocus}
-                  onBlur={handleWorkoutDurationBlur}
-                  type="button"
-                  className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
-                    userWorkoutDurationFocus
-                      ? "border-peach-fuzz"
-                      : "border-gray-400"
-                  } focus:border-2 focus:outline-none text-sm peer my-2 `}
-                  value={userWorkoutDuration}
-                  onChange={handleChangeWorkoutDuration}
-                >
-                  {WorkoutDurationOptions}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  {!userWorkoutDurationFocus ? (
-                    <FaChevronDown className="text-gray-400" />
-                  ) : (
-                    <FaChevronUp className="text-gray-400" />
-                  )}
-                </div>
-              </div>
-              <div className="flex float-end">
+              <div className="flex flex-col items-end gap-4 self-end">
                 {/* @@@@@@@@@상품 가격 표시 */}
                 {/* @@@@@@@@@상품 가격 표시 */}
                 {/* @@@@@@@@@상품 가격 표시 */}
                 {/* @@@@@@@@@상품 가격 표시 */}
-                <div>{selectedProductPrice}원</div>
+                <div>결제 금액: {selectedProductPrice}원</div>
                 <div className="mr-2">
                   <Button
                     width="120px"

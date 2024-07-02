@@ -9,6 +9,7 @@ import { useLocation } from "react-router-dom";
 import { useLoginModalContext } from "../context/LoginModalContext";
 import { useAuth } from "../context/AuthContext";
 import Fallback from "./shared/Fallback";
+import MemberRegisterModal from "./modals/MemberRegisterModal";
 const { kakao } = window;
 
 const GymSearchMap = () => {
@@ -450,6 +451,7 @@ const GymSearchMap = () => {
       {isChatModalVisible && sessionStorage.getItem("isLoggedIn") && (
         <ChatModal toggleModal={toggleChatModal} selectedGym={selectedGym} />
       )}
+      {/* <MemberRegisterModal /> */}
     </div>
   );
 };
