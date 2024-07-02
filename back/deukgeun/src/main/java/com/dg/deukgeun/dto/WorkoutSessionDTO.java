@@ -1,11 +1,10 @@
 package com.dg.deukgeun.dto;
 
-import com.dg.deukgeun.entity.PtSession;
-import com.dg.deukgeun.entity.User;
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
+
+import com.dg.deukgeun.entity.PtSession;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

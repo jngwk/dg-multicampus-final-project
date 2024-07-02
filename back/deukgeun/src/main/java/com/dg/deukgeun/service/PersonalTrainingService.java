@@ -19,7 +19,6 @@ import com.dg.deukgeun.entity.Trainer;
 import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.PersonalTrainingRepository;
 import com.dg.deukgeun.repository.TrainerRepository;
-import com.dg.deukgeun.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +33,6 @@ public class PersonalTrainingService {
     private final PersonalTrainingRepository personalTrainingRepository;
     private final MembershipService membershipService;
     private final ProductService productService;
-    @Autowired
-    private UserRepository userRepository;
     @Autowired
     private TrainerRepository trainerRepository;
 
