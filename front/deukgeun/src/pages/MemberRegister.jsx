@@ -109,7 +109,7 @@ const MemberRegister = () => {
   for (let WorkoutDuration = 1; WorkoutDuration <= 20; WorkoutDuration++) {
     WorkoutDurationOptions.push(
       <option key={WorkoutDuration} value={WorkoutDuration}>
-        {WorkoutDuration}
+        {WorkoutDuration}년
       </option>
     );
   }
@@ -171,7 +171,7 @@ const MemberRegister = () => {
     e.preventDefault();
 
     const paymentData = {
-      amount: 100,
+      amount: selectedProductPrice,
       buyer_email: userData.email,
       buyer_name: userData.userName,
       merchantUid: `mid_${new Date().getTime()}`,
@@ -248,7 +248,7 @@ const MemberRegister = () => {
             } h-[550px] rounded-lg flex items-center border-2 border-peach-fuzz`}
         >
           <div className="flex flex-col items-center space-y-6">
-            <p className="font-semibold text-xl">헬스권 등록</p>
+            <p className="font-semibold text-xl">회원권 등록</p>
             {/* 이름 */}
             <Input
               label="이름"
@@ -444,6 +444,13 @@ const MemberRegister = () => {
                   </div>
                 </div>
 
+                <div className="relative">
+                  {/* 운동경력(선택) */}
+                  <label
+                    className={`absolute right-30 -top-2 px-2 text-xs pointer-events-none text-gray-400`}
+                  >
+                    운동경력(선택)
+                  </label>
                 <div className="relative">
                   {/* 운동경력(선택) */}
                   <label

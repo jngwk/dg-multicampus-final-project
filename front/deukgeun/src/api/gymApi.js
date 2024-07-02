@@ -15,10 +15,18 @@ export const getGymList = async () => {
   }
 };
 
-export const searchGyms = async (searchWord) => {
+export const searchGyms = async (searchWord, filter, location, page, size) => {
   try {
     console.log(searchWord);
-    const res = await axios.get(`${prefix}/search/${searchWord}`);
+    const res = await axios.get(`${prefix}/search`, {
+      params: {
+        searchWord: searchWord,
+        filter: filter,
+        location: location,
+        page: page,
+        size: size,
+      },
+    });
     console.log("searchGyms", res);
     return res.data;
   } catch (error) {
@@ -50,7 +58,6 @@ export const GymInfoByUserId = async () => {
   }
 };
 
-
 export const updateGym = async (gymId, gymData) => {
   try {
     const res = await axios.put(`${prefix}/put/${gymId}`, gymData);
@@ -63,17 +70,20 @@ export const updateGym = async (gymId, gymData) => {
   }
 };
 
-
 export const insertImage = async (gymId, formData) => {
   try {
-    const response = await axios.post(`${prefix}/insertImage/${gymId}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await axios.post(
+      `${prefix}/insertImage/${gymId}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
     return response.data;
   } catch (error) {
-    throw new Error('Failed to insert image');
+    throw new Error("Failed to insert image");
   }
 };
 
@@ -82,7 +92,6 @@ export const deleteImage = async (gymImage) => {
     const response = await axios.delete(`${prefix}/deleteImage/${gymImage}`);
     return response.data;
   } catch (error) {
-    throw new Error('Failed to delete image');
+    throw new Error("Failed to delete image");
   }
 };
-
