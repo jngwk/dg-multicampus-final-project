@@ -24,7 +24,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @RequiredArgsConstructor
 public class CustomFileUtil {
-    private final String uploadPath = "./images";
+    private final String uploadPath = "C:\\Git\\mpl-final\\dg-multicampus-final-project\\front\\deukgeun\\public\\images";
     @PostConstruct
     public void init(){
         File tempFolder = new File(uploadPath);
