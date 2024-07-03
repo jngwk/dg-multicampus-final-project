@@ -152,6 +152,7 @@ public class GymService {
         gym.getUser().setUserId(userDetails.getUserId());
         //수정 시 role이 null로 설정되어 db에서 거부하는 에러 발생, 해결하기 위해 role을 부여
         gym.getUser().setRole(user.getRole());
+        gym.getUser().setUserName(user.getUserName());
         gym.setUser(user);
         gymRepository.save(gym);
     }

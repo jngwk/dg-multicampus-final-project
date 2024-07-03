@@ -168,10 +168,10 @@ const Gymset = () => {
     const fileArray = Array.from(files);
     console.log("Selected files:", fileArray);
     setImages(fileArray.slice(0, 12));
-    setGymData({
-      ...GymData,
-      imgList: fileArray.slice(0, 12),
-    });
+    // setGymData({
+    //   ...GymData,
+    //   imgList: fileArray.slice(0, 12),
+    // });
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -196,7 +196,6 @@ const Gymset = () => {
           images.forEach((image, index) => {
               formData.append('files', image);  // Use 'files' as the key
           });
-          await insertImage(gymId, formData);
           const insertImageResponse = await insertImage(gymId, formData);
           console.log('insertImageResponse:', insertImageResponse);
 
@@ -262,8 +261,7 @@ const Gymset = () => {
                 width="320px"
                 name="userName"
                 value={GymData.userName}
-                required={true}
-                onChange={handleGymDataChange}
+                readOnly={true}
               />
             </div>
             {/* 사업자 번호 */}

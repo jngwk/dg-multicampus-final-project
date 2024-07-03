@@ -216,6 +216,7 @@ public class GymController {
         gymResponseDTO.setPhoneNumber(gymDTO.getPhoneNumber());
         gymResponseDTO.setUploadFileName(fileNames);
         gymResponseDTO.setUserId(gymDTO.getUserId());
+        gymResponseDTO.setUserName(gymDTO.getUserName());
         gymResponseDTO.setSNSLink(gymDTO.getSNSLink());
         return gymResponseDTO;
     }

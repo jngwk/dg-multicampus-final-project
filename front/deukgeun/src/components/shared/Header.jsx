@@ -86,7 +86,7 @@ export default function Header() {
                 onClick={toggleProfileDropdown}
               >
                 <img
-                  src={`./images/${userImage}` || Bprofile}
+                  src={`${process.env.PUBLIC_URL}/images/${userImage}` || Bprofile}
                   alt="Profile"
                   className="w-8 h-8 rounded-full object-cover"
                 />
