@@ -497,6 +497,12 @@ const MemberRegister = () => {
           </button>
         )}
       </div>
+      {isExpanded && (
+        <button className="flex items-center mb-10 text-lg text-grayish-red hover:border-b hover:border-gray-400 hover:font-semibold mx-auto animate-bounce" onClick={handleSubmit}>
+          <box-icon name="wallet-alt" color="#9F8D8D" size="sm"></box-icon>
+          결제하기
+        </button>
+      )}
       {isAddressModalVisible && (
         <AddressModal
           userData={userData}
