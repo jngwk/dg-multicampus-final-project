@@ -21,6 +21,7 @@ import AlertModal from "./AlertModal";
 import { findMembership } from "../../api/membershipApi";
 import { GymInfoByUserId } from "../../api/gymApi";
 import MembershipPtSelectModal from "./MembershipPtSelectModal";
+import MembershipModal from "./MembershipModal";
 
 const MyInfo = ({ toggleModal, userData, setUserData }) => {
   const initFullAddress = {
@@ -45,6 +46,8 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
   const { fetchUserData } = useAuth();
   const [gymInfo, setGymInfo] = useState(null);
   const [isSelectModalVisible, setIsSelectModalVisible] = useState(false);
+  const [isMembershipModalVisible, setIsMembershipModalVisible] =
+    useState(false);
 
   useEffect(() => {
     const fetchUserImage = async () => {
@@ -309,29 +312,17 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
                           <p className="max-w-[190px] overflow-hidden text-wrap whitespace-nowrap">
                             <span
                               className="cursor-pointer hover:text-gray-700"
-                              onClick={() =>
-                                customNavigate("/centerView", {
-                                  state: { gym: membership.gym },
-                                })
-                              }
+                              onClick={() => setIsMembershipModalVisible(true)}
                             >
                               {membership.gym.user.userName}{" "}
                             </span>
-                            <br />
-                            <span
-                              className="cursor-pointer hover:text-gray-700"
-                              onClick={() =>
-                                // TODO 회원권 연장으로 이동
-                                setIsSelectModalVisible(true)
-                              }
-                            >
-                              (만료일: {membership.expDate})
-                            </span>
                           </p>
-                          {isSelectModalVisible && (
-                            <MembershipPtSelectModal
-                              toggleModal={() => setIsSelectModalVisible(false)}
-                              selectedGym={membership.gym}
+                          {isMembershipModalVisible && (
+                            <MembershipModal
+                              membership={membership}
+                              toggleModal={() =>
+                                setIsMembershipModalVisible(false)
+                              }
                             />
                           )}
                         </>
