@@ -100,6 +100,7 @@ const CalendarPage = () => {
   const addEvent = async (formValues) => {
     // events에 추가
     try {
+      console.log("add Event @@@ 넘어가는 데이터", formValues);
       var result = "";
       if (userData.role === "ROLE_GENERAL") {
         result = await registerWorkoutSession(formValues);
@@ -284,7 +285,7 @@ const CalendarPage = () => {
   // 등록할 때 formValue를 event 객체의 포맷과 동일하게 수정
   const formatFormValues = (formValues, selectedEventId, ptSession = null) => {
     const id = selectedEventId ? selectedEventId : "";
-    const color = userData.role === "ROLE_TRAINER" ? "#1e88e5" : "#43a047";
+    const color = formValues.ptSession ? "#1e88e5" : "#43a047";
     const isEditable =
       userData.role === "ROLE_TRAINER"
         ? true

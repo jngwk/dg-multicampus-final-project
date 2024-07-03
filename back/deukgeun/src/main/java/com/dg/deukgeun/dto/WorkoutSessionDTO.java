@@ -2,10 +2,13 @@ package com.dg.deukgeun.dto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.ArrayList;
+
+import org.springframework.lang.Nullable;
 
 import com.dg.deukgeun.entity.PtSession;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.lang.Nullable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,4 +33,6 @@ public class WorkoutSessionDTO {
     private LocalTime startTime;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     private LocalTime endTime;
+    @Builder.Default
+    private List<WorkoutDTO> workouts = new ArrayList<>();
 }

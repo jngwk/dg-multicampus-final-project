@@ -143,7 +143,7 @@ const CalendarInputForm = ({
 
   const handleSubmit = () => {
     const nestedFormValues = {
-      ptSession: formValues.ptSessionId
+      ptSession: formValues.ptUserId
         ? {
             ptSessionId: formValues.ptSessionId,
             pt: {
