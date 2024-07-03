@@ -36,6 +36,7 @@ public class ProductService {
             dto.setProductId(result.get(i).getProductId());
             dto.setProductName(result.get(i).getProductName());
             dto.setPtCountTotal(result.get(i).getPtCountTotal());
+            dto.setStatus(result.get(i).isStatus());
             dtoList.add(dto);
         }
         return dtoList;
@@ -61,7 +62,14 @@ public class ProductService {
         return Map.of("RESULT","SUCCESS");
     }
 
-    public void deleteByGymId(Integer gymId){
-        productRepository.deleteBygymGymId(gymId);
+    // public void deleteByGymId(Integer gymId){
+    //     productRepository.deleteBygymGymId(gymId);
+    // }
+
+    public void deleteProductById(Integer productId){
+        Optional<Product> result = productRepository.findById(productId);
+        Product product = result.orElseThrow();
+        product.setStatus(false);
+        productRepository.save(product);
     }
 }
