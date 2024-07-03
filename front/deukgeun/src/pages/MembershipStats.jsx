@@ -151,11 +151,11 @@ const MembershipStats = () => {
     const fetchPtSessions = async () => {
       try {
         const sessions = await getPtSession();
-        sessions.sort((a, b) => new Date(a.ptDate) - new Date(b.ptDate));
+        sessions.sort((a, b) => new Date(a.workoutDate) - new Date(b.workoutDate));
 
         if (sessions.length > 0) {
-          const earliestDate = new Date(sessions[0]?.ptDate);
-          const latestDate = new Date(sessions[sessions.length - 1]?.ptDate);
+          const earliestDate = new Date(sessions[0]?.workoutDate);
+          const latestDate = new Date(sessions[sessions.length - 1]?.workoutDate);
           setPtSessions(sessions);
           setMinPtDate(formatDate(earliestDate));
           setMaxPtDate(formatDate(latestDate));
@@ -181,7 +181,7 @@ const MembershipStats = () => {
 
   // Function to get unique years from ptSessions
   const getUniqueYears = () => {
-    const years = ptSessions.map(session => new Date(session.ptDate).getFullYear());
+    const years = ptSessions.map(session => new Date(session.workoutDate).getFullYear());
     return Array.from(new Set(years));
   };
 
@@ -205,9 +205,9 @@ const MembershipStats = () => {
 
     const months = new Set();
     ptSessions.forEach(session => {
-      const sessionYear = new Date(session.ptDate).getFullYear();
+      const sessionYear = new Date(session.workoutDate).getFullYear();
       if (sessionYear.toString() === selectedYear) {
-        const month = new Date(session.ptDate).getMonth() + 1;
+        const month = new Date(session.workoutDate).getMonth() + 1;
         months.add(month);
       }
     });
@@ -288,17 +288,17 @@ const MembershipStats = () => {
     }
 
     const filteredSessions = ptSessions.filter(session => {
-      const sessionYear = new Date(session.ptDate).getFullYear().toString();
-      const sessionMonth = (new Date(session.ptDate).getMonth() + 1).toString();
-      const sessionWeek = getWeekNumber(new Date(session.ptDate)); // Using getWeekNumber function
+      const sessionYear = new Date(session.workoutDate).getFullYear().toString();
+      const sessionMonth = (new Date(session.workoutDate).getMonth() + 1).toString();
+      const sessionWeek = getWeekNumber(new Date(session.workoutDate)); // Using getWeekNumber function
       return (selectedYear === '전체' || sessionYear === selectedYear) &&
         (selectedMonth === '전체' || sessionMonth === selectedMonth) &&
         (selectedWeek === '전체' || sessionWeek === parseInt(selectedWeek.replace('주차', ''), 10)); // Converting selectedWeek to number
     });
 
     if (filteredSessions.length > 0) {
-      const earliestDate = new Date(filteredSessions[0].ptDate);
-      const latestDate = new Date(filteredSessions[filteredSessions.length - 1].ptDate);
+      const earliestDate = new Date(filteredSessions[0].workoutDate);
+      const latestDate = new Date(filteredSessions[filteredSessions.length - 1].workoutDate);
       setPtStart(formatDate(earliestDate));
       setPtEnd(formatDate(latestDate));
     } else {

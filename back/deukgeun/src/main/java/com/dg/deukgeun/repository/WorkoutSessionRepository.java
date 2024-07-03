@@ -17,6 +17,7 @@ public interface WorkoutSessionRepository extends JpaRepository<WorkoutSession, 
 
     public void deleteByPtSession_PtSessionId(Integer ptSessionId);
 
-    Optional<List<WorkoutSession>> findByPtSession_TrainerAndWorkoutDateBetween(Trainer trainer, LocalDate startDate,
-            LocalDate endDate);
+    Optional<List<WorkoutSession>> findByPtSession_TrainerAndWorkoutDateBetween(Trainer trainer, LocalDate startDate, LocalDate endDate);
+    
+    List<WorkoutSession> findByUser_UserIdInAndPtSessionIsNotNull(List<Integer> userIds);
 }
