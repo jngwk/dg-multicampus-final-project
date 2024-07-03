@@ -97,7 +97,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/signUp/gym", "/api/user/signUp/general",
                                 "/api/user/sendCode",
                                 "/api/gym/crNumberCheck", "/api/gym/crNumberCheck/**",
-                                "/api/user/emailCheck/*")
+                                "/api/user/emailCheck/*", "/api/user/resetPassword")
                         .anonymous() // 비회원만 가능
                         .requestMatchers("/api/user/userInfo", "/ws/**",
                                 "/api/membership/findMembership")
