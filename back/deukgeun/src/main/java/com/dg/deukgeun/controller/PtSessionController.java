@@ -2,6 +2,7 @@ package com.dg.deukgeun.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +19,7 @@ import com.dg.deukgeun.dto.PtSessionDTO;
 import com.dg.deukgeun.dto.PtSessionResponseDTO;
 import com.dg.deukgeun.dto.WorkoutSessionDTO;
 import com.dg.deukgeun.dto.personalTraining.PersonalTrainingDTO;
+import com.dg.deukgeun.entity.WorkoutSession;
 import com.dg.deukgeun.repository.TrainerRepository;
 import com.dg.deukgeun.security.CustomUserDetails;
 import com.dg.deukgeun.service.PersonalTrainingService;
@@ -165,9 +167,16 @@ public class PtSessionController {
     }
     
     @GetMapping("/getPtSession")
-    public List<PtSessionDTO> getPtSessionsForCurrentUser() {
+    public List<WorkoutSessionDTO> getPtSessionForCurrentUser() {
+        // Retrieve the current user's ID from security context
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Integer userId = userDetails.getUserId();
-        return ptSessionService.getPtSession(userId);
+
+        // Fetch WorkoutSessionDTO objects directly from PtSessionService
+        List<WorkoutSessionDTO> workoutSessionDTOs = ptSessionService.getPtSession(userId);
+
+        // Return WorkoutSessionDTO objects
+        return workoutSessionDTOs;
     }
+
 }

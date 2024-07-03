@@ -18,20 +18,20 @@ const MembershipChart2 = ({ ptSessions, minPtDate, maxPtDate, ptStart, ptEnd }) 
     // 각 날짜별 세션 수 카운트
     const sessionCount = {};
     ptSessions.forEach(session => {
-      const date = session.ptDate;
+      const date = session.workoutDate;
       sessionCount[date] = sessionCount[date] ? sessionCount[date] + 1 : 1;
     });
 
     // 선택된 날짜 범위 내의 세션 필터링
     const filteredSessions = ptSessions.filter(session => {
-      const sessionDate = new Date(session.ptDate);
+      const sessionDate = new Date(session.workoutDate);
       return sessionDate >= new Date(ptStart) && sessionDate <= new Date(ptEnd);
     });
 
     // 필터링된 세션별 카운트
     const filteredSessionCount = {};
     filteredSessions.forEach(session => {
-      const date = session.ptDate;
+      const date = session.workoutDate;
       filteredSessionCount[date] = filteredSessionCount[date] ? filteredSessionCount[date] + 1 : 1;
     });
 
@@ -58,7 +58,7 @@ const MembershipChart2 = ({ ptSessions, minPtDate, maxPtDate, ptStart, ptEnd }) 
         {
           label: 'PT 등록 시간',
           type: 'bubble',
-          data: filteredSessions.map(session => ({ x: session.ptDate, y: session.startTime, r: 7 })),
+          data: filteredSessions.map(session => ({ x: session.workoutDate, y: session.startTime, r: 7 })),
           backgroundColor: 'rgba(54, 162, 235, 0.6)',
           borderColor: 'rgba(54, 162, 235, 1)',
           borderWidth: 1,
