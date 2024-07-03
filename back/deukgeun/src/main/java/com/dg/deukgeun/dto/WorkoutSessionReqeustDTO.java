@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import org.springframework.lang.Nullable;
+
 import com.dg.deukgeun.entity.PtSession;
 
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import lombok.NoArgsConstructor;
 public class WorkoutSessionReqeustDTO {
     private Integer workoutSessionId;
     private Integer userId;
+    @Nullable
     private PtSession ptSession;
     private LocalDate workoutDate;
     private String content;

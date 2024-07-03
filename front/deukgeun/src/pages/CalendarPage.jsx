@@ -105,6 +105,7 @@ const CalendarPage = () => {
         result = await registerWorkoutSession(formValues);
         console.log("registering session as general", result);
       } else if (userData.role === "ROLE_TRAINER") {
+        console.log("trainer");
         result = await registerPTSession(formValues);
         console.log("registering session as trainer", result);
       }
@@ -280,10 +281,10 @@ const CalendarPage = () => {
     };
   };
 
-  // formValue를 event 객체의 포맷과 동일하게 수정
+  // 등록할 때 formValue를 event 객체의 포맷과 동일하게 수정
   const formatFormValues = (formValues, selectedEventId, ptSession = null) => {
     const id = selectedEventId ? selectedEventId : "";
-    const color = formValues.ptSession ? "#1e88e5" : "#43a047";
+    const color = userData.role === "ROLE_TRAINER" ? "#1e88e5" : "#43a047";
     const isEditable =
       userData.role === "ROLE_TRAINER"
         ? true
@@ -325,7 +326,7 @@ const CalendarPage = () => {
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView={
-            userData?.role === "ROLE_GENERAL" ? "dayGridMonth" : "timeGridWeek"
+            userData.role === "ROLE_GENERAL" ? "dayGridMonth" : "timeGridWeek"
           }
           scrollTimeReset={false}
           titleFormat={(date) => customTitleFormat(date)}
@@ -369,7 +370,6 @@ const CalendarPage = () => {
             toggleInputForm={toggleInputForm}
             workoutsLoading={workoutsLoading}
             deleteWorkouts={deleteWorkouts}
-            role={userData.role}
           />
         </div>
       </div>
