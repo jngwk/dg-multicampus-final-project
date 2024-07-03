@@ -7,9 +7,9 @@ import {
   getAvailableUsers,
   getChatRoom,
   sendMessageViaHttp,
+  getToken,
 } from "../api/chatApi";
 import { useAuth } from "../context/AuthContext";
-import axiosInstance from "../api/axiosInstance";
 
 const useChat = () => {
   // const [stompClient, setStompClient] = useState(null);
@@ -30,10 +30,7 @@ const useChat = () => {
   useEffect(() => {
     const fetchToken = async () => {
       try {
-        const response = await axiosInstance.get(
-          "http://localhost:8282/api/user/token"
-        );
-        const fetchedToken = response.data;
+        const fetchedToken = await getToken();
         setToken(fetchedToken);
         connect(fetchedToken);
         console.log("fetchedToken: ", fetchedToken);
@@ -65,7 +62,9 @@ const useChat = () => {
 
   // 소켓 연결
   const connect = (token) => {
-    const socket = new SockJS("http://localhost:8282/ws");
+    // const socket = new SockJS("http://localhost:8282/ws");
+    const socket = new SockJS("http://223.130.157.92:30000/ws");
+    
     const client = new Client({
       webSocketFactory: () => socket,
       connectHeaders: {

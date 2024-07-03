@@ -1,6 +1,7 @@
 package com.dg.deukgeun.config;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.dg.deukgeun.security.CustomUserDetails;
@@ -85,6 +90,7 @@ public class SecurityConfig {
                                                                                                               // Stateless로
                                                                                                               // 설정합니다.
                 .authorizeHttpRequests(authorize -> authorize
+                // .requestMatchers("/**").permitAll().
                         .requestMatchers("/api/user/login", "/api/qna", "/api/qna/**", "/api/user/logout", "/api/chart",
                                 "/api/gym/search", "/api/user/putImage", "/api/user/getImage", "/api/user/uploadImage",
                                 "/api/user/updateImage",
@@ -120,6 +126,19 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider, customUserDetailsService),
                         UsernamePasswordAuthenticationFilter.class); // JWT 토큰 필터를 추가합니다.
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://223.130.157.92:30115", "http://223.130.157.92:80", "http://localhost:3000"));
+        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setExposedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     public static class JwtTokenFilter extends OncePerRequestFilter {

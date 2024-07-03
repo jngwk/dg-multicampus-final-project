@@ -37,9 +37,9 @@ const CalendarPage = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isInputFormVisible, setIsInputFormVisible] = useState(false);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [calendarLoading, setCalendarLoading] = useState(true);
   const [workoutsLoading, setWorkoutsLoading] = useState(false);
-  const { userData } = useAuth();
+  const { userData, loading } = useAuth();
 
   // TODO DB에 새로운 event 저장
   // addEvent로 event 추가 후 events 업데이트가 되면 localStorage에 저장
@@ -60,7 +60,7 @@ const CalendarPage = () => {
     //   }
     // };
     // loadEvents();
-    setLoading(false);
+    setCalendarLoading(false);
   }, []);
 
   // (Load workout sessions) 날짜 range 변경시
@@ -77,7 +77,7 @@ const CalendarPage = () => {
       setError("데이터 베이스에서 불러오는데 실패했습니다.");
       console.log("Get mapping error: ", error);
     } finally {
-      setLoading(false);
+      setCalendarLoading(false);
     }
   };
 
@@ -291,7 +291,7 @@ const CalendarPage = () => {
     };
   };
 
-  if (loading) {
+  if (calendarLoading || loading) {
     return <Fallback />;
   }
   return (

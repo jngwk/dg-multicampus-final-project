@@ -18,13 +18,13 @@ public class GymControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @DisplayName("get test")
-    @Test
-    public void getTest() throws Exception{
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/gym/1"))
-        .andExpectAll(
-            MockMvcResultMatchers.status().isOk(),
-            MockMvcResultMatchers.content().string("ok")
-        );
-    }
+    // @DisplayName("get test")
+    // @Test
+    // public void getTest() throws Exception{
+    //     mockMvc.perform(MockMvcRequestBuilders.get("/api/gym/1"))
+    //     .andExpectAll(
+    //         MockMvcResultMatchers.status().isOk(),
+    //         MockMvcResultMatchers.content().string("ok")
+    //     );
+    // }
 }

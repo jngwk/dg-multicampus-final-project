@@ -5,6 +5,7 @@ import Section from "../components/main/Section";
 
 // https://github.com/tsparticles/react
 export default function Main() {
+  console.log("메인화면");
   return (
     <>
       <CustomParticles />

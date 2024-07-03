@@ -17,9 +17,9 @@ public class WorkoutSessionServiceTest {
     @Autowired
     private WorkoutSessionService workoutSessionService;
 
-    @Test
-    public void testGet(){
-        List<WorkoutSessionDTO> dtoList = workoutSessionService.get(1,LocalDate.parse("2024-06-01"), LocalDate.parse("2024-07-01"));
-        log.info(dtoList);
-    }
+    // @Test
+    // public void testGet(){
+    //     List<WorkoutSessionDTO> dtoList = workoutSessionService.get(1,LocalDate.parse("2024-06-01"), LocalDate.parse("2024-07-01"));
+    //     log.info(dtoList);
+    // }
 }

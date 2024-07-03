@@ -108,8 +108,9 @@ public class UserController {
 
     @GetMapping("/userInfo")
     public ResponseDTO<?> getUserInfo() {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
+        log.info("get user info @@@@@@@@@@");
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info(userDetails);
         Integer userId = userDetails.getUserId();
         return userService.getUserInfo(userId);
     }
@@ -148,7 +149,11 @@ public class UserController {
     public ResponseEntity<String> getToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
+            System.out.println("have cookies");
             for (Cookie cookie : cookies) {
+                System.out.println("cookie" + cookie);
+                System.out.println("cookie" + cookie.getValue());
+                log.info("Cookie: {} = {}", cookie.getName(), cookie.getValue());
                 if ("accessToken".equals(cookie.getName())) {
                     return ResponseEntity.ok(cookie.getValue());
                 }
@@ -178,58 +183,58 @@ public class UserController {
     // }
 
     // 새로운 이미지를 저장하기 위한 컨트롤러 메서드 추가
-    @PostMapping("/uploadImage")
-    public ResponseEntity<ResponseDTO<Void>> uploadUserImages(@RequestParam("imageFiles") List<MultipartFile> imageFiles) {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        Integer userId = userDetails.getUserId();
-        try {
-            for (MultipartFile file : imageFiles) {
-                userImageService.insert(file, userId);
-            }
-            return ResponseEntity.ok().body(ResponseDTO.setSuccess("Images uploaded successfully"));
-        } catch (Exception e) {
-            log.error("Failed to upload images for user ID: {}", userId, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ResponseDTO.setFailed("Failed to upload images."));
-        }
-    }
+    // @PostMapping("/uploadImage")
+    // public ResponseEntity<ResponseDTO<Void>> uploadUserImages(@RequestParam("imageFiles") List<MultipartFile> imageFiles) {
+    //     CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+    //             .getPrincipal();
+    //     Integer userId = userDetails.getUserId();
+    //     try {
+    //         for (MultipartFile file : imageFiles) {
+    //             userImageService.insert(file, userId);
+    //         }
+    //         return ResponseEntity.ok().body(ResponseDTO.setSuccess("Images uploaded successfully"));
+    //     } catch (Exception e) {
+    //         log.error("Failed to upload images for user ID: {}", userId, e);
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    //                 .body(ResponseDTO.setFailed("Failed to upload images."));
+    //     }
+    // }
 
-    // 사용자 ID에 따라 사용자 이미지를 가져오는 엔드포인트
-    @GetMapping("/getImage")
-    public ResponseEntity<ResponseDTO<UserImageDTO>> getUserImages() {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        Integer userId = userDetails.getUserId();
-        try {
-            UserImageDTO userImages = userImageService.getByUserId(userId);
-            if (userImages != null) {
-                return ResponseEntity.ok()
-                        .body(ResponseDTO.setSuccessData("User images retrieved successfully", userImages));
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (Exception e) {
-            log.error("Failed to retrieve user images for user ID: {}", userId, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ResponseDTO.setFailed("Failed to retrieve user images."));
-        }
-    }
+    // // 사용자 ID에 따라 사용자 이미지를 가져오는 엔드포인트
+    // @GetMapping("/getImage")
+    // public ResponseEntity<ResponseDTO<UserImageDTO>> getUserImages() {
+    //     CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+    //             .getPrincipal();
+    //     Integer userId = userDetails.getUserId();
+    //     try {
+    //         UserImageDTO userImages = userImageService.getByUserId(userId);
+    //         if (userImages != null) {
+    //             return ResponseEntity.ok()
+    //                     .body(ResponseDTO.setSuccessData("User images retrieved successfully", userImages));
+    //         } else {
+    //             return ResponseEntity.notFound().build();
+    //         }
+    //     } catch (Exception e) {
+    //         log.error("Failed to retrieve user images for user ID: {}", userId, e);
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    //                 .body(ResponseDTO.setFailed("Failed to retrieve user images."));
+    //     }
+    // }
 
-    // 사용자 ID에 따라 사용자 이미지를 업데이트하는 엔드포인트
-    @PutMapping("/updateImage")
-    public ResponseEntity<ResponseDTO<Void>> updateUserImage(@RequestParam("imageFile") MultipartFile imageFile) {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        Integer userId = userDetails.getUserId();
-        try {
-            userImageService.update(imageFile, userId);
-            return ResponseEntity.ok().body(ResponseDTO.setSuccess("User image updated successfully"));
-        } catch (Exception e) {
-            log.error("Failed to update user image for user ID: {}", userId, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ResponseDTO.setFailed("Failed to update user image."));
-        }
-    }
+    // // 사용자 ID에 따라 사용자 이미지를 업데이트하는 엔드포인트
+    // @PutMapping("/updateImage")
+    // public ResponseEntity<ResponseDTO<Void>> updateUserImage(@RequestParam("imageFile") MultipartFile imageFile) {
+    //     CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+    //             .getPrincipal();
+    //     Integer userId = userDetails.getUserId();
+    //     try {
+    //         userImageService.update(imageFile, userId);
+    //         return ResponseEntity.ok().body(ResponseDTO.setSuccess("User image updated successfully"));
+    //     } catch (Exception e) {
+    //         log.error("Failed to update user image for user ID: {}", userId, e);
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+    //                 .body(ResponseDTO.setFailed("Failed to update user image."));
+    //     }
+    // }
 
 }

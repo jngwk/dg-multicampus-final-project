@@ -69,6 +69,7 @@ const GymSearchMap = () => {
     if (searchWord) {
       handleSearch();
     } else {
+      console.log("지도에서 get Gyms");
       getGyms();
     }
   }, [sessionStorage.getItem("isLoggedIn")]);
@@ -94,6 +95,7 @@ const GymSearchMap = () => {
     try {
       const res = await getGymList();
       handleLoadedGyms(res);
+      console.log("getGyms 들어옴");
     } catch (error) {
       console.error("Error fetching gym list:", error);
     }

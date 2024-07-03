@@ -1,8 +1,9 @@
 import axios from "axios";
 
-export const API_SERVER_HOST = "http://localhost:8282";
-const prefix = `${API_SERVER_HOST}/api/gym`;
-// const prefix = `/api/gym`; // proxy 사용
+// export const API_SERVER_HOST = "http://localhost:8282";
+// export const API_SERVER_HOST = "http://223.130.157.92:30000/";
+// const prefix = `${API_SERVER_HOST}/api/gym`;
+const prefix = `/api/gym`; // proxy 사용
 
 export const getGymList = async () => {
   try {
@@ -10,7 +11,7 @@ export const getGymList = async () => {
     console.log(res.data);
     return res.data;
   } catch (error) {
-    console.error("Error fetching user info:", error);
+    console.error("Error fetching gymList:", `${prefix}/getList`, error);
     throw error;
   }
 };
