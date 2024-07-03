@@ -12,6 +12,7 @@ import {
 } from "../../api/signUpApi";
 import { resetPasswordWithEmail } from "../../api/userInfoApi";
 import AlertModal from "./AlertModal";
+import useEmailVerification from "../../hooks/useEmailVerification";
 
 const initErrors = {
   name: "",
@@ -23,23 +24,26 @@ const initErrors = {
 };
 
 const FindPasswordModal = ({ toggleModal }) => {
-  const customNavigate = useCustomNavigate();
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordConfirm, setNewPasswordConfirm] = useState("");
   const [errors, setErrors] = useState(initErrors);
-  const [verifyCodeSent, setVerifyCodeSent] = useState(false);
-  const [sentCode, setSentCode] = useState();
   const [code, setCode] = useState();
   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
+  const {
+    isCodeSent,
+    checkEmailExists,
+    sendCode,
+    validateCode,
+    initCodeStates,
+  } = useEmailVerification();
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
     setErrors((prevErrors) => ({ ...prevErrors, email: "" }));
-    if (verifyCodeSent) {
-      setVerifyCodeSent(false);
-      setSentCode("");
+    if (isCodeSent) {
+      initCodeStates();
     }
   };
 
@@ -75,6 +79,7 @@ const FindPasswordModal = ({ toggleModal }) => {
       setErrors((prevErrors) => ({ ...prevErrors, password: "" }));
     }
   };
+
   const validateConfirmPassword = (password, confirmPassword) => {
     if (password !== confirmPassword) {
       setErrors((prevErrors) => ({
@@ -87,27 +92,11 @@ const FindPasswordModal = ({ toggleModal }) => {
   };
   const validateFindPasswordInput = async () => {
     let isValid = true;
-    let isValidEmail = true;
     const newErrors = { ...initErrors };
 
     // 이메일 확인
 
-    try {
-      const res = await checkDuplicateEmail(email);
-      console.log("email 확인", res);
-      isValidEmail = res;
-    } catch (error) {
-      console.log("error checking duplicate email", error);
-      newErrors.email = "데이터베이스 오류";
-    }
-
-    // if (!name) {
-    //   isValid = false;
-    //   newErrors.name = "이름을 입력해주세요";
-    // } else if (!isValidName) {
-    //   isValid = false;
-    //   newErrors.name = "이름을 다시 입력해주세요.";
-    // }
+    const isValidEmail = await checkEmailExists(email);
 
     if (!email) {
       isValid = false;
@@ -125,7 +114,6 @@ const FindPasswordModal = ({ toggleModal }) => {
 
   const validateResetPasswordInput = () => {
     let isValid = true;
-    // const newErrors = { ...initErrors };
 
     if (!newPassword) {
       isValid = false;
@@ -139,49 +127,18 @@ const FindPasswordModal = ({ toggleModal }) => {
       isValid = false;
     }
 
-    // if (!newPasswordConfirm) {
-    //   isValid = false;
-    //   newErrors.passwordConfirm = "새 비밀번호 재확인을 입력해주세요";
-    // } else if (newPassword !== newPasswordConfirm) {
-    //   isValid = false;
-    //   newErrors.passwordConfirm = "비밀번호가 일치하지 않습니다";
-    // }
-
-    // setErrors(newErrors);
     return isValid;
-  };
-
-  const validateCode = () => {
-    if (code && code?.trim() === sentCode) {
-      setShowResetPassword(true);
-    } else {
-      setErrors((prev) => ({ ...prev, code: "인증번호가 일치하지 않습니다" }));
-    }
-  };
-
-  const generateVerificationCode = () => {
-    const generatedCode = Math.floor(
-      100000 + Math.random() * 900000
-    ).toString();
-    return generatedCode;
   };
 
   const handleVerifyEmailClick = async () => {
     if (await validateFindPasswordInput()) {
-      try {
-        const verifCode = generateVerificationCode();
-        setSentCode(verifCode);
-        const data = sendVerificationEmail(email, verifCode);
-        console.log(data);
-        setVerifyCodeSent(true);
-      } catch (error) {
-        console.error(
-          "error sending verification code in password modal",
-          error
-        );
-      }
-      // setShowResetPassword(true);
+      const data = await sendCode(email);
+      console.log("send code from find password", data);
     }
+  };
+
+  const handleVerifyClick = () => {
+    if (validateCode(code)) setShowResetPassword(true);
   };
 
   const handleResetPasswordClick = async () => {
@@ -214,7 +171,7 @@ const FindPasswordModal = ({ toggleModal }) => {
               onChange={handleEmailChange}
               error={errors.email}
             />
-            {verifyCodeSent && (
+            {isCodeSent && (
               <Input
                 label="인증번호"
                 value={code}
@@ -226,10 +183,10 @@ const FindPasswordModal = ({ toggleModal }) => {
               <div className="text-red-500 text-xs">{errors.findPassword}</div>
             )}
             <br />
-            {!verifyCodeSent ? (
+            {!isCodeSent ? (
               <Button label="이메일 인증" onClick={handleVerifyEmailClick} />
             ) : (
-              <Button label="인증하기" onClick={validateCode} />
+              <Button label="인증하기" onClick={handleVerifyClick} />
             )}
             <Button
               label="로그인"
