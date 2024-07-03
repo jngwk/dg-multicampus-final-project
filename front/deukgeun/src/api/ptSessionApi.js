@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // export const API_SERVER_HOST = "http://localhost:8282";
-// const prefix = `${API_SERVER_HOST}/api/ptSession`;
+// const prefix = `${API_SERVER_HOST}/api/personalTraining`;
 const prefix = `/api/personalTraining`; // proxy 사용
 
 export const registerPTSession = async (workoutSessionData) => {
