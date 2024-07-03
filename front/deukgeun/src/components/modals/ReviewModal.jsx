@@ -6,8 +6,9 @@ import { IoMdPhotos } from "react-icons/io";
 import Button from "../shared/Button";
 import { addReview, uploadReviewImages } from "../../api/reviewApi";
 import Fallback from "../shared/Fallback";
+import AlertModal from "../modals/AlertModal";
 
-const ReviewModal = ({ toggleModal, gymId }) => {
+const ReviewModal = ({ toggleModal, gymId, onReviewAdded }) => {
     const { userData, loading } = useAuth();
     const [formValues, setFormValues] = useState({
         gymId: parseInt(gymId, 10),
@@ -19,6 +20,9 @@ const ReviewModal = ({ toggleModal, gymId }) => {
     });
 
     const [images, setImages] = useState([]);
+    const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         if (userData) {
@@ -50,13 +54,16 @@ const ReviewModal = ({ toggleModal, gymId }) => {
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
         setImages(files);
-
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleConfirmClick = () => {
+        setIsAlertModalVisible(false);
+        toggleModal();
+    };
+
+    const handleSubmit = async () => {
+        setIsLoading(true);
         try {
-            // Step 1: Submit review data
             const reviewData = {
                 gymId: formValues.gymId,
                 comment: formValues.comment,
@@ -64,38 +71,56 @@ const ReviewModal = ({ toggleModal, gymId }) => {
                 userId: userData.userId,
                 userName: userData.userName,
                 email: userData.email,
-                regDate: new Date().toISOString().split('T')[0],
+                regDate: new Date().toISOString().split("T")[0],
             };
 
             const reviewRes = await addReview(reviewData);
 
             if (reviewRes.RESULT === "SUCCESS") {
-                const reviewId = reviewRes.reviewId;
+                const newReview = reviewRes.newReview; // 서버에서 추가된 새 리뷰 객체
 
-                // Step 2: Upload images if there are any
                 if (images.length > 0) {
                     const formData = new FormData();
                     images.forEach((image, index) => {
-                        formData.append('files', image);  // Use 'files' as the key
+                        formData.append(`file${index}`, image); // 파일 이름을 명확히 지정
                     });
 
-                    await uploadReviewImages(reviewId, formData);
+                    await uploadReviewImages(newReview.reviewId, formData);
                 }
 
-                toggleModal();
+                // 부모 컴포넌트로 새 리뷰를 전달
+                if (typeof onReviewAdded === 'function') {
+                    onReviewAdded(newReview); // onReviewAdded는 ReviewModal의 props로 전달받은 콜백 함수
+                }
+
+                setIsAlertModalVisible(true);
+                setFormValues({
+                    gymId: parseInt(gymId, 10),
+                    comment: "",
+                    rating: 0,
+                    userId: userData.userId,
+                    userName: userData.userName,
+                    email: userData.email,
+                });
+                setImages([]);
+            } else {
+                setError("리뷰를 추가하는 도중 문제가 발생했습니다.");
             }
         } catch (error) {
             console.error("Failed to add review", error);
+            setError("리뷰를 추가하는 도중 문제가 발생했습니다.");
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    if (loading) {
+    if (loading || isLoading) {
         return <Fallback />;
     }
 
     return (
-        <ModalLayout toggleModal={toggleModal}>
-            <form onSubmit={handleSubmit}>
+        <>
+            <ModalLayout toggleModal={toggleModal}>
                 <div className="flex flex-col h-96">
                     <div className="flex flex-col gap-1 justify-center items-center">
                         <div className="mb-2 font-semibold text-xl">
@@ -105,70 +130,30 @@ const ReviewModal = ({ toggleModal, gymId }) => {
 
                         <div>
                             <div className="flex justify-center gap-2">
-                            <div className="mx-5 flex flex-row-reverse justify-end text-2xl">
-                                {[...Array(5)].map((_, index) => {
-                                    const ratingValue = index + 1;
-                                    return (
-                                        <React.Fragment key={ratingValue}>
-                                            <input
-                                                type="radio"
-                                                className="peer hidden"
-                                                id={`value${ratingValue}`}
-                                                value={ratingValue.toString()}
-                                                name="score"
-                                                checked={formValues.rating === ratingValue}
-                                                onChange={handleRatingChange}
-                                            />
-                                            <label
-                                                htmlFor={`value${ratingValue}`}
-                                                className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-300"
-                                            >
-                                                ★
-                                            </label>
-                                        </React.Fragment>
-                                    );
-                                })}
-                            </div>
-                            {/* <div class="mx-5 flex flex-row-reverse justify-end text-2xl">
-                                        <label for="score"></label>
-                                        <input type="radio" class="peer hidden" id="value5" value="5" name="score"
-                                        checked={formValues.rating === 5}
-                                            onChange={handleRatingChange} />
-                                        <label for="value5"
-                                        class="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-300">★</label>
-                                        <input type="radio" class="peer hidden" id="value4" value="4" name="score" 
-                                        checked={formValues.rating === 4}
-                                        onChange={handleRatingChange}/>
-                                        <label for="value4"
-                                        class="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-300">★</label>
-                                        <input type="radio" class="peer hidden" id="value3" value="3" name="score"
-                                        checked={formValues.rating === 3}
-                                        onChange={handleRatingChange} />
-                                        <label for="value3"
-                                        class="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-300">★</label>
-                                        <input type="radio" class="peer hidden" id="value2" value="2" name="score" 
-                                        checked={formValues.rating === 2}
-                                        onChange={handleRatingChange}/>
-                                        <label for="value2"
-                                        class="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-300">★</label>
-                                        <input type="radio" class="peer hidden" id="value1" value="1" name="score"
-                                        checked={formValues.rating === 1}
-                                        onChange={handleRatingChange} />
-                                        <label for="value1"
-                                        class="cursor-pointer peer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-300">★</label>
-                            </div> */}
-                            {/* {[1, 2, 3, 4, 5].map((value) => (
-                                    <label key={value}>
-                                        <input
-                                            type="radio"
-                                            name="rating"
-                                            value={value}
-                                            checked={formValues.rating === value}
-                                            onChange={handleRatingChange}
-                                        />
-                                        {value} ★
-                                    </label>
-                                ))} */}
+                                <div className="mx-5 flex flex-row-reverse justify-end text-2xl">
+                                    {[...Array(5)].map((_, index) => {
+                                        const ratingValue = index + 1;
+                                        return (
+                                            <React.Fragment key={ratingValue}>
+                                                <input
+                                                    type="radio"
+                                                    className="peer hidden"
+                                                    id={`value${ratingValue}`}
+                                                    value={ratingValue.toString()}
+                                                    name="score"
+                                                    checked={formValues.rating === ratingValue}
+                                                    onChange={handleRatingChange}
+                                                />
+                                                <label
+                                                    htmlFor={`value${ratingValue}`}
+                                                    className="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-300"
+                                                >
+                                                    ★
+                                                </label>
+                                            </React.Fragment>
+                                        );
+                                    })}
+                                </div>
                             </div>
                         </div>
 
@@ -185,22 +170,46 @@ const ReviewModal = ({ toggleModal, gymId }) => {
                     </div>
 
                     <div>
-                        <label className=" w-[400px] h-[40px] pl-2 flex text-sm items-center cursor-pointer">
+                        <label className="w-[400px] h-[40px] pl-2 flex text-sm items-center cursor-pointer">
                             <IoMdPhotos className="w-7 h-7 px-1" />
                             이미지넣기
                             <input
                                 type="file"
                                 className="hidden"
                                 onChange={handleImageChange}
-                                multiple  // 여러 개의 파일 선택 가능하도록
+                                multiple
                             />
-                           
                         </label>
-                        <Button label="작성" width="100px" className="float-right" type="submit" />
+                        <Button
+                            label="작성"
+                            width="100px"
+                            className="float-right"
+                            onClick={handleSubmit}
+                        />
                     </div>
                 </div>
-            </form>
-        </ModalLayout>
+            </ModalLayout>
+            {isAlertModalVisible && (
+                <AlertModal
+                    headerEmoji={"✔️"}
+                    line1={"리뷰가 성공적으로 등록되었습니다!"}
+                    button2={{
+                        label: "확인",
+                        onClick: handleConfirmClick,
+                    }}
+                />
+            )}
+            {error && (
+                <AlertModal
+                    headerEmoji={"❌"}
+                    line1={error}
+                    button2={{
+                        label: "닫기",
+                        onClick: () => setError(null),
+                    }}
+                />
+            )}
+        </>
     );
 };
 
