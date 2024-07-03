@@ -1,7 +1,5 @@
 package com.dg.deukgeun.controller;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -18,12 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dg.deukgeun.dto.PtSessionDTO;
 import com.dg.deukgeun.dto.PtSessionResponseDTO;
+import com.dg.deukgeun.dto.WorkoutDTO;
 import com.dg.deukgeun.dto.WorkoutSessionDTO;
 import com.dg.deukgeun.dto.personalTraining.PersonalTrainingDTO;
 import com.dg.deukgeun.repository.TrainerRepository;
 import com.dg.deukgeun.security.CustomUserDetails;
 import com.dg.deukgeun.service.PersonalTrainingService;
 import com.dg.deukgeun.service.PtSessionService;
+import com.dg.deukgeun.service.WorkoutService;
 import com.dg.deukgeun.service.WorkoutSessionService;
 
 import lombok.RequiredArgsConstructor;
@@ -36,6 +36,7 @@ public class PtSessionController {
     private final PersonalTrainingService personalTrainingService;
     private final WorkoutSessionService workoutSessionService;
     private final TrainerRepository trainerRepository;
+    private final WorkoutService workoutService;
 
     // pt 일정 등록
     /**
@@ -49,6 +50,7 @@ public class PtSessionController {
      * color : String. 6자리 색상 코드를 저장한다 (ex. ffffff:흰색, ff0000:빨간색)
      * }
      */
+    @SuppressWarnings("null")
     /*
      * pt 일정이 등록되는 순간
      * 1. pt_id를 참고하여 personal_training 테이블의 remain을 1 차감한다.
@@ -79,11 +81,21 @@ public class PtSessionController {
         // 받아온 PT session을 저장
         Integer ptSessionId = ptSessionService.insert(workoutSessionDTO.getPtSession());
 
+        // PT session에 있는 userId를 workoutSessionDTO id 로 저장
+        workoutSessionDTO.setUserId(workoutSessionDTO.getPtSession().getPt().getUser().getUserId());
+
         // 저장한 PT session의 ID를 DTO에 저장
         workoutSessionDTO.getPtSession().setPtSessionId(ptSessionId);
 
         // DTO를 디비에 저장
         Integer workoutSessionId = workoutSessionService.register(workoutSessionDTO);
+
+        // Workout List
+        List<WorkoutDTO> workoutList = workoutSessionDTO.getWorkouts();
+        for (int i = 0; i < workoutList.size(); i++) {
+            workoutList.get(i).setWorkoutSessionId(workoutSessionId);
+        }
+        workoutService.insertList(workoutList);
 
         // personalTrainingService.update(ptSessionDTO.getPtId());
 
@@ -165,4 +177,19 @@ public class PtSessionController {
 
         return Map.of("RESULT", "SUCESS");
     }
+
+    @GetMapping("/getPtSession")
+    public List<WorkoutSessionDTO> getPtSessionForCurrentUser() {
+        // Retrieve the current user's ID from security context
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer userId = userDetails.getUserId();
+
+        // Fetch WorkoutSessionDTO objects directly from PtSessionService
+        List<WorkoutSessionDTO> workoutSessionDTOs = ptSessionService.getPtSession(userId);
+
+        // Return WorkoutSessionDTO objects
+        return workoutSessionDTOs;
+    }
+
 }

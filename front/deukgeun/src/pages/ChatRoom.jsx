@@ -133,7 +133,12 @@ export default function ChatRoom() {
                     </div>
                   ))
                 ) : chatRooms.length === 0 ? (
-                  "대화 가능한 상대가 없습니다. 추가 후 대화를 시작해주세요."
+                  <div className="h-full flex flex-col justify-center items-center px-4 text-center gap-6">
+                    <span className="text-3xl pt-6">😢</span>
+                    대화가 가능한
+                    <br />
+                    상대가 없습니다.
+                  </div>
                 ) : (
                   <Loader />
                 ))}

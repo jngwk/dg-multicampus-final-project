@@ -9,9 +9,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import lombok.extern.log4j.Log4j2;
-
-@Log4j2
 @AutoConfigureMockMvc
 @SpringBootTest
 public class GymControllerTest {

@@ -279,16 +279,12 @@ const PtRegister = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center relative">
-        <GiArchiveRegister
-          className="absolute left-20 w-20 h-20 bg-white"
-          color="#9F8D8D"
-        />
+      <div className="flex flex-col my-8 items-center relative">
+        <div className="text-6xl absolute left-1/4">🏋🏻</div>
         <div className="flex flex-row items-center">
           <div
-            className={`m-10 max-h-[600px] transition-max-height duration-500 overflow-hidden ${
-              isExpanded ? "h-[700px]" : "h-[400px]"
-            } w-[800px] space-x-10 px-20 justify-center rounded-lg flex items-center border-2 border-peach-fuzz`}
+            className={`m-8 max-h-[590px] transition-max-height duration-500 overflow-hidden ${isExpanded ? "h-[700px]" : "h-[400px]"
+              } w-[800px] space-x-10 px-20 justify-center flex items-center border-y-8 border-dotted border-peach-fuzz border-opacity-50`}
           >
             <div className="flex flex-col items-center space-y-7 ">
               <p className="font-semibold text-xl">PT 등록</p>
@@ -407,7 +403,7 @@ const PtRegister = () => {
                     </div>
                   </div>
                   {isExpanded && (
-                    <div className="flex flex-col items-center space-y-4 w-full">
+                    <div className="flex">
                       <div className="relative">
                         <label
                           className={`absolute -top-2 px-2 text-xs pointer-events-none text-gray-400`}
@@ -418,11 +414,10 @@ const PtRegister = () => {
                           onFocus={handleMemberReasonFocus}
                           onBlur={handleMemberReasonBlur}
                           type="button"
-                          className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
-                            userMemberReasonFocus
+                          className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userMemberReasonFocus
                               ? "border-peach-fuzz"
                               : "border-gray-400"
-                          } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                            } focus:border-2 focus:outline-none text-sm peer my-2 `}
                           value={userMemberReason}
                           onChange={handleChangeMemberReason}
                         >
@@ -458,9 +453,8 @@ const PtRegister = () => {
                         onFocus={handleGenderFocus}
                         onBlur={handleGenderBlur}
                         type="button"
-                        className={`h-11 py-3 px-4 w-[150px]  appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${
-                          genderFocus ? "border-peach-fuzz" : "border-gray-400"
-                        } focus:border-2 focus:outline-none text-sm peer mt-2 `}
+                        className={`h-11 py-3 px-4 w-[150px]  appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${genderFocus ? "border-peach-fuzz" : "border-gray-400"
+                          } focus:border-2 focus:outline-none text-sm peer mt-2 `}
                         value={userGender}
                         onChange={handleChangeGender}
                       >
@@ -487,9 +481,8 @@ const PtRegister = () => {
                         onFocus={handleAgeFocus}
                         onBlur={handleAgeBlur}
                         type="button"
-                        className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${
-                          ageFocus ? "border-peach-fuzz" : "border-gray-400"
-                        } focus:border-2 focus:outline-none text-sm peer mt-2 `}
+                        className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${ageFocus ? "border-peach-fuzz" : "border-gray-400"
+                          } focus:border-2 focus:outline-none text-sm peer mt-2 `}
                         value={userAge}
                         onChange={handleChangeAge}
                       >
@@ -541,9 +534,8 @@ const PtRegister = () => {
                         onFocus={handleTimeFocus}
                         onBlur={handleTimeBlur}
                         type="button"
-                        className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${
-                          timeFocus ? "border-peach-fuzz" : "border-gray-400"
-                        } focus:border-2 focus:outline-none text-sm peer `}
+                        className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${timeFocus ? "border-peach-fuzz" : "border-gray-400"
+                          } focus:border-2 focus:outline-none text-sm peer `}
                         value={selectedTime}
                         onChange={handleChangeTime}
                       >
@@ -559,9 +551,9 @@ const PtRegister = () => {
                     </div>
                   </div>
                   {isExpanded && (
-                    <div>
-                      <div className="flex flex-col items-center space-y-4 w-full">
-                        <div className="relative">
+                    <>
+                      <div className="flex">
+                        <div className="relative ">
                           <label
                             className={`absolute right-30 -top-2 px-2 text-xs pointer-events-none text-gray-400`}
                           >
@@ -571,11 +563,10 @@ const PtRegister = () => {
                             onFocus={handleWorkoutDurationFocus}
                             onBlur={handleWorkoutDurationBlur}
                             type="button"
-                            className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
-                              userWorkoutDurationFocus
+                            className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userWorkoutDurationFocus
                                 ? "border-peach-fuzz"
                                 : "border-gray-400"
-                            } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                              } focus:border-2 focus:outline-none text-sm peer my-2 `}
                             value={userWorkoutDuration}
                             onChange={handleChangeWorkoutDuration}
                           >
@@ -590,22 +581,21 @@ const PtRegister = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex float-end">
+                      <div className="flex flex-row items-center float-end">
                         {/* @@@@@@@@@상품 가격 표시 */}
                         {/* @@@@@@@@@상품 가격 표시 */}
                         {/* @@@@@@@@@상품 가격 표시 */}
                         {/* @@@@@@@@@상품 가격 표시 */}
-                        <div>{selectedProductPrice}원</div>
-                        <div className="mr-2">
-                          <Button
-                            width="120px"
-                            color="peach-fuzz"
-                            label="등록"
+                        <div >{selectedProductPrice}원</div>
+                        <div className="ml-3">
+                          <button
                             onClick={handleModify}
-                          />
+                            className="flex items-center text-lg text-grayish-red hover:border-b  hover:font-semibold mx-auto animate-bounce" >
+                            <div className="mb-4 text-3xl">💳</div> 결제하기
+                          </button>
                         </div>
                       </div>
-                    </div>
+                    </>
                   )}
                 </div>
               </div>
@@ -619,13 +609,6 @@ const PtRegister = () => {
           </button>
         )}
       </div>
-      {isExpanded && (
-        //임시로 넣어둠 ( 누르면 결제창 이동)
-
-        <button>
-          <FaAngleDoubleRight className=" mx-auto animate-[propel_3s_infinite]" />
-        </button>
-      )}
       {isAddressModalVisible && (
         <AddressModal
           userData={userData}

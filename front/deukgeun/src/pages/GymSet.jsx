@@ -6,19 +6,20 @@ import TextArea from "../components/shared/TextArea";
 import UploadBox from "../components/set/UploadBox";
 import { FaArrowRightLong, FaCircleMinus } from "react-icons/fa6";
 import Button from "../components/shared/Button";
+import useCustomNavigate from "../hooks/useCustomNavigate";
 import {insertImage, deleteImage, GymInfo ,updateGym } from "../api/gymApi";
 import { useParams } from "react-router-dom";
 
 // 회원 정보
 const initGymData = {
   gymId: "",
-  GymName: "",
+  userName: "",
   crNumber: "",
   address: "",
   detailAddress: "",
-  phonNumber: "",
+  phoneNumber: "",
   SNSLink: "",
-  OperatingHours: "",
+  operatingHours: "",
   introduce: "",
   priceImage: null,
   imgList: [],
@@ -28,6 +29,8 @@ const initGymData = {
 
 
 const Gymset = () => {
+  const customNavigate = useCustomNavigate();
+    
   const {gymId} =useParams();
   const [GymData, setGymData] = useState(initGymData);
   // const [healthProducts, setHealthProducts] = useState([]);
@@ -38,6 +41,8 @@ const Gymset = () => {
   // const [healthErrors, setHealthErrors] = useState({});
   // const [ptErrors, setPTErrors] = useState({});
   const { validateInput } = useValidation();
+  const [images, setImages] = useState([]);
+
 
   useEffect(() => {
     if (gymId) {
@@ -47,8 +52,13 @@ const Gymset = () => {
 
   const fetchGymData = async (gymId) => {
     try {
-      const gymData = await GymInfo(gymId); // replace with your actual function to fetch gym data
-      setGymData(gymData); // assuming gymData includes gymId
+      const gymData = await GymInfo(gymId);
+      console.log("Fetched gym data:", gymData);
+
+      setGymData({
+        ...gymData,
+        imgList: gymData.imgList || [], // Ensure imgList is an array
+      });
       // setHealthProducts(gymData.healthProducts || []);
       // setPTProducts(gymData.ptProducts || []);
     } catch (error) {
@@ -146,36 +156,70 @@ const Gymset = () => {
 
   const handlePriceImageChange = (files) => {
     const priceImage = files[0];
+    console.log("Price image selected:", priceImage);
     setGymData({
       ...GymData,
       priceImage: priceImage,
     });
+    
   };
 
-  // const handleImgListChange = (files) => {
-  //   setGymData({
-  //     ...GymData,
-  //     imgList: files.slice(0, 12),
-  //   });
-  // };
-  const handleImgListChange = async (files) => {
+  const handleImgListChange = (files) => {
+    const fileArray = Array.from(files);
+    console.log("Selected files:", fileArray);
+    setImages(fileArray.slice(0, 12));
+    // setGymData({
+    //   ...GymData,
+    //   imgList: fileArray.slice(0, 12),
+    // });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      const response = await insertImage(GymData.gymId, files);
-      if (response.RESULT === 'SUCCESS') {
-        setGymData({
-          ...GymData,
-          imgList: [...GymData.imgList, ...files],
-        });
+      const gymData={
+        gymId: GymData.gymId,
+        userName: GymData.userName,
+        crNumber: GymData.crNumber,
+        address: GymData.address,
+        detailAddress: GymData.detailAddress,
+        phoneNumber: GymData.phoneNumber,
+        SNSLink: GymData.SNSLink,
+        operatingHours: GymData.operatingHours,
+        introduce: GymData.introduce,
+      }
+      const gymId = gymData.gymId;
+      const gymRes = await updateGym(gymId, gymData);
+      console.log('gymRes', gymRes);
+      if(gymRes.RESULT === "SUCCESS"){
+        if (images.length > 0) {
+          const formData = new FormData();
+          images.forEach((image, index) => {
+              formData.append('files', image);  // Use 'files' as the key
+          });
+          const insertImageResponse = await insertImage(gymId, formData);
+          console.log('insertImageResponse:', insertImageResponse);
+
+        } else {
+          // 이미지가 선택되지 않은 경우에 대한 처리
+          console.log('No images selected for upload.');
+        }
+      } else {
+        // Gym 정보 업데이트 실패 시 처리
+        console.error('Failed to update gym:', gymRes);
+        alert('Gym 정보 업데이트에 실패했습니다.');
       }
     } catch (error) {
-      console.error('Error uploading images:', error);
-      alert('Failed to upload images');
+      console.error("Failed to add gym", error);
+      alert("Gym 정보 업데이트에 실패했습니다.");
     }
   };
+
   const handleDeleteImage = async (image) => {
     try {
       const response = await deleteImage(image);
+      
       if (response.RESULT === 'SUCCESS') {
+        console.log("Image deleted successfully:", image);
         setGymData({
           ...GymData,
           imgList: GymData.imgList.filter((img) => img !== image),
@@ -195,30 +239,19 @@ const Gymset = () => {
   //   const updatedPTProducts = ptProducts.filter((_, i) => i !== index);
   //   setPTProducts(updatedPTProducts);
   // };
-  const handleSubmit = async () => {
+  
 
-    const gymDataToSubmit = {
-      ...GymData,
-      // productList: [...healthProducts, ...ptProducts],
-    };
-
-    console.log("Submitting gym data:", gymDataToSubmit);
-    try {
-      const response = await updateGym(GymData.gymId, gymDataToSubmit);
-      if (response.RESULT === "SUCCESS") {
-        alert("Gym information updated successfully");
-      }
-    } catch (error) {
-      console.error("Error updating gym information:", error);
-      alert("Failed to update gym information");
-    }
-  };
+  const handleTrainerRegisterClick = () => {
+    customNavigate("/trainerSet");
+};
 
   return (
     <>
-      <div className="space-y-8 relative">
+      <div className="space-y-8 relative flex items-center justify-center my-10">
         <div className="flex flex-col space-y-6">
-          <p className="font-extrabold text-2xl pb-7">헬스권 정보 설정</p>
+          <p className="font-extrabold text-2xl pb-4 flex flex-row items-center">
+          <box-icon name='cog' size='40px' color='#9f8d8d'></box-icon>
+          헬스권 정보 설정</p>
           <div className="py-10 px-7 mx-6 rounded-lg flex flex-col space-y-4 w-[1000px] h-fit border border-peach-fuzz">
             {/* 업체명 */}
             <div className="flex flex-row space-x-44">
@@ -226,8 +259,8 @@ const Gymset = () => {
               <Input
                 label="업체명"
                 width="320px"
-                name="GymName"
-                value={GymData.GymName}
+                name="userName"
+                value={GymData.userName}
                 readOnly={true}
               />
             </div>
@@ -277,8 +310,8 @@ const Gymset = () => {
               <Input
                 label="센터 or 대표자 전화번호 ('-'입력) "
                 width="320px"
-                name="phonNumber"
-                value={GymData.phonNumber}
+                name="phoneNumber"
+                value={GymData.phoneNumber}
                 required={true}
                 onChange={handleGymDataChange}
               />
@@ -302,8 +335,8 @@ const Gymset = () => {
                 label="운영시간"
                 width="320px"
                 height="150px"
-                name="OperatingHours"
-                value={GymData.OperatingHours}
+                name="operatingHours"
+                value={GymData.operatingHours}
                 required={true}
                 onChange={handleGymDataChange}
               />
@@ -481,11 +514,13 @@ const Gymset = () => {
             </div>
           </div>
         </div>
-        <button className="pb-4 flex flex-row items-center font-semibold absolute right-0">
+      </div>
+      <button className="pb-4 flex flex-row items-center font-semibold absolute right-44"
+      onClick={handleTrainerRegisterClick}
+      >
           트레이너 정보 등록 
           <FaArrowRightLong className="w-6 h-8 ml-3 animate-[propel_3s_infinite] "/>
-        </button>
-      </div>
+      </button>
       {isAddressModalVisible && (
         <AddressModal
           GymData={GymData}

@@ -265,7 +265,7 @@ const SignUpPage = () => {
                     (isCrNumberValid === false &&
                       "등록된 정보가 없는 번호입니다")
                   }
-                  message={isCrNumberValid && "확왼됐습니다"}
+                  message={isCrNumberValid && "확인됐습니다"}
                   feature="인증하기"
                   featureOnClick={verifyGym}
                 />

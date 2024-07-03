@@ -20,7 +20,6 @@ import com.dg.deukgeun.dto.personalTraining.PersonalTrainingResponseDTO;
 import com.dg.deukgeun.entity.PersonalTraining;
 import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.security.CustomUserDetails;
-import com.dg.deukgeun.service.MembershipService;
 import com.dg.deukgeun.service.PersonalTrainingService;
 import com.dg.deukgeun.service.ProductService;
 import com.dg.deukgeun.service.TrainerService;
@@ -34,7 +33,6 @@ public class PersonalTrainingController {
     private final PersonalTrainingService service;
     private final TrainerService trainerService;
     private final ProductService productService;
-    private final MembershipService membershipService;
 
     // 마찬가지로 매핑 타입에 따라 구분하기 쉽도록 메서드 이름을 짓겠습니다.
 

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -158,11 +162,11 @@ public class GymController {
      * userName : 트레이너 이름
      * }]
      * productList : [{
-     *  productId : 상품 아이디
-     *  price : 상품 가격
-     *  days : 상품 기간 (일수 예 : 30일, 60일 등)
-     *  productName : 상품명
-     *  ptCountTotal : pt일 경우 상품이 제공하는 pt 횟수
+     * productId : 상품 아이디
+     * price : 상품 가격
+     * days : 상품 기간 (일수 예 : 30일, 60일 등)
+     * productName : 상품명
+     * ptCountTotal : pt일 경우 상품이 제공하는 pt 횟수
      * }]
      */
     @GetMapping("/get/{gymId}")
@@ -185,11 +189,14 @@ public class GymController {
         gymResponseDTO.setPhoneNumber(gymDTO.getPhoneNumber());
         gymResponseDTO.setUploadFileName(fileNames);
         gymResponseDTO.setUserId(gymDTO.getUserId());
+        gymResponseDTO.setUserName(gymDTO.getUserName());
+        gymResponseDTO.setSNSLink(gymDTO.getSNSLink());
         gymResponseDTO.setTrainersList(trainerService.getList(gymId));
         gymResponseDTO.setProductList(productService.getList(gymId));
         return gymResponseDTO;
     }
-    //userId로 gym 정보 가져오기
+
+    // userId로 gym 정보 가져오기
     @GetMapping("/getGymByUserId")
     public GymResponseDTO getGymByUserId() {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
@@ -213,6 +220,8 @@ public class GymController {
         gymResponseDTO.setPhoneNumber(gymDTO.getPhoneNumber());
         gymResponseDTO.setUploadFileName(fileNames);
         gymResponseDTO.setUserId(gymDTO.getUserId());
+        gymResponseDTO.setUserName(gymDTO.getUserName());
+        gymResponseDTO.setSNSLink(gymDTO.getSNSLink());
         return gymResponseDTO;
     }
 
@@ -230,11 +239,11 @@ public class GymController {
      * approval : 0 or 1 or 2 or... I don't know...,
      * files : file array format
      * productList : [{
-     *  productId : 상품 아이디
-     *  price : 상품 가격
-     *  days : 상품 기간 (일수 예 : 30일, 60일 등)
-     *  productName : 상품명
-     *  ptCountTotal : pt일 경우 상품이 제공하는 pt 횟수
+     * productId : 상품 아이디
+     * price : 상품 가격
+     * days : 상품 기간 (일수 예 : 30일, 60일 등)
+     * productName : 상품명
+     * ptCountTotal : pt일 경우 상품이 제공하는 pt 횟수
      * }]
      * }
      * 
@@ -260,6 +269,8 @@ public class GymController {
         gymDTO.setOperatingHours(gymRequestDTO.getOperatingHours());
         gymDTO.setPhoneNumber(gymRequestDTO.getPhoneNumber());
         gymDTO.setUserId(gymRequestDTO.getUserId());
+        gymDTO.setUserName(gymRequestDTO.getUserName());
+        gymDTO.setSNSLink(gymRequestDTO.getSNSLink());
 
         int gymId = gymService.insert(gymDTO);
 
@@ -267,7 +278,7 @@ public class GymController {
         for (int i = 0; i < uploadFileNames.size(); i++) {
             gymImageDTOList.add(new GymImageDTO(uploadFileNames.get(i), gymId));
         }
-        
+
         productService.insertList(gymRequestDTO.getProductList());
 
         gymImageService.insertList(gymImageDTOList);
@@ -287,11 +298,11 @@ public class GymController {
      * operatingHours : ?,
      * introduce : String,
      * productList : [{
-     *      productId : Integer,
-     *      gymId : Integer,
-     *      days : Integer,
-     *      productName : String,
-     *      ptCountTotal : Integer, nullable
+     * productId : Integer,
+     * gymId : Integer,
+     * days : Integer,
+     * productName : String,
+     * ptCountTotal : Integer, nullable
      * }]
      * }
      * 파일은 받지 않는다.
@@ -309,13 +320,16 @@ public class GymController {
         gymDTO.setDetailAddress(gymRequestDTO.getDetailAddress());
         gymDTO.setGymId(gymId);
         gymDTO.setGymName(gymRequestDTO.getGymName());
+        gymDTO.setUserName(gymRequestDTO.getUserName());
         gymDTO.setIntroduce(gymRequestDTO.getIntroduce());
         gymDTO.setOperatingHours(gymRequestDTO.getOperatingHours());
+        gymDTO.setSNSLink(gymRequestDTO.getSNSLink());
         gymDTO.setPhoneNumber(gymRequestDTO.getPhoneNumber());
+        gymDTO.setUserName(gymRequestDTO.getUserName());
         log.info("Modify: " + gymDTO);
         gymService.modify(gymDTO);
         // productService.deleteByGymId(gymId);
-        productService.insertList(gymRequestDTO.getProductList());
+        // productService.insertList(gymRequestDTO.getProductList());
         return Map.of("RESULT", "SUCCESS");
     }
 
@@ -336,18 +350,14 @@ public class GymController {
      */
     @PostMapping("/insertImage/{gymId}")
     public Map<String, String> insertImage(@PathVariable(name = "gymId") Integer gymId,
-            @RequestBody GymRequestDTO gymRequestDTO) {
+            @RequestPart("files") List<MultipartFile> files) {
         List<GymImageDTO> dtoList = new ArrayList<>();
-        List<MultipartFile> files = gymRequestDTO.getFiles();
         List<String> uploadFileNames = fileUtil.saveFile(files);
-        for (int i = 0; i < files.size(); i++) {
-            GymImageDTO dto = new GymImageDTO();
-            dto.setGymId(gymId);
-            dto.setGymImage(uploadFileNames.get(i));
-            dtoList.add(dto);
+        for (String fileName : uploadFileNames) {
+            dtoList.add(new GymImageDTO(fileName, gymId));
         }
         gymImageService.insertList(dtoList);
-        return Map.of("RESULT", "SUCESS");
+        return Map.of("RESULT", "SUCCESS");
     }
 
     // 헬스장 이미지 삭제
@@ -366,9 +376,25 @@ public class GymController {
     // return result;
     // }
 
-    @GetMapping("/search/{searchWord}")
-    public List<Gym> searchGyms(@PathVariable(name = "searchWord") String searchWord) {
-        log.info("Searching for gyms with keyword: {}", searchWord);
-        return gymService.searchGyms(searchWord);
+    @GetMapping("/search")
+    public List<Gym> searchGyms(
+            @RequestParam(name = "searchWord") String searchWord,
+            @RequestParam(name = "filter", defaultValue = "general") String filter,
+            @RequestParam(name = "location", required = false) String location,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "100") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        switch (filter) {
+            case "hours":
+                return gymService.searchGymsByOperatingHours(searchWord);
+            case "location":
+                return gymService.searchGymsByLocation(searchWord, location);
+            case "price":
+                return gymService.searchGymsByPrice(searchWord, pageable);
+            default:
+                return gymService.searchGyms(searchWord);
+        }
     }
 }

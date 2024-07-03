@@ -34,7 +34,6 @@ const CalendarInputForm = ({
   toggleInputForm,
   workoutsLoading,
   deleteWorkouts,
-  role,
 }) => {
   const { computeTime, getTime } = useCustomDate();
   const { userData } = useAuth();
@@ -144,17 +143,19 @@ const CalendarInputForm = ({
 
   const handleSubmit = () => {
     const nestedFormValues = {
-      ptSession: {
-        ptSessionId: formValues.ptSessionId,
-        pt: {
-          user: {
-            userId: formValues.ptUserId,
-            userName: formValues.ptUserName,
-          },
-        },
-        trainer: formValues.trainer,
-        memo: formValues.ptMemo,
-      },
+      ptSession: formValues.ptUserId
+        ? {
+            ptSessionId: formValues.ptSessionId,
+            pt: {
+              user: {
+                userId: formValues.ptUserId,
+                userName: formValues.ptUserName,
+              },
+            },
+            trainer: formValues.trainer,
+            memo: formValues.ptMemo,
+          }
+        : null,
       workoutDate: formValues.workoutDate,
       startTime: formValues.startTime,
       endTime: formValues.endTime,
@@ -207,7 +208,7 @@ const CalendarInputForm = ({
       <div className="p-3 flex gap-1 items-end">
         <div
           className={`mb-1 h-4 w-1 ${
-            formValues.ptSessionId ? "bg-blue-300" : "bg-green-200"
+            formValues.ptSessionId ? "bg-blue-600" : "bg-green-600"
           }`}
         ></div>
         <div className="text-3xl ">
@@ -216,7 +217,7 @@ const CalendarInputForm = ({
         </div>
       </div>
       <div className="h-[600px] w-80 px-2 overflow-y-auto overflow-x-hidden scrollbar-hide">
-        {formValues.ptSessionId && (
+        {userData.role === "ROLE_GENERAL" && formValues.ptSessionId && (
           <>
             <Input
               label="헬스장"
@@ -234,31 +235,7 @@ const CalendarInputForm = ({
             />
           </>
         )}
-        <Input
-          label="날짜"
-          name="workoutDate"
-          type="date"
-          value={formValues.workoutDate || ""}
-          onChange={handleChange}
-        />
-        <Input
-          label="시작 시간"
-          name="startTime"
-          type="time"
-          step="1800"
-          value={formValues.startTime || ""}
-          onChange={handleChange}
-        />
-        <Input
-          label="종료 시간"
-          name="endTime"
-          type="time"
-          step="1800"
-          value={formValues.endTime || ""}
-          onChange={handleChange}
-        />
-        <hr style={{ width: "240px" }} />
-        {role === "ROLE_TRAINER" && (
+        {userData.role === "ROLE_TRAINER" && (
           <>
             <Input
               label="회원 성함"
@@ -287,6 +264,45 @@ const CalendarInputForm = ({
             )}
           </>
         )}
+        <Input
+          label="날짜"
+          name="workoutDate"
+          type="date"
+          value={formValues.workoutDate || ""}
+          onChange={handleChange}
+          readOnly={
+            userData.role === "ROLE_GENERAL" && formValues.ptSessionId
+              ? true
+              : false
+          }
+        />
+        <Input
+          label="시작 시간"
+          name="startTime"
+          type="time"
+          step="1800"
+          value={formValues.startTime || ""}
+          onChange={handleChange}
+          readOnly={
+            userData.role === "ROLE_GENERAL" && formValues.ptSessionId
+              ? true
+              : false
+          }
+        />
+        <Input
+          label="종료 시간"
+          name="endTime"
+          type="time"
+          step="1800"
+          value={formValues.endTime || ""}
+          onChange={handleChange}
+          readOnly={
+            userData.role === "ROLE_GENERAL" && formValues.ptSessionId
+              ? true
+              : false
+          }
+        />
+        <hr style={{ width: "240px" }} />
         <Input
           label="제목"
           name="content"
@@ -363,11 +379,39 @@ const CalendarInputForm = ({
           value={formValues.memo || ""}
           onChange={handleChange}
         />
-        <Button
-          label={selectedEvent ? "수정" : "등록"}
-          onClick={handleSubmit}
-        />
-        {selectedEvent && <Button label="삭제" onClick={handleDelete} />}
+        {userData.role === "ROLE_TRAINER" && (
+          <>
+            <hr style={{ width: "240px" }} />
+            <Input
+              label="트레이너 메모"
+              name="ptMemo"
+              value={formValues.ptMemo || ""}
+              onChange={handleChange}
+            />
+            <p className="before:content-['*'] before:text-red-500 before:mr-0.5 text-xs mb-1 text-center w-[240px]">
+              트레이너 님에게만 보이는 메모입니다.
+            </p>
+          </>
+        )}
+        <hr style={{ width: "240px" }} />
+        <div className="mt-2">
+          <Button
+            label={selectedEvent ? "수정" : "등록"}
+            onClick={handleSubmit}
+          />
+          {userData.role === "ROLE_TRAINER" && (
+            <>
+              {selectedEvent && <Button label="삭제" onClick={handleDelete} />}
+            </>
+          )}
+          {userData.role === "ROLE_GENERAL" && (
+            <>
+              {selectedEvent && !formValues.ptSessionId && (
+                <Button label="삭제" onClick={handleDelete} />
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

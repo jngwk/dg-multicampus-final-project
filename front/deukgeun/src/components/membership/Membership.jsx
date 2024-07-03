@@ -1,56 +1,70 @@
 import React from "react";
 
 const MembershipTable = ({ stats }) => {
+  const tableHeader = (
+    <thead>
+      <tr className="bg-grayish-red bg-opacity-35">
+        <th className="text-center px-6 py-3 text-xs leading-4 font-semibold text-gray-600 uppercase tracking-wider rounded-l-lg w-1/6">
+          등록 날짜
+        </th>
+        <th className="px-6 py-3 text-center text-xs leading-4 font-semibold text-gray-600 uppercase tracking-wider w-1/6">
+          만료 날짜
+        </th>
+        <th className="px-6 py-3 text-center text-xs leading-4 font-semibold text-gray-600 uppercase tracking-wider w-1/6">
+          멤버십 가입 이유
+        </th>
+        <th className="px-6 py-3 text-center text-xs leading-4 font-semibold text-gray-600 uppercase tracking-wider w-1/6">
+          성별
+        </th>
+        <th className="px-6 py-3 text-center text-xs leading-4 font-semibold text-gray-600 uppercase tracking-wider w-1/6">
+          나이
+        </th>
+        <th className="px-6 py-3 text-center text-xs leading-4 font-semibold text-gray-600 uppercase tracking-wider rounded-r-lg w-1/6">
+          운동 경력
+        </th>
+      </tr>
+    </thead>
+  );
+
+  const tableBody = (
+    <tbody>
+      {stats.map((membership, index) => (
+        <tr key={index} className="bg-gray-50 hover:bg-grayish-red hover:bg-opacity-10">
+          <td className="px-6 py-3 text-center text-sm whitespace-no-wrap rounded-l-lg border-t-2 border-white w-1/6">
+            {membership.regDate} 
+          </td>
+          <td className="px-6 py-3 text-center text-sm whitespace-no-wrap border-t-2 border-white w-1/6">
+            {membership.expDate}
+          </td>
+          <td className="px-6 py-3 text-center text-sm whitespace-no-wrap border-t-2 border-white w-1/6">
+            {membership.userMemberReason}
+          </td>
+          <td className="px-6 py-3 text-center text-sm whitespace-no-wrap border-t-2 border-white w-1/6">
+            {membership.userGender}
+          </td>
+          <td className="px-6 py-3 text-center text-sm whitespace-no-wrap border-t-2 border-white w-1/6">
+            {membership.userAge}
+          </td>
+          <td className="px-6 py-3 text-center text-sm whitespace-no-wrap rounded-r-lg border-t-2 border-white w-1/6">
+            {membership.userWorkoutDuration}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  );
+
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full bg-white border-collapse shadow-md">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border-b border-gray-200 px-6 py-3 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              등록 날짜
-            </th>
-            <th className="border-b border-gray-200 px-6 py-3 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              만료 날짜
-            </th>
-            <th className="border-b border-gray-200 px-6 py-3 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              멤버십 가입 이유
-            </th>
-            <th className="border-b border-gray-200 px-6 py-3 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              성별
-            </th>
-            <th className="border-b border-gray-200 px-6 py-3 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              나이
-            </th>
-            <th className="border-b border-gray-200 px-6 py-3 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-              운동 경력
-            </th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200">
-          {stats.map((membership, index) => (
-            <tr key={index} className="hover:bg-gray-50">
-              <td className="border-b border-gray-200 px-6 py-4 whitespace-no-wrap">
-                {membership.regDate}
-              </td>
-              <td className="border-b border-gray-200 px-6 py-4 whitespace-no-wrap">
-                {membership.expDate}
-              </td>
-              <td className="border-b border-gray-200 px-6 py-4 whitespace-no-wrap">
-                {membership.userMemberReason}
-              </td>
-              <td className="border-b border-gray-200 px-6 py-4 whitespace-no-wrap">
-                {membership.userGender}
-              </td>
-              <td className="border-b border-gray-200 px-6 py-4 whitespace-no-wrap">
-                {membership.userAge}
-              </td>
-              <td className="border-b border-gray-200 px-6 py-4 whitespace-no-wrap">
-                {membership.userWorkoutDuration}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="mb-4">
+        <table className="min-w-full border-collapse shadow-md">
+          {tableHeader}
+        </table>
+        <div className="max-h-[300px] overflow-y-auto scrollbar-hide">
+          <table className="min-w-full border-collapse shadow-md">
+            {tableBody}
+          </table>
+        </div>
+      </div>
     </div>
   );
 };

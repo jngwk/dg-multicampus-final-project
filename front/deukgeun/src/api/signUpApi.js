@@ -33,7 +33,7 @@ export const signUpTrainer = async (userData) => {
     return response.data;
   } catch (error) {
     // throw new Error("Signup failed");
-    console.error("Error trainer singup", error);
+    console.error("Error trainer signup", error);
   }
 };
 

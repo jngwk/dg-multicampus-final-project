@@ -1,12 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Input from "../shared/Input";
 import Filter from "./Filter";
 import useCustomNavigate from "../../hooks/useCustomNavigate";
 
 const Hero = () => {
-  const [filter, setFilter] = useState("location");
+  const filters = ["general", "location", "price", "hours"];
+  const [filter, setFilter] = useState(filters[0]);
   const [searchWord, setSearchWord] = useState("");
   const customNavigate = useCustomNavigate();
+  const [manualFilterChange, setManualFilterChange] = useState(false);
+
+  useEffect(() => {
+    if (!manualFilterChange) {
+      const interval = setInterval(() => {
+        handleFilterClick();
+      }, 9000); // Change filter every 10 seconds
+
+      return () => clearInterval(interval); // Clear interval on component unmount
+    }
+  }, [filter, manualFilterChange]);
 
   const handleSearchButton = () => {
     // TODO 필터 적용한 검색 기능 구현
@@ -15,14 +27,40 @@ const Hero = () => {
     });
   };
 
+  const handleFilterClick = () => {
+    const currentIdx = filters.findIndex((f) => f === filter);
+    setFilter(filters[(currentIdx + 1) % filters.length]);
+  };
+
+  const handleFilterButtonClick = (selectedFilter) => {
+    setFilter(selectedFilter);
+    if (!manualFilterChange) setManualFilterChange(true);
+  };
+
+  const handleSearchWordChange = (e) => {
+    if (!manualFilterChange) setManualFilterChange(true);
+    setSearchWord(e.target.value);
+  };
+
   return (
     <div className="relative w-full h-[90dvh] flex justify-center items-center">
-      <div className="h-[40%] flex flex-col items-center gap-11">
-        <div className="pointer-events-none select-none self-start">
+      <div className="h-[40%] w-[400px] flex flex-col items-start gap-11">
+        <div
+          // pointer-events-none
+          className=" select-none self-start"
+          onClick={handleFilterClick}
+        >
           {/* 가격 필터 */}
+          {filter === "general" && (
+            <Filter
+              label={"'득근' 파트너"}
+              emoji={"💪"}
+              // underlineWidth={"140px"}
+            />
+          )}
           {filter === "price" && (
             <Filter
-              label={"가격이 저렴한"}
+              label={"회원권 가격이 저렴한"}
               emoji={"💳"}
               // underlineWidth={"140px"}
             />
@@ -52,7 +90,7 @@ const Hero = () => {
             height="50px"
             placeholder="헬스장 검색하기"
             value={searchWord}
-            onChange={(e) => setSearchWord(e.target.value)}
+            onChange={handleSearchWordChange}
             feature={
               <div>
                 <box-icon name="search" color="#bdbdbd" size="s"></box-icon>
@@ -65,21 +103,28 @@ const Hero = () => {
             <span>필터 선택: </span>
             <span
               className="hover:underline hover:underline-offset-[3px] cursor-pointer hover:text-trueGray-800"
-              onClick={() => setFilter("location")}
+              onClick={() => handleFilterButtonClick("general")}
+            >
+              없음{" "}
+            </span>
+            {"·"}
+            <span
+              className="hover:underline hover:underline-offset-[3px] cursor-pointer hover:text-trueGray-800"
+              onClick={() => handleFilterButtonClick("location")}
             >
               위치{" "}
             </span>
             {"·"}
             <span
               className="hover:underline hover:underline-offset-[3px] cursor-pointer hover:text-trueGray-800"
-              onClick={() => setFilter("price")}
+              onClick={() => handleFilterButtonClick("price")}
             >
               가격
             </span>
             {"·"}
             <span
               className="hover:underline hover:underline-offset-[3px] cursor-pointer hover:text-trueGray-800"
-              onClick={() => setFilter("hours")}
+              onClick={() => handleFilterButtonClick("hours")}
             >
               24시간
             </span>

@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { signUpTrainer } from '../api/signUpApi';
+import Input from '../components/shared/Input';
+import Button from '../components/shared/Button';
+import AddressModal from "../components/modals/AddressModal";
+import useValidation from "../hooks/useValidation";
 
 function SignUpTrainerPage() {
+  const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
+
   const [trainerInfo, setTrainerInfo] = useState({
     userName: '',
     email: '',
@@ -10,16 +16,30 @@ function SignUpTrainerPage() {
     detailAddress: ''
   });
 
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const { errors, resetErrors, validateForm, validateInput } = useValidation();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setTrainerInfo((prevInfo) => ({
       ...prevInfo,
       [name]: value,
     }));
+    validateInput(name, value);
+  };
+
+  const handleConfirmPasswordChange = (e) => {
+    setConfirmPassword(e.target.value);
+    validateInput("confirmPassword", e.target.value, trainerInfo.password);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const isValid = validateForm(trainerInfo, confirmPassword);
+    if (!isValid) {
+      console.log("Validation failed");
+      return;
+    }
     try {
       const response = await signUpTrainer(trainerInfo);
       console.log('Response:', response);
@@ -32,101 +52,114 @@ function SignUpTrainerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen flex justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-xl w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">트레이너 등록</h2>
+          <h2 className="mt-6 text-start text-3xl font-extrabold text-gray-900"> 📑 트레이너 등록</h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <input type="hidden" name="remember" value="true" />
           <div className="rounded-md shadow-sm space-y-4">
-            <div>
-              <label htmlFor="userName" className="block text-sm font-medium text-gray-700">
-                사용자명
-              </label>
-              <input
-                id="userName"
-                name="userName"
+            <div className="flex flex-row items-center space-x-3">
+              <label className="text-sm w-28">트레이너 이름</label>
+              <Input
                 type="text"
-                autoComplete="userName"
-                required
-                className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                width="100%"
+                label="트레이너 이름"
+                required={true}
+                name="userName"
                 value={trainerInfo.userName}
                 onChange={handleChange}
+                error={errors.userName}
               />
             </div>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                이메일
-              </label>
-              <input
-                id="email"
+            <div className="flex flex-row items-center space-x-3">
+              <label className="text-sm w-28">이메일</label>
+              <Input
+                type="text"
+                width="100%"
+                label="이메일"
+                required={true}
                 name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 value={trainerInfo.email}
                 onChange={handleChange}
+                error={errors.email}
               />
             </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                비밀번호
-              </label>
-              <input
-                id="password"
-                name="password"
+            <div className="flex flex-row items-center space-x-3">
+              <label className="text-sm w-28">비밀번호</label>
+              <Input
                 type="password"
-                autoComplete="current-password"
-                required
-                className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                width="100%"
+                label="비밀번호"
+                required={true}
+                name="password"
                 value={trainerInfo.password}
                 onChange={handleChange}
+                error={errors.password}
               />
             </div>
-            <div>
-              <label htmlFor="address" className="block text-sm font-medium text-gray-700">
-                주소
-              </label>
-              <input
-                id="address"
-                name="address"
+            <div className="flex flex-row items-center space-x-3">
+              <label className="text-sm w-28">비밀번호 확인</label>
+              <Input
+                type="password"
+                width="100%"
+                label="비밀번호 확인"
+                required={true}
+                name="confirmPassword"
+                value={confirmPassword}
+                onChange={handleConfirmPasswordChange}
+                error={errors.confirmPassword}
+              />
+            </div>
+            <div className="flex flex-row items-center space-x-3">
+              <label className="text-sm w-28">주소</label>
+              <Input
                 type="text"
-                autoComplete="address"
-                required
-                className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                width="100%"
+                label="주소"
+                required={true}
+                name="address"
                 value={trainerInfo.address}
                 onChange={handleChange}
+                readOnly={true}
+                error={errors.address}
+                feature="검색"
+                featureOnClick={() => setIsAddressModalVisible(true)}
+                featureEnableOnLoad={true}
+
               />
             </div>
-            <div>
-              <label htmlFor="detailAddress" className="block text-sm font-medium text-gray-700">
-                상세 주소
-              </label>
-              <input
-                id="detailAddress"
-                name="detailAddress"
+            <div className="flex flex-row items-center space-x-3">
+              <label className="text-sm w-28">상세 주소</label>
+              <Input
                 type="text"
-                autoComplete="detailAddress"
-                required
-                className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                width="100%"
+                label="상세 주소"
+                required={true}
+                name="detailAddress"
                 value={trainerInfo.detailAddress}
                 onChange={handleChange}
+                error={errors.detailAddress}
               />
             </div>
           </div>
-
-          <div className="mt-6">
-            <button
+          <div className="mt-6 flex float-end">
+            <Button
+              label="트레이너 등록"
               type="submit"
-              className="w-full bg-indigo-600 border border-transparent rounded-md py-2 px-4 inline-flex justify-center items-center text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
-            >
-              트레이너 등록
-            </button>
+              className="py-2 px-4 inline-flex justify-center items-center text-white hover:bg-bright-orange"
+            />
           </div>
         </form>
       </div>
+      {isAddressModalVisible && (
+        <AddressModal
+          userData={trainerInfo}
+          setUserData={setTrainerInfo}
+          toggleModal={() => setIsAddressModalVisible(false)}
+        />
+      )}
     </div>
   );
 }

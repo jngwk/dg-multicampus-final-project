@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 public class GymDTO {
     private Integer gymId;
     private String gymName;
+    private String userName;
     private Integer userId;
     private String crNumber;
     private String phoneNumber;
@@ -24,5 +25,6 @@ public class GymDTO {
     private String detailAddress;
     private String operatingHours;
     private String introduce;
+    private String SNSLink;
     // private Integer approval;
 }

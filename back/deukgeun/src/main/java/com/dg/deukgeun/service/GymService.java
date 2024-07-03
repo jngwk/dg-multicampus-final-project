@@ -8,12 +8,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import com.dg.deukgeun.dto.PageRequestDTO;
 import com.dg.deukgeun.dto.PageResponseDTO;
@@ -114,7 +114,7 @@ public class GymService {
         return dto;
     }
 
-    //gymInfo userId로 불러오기
+    // gymInfo userId로 불러오기
     public GymDTO getGymByUserId(Integer userId) {
         Optional<Gym> result = gymRepository.findByUser_UserId(userId);
         Gym gym = result.orElseThrow();
@@ -150,8 +150,9 @@ public class GymService {
         Optional<User> userResult = userRepository.findByUserId(userDetails.getUserId());
         User user = userResult.get();
         gym.getUser().setUserId(userDetails.getUserId());
-        //수정 시 role이 null로 설정되어 db에서 거부하는 에러 발생, 해결하기 위해 role을 부여
+        // 수정 시 role이 null로 설정되어 db에서 거부하는 에러 발생, 해결하기 위해 role을 부여
         gym.getUser().setRole(user.getRole());
+        gym.getUser().setUserName(user.getUserName());
         gym.setUser(user);
         gymRepository.save(gym);
     }
@@ -184,6 +185,22 @@ public class GymService {
     public List<Gym> searchGyms(String searchWord) {
         String processedSearchWord = searchWord.replaceAll("\\s+", "").toLowerCase();
         return gymRepository.searchGyms(processedSearchWord);
+    }
+
+    public List<Gym> searchGymsByOperatingHours(String searchWord) {
+        String processedSearchWord = searchWord.replaceAll("\\s+", "").toLowerCase();
+        return gymRepository.searchGymsByOperatingHours(processedSearchWord);
+    }
+
+    public List<Gym> searchGymsByLocation(String searchWord, String location) {
+        String processedSearchWord = searchWord.replaceAll("\\s+", "").toLowerCase();
+        String processedLocation = location.replaceAll("\\s+", "").toLowerCase();
+        return gymRepository.searchGymsByLocation(processedSearchWord, processedLocation);
+    }
+
+    public List<Gym> searchGymsByPrice(String searchWord, Pageable pageable) {
+        String processedSearchWord = searchWord.replaceAll("\\s+", "").toLowerCase();
+        return gymRepository.searchGymsByPrice(processedSearchWord, pageable).getContent();
     }
 
     public Boolean crNumberDuplicateCheck(String crNumber) {

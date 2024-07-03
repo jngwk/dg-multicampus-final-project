@@ -100,11 +100,13 @@ const CalendarPage = () => {
   const addEvent = async (formValues) => {
     // events에 추가
     try {
+      console.log("add Event @@@ 넘어가는 데이터", formValues);
       var result = "";
       if (userData.role === "ROLE_GENERAL") {
         result = await registerWorkoutSession(formValues);
         console.log("registering session as general", result);
       } else if (userData.role === "ROLE_TRAINER") {
+        console.log("trainer");
         result = await registerPTSession(formValues);
         console.log("registering session as trainer", result);
       }
@@ -183,6 +185,7 @@ const CalendarPage = () => {
   // 이벤트 클릭시
   // TODO 내용 수정 및 삭제 가능하게 하기
   const handleEventClick = (info) => {
+    if (info.event === selectedEvent) return;
     setSelectedEvent(info.event);
 
     console.log("load workout", info.event);
@@ -258,7 +261,13 @@ const CalendarPage = () => {
 
   // DB에서 받아온 data를 format
   const formatSessionToEvent = (session) => {
-    const color = session.ptSession ? "E6F4FF" : "#CFEB7F";
+    const color = session.ptSession ? "#1e88e5" : "#43a047";
+    const isEditable =
+      userData.role === "ROLE_TRAINER"
+        ? true
+        : session.ptSession
+        ? false
+        : true;
     return {
       id: session.workoutSessionId,
       title:
@@ -268,14 +277,21 @@ const CalendarPage = () => {
       start: new Date(`${session.workoutDate}T${session.startTime}`),
       end: new Date(`${session.workoutDate}T${session.endTime}`),
       color: color,
+      editable: isEditable,
       extendedProps: session,
     };
   };
 
-  // formValue를 event 객체의 포맷과 동일하게 수정
+  // 등록할 때 formValue를 event 객체의 포맷과 동일하게 수정
   const formatFormValues = (formValues, selectedEventId, ptSession = null) => {
     const id = selectedEventId ? selectedEventId : "";
-    const color = formValues.ptSession ? "E6F4FF" : "#CFEB7F";
+    const color = formValues.ptSession ? "#1e88e5" : "#43a047";
+    const isEditable =
+      userData.role === "ROLE_TRAINER"
+        ? true
+        : formValues.ptSession
+        ? false
+        : true;
     if (!ptSession) ptSession = formValues.ptSession;
     console.log(formValues, selectedEventId, ptSession, id, color);
     return {
@@ -287,6 +303,7 @@ const CalendarPage = () => {
       start: new Date(`${formValues.workoutDate}T${formValues.startTime}`),
       end: new Date(`${formValues.workoutDate}T${formValues.endTime}`),
       color: color,
+      editable: isEditable,
       extendedProps: { ...formValues, ptSession: ptSession ? ptSession : null },
     };
   };
@@ -318,7 +335,6 @@ const CalendarPage = () => {
           weekends={true}
           events={events}
           selectable={true}
-          editable={true}
           dateClick={handleDateClick}
           eventClick={handleEventClick}
           eventDrop={handleEventDrop}
@@ -345,7 +361,6 @@ const CalendarPage = () => {
             toggleInputForm={toggleInputForm}
             workoutsLoading={workoutsLoading}
             deleteWorkouts={deleteWorkouts}
-            role={userData.role}
           />
         </div>
       </div>
