@@ -405,7 +405,7 @@ const GymSearchMap = () => {
                   >
                     <span className="text-blue-600">{gym.user.userName}</span>
                     <span className="text-sm">{gym.operatingHours || ""}</span>
-                    <span className="text-sm">{gym.operatingHours || ""}</span>
+                    {/* <span className="text-sm">{gym.operatingHours || ""}</span> */}
                     <span className="text-ellipsis overflow-hidden text-sm">
                       {gym.address}
                     </span>
