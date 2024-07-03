@@ -45,7 +45,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
   const customNavigate = useCustomNavigate();
   const { fetchUserData } = useAuth();
   const [gymInfo, setGymInfo] = useState(null);
-  const [isSelectModalVisible, setIsSelectModalVisible] = useState(false);
+  // const [isSelectModalVisible, setIsSelectModalVisible] = useState(false);
   const [isMembershipModalVisible, setIsMembershipModalVisible] =
     useState(false);
 
