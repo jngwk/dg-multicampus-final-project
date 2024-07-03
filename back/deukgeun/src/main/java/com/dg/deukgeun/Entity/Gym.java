@@ -36,6 +36,8 @@ public class Gym {
     private String detailAddress;
     private String operatingHours;
     private String introduce;
+    private String userName;
+    private String SNSLink;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id")
