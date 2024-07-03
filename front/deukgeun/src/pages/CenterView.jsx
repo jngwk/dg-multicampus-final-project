@@ -1,5 +1,3 @@
-//헬스장 상세페이지 -> 코드 병합 필요
-
 import React, { useEffect, useState } from "react";
 import { Map, MapMarker, useMap } from "react-kakao-maps-sdk";
 
@@ -22,6 +20,9 @@ import { findMembership } from "../api/membershipApi";
 import { findPT } from "../api/ptApi";
 import { GymInfo } from "../api/gymApi";
 import { useLoginModalContext } from "../context/LoginModalContext";
+import useTyping from "../hooks/useTyping";
+import { useModal } from "../hooks/useModal";
+import EventModal from "../components/modals/EventModal";
 
 const CenterView = () => {
   const [gymData, setGymData] = useState(null);
@@ -31,6 +32,11 @@ const CenterView = () => {
   const customNavigate = useCustomNavigate();
   const location = useLocation();
   const gymId = location.state?.gym?.gymId || "";
+  
+
+  //헬스장 소개글 불러와야함
+  const introduce = "Gymdata에 introduce불러오기";
+  const { text: introduceText, isEnd: isintroduceEnd } = useTyping(introduce);
 
   useEffect(() => {
     const fetchGymData = async () => {
@@ -153,12 +159,21 @@ const CenterView = () => {
             </div>
           </div>
 
-          {/* 헬스장 사진 */}
-          <CenterImg gymId={gymId}/>
+          {/* 헬스장 설명 */}
+          <div className="flex justify-center items-center w-full h-full">
+            <div className="max-w-[1000px]">
+              <div className='text-base sm:text-lg'>
+                {introduceText}
+                <span className={`${isintroduceEnd ? 'hidden' : 'animate-typing'} `}>|</span>
+              </div>
+            </div>
+          </div>
 
+          {/* 헬스장 사진 */}
+          <CenterImg gymId={gymId} />
 
           {/* 헬스장 가격표 */}
-          <div className="w-full h-full p-5 flex flex-col items-center rounded-3xl bg-grayish-red bg-opacity-20 rounded-b-none" >
+          <div className="w-full h-full p-5 flex flex-col items-center rounded-3xl bg-grayish-red bg-opacity-20 rounded-b-none">
             <div className="my-10">
               <div className="flex flex-col items-center text-center mb-2 font-semibold text-xl">
                 가격표
@@ -167,102 +182,39 @@ const CenterView = () => {
             </div>
             {/* 가격표이미지가져오기 */}
             <div className="max-w-[1000px] max-h-full bg-grayish-red bg-opacity-20">
-              <img
-                src={priceImg}
-              />
+              <img src={priceImg} />
             </div>
           </div>
-
 
           {/* 트레이너 소개 */}
           <TrainerInfo />
           {/* 헬스장 리뷰 */}
           <Review />
         </div>
-
       </div>
       {/* 헬스권/PT등록버튼 */}
       <div className="flex flex-col space-y-3">
         <button 
-        onClick={() =>
-          sessionStorage.getItem("isLoggedIn")
-            ? handleMembershipInfo()
-            : toggleLoginModal()
-        }
-        className=" flex flex-col justify-center items-center fixed bottom-32 right-16 w-20 h-20 rounded-full bg-[#4E4C4F] text-[11px] text-white hover:bg-opacity-45 hover:border-2 hover:border-stone-500">
+          onClick={() =>
+            sessionStorage.getItem("isLoggedIn")
+              ? handleMembershipInfo()
+              : toggleLoginModal()
+          }
+          className="flex flex-col justify-center items-center fixed bottom-32 right-16 w-20 h-20 rounded-full bg-[#4E4C4F] text-[11px] text-white hover:bg-opacity-45 hover:border-2 hover:border-stone-500">
           <BsPersonVcard color="white" size={33} />
           <p>회원권 등록</p>
         </button>
         <button 
-        onClick={() =>
-          sessionStorage.getItem("isLoggedIn")
-            ? handlePTInfo()
-            : toggleLoginModal()
-        }
-        className=" flex flex-col justify-center items-center fixed bottom-10 right-16 w-20 h-20 rounded-full bg-grayish-red text-[12px] text-white hover:bg-opacity-45 hover:border-2 hover:border-stone-500">
+          onClick={() =>
+            sessionStorage.getItem("isLoggedIn")
+              ? handlePTInfo()
+              : toggleLoginModal()
+          }
+          className="flex flex-col justify-center items-center fixed bottom-10 right-16 w-20 h-20 rounded-full bg-grayish-red text-[12px] text-white hover:bg-opacity-45 hover:border-2 hover:border-stone-500">
           <LiaChalkboardTeacherSolid color="white" size={38} />
           <p>PT 등록</p>
         </button>
       </div>
-
-      {/* <div className="flex flex-col space-y-5">
-        <h1>Gym Details</h1>
-        <strong>Address:</strong> {gymData.address}
-        <p><strong>Detail Address:</strong> {gymData.detailAddress}</p>
-        <p><strong>Gym Name:</strong> {gymData.gymName}</p>
-        <p><strong>Introduction:</strong> {gymData.introduce}</p>
-        <p><strong>Operating Hours:</strong> {gymData.operatingHours}</p>
-        <p><strong>Phone Number:</strong> {gymData.phoneNumber}</p>
-
-        <h2>Trainers</h2>
-        <ul>
-          {gymData.trainersList.map((trainer) => (
-            <li key={trainer.trainerId}>
-              <p><strong>Name:</strong> {trainer.userName}</p>
-              <p><strong>Career:</strong> {trainer.trainerCareer}</p>
-
-              <img src={trainer.trainerImage} alt={`${trainer.userName}`} />
-            </li>
-          ))}
-        </ul>
-        <h2>Products</h2>
-        <ul>
-          {gymData.productList.map((product) => (
-            <li key={product.productId}>
-              <p><strong>Name:</strong> {product.productName}</p>
-              <p><strong>Price:</strong> {product.price}</p>
-              <p><strong>Days:</strong> {product.days}</p>
-              {product.ptCountTotal && (
-                <p><strong>PT Count Total:</strong> {product.ptCountTotal}</p>
-              )}
-            </li>
-          ))}
-        </ul>
-        <Button
-                width="120px"
-                color="peach-fuzz"
-                label="헬스권 등록"
-                onClick={() =>
-                  sessionStorage.getItem("isLoggedIn")
-                    ? handleMembershipInfo
-                    : toggleLoginModal()
-                }
-              />
-        <Button
-                width="120px"
-                color="peach-fuzz"
-                label="PT 등록"
-                onClick={() =>
-                  sessionStorage.getItem("isLoggedIn")
-                    ? handlePTInfo
-                    : toggleLoginModal()
-                }
-              />
-        <div className="flex flex-col space-y-56">
-          <TrainerInfo />
-          <Review />
-        </div>
-      </div> */}
 
       {/* Alert modal to display if membership is already registered */}
       {isMembershipAlreadyRegistered && (
@@ -285,10 +237,7 @@ const CenterView = () => {
           }}
         />
       )}
-
-
     </>
-
   );
 };
 

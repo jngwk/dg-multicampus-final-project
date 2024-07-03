@@ -138,7 +138,7 @@ const MembershipChart2 = ({ ptSessions, minPtDate, maxPtDate, ptStart, ptEnd }) 
   const { data, options } = prepareChartData();
 
   return (
-    <div className="flex justify-center items-center min-h-[300px]">
+    <div className="flex justify-center items-center min-h-[300px] w-[60vw]">
       <div className="w-full lg:w-3/4 xl:w-2/3">
         <h2 className="text-center mb-4">PT 선호도 차트</h2>
         <div className="flex flex-col items-center lg:flex-row lg:justify-center mb-4">
@@ -152,7 +152,7 @@ const MembershipChart2 = ({ ptSessions, minPtDate, maxPtDate, ptStart, ptEnd }) 
           </div>
         </div>
         {/* 차트 컨테이너 */}
-        <div className="chart-container relative h-[40vh] w-[60vw]">
+        <div className="chart-container relative h-[40vh]">
           <Bubble data={data} options={options} />
         </div>
       </div>

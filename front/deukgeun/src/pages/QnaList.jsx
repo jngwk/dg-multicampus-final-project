@@ -83,11 +83,11 @@ const QnaList = () => {
   return (
     <div className="flex flex-col items-center space-y-14 my-10">
       <div className="flex flex-row items-center absolute left-64">
-        <FcInspection size="34" className="mr-3" />
-        <p className="font-semibold text-xl">문의내역</p>
+        <p className="font-semibold text-xl flex flex-row items-center"> 
+          <div className="mr-1 text-3xl">📮</div> 문의내역</p>
       </div>
 
-      <div className="overflow-y-scroll scrollbar min-h-screen max-h-[15dvh] border-y flex flex-col space-y-5 w-3/4 items-center py-2">
+      <div className="overflow-y-scroll scrollbar min-h-screen max-h-[15dvh] border-y-4 border-peach-fuzz border-dotted flex flex-col space-y-5 w-3/4 items-center py-2">
         {inquiries.length > 0 ? (
           inquiries.map((inquiry, index) => (
             <div key={index} className="flex flex-col justify-center p-2 space-y-2 h-fit bg-peach-fuzz bg-opacity-25 w-full rounded-lg">

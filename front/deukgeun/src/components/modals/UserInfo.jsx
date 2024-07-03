@@ -48,6 +48,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
     const fetchUserImage = async () => {
       try {
         const images = await getImage();
+        console.log(images);
         if (images) {
           setUserImage(images.userImage);
         }
@@ -145,7 +146,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
     if (file) {
       const formData = new FormData();
       formData.append("imageFiles", file);
-
+      console.log(formData);
       try {
         let response;
         if (userImage === null) {
@@ -192,7 +193,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
             <div className="w-28 h-28 rounded-full">
               <img
                 className="w-full h-full rounded-full object-cover"
-                src={userImage || Bprofile}
+                src={`${process.env.PUBLIC_URL}/images/${userImage}` || Bprofile}
                 alt="Profile"
               />
             </div>
@@ -200,7 +201,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
               className="profileImg-input hidden"
               ref={fileInput}
               type="file"
-              accept="image/*"
+              accept=""
               onChange={onChangeImage}
             />
             <button className="cursor-pointer w-full text-center">

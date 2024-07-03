@@ -181,7 +181,7 @@ const MembershipChart1 = ({ filterType, start, end }) => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-[300px]">
+    <div className="flex justify-center items-center min-h-[300px] w-[60vw] ">
       <div className="w-full lg:w-3/4 xl:w-2/3">
         <h2 className="text-center mb-4">헬스 등록 차트</h2>
         <div className="flex flex-col items-center lg:flex-row lg:justify-center mb-4">
@@ -199,7 +199,7 @@ const MembershipChart1 = ({ filterType, start, end }) => {
           </div>
         </div>
         {/* 차트 컨테이너 */}
-        <div className="chart-container relative h-[40vh] w-[60vw]">
+        <div className="chart-container relative h-[40vh]">
           <Line data={chartData} options={chartOptions} />
         </div>
         {/* 선택된 월의 상세 정보 모달 */}
