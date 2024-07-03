@@ -13,9 +13,9 @@ const SignUpChoice = lazy(() => import("../pages/SignUpChoicePage"));
 const SignUpForm = lazy(() => import("../pages/SignUpPage"));
 const FindPassword = lazy(()=> import("../components/modals/FindPassword"));
 const QnaForm = lazy(() => import("../pages/QnaForm"));
-const MemberList = lazy(() => import("../pages/MemberList"));
 const GymSearch = lazy(() => import("../pages/GymSearchPage"));
 
+const MemberList = lazy(() => import("../pages/MemberList"));
 const PTMemberList = lazy(() => import("../pages/PTMemberList"));
 const CenterTrainerList = lazy(() => import("../pages/CenterTrainerList"));
 const CenterMemberList = lazy(() => import("../pages/CenterMemberList"));
@@ -32,6 +32,7 @@ const TrainerSet = lazy(() => import("../pages/TrainerSet"));
 const QnaList = lazy(() => import("../pages/QnaList"));
 const GymInfo = lazy(()=> import("../pages/GymInfo"));
 const PtSessionRegister = lazy(() => import("../pages/PtSessionForm"));
+const TrainerList = lazy(() => import("../pages/TrainerList"));
 
 const root = createBrowserRouter([
   {
@@ -108,6 +109,10 @@ const root = createBrowserRouter([
       {
         path: "memberList",
         element: <MemberList />,
+      },
+      {
+        path: "TrainerList",
+        element: <TrainerList />,
       },
       {
         path: "gymSearch",

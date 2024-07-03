@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { signUpTrainer } from '../api/signUpApi';
 import Input from '../components/shared/Input';
 import Button from '../components/shared/Button';
-import AddressModal from "../components/modals/AddressModal";
+// import AddressModal from "../components/modals/AddressModal";
 import useValidation from "../hooks/useValidation";
 
 function SignUpTrainerPage() {
-  const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
+  // const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
 
   const [trainerInfo, setTrainerInfo] = useState({
     userName: '',
@@ -112,7 +112,7 @@ function SignUpTrainerPage() {
                 error={errors.confirmPassword}
               />
             </div>
-            <div className="flex flex-row items-center space-x-3">
+            {/* <div className="flex flex-row items-center space-x-3">
               <label className="text-sm w-28">주소</label>
               <Input
                 type="text"
@@ -142,7 +142,7 @@ function SignUpTrainerPage() {
                 onChange={handleChange}
                 error={errors.detailAddress}
               />
-            </div>
+            </div> */}
           </div>
           <div className="mt-6 flex float-end">
             <Button
@@ -153,13 +153,13 @@ function SignUpTrainerPage() {
           </div>
         </form>
       </div>
-      {isAddressModalVisible && (
+      {/* {isAddressModalVisible && (
         <AddressModal
           userData={trainerInfo}
           setUserData={setTrainerInfo}
           toggleModal={() => setIsAddressModalVisible(false)}
         />
-      )}
+      )} */}
     </div>
   );
 }

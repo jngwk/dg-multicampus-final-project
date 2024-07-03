@@ -9,100 +9,6 @@ import { getMembershipStats } from '../api/membershipApi';
 import { getPtSession } from '../api/ptApi';
 
 
-const tempData = [
-  {
-    regDate: "2023-01-15",
-    expDate: "2024-01-14",
-    userMemberReason: "건강 유지",
-    userGender: "남성",
-    userAge: 30,
-    userWorkoutDuration: "2년"
-  },
-  {
-    regDate: "2023-03-20",
-    expDate: "2024-03-19",
-    userMemberReason: "다이어트",
-    userGender: "여성",
-    userAge: 25,
-    userWorkoutDuration: "1년"
-  },
-  {
-    regDate: "2023-03-20",
-    expDate: "2024-03-19",
-    userMemberReason: "다이어트",
-    userGender: "여성",
-    userAge: 25,
-    userWorkoutDuration: "1년"
-  },
-  {
-    regDate: "2023-03-20",
-    expDate: "2024-03-19",
-    userMemberReason: "다이어트",
-    userGender: "여성",
-    userAge: 25,
-    userWorkoutDuration: "1년"
-  },
-  {
-    regDate: "2023-03-20",
-    expDate: "2024-03-19",
-    userMemberReason: "다이어트",
-    userGender: "여성",
-    userAge: 25,
-    userWorkoutDuration: "1년"
-  },
-  {
-    regDate: "2023-03-20",
-    expDate: "2024-03-19",
-    userMemberReason: "다이어트",
-    userGender: "여성",
-    userAge: 25,
-    userWorkoutDuration: "1년"
-  },
-  {
-    regDate: "2023-03-20",
-    expDate: "2024-03-19",
-    userMemberReason: "다이어트",
-    userGender: "여성",
-    userAge: 25,
-    userWorkoutDuration: "1년"
-  },
-  {
-    regDate: "2023-03-20",
-    expDate: "2024-03-19",
-    userMemberReason: "다이어트",
-    userGender: "여성",
-    userAge: 25,
-    userWorkoutDuration: "1년"
-  },
-  {
-    regDate: "2023-03-20",
-    expDate: "2024-03-19",
-    userMemberReason: "다이어트",
-    userGender: "여성",
-    userAge: 25,
-    userWorkoutDuration: "1년"
-  },
-  {
-    regDate: "2023-03-20",
-    expDate: "2024-03-19",
-    userMemberReason: "다이어트",
-    userGender: "여성",
-    userAge: 25,
-    userWorkoutDuration: "1년"
-  },
-  {
-    regDate: "2023-03-20",
-    expDate: "2024-03-19",
-    userMemberReason: "다이어트",
-    userGender: "여성",
-    userAge: 25,
-    userWorkoutDuration: "1년"
-  },
-
-  // 추가적인 임시 데이터도 필요에 따라 추가할 수 있습니다.
-];
-
-
 const MembershipStats = () => {
   // 필터 사이드바
   const [FilterToggle, setFilterToggle] = useState(false);
@@ -436,7 +342,7 @@ const MembershipStats = () => {
 
           {/* Membership Table Section */}
           <div className="px-4">
-            <MembershipTable stats={tempData} filterType={filterType} start={start} end={end} />
+            <MembershipTable stats={stats} filterType={filterType} start={start} end={end} />
           </div>
         </div>
       </div>

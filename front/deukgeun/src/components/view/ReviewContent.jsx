@@ -35,7 +35,7 @@ const ReviewContent = ({ gymId }) => {
     };
 
     const handleDelete = (reviewId) => {
-        if (window.confirm("Are you sure you want to delete this review?")) {
+        if (window.confirm("작성하신 리뷰가 삭제됩니다. 삭제하시겠습니까?")) {
             deleteReview(reviewId)
                 .then(() => {
                     setReviews(reviews.filter((r) => r.id !== reviewId));
