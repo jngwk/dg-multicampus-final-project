@@ -29,4 +29,5 @@ public class Product{
     private Integer days;
     private String productName;
     private Integer ptCountTotal;
+    private boolean status;
 }
