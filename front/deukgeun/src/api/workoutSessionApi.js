@@ -53,6 +53,7 @@ export const deleteWorkoutSession = async (eventId) => {
 
 export const getWorkoutSessions = async (startDate, endDate) => {
   try {
+    console.log("in get");
     const res = await axios.get(`${prefix}/get/${startDate}/${endDate}`);
     return res.data;
   } catch (error) {
