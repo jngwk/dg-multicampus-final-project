@@ -193,6 +193,9 @@ public class WorkoutSessionController {
 
         for (int i = 0; i < workoutList.size(); i++) {
             WorkoutDTO dto = workoutList.get(i);
+            if (dto.getWorkoutName() == null) {
+                continue;
+            }
             if (dto.getWorkoutSessionId() == null) {
                 dto.setWorkoutSessionId(workoutSessionId);
                 workoutService.register(dto);
