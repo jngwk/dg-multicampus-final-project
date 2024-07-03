@@ -46,3 +46,4 @@ public class WorkoutSession {
     @OneToMany(mappedBy = "workoutSessionId", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Workout> workouts;
 }
+ 

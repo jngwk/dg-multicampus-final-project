@@ -56,7 +56,7 @@ const MembershipChart2 = ({ ptSessions, minPtDate, maxPtDate, ptStart, ptEnd }) 
     const data = {
       datasets: [
         {
-          label: 'PT 등록 시간',
+          label: 'PT 시간',
           type: 'bubble',
           data: filteredSessions.map(session => ({ x: session.workoutDate, y: session.startTime, r: 7 })),
           backgroundColor: 'rgba(54, 162, 235, 0.6)',
@@ -65,7 +65,7 @@ const MembershipChart2 = ({ ptSessions, minPtDate, maxPtDate, ptStart, ptEnd }) 
           yAxisID: 'y1',
         },
         {
-          label: 'PT 가입 수(전체)',
+          label: '일별 PT 수(전체)',
           type: 'line',
           data: Object.keys(filteredSessionCount).map(date => ({ x: date, y: filteredSessionCount[date] })),
           backgroundColor: 'rgba(255, 99, 132, 0.6)',
