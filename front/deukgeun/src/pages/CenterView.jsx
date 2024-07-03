@@ -23,24 +23,27 @@ import { useLoginModalContext } from "../context/LoginModalContext";
 import useTyping from "../hooks/useTyping";
 import { useModal } from "../hooks/useModal";
 import EventModal from "../components/modals/EventModal";
+import Fallback from "../components/shared/Fallback";
 
 const CenterView = () => {
-  const [gymData, setGymData] = useState(null);
-  const [isMembershipAlreadyRegistered, setIsMembershipAlreadyRegistered] = useState(false);
+  const location = useLocation();
+  const [gymData, setGymData] = useState(location.state?.gym);
+  const [isMembershipAlreadyRegistered, setIsMembershipAlreadyRegistered] =
+    useState(false);
   const [isPTAlreadyRegistered, setIsPTAlreadyRegistered] = useState(false);
   const { toggleLoginModal } = useLoginModalContext();
   const customNavigate = useCustomNavigate();
-  const location = useLocation();
   const gymId = location.state?.gym?.gymId || "";
-  
 
   //헬스장 소개글 불러와야함
   const introduce = "Gymdata에 introduce불러오기";
   const { text: introduceText, isEnd: isintroduceEnd } = useTyping(introduce);
 
   useEffect(() => {
+    if (gymData) return;
     const fetchGymData = async () => {
       try {
+        console.log("fetch gym data in center view");
         const data = await GymInfo(gymId);
         setGymData(data);
       } catch (error) {
@@ -78,14 +81,15 @@ const CenterView = () => {
   };
 
   if (!gymData) {
-    return <div>Loading...</div>;
+    return <Fallback />;
   }
 
   return (
     <>
       <div className="flex flex-col space-y-5 mt-10">
         <div className="flex flex-row ml-40  items-center font-semibold text-2xl mb-3">
-          <CgDetailsMore size="38" className="mr-3" />상세정보
+          <CgDetailsMore size="38" className="mr-3" />
+          상세정보
         </div>
         {/* 헬스장 정보 */}
         <div className="flex flex-col space-y-36">
@@ -116,12 +120,14 @@ const CenterView = () => {
               </Map>
             </div>
             <div className="relative flex flex-col space-y-7 box-border justify-center w-[50%]">
-              <p className="text-3xl font-semibold">{gymData.gymName}</p>
+              <p className="text-3xl font-semibold">{gymData.user.userName}</p>
               <div className="flex flex-row">
                 <FaLocationDot size="32" className="mr-3" color="#fe8742" />
                 <div className="flex flex-col ">
                   <p className="font-semibold text-xl"> 주소 </p>
-                  <div>{gymData.address} {gymData.detailAddress}</div>
+                  <div>
+                    {gymData.address} {gymData.detailAddress}
+                  </div>
                 </div>
               </div>
               <div className="flex flex-row">
@@ -132,7 +138,11 @@ const CenterView = () => {
                 </div>
               </div>
               <div className="flex flex-row">
-                <PiPhoneListDuotone size="32" className="mr-3" color="#fe8742" />
+                <PiPhoneListDuotone
+                  size="32"
+                  className="mr-3"
+                  color="#fe8742"
+                />
                 <div className="flex flex-col">
                   <p className="font-semibold text-xl"> 전화번호 </p>
                   <div>{gymData.phoneNumber}</div>
@@ -144,16 +154,16 @@ const CenterView = () => {
                     width="100px"
                     label="1:1 메시지"
                     height="40px"
-                    className="hover:font-semibold">
-                  </Button>
+                    className="hover:font-semibold"
+                  ></Button>
                 </div>
                 <div className="">
                   <Button
                     width="100px"
                     label="🎉 Event"
                     height="40px"
-                    className="hover:font-semibold">
-                  </Button>
+                    className="hover:font-semibold"
+                  ></Button>
                 </div>
               </div>
             </div>
@@ -162,9 +172,13 @@ const CenterView = () => {
           {/* 헬스장 설명 */}
           <div className="flex justify-center items-center w-full h-full">
             <div className="max-w-[1000px]">
-              <div className='text-base sm:text-lg'>
+              <div className="text-base sm:text-lg">
                 {introduceText}
-                <span className={`${isintroduceEnd ? 'hidden' : 'animate-typing'} `}>|</span>
+                <span
+                  className={`${isintroduceEnd ? "hidden" : "animate-typing"} `}
+                >
+                  |
+                </span>
               </div>
             </div>
           </div>
@@ -194,23 +208,25 @@ const CenterView = () => {
       </div>
       {/* 헬스권/PT등록버튼 */}
       <div className="flex flex-col space-y-3">
-        <button 
+        <button
           onClick={() =>
             sessionStorage.getItem("isLoggedIn")
               ? handleMembershipInfo()
               : toggleLoginModal()
           }
-          className="flex flex-col justify-center items-center fixed bottom-32 right-16 w-20 h-20 rounded-full bg-[#4E4C4F] text-[11px] text-white hover:bg-opacity-45 hover:border-2 hover:border-stone-500">
+          className="flex flex-col justify-center items-center fixed bottom-32 right-16 w-20 h-20 rounded-full bg-[#4E4C4F] text-[11px] text-white hover:bg-opacity-45 hover:border-2 hover:border-stone-500"
+        >
           <BsPersonVcard color="white" size={33} />
           <p>회원권 등록</p>
         </button>
-        <button 
+        <button
           onClick={() =>
             sessionStorage.getItem("isLoggedIn")
               ? handlePTInfo()
               : toggleLoginModal()
           }
-          className="flex flex-col justify-center items-center fixed bottom-10 right-16 w-20 h-20 rounded-full bg-grayish-red text-[12px] text-white hover:bg-opacity-45 hover:border-2 hover:border-stone-500">
+          className="flex flex-col justify-center items-center fixed bottom-10 right-16 w-20 h-20 rounded-full bg-grayish-red text-[12px] text-white hover:bg-opacity-45 hover:border-2 hover:border-stone-500"
+        >
           <LiaChalkboardTeacherSolid color="white" size={38} />
           <p>PT 등록</p>
         </button>
