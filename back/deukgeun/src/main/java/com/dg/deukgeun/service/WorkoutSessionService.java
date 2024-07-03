@@ -33,6 +33,8 @@ public class WorkoutSessionService {
     public Integer register(WorkoutSessionDTO workoutSessionDTO) {
         log.info("--------------------");
         WorkoutSession workoutSession = modelMapper.map(workoutSessionDTO, WorkoutSession.class);
+        workoutSession.setUser(userRepository.findById(workoutSessionDTO.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found")));
         WorkoutSession savedWorkoutSession = workoutSessionRepository.save(workoutSession);
         return savedWorkoutSession.getWorkoutSessionId();
     }

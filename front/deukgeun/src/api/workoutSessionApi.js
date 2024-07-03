@@ -1,9 +1,9 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
 
-export const API_SERVER_HOST = "http://localhost:8282";
-const prefix = `${API_SERVER_HOST}/api/workoutSession`;
-// const prefix = `/api/workoutSession`; // proxy 사용
+// export const API_SERVER_HOST = "http://localhost:8282";
+// const prefix = `${API_SERVER_HOST}/api/workoutSession`;
+const prefix = `/api/workoutSession`; // proxy 사용
 
 export const registerWorkoutSession = async (event) => {
   try {
@@ -53,6 +53,7 @@ export const deleteWorkoutSession = async (eventId) => {
 
 export const getWorkoutSessions = async (startDate, endDate) => {
   try {
+    console.log("in get");
     const res = await axios.get(`${prefix}/get/${startDate}/${endDate}`);
     return res.data;
   } catch (error) {

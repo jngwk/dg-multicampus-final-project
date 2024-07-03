@@ -18,20 +18,20 @@ const MembershipChart2 = ({ ptSessions, minPtDate, maxPtDate, ptStart, ptEnd }) 
     // 각 날짜별 세션 수 카운트
     const sessionCount = {};
     ptSessions.forEach(session => {
-      const date = session.ptDate;
+      const date = session.workoutDate;
       sessionCount[date] = sessionCount[date] ? sessionCount[date] + 1 : 1;
     });
 
     // 선택된 날짜 범위 내의 세션 필터링
     const filteredSessions = ptSessions.filter(session => {
-      const sessionDate = new Date(session.ptDate);
+      const sessionDate = new Date(session.workoutDate);
       return sessionDate >= new Date(ptStart) && sessionDate <= new Date(ptEnd);
     });
 
     // 필터링된 세션별 카운트
     const filteredSessionCount = {};
     filteredSessions.forEach(session => {
-      const date = session.ptDate;
+      const date = session.workoutDate;
       filteredSessionCount[date] = filteredSessionCount[date] ? filteredSessionCount[date] + 1 : 1;
     });
 
@@ -56,16 +56,16 @@ const MembershipChart2 = ({ ptSessions, minPtDate, maxPtDate, ptStart, ptEnd }) 
     const data = {
       datasets: [
         {
-          label: 'PT 등록 시간',
+          label: 'PT 시간',
           type: 'bubble',
-          data: filteredSessions.map(session => ({ x: session.ptDate, y: session.startTime, r: 7 })),
+          data: filteredSessions.map(session => ({ x: session.workoutDate, y: session.startTime, r: 7 })),
           backgroundColor: 'rgba(54, 162, 235, 0.6)',
           borderColor: 'rgba(54, 162, 235, 1)',
           borderWidth: 1,
           yAxisID: 'y1',
         },
         {
-          label: 'PT 가입 수(전체)',
+          label: '일별 PT 수(전체)',
           type: 'line',
           data: Object.keys(filteredSessionCount).map(date => ({ x: date, y: filteredSessionCount[date] })),
           backgroundColor: 'rgba(255, 99, 132, 0.6)',
@@ -138,7 +138,7 @@ const MembershipChart2 = ({ ptSessions, minPtDate, maxPtDate, ptStart, ptEnd }) 
   const { data, options } = prepareChartData();
 
   return (
-    <div className="flex justify-center items-center min-h-[300px]">
+    <div className="flex justify-center items-center min-h-[300px] w-[60vw]">
       <div className="w-full lg:w-3/4 xl:w-2/3">
         <h2 className="text-center mb-4">PT 선호도 차트</h2>
         <div className="flex flex-col items-center lg:flex-row lg:justify-center mb-4">
@@ -152,7 +152,7 @@ const MembershipChart2 = ({ ptSessions, minPtDate, maxPtDate, ptStart, ptEnd }) 
           </div>
         </div>
         {/* 차트 컨테이너 */}
-        <div className="chart-container relative h-[40vh] w-[60vw]">
+        <div className="chart-container relative h-[40vh]">
           <Bubble data={data} options={options} />
         </div>
       </div>

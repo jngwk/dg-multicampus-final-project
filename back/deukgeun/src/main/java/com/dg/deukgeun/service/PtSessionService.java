@@ -10,14 +10,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dg.deukgeun.dto.PtSessionDTO;
+import com.dg.deukgeun.dto.WorkoutSessionDTO;
 import com.dg.deukgeun.entity.Gym;
+import com.dg.deukgeun.entity.PersonalTraining;
 import com.dg.deukgeun.entity.PtSession;
 import com.dg.deukgeun.entity.Trainer;
 import com.dg.deukgeun.entity.User;
+import com.dg.deukgeun.entity.WorkoutSession;
 import com.dg.deukgeun.repository.GymRepository;
+import com.dg.deukgeun.repository.PersonalTrainingRepository;
 import com.dg.deukgeun.repository.PtSessionRepository;
 import com.dg.deukgeun.repository.TrainerRepository;
 import com.dg.deukgeun.repository.UserRepository;
+import com.dg.deukgeun.repository.WorkoutSessionRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +39,13 @@ public class PtSessionService {
     private final TrainerRepository trainerRepository;
     @Autowired
     private final GymRepository gymRepository;
+    @Autowired
+    private final PersonalTrainingRepository personalTrainingRepository;
+    @Autowired
+    private final WorkoutSessionRepository workoutSessionRepository;
+
+
+    
 
     public Integer insert(PtSession ptSession) {
         PtSession savedPtSession = ptSessionRepository.save(ptSession);
@@ -69,70 +81,45 @@ public class PtSessionService {
     }
 
     //헬스장
-    public List<PtSessionDTO> getPtSession(Integer userId) {
-        // 1. Retrieve gymId using userId
+    public List<WorkoutSessionDTO> getPtSession(Integer userId) {
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         Gym gym = gymRepository.findByUser(user)
                 .orElseThrow(() -> new IllegalArgumentException("Gym not found for the user"));
-    
-        // Log user and gym information
-        System.out.println("User ID: " + user.getUserId());
-        System.out.println("Gym ID: " + gym.getGymId());
-    
-        // 2. Retrieve trainers associated with the same gymId
+
         List<Trainer> trainers = trainerRepository.findAllBygymGymId(gym.getGymId());
-    
-        // Log the number of trainers found
-        System.out.println("Number of trainers found: " + trainers.size());
-    
-        // 3. Extract trainerIds from trainers list
+ 
         List<Integer> trainerIds = trainers.stream()
                 .map(Trainer::getTrainerId)
                 .collect(Collectors.toList());
-    
-        // Log trainer IDs
-        System.out.println("Trainer IDs: " + trainerIds);
-    
-        // Verify that trainer IDs are correct and not empty
+ 
         if (trainerIds.isEmpty()) {
             System.out.println("No trainer IDs found for gym ID: " + gym.getGymId());
             return new ArrayList<>(); // Return an empty list if no trainer IDs are found
         }
-    
-        // 4. Initialize an empty list to store all PtSessionDTOs
-        List<PtSessionDTO> ptSessionDTOs = new ArrayList<>();
-    
-        // 5. Loop through each trainerId and query PtSessionRepository to get PtSessions associated with that trainerId
+
+        List<Integer> allUserIds = new ArrayList<>();
         for (Integer trainerId : trainerIds) {
-            List<PtSession> ptSessions = ptSessionRepository.findByTrainer_TrainerId(trainerId);
-    
-            // Log the number of PT sessions found for the current trainerId
-            System.out.println("Number of PT sessions found for trainer ID " + trainerId + ": " + ptSessions.size());
-    
-            // Map PtSession entities to PtSessionDTOs and add to ptSessionDTOs list
-            List<PtSessionDTO> mappedDTOs = ptSessions.stream()
-                    .map(ptSession -> mapPtSessionToDto(ptSession))
+            List<Integer> userIDsForTrainer = personalTrainingRepository.findAllByTrainer_TrainerId(trainerId)
+                    .stream()
+                    .map(pt -> pt.getUser().getUserId())
                     .collect(Collectors.toList());
-    
-            // Add mapped DTOs to the main list
-            ptSessionDTOs.addAll(mappedDTOs);
+            allUserIds.addAll(userIDsForTrainer);
         }
-    
-        // Log the final DTO list
-        System.out.println("PT Session DTOs: " + ptSessionDTOs);
-    
-        return ptSessionDTOs;
+
+        List<WorkoutSession> workoutSessions = workoutSessionRepository
+                .findByUser_UserIdInAndPtSessionIsNotNull(allUserIds);
+
+
+        List<WorkoutSessionDTO> workoutSessionDTOs = workoutSessions.stream()
+                .filter(workoutSession -> workoutSession.getPtSession() != null) // Filter out sessions with null ptSession
+                .map(workoutSession -> modelMapper.map(workoutSession, WorkoutSessionDTO.class))
+                .collect(Collectors.toList());
+
+        // Log mapped WorkoutSessionDTOs
+        // workoutSessionDTOs.forEach(dto -> System.out.println("Mapped WorkoutSessionDTO: " + dto));
+
+        return workoutSessionDTOs;
     }
-    
-    private PtSessionDTO mapPtSessionToDto(PtSession ptSession) {
-        ModelMapper modelMapper = new ModelMapper();
-        
-        // Configure ModelMapper to explicitly map ptId from PersonalTraining entity
-        modelMapper.typeMap(PtSession.class, PtSessionDTO.class)
-                .addMapping(src -> src.getPt().getPtId(), PtSessionDTO::setPtId);
-    
-        return modelMapper.map(ptSession, PtSessionDTO.class);
-    }
-    
 }

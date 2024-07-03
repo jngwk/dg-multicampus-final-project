@@ -1,5 +1,6 @@
 package com.dg.deukgeun.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,11 +24,11 @@ public class PersonalTraining {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer ptId;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "trainer_id")
     private Trainer trainer;
 
