@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dg.deukgeun.dto.personalTraining.PersonalTrainingRequestDTO;
 import com.dg.deukgeun.dto.personalTraining.PersonalTrainingResponseDTO;
+import com.dg.deukgeun.entity.Membership;
 import com.dg.deukgeun.entity.PersonalTraining;
 import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.security.CustomUserDetails;
+import com.dg.deukgeun.service.MembershipService;
 import com.dg.deukgeun.service.PersonalTrainingService;
 import com.dg.deukgeun.service.ProductService;
 import com.dg.deukgeun.service.TrainerService;
@@ -33,6 +35,7 @@ public class PersonalTrainingController {
     private final PersonalTrainingService service;
     private final TrainerService trainerService;
     private final ProductService productService;
+    private final MembershipService membershipService;
 
     // 마찬가지로 매핑 타입에 따라 구분하기 쉽도록 메서드 이름을 짓겠습니다.
 
@@ -107,7 +110,14 @@ public class PersonalTrainingController {
             CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
                     .getPrincipal();
             Integer userId = userDetails.getUserId();
-
+            //userId와 membership이 이미 테이블에 있다면 횟수와 멤버쉽 타임 추가
+            Optional<Membership> membershiOptional = membershipService.findMembershipByUserIdAndProductId(userId, requestDTO.getMembershipDTO().getProductId());
+            if(!membershiOptional.isEmpty()){
+                Membership membership = membershiOptional.orElseThrow();
+                membershipService.plusDays(membership);
+                service.plusRemain(membership);
+                return ResponseEntity.ok(Map.of("기존의 pt 정보가 있습니다. pt 횟수 증가 및 맴버쉽 기간을 연장합니다.", membership.getMembershipId()));
+            }
             requestDTO.getPersonalTrainingDTO().setUserId(userId);
             requestDTO.getMembershipDTO().setUserMemberReason(requestDTO.getPersonalTrainingDTO().getUserPtReason());
 

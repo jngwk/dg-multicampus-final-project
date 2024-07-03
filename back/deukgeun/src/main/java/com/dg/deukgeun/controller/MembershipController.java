@@ -30,6 +30,14 @@ public class MembershipController {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         Integer userId = userDetails.getUserId();
+        //만약 유저아이디와 dto의 productId 가 이미 있을 때, 기존의 정보에 product days 만큼 만료일 추가
+        //이 코드는 완전히 동일한 상품을 다시 재구매 했을때 작동.
+        Optional<Membership> membershipOPT = membershipService.findMembershipByUserIdAndProductId(userId, membershipDTO.getProductId());
+        if(!membershipOPT.isEmpty()){
+            Membership membership = membershipOPT.orElseThrow();
+            return membershipService.plusDays(membership);
+        }
+        //아니면 새로 입력 받기
 
         return membershipService.registerMembership(membershipDTO, userId);
     }

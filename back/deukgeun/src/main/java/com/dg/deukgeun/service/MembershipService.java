@@ -3,6 +3,7 @@ package com.dg.deukgeun.service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -70,6 +71,20 @@ public class MembershipService {
             return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
         }
     }
+
+    //허승돈 수정
+    @PreAuthorize("(hasRole('ROLE_GENERAL')) &&" + "#userId == principal.userId")
+    public ResponseDTO<?> plusDays(Membership membership){
+        LocalDate newExp = LocalDate.parse(membership.getExpDate()).plusDays(membership.getProduct().getDays());
+        membership.setExpDate(newExp.toString());
+        try {
+            membershipRepository.save(membership);
+            return ResponseDTO.setSuccess("기존의 맴버쉽 정보가 있습니다. 맴버십 기간을 연장합니다.");
+        } catch(Exception e){
+            return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
+        }
+    }
+    //허승돈 수정 종료
 
     // IAMPORT와의 결제 인증이 완료된 후 회원권 등록을 처리하는 메서드
     public ResponseDTO<?> processMembershipRegistrationAfterPayment(MembershipDTO membershipDTO, Integer userId,
@@ -146,5 +161,16 @@ public class MembershipService {
             return membershipRepository.findByUser(user);
         }
         return Optional.empty(); // Return empty optional if user not found
+    }
+    
+    @PreAuthorize("(hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM')) && #userId == principal.userId")
+    public Optional<Membership> findMembershipByUserIdAndProductId(Integer userId, Integer productId){
+        User user = userRepository.findByUserId(userId).orElse(null);
+        Product product = productRepository.findById(productId).orElse(null);
+        if(user != null && product != null){
+            Optional<Membership> result = membershipRepository.findByUserAndProduct(user, product);
+            return result;
+        }
+        return Optional.empty();
     }
 }

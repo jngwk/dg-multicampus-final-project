@@ -15,6 +15,7 @@ public interface PersonalTrainingRepository extends JpaRepository<PersonalTraini
     List<PersonalTraining> findAllByUser_UserId(Integer userId);
 
     Optional<PersonalTraining> findByUser(User user);
+    Optional<PersonalTraining> findByMembershipId(Integer membershipId);
 
     Optional<List<PersonalTraining>> findAllByTrainer(Trainer trainer);
 

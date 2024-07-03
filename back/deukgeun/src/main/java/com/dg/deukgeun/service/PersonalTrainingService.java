@@ -13,11 +13,14 @@ import org.springframework.stereotype.Service;
 import com.dg.deukgeun.dto.ProductDTO;
 import com.dg.deukgeun.dto.personalTraining.PersonalTrainingDTO;
 import com.dg.deukgeun.dto.personalTraining.PersonalTrainingRequestDTO;
+import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.entity.Membership;
 import com.dg.deukgeun.entity.PersonalTraining;
+import com.dg.deukgeun.entity.Product;
 import com.dg.deukgeun.entity.Trainer;
 import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.PersonalTrainingRepository;
+import com.dg.deukgeun.repository.ProductRepository;
 import com.dg.deukgeun.repository.TrainerRepository;
 
 import jakarta.transaction.Transactional;
@@ -99,6 +102,18 @@ public class PersonalTrainingService {
             dtoList.add(modelMapper.map(result.get(i), PersonalTrainingDTO.class));
         }
         return dtoList;
+    }
+
+    public ResponseDTO<?> plusRemain(Membership membership){
+        Product product = membership.getProduct();
+        PersonalTraining personalTraining = personalTrainingRepository.findByMembershipId(membership.getMembershipId()).orElse(null);
+        personalTraining.setPtCountRemain(personalTraining.getPtCountRemain()+product.getPtCountTotal());
+        try{
+            personalTrainingRepository.save(personalTraining);
+            return ResponseDTO.setSuccess("기존의 pt 정보가 있습니다. pt 횟수 증가 및 맴버쉽 기간을 연장합니다.");
+        } catch(Exception e){
+            return ResponseDTO.setFailed("데이터베이스 연결에 실패하였습니다.");
+        }
     }
 
     // pt 데이터 수정 메서드.
