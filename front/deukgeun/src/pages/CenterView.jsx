@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Map, MapMarker, useMap } from "react-kakao-maps-sdk";
-
+import { Map, MapMarker } from "react-kakao-maps-sdk";
 import { CgDetailsMore } from "react-icons/cg";
 import { FaLocationDot } from "react-icons/fa6";
 import { PiPhoneListDuotone } from "react-icons/pi";
 import { LuTimer } from "react-icons/lu";
 import { BsPersonVcard } from "react-icons/bs";
 import { LiaChalkboardTeacherSolid } from "react-icons/lia";
-
 import Review from "../components/view/Review";
 import TrainerInfo from "../components/view/TrainerInfo";
 import Button from "../components/shared/Button";
@@ -35,7 +33,7 @@ const CenterView = () => {
   const customNavigate = useCustomNavigate();
   const gymId = location.state?.gym?.gymId || "";
 
-  //헬스장 소개글 불러와야함
+  // 헬스장 소개글 불러와야함
   const introduce = "Gymdata에 introduce불러오기";
   const { text: introduceText, isEnd: isintroduceEnd } = useTyping(introduce);
 
@@ -87,32 +85,29 @@ const CenterView = () => {
   return (
     <>
       <div className="flex flex-col space-y-5 mt-10">
-        <div className="flex flex-row ml-40  items-center font-semibold text-2xl mb-3">
+        <div className="flex flex-row ml-40 items-center font-semibold text-2xl mb-3">
           <CgDetailsMore size="38" className="mr-3" />
           상세정보
         </div>
         {/* 헬스장 정보 */}
         <div className="flex flex-col space-y-36">
-          <div className="w-full h-[500px]  flex bg-grayish-red bg-opacity-20">
-            <div className="box-border w-[50%] flex justify-center items-center ">
-              <Map // 지도를 표시할 Container
+          <div className="w-full h-[500px] flex bg-grayish-red bg-opacity-20">
+            <div className="box-border w-[50%] flex justify-center items-center">
+              <Map
                 className="rounded-lg"
                 id="map"
                 center={{
-                  // 지도의 중심좌표
                   lat: 33.450701,
                   lng: 126.570667,
                 }}
                 style={{
-                  // 지도의 크기
                   width: "80%",
                   height: "400px",
                 }}
-                level={3} // 지도의 확대 레벨
+                level={3}
               >
-                <MapMarker // 마커를 생성합니다
+                <MapMarker
                   position={{
-                    // 마커가 표시될 위치입니다
                     lat: 33.450701,
                     lng: 126.570667,
                   }}
@@ -123,7 +118,7 @@ const CenterView = () => {
               <p className="text-3xl font-semibold">{gymData.user.userName}</p>
               <div className="flex flex-row">
                 <FaLocationDot size="32" className="mr-3" color="#fe8742" />
-                <div className="flex flex-col ">
+                <div className="flex flex-col">
                   <p className="font-semibold text-xl"> 주소 </p>
                   <div>
                     {gymData.address} {gymData.detailAddress}
@@ -132,7 +127,7 @@ const CenterView = () => {
               </div>
               <div className="flex flex-row">
                 <LuTimer size="32" className="mr-3" color="#fe8742" />
-                <div className="flex flex-col ">
+                <div className="flex flex-col">
                   <p className="font-semibold text-xl"> 운영시간 </p>
                   <div>{gymData.operatingHours}</div>
                 </div>
@@ -149,7 +144,7 @@ const CenterView = () => {
                 </div>
               </div>
               <div className="absolute right-44 bottom-8 flex flex-row space-x-3">
-                <div className="">
+                <div>
                   <Button
                     width="100px"
                     label="1:1 메시지"
@@ -157,7 +152,7 @@ const CenterView = () => {
                     className="hover:font-semibold"
                   ></Button>
                 </div>
-                <div className="">
+                <div>
                   <Button
                     width="100px"
                     label="🎉 Event"
@@ -175,7 +170,7 @@ const CenterView = () => {
               <div className="text-base sm:text-lg">
                 {introduceText}
                 <span
-                  className={`${isintroduceEnd ? "hidden" : "animate-typing"} `}
+                  className={`${isintroduceEnd ? "hidden" : "animate-typing"}`}
                 >
                   |
                 </span>
@@ -194,16 +189,15 @@ const CenterView = () => {
                 <div className="mt-2 w-16 border-b-2 border-grayish-red border-opacity-20"></div>
               </div>
             </div>
-            {/* 가격표이미지가져오기 */}
             <div className="max-w-[1000px] max-h-full bg-grayish-red bg-opacity-20">
-              <img src={priceImg} />
+              <img src={priceImg} alt="Price" />
             </div>
           </div>
 
           {/* 트레이너 소개 */}
           <TrainerInfo />
           {/* 헬스장 리뷰 */}
-          <Review />
+          <Review gymId={gymId} />
         </div>
       </div>
       {/* 헬스권/PT등록버튼 */}
