@@ -418,8 +418,8 @@ const GymSearchMap = () => {
                       >
                         상세보기
                       </button>
-                      {(userData.role === "ROLE_GENERAL" ||
-                        !sessionStorage.getItem("isLoggedIn")) && (
+                      {(!sessionStorage.getItem("isLoggedIn") ||
+                        userData?.role === "ROLE_GENERAL") && (
                         <>
                           <button
                             className="border border-gray-500 py-2 px-4 text-xs rounded-md bg-grayish-red/30 hover:border-grayish-red hover:bg-grayish-red hover:text-white transition-all"
