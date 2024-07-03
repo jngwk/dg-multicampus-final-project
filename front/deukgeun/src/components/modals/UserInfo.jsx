@@ -19,7 +19,8 @@ import {
 } from "../../api/userInfoApi";
 import AlertModal from "./AlertModal";
 import { findMembership } from "../../api/membershipApi";
-import { GymInfoByUserId } from "../../api/gymApi"; 
+import { GymInfoByUserId } from "../../api/gymApi";
+import MembershipPtSelectModal from "./MembershipPtSelectModal";
 
 const MyInfo = ({ toggleModal, userData, setUserData }) => {
   const initFullAddress = {
@@ -43,6 +44,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
   const customNavigate = useCustomNavigate();
   const { fetchUserData } = useAuth();
   const [gymInfo, setGymInfo] = useState(null);
+  const [isSelectModalVisible, setIsSelectModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchUserImage = async () => {
@@ -193,7 +195,9 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
             <div className="w-28 h-28 rounded-full">
               <img
                 className="w-full h-full rounded-full object-cover"
-                src={`${process.env.PUBLIC_URL}/images/${userImage}` || Bprofile}
+                src={
+                  `${process.env.PUBLIC_URL}/images/${userImage}` || Bprofile
+                }
                 alt="Profile"
               />
             </div>
@@ -306,10 +310,8 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
                             <span
                               className="cursor-pointer hover:text-gray-700"
                               onClick={() =>
-                                customNavigate("/gymSearch", {
-                                  state: {
-                                    searchWord: membership.gym.user.userName,
-                                  },
+                                customNavigate("/centerView", {
+                                  state: { gym: membership.gym },
                                 })
                               }
                             >
@@ -320,16 +322,18 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
                               className="cursor-pointer hover:text-gray-700"
                               onClick={() =>
                                 // TODO 회원권 연장으로 이동
-                                customNavigate("/gymSearch", {
-                                  state: {
-                                    searchWord: membership.gym.user.userName,
-                                  },
-                                })
+                                setIsSelectModalVisible(true)
                               }
                             >
                               (만료일: {membership.expDate})
                             </span>
                           </p>
+                          {isSelectModalVisible && (
+                            <MembershipPtSelectModal
+                              toggleModal={() => setIsSelectModalVisible(false)}
+                              selectedGym={membership.gym}
+                            />
+                          )}
                         </>
                       ) : (
                         <p
