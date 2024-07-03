@@ -58,6 +58,7 @@ const GymSearchMap = () => {
       handleSearch();
       return;
     }
+    setFilter("general");
     if (navigator.geolocation) {
       setUseCurrentLoc(true);
       navigator.geolocation.getCurrentPosition(
@@ -403,9 +404,8 @@ const GymSearchMap = () => {
                     onClick={() => handleListClick(gym)}
                   >
                     <span className="text-blue-600">{gym.user.userName}</span>
-                    <span className="text-sm">
-                      {gym.operatingHours || "24시간 운영"}
-                    </span>
+                    <span className="text-sm">{gym.operatingHours || ""}</span>
+                    <span className="text-sm">{gym.operatingHours || ""}</span>
                     <span className="text-ellipsis overflow-hidden text-sm">
                       {gym.address}
                     </span>
