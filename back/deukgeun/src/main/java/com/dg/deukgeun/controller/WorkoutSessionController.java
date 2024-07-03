@@ -142,6 +142,7 @@ public class WorkoutSessionController {
      * userId의 경우, workoutSessionId가 PK로서 고유성을 보장하므로, 입력받지 않는 것이 security가 좋을듯. 수정하는
      * 단계라면 이미 저장되어 있기도 하고.
      */
+    @SuppressWarnings("null")
     @PutMapping("/modify/{workoutSessionId}")
     public Map<String, String> modify(@PathVariable(name = "workoutSessionId") Integer workoutSessionId,
             @RequestBody WorkoutSessionReqeustDTO workoutSessionReqeustDTO) {
@@ -154,10 +155,14 @@ public class WorkoutSessionController {
         // 운동일지
         if ("ROLE_GENERAL".equals(authority)) {
             workoutSessionDTO.setUserId(userDetails.getUserId());
-        } else if ("ROLE_TRAINER".equals(authority)) {
+        }
+        // PT 캘린더
+        else if ("ROLE_TRAINER".equals(authority)) {
             workoutSessionDTO.setUserId(workoutSessionReqeustDTO.getPtSession().getPt().getUser().getUserId());
         }
-
+        // if (workoutSessionReqeustDTO.getPtSession() != null) {
+        // workoutSessionDTO.setPtSession(workoutSessionReqeustDTO.getPtSession());
+        // }
         workoutSessionDTO.setWorkoutSessionId(workoutSessionId);
         workoutSessionDTO.setBodyWeight(workoutSessionReqeustDTO.getBodyWeight());
         workoutSessionDTO.setContent(workoutSessionReqeustDTO.getContent());
@@ -178,7 +183,6 @@ public class WorkoutSessionController {
         // workoutService.insertList(workoutList);
         List<WorkoutDTO> workoutList = workoutSessionReqeustDTO.getWorkouts();
 
-        // TODO 삭제된 workout 파악하기
         // List<WorkoutDTO> savedWorkoutList =
         // workoutService.getByWorkoutSessionId(workoutSessionId);
 

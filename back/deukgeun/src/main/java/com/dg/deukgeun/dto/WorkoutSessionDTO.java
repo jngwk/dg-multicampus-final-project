@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import org.springframework.lang.Nullable;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +21,7 @@ import lombok.NoArgsConstructor;
 public class WorkoutSessionDTO {
     private Integer workoutSessionId;
     private Integer userId;
+    @Nullable
     private PtSession ptSession;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate workoutDate;

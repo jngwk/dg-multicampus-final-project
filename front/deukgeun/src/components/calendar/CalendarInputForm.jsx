@@ -34,7 +34,6 @@ const CalendarInputForm = ({
   toggleInputForm,
   workoutsLoading,
   deleteWorkouts,
-  role,
 }) => {
   const { computeTime, getTime } = useCustomDate();
   const { userData } = useAuth();
@@ -144,17 +143,19 @@ const CalendarInputForm = ({
 
   const handleSubmit = () => {
     const nestedFormValues = {
-      ptSession: {
-        ptSessionId: formValues.ptSessionId,
-        pt: {
-          user: {
-            userId: formValues.ptUserId,
-            userName: formValues.ptUserName,
-          },
-        },
-        trainer: formValues.trainer,
-        memo: formValues.ptMemo,
-      },
+      ptSession: formValues.ptSessionId
+        ? {
+            ptSessionId: formValues.ptSessionId,
+            pt: {
+              user: {
+                userId: formValues.ptUserId,
+                userName: formValues.ptUserName,
+              },
+            },
+            trainer: formValues.trainer,
+            memo: formValues.ptMemo,
+          }
+        : null,
       workoutDate: formValues.workoutDate,
       startTime: formValues.startTime,
       endTime: formValues.endTime,
@@ -234,6 +235,35 @@ const CalendarInputForm = ({
             />
           </>
         )}
+        {userData.role === "ROLE_TRAINER" && (
+          <>
+            <Input
+              label="회원 성함"
+              name="ptUserName"
+              type="text"
+              value={formValues.ptUserName || ""}
+              onChange={handleChange}
+              readOnly
+              feature={
+                <div className="-translate-y-1">
+                  <box-icon name="search" color="#bdbdbd" size="s"></box-icon>
+                </div>
+              }
+              featureOnClick={toggleUserSearchModal}
+              featureEnableOnLoad
+            />
+            {isUserSearchModalVisible && (
+              <UserSearchModal
+                toggleModal={toggleUserSearchModal}
+                userData={userData}
+                users={users}
+                usersLoading={usersLoading}
+                formValues={formValues}
+                setFormValues={setFormValues}
+              />
+            )}
+          </>
+        )}
         <Input
           label="날짜"
           name="workoutDate"
@@ -273,35 +303,6 @@ const CalendarInputForm = ({
           }
         />
         <hr style={{ width: "240px" }} />
-        {role === "ROLE_TRAINER" && (
-          <>
-            <Input
-              label="회원 성함"
-              name="ptUserName"
-              type="text"
-              value={formValues.ptUserName || ""}
-              onChange={handleChange}
-              readOnly
-              feature={
-                <div className="-translate-y-1">
-                  <box-icon name="search" color="#bdbdbd" size="s"></box-icon>
-                </div>
-              }
-              featureOnClick={toggleUserSearchModal}
-              featureEnableOnLoad
-            />
-            {isUserSearchModalVisible && (
-              <UserSearchModal
-                toggleModal={toggleUserSearchModal}
-                userData={userData}
-                users={users}
-                usersLoading={usersLoading}
-                formValues={formValues}
-                setFormValues={setFormValues}
-              />
-            )}
-          </>
-        )}
         <Input
           label="제목"
           name="content"
@@ -383,7 +384,7 @@ const CalendarInputForm = ({
             <hr style={{ width: "240px" }} />
             <Input
               label="트레이너 메모"
-              name="memo"
+              name="ptMemo"
               value={formValues.ptMemo || ""}
               onChange={handleChange}
             />
@@ -394,20 +395,17 @@ const CalendarInputForm = ({
         )}
         <hr style={{ width: "240px" }} />
         <div className="mt-2">
+          <Button
+            label={selectedEvent ? "수정" : "등록"}
+            onClick={handleSubmit}
+          />
           {userData.role === "ROLE_TRAINER" && (
             <>
-              <Button
-                label={selectedEvent ? "수정" : "등록"}
-                onClick={handleSubmit}
-              />
               {selectedEvent && <Button label="삭제" onClick={handleDelete} />}
             </>
           )}
           {userData.role === "ROLE_GENERAL" && (
             <>
-              {selectedEvent && (
-                <Button label={"수정"} onClick={handleSubmit} />
-              )}
               {selectedEvent && !formValues.ptSessionId && (
                 <Button label="삭제" onClick={handleDelete} />
               )}
