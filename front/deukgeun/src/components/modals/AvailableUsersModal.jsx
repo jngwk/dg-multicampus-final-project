@@ -93,8 +93,8 @@ const AvailableUsersModal = ({
                       )
                   )
                 ) : (
-                  <div className="flex flex-col justify-center items-center">
-                    <span className="text-3xl pt-6">😔</span>
+                  <div className="flex flex-col h-full justify-center items-center text-center">
+                    <span className="text-3xl pt-6">😢</span>
                     <span className="py-6">
                       대화 가능한 상대가 없습니다.
                       {userData.role === "ROLE_GENERAL" && (
@@ -147,7 +147,7 @@ const AvailableUsersModal = ({
                     );
                   })
                 ) : (
-                  <div className="flex flex-col justify-center items-center">
+                  <div className="flex flex-col justify-center items-center text-center">
                     <span className="text-3xl pt-6">😔</span>
                     <span className="py-6">
                       검색어와 일치하는 헬스장이 없습니다.

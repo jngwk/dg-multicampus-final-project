@@ -109,7 +109,7 @@ const MemberRegister = () => {
   for (let WorkoutDuration = 1; WorkoutDuration <= 20; WorkoutDuration++) {
     WorkoutDurationOptions.push(
       <option key={WorkoutDuration} value={WorkoutDuration}>
-        {WorkoutDuration}
+        {WorkoutDuration}년
       </option>
     );
   }
@@ -235,20 +235,23 @@ const MemberRegister = () => {
   return (
     <>
       <div className="flex flex-row justify-center items-center mt-10 relative ">
-        <GiArchiveRegister color="#9F8D8D"
-          className={` ${isExpanded
-            ? "absolute left-1/4 top-0 w-20 h-20 z-50"
-            : "absolute left-1/3 top-0 w-20 h-20 z-50"
+        <GiArchiveRegister
+          color="#9F8D8D"
+          className={` ${
+            isExpanded
+              ? "absolute left-1/4 top-0 w-20 h-20 z-50"
+              : "absolute left-1/3 top-0 w-20 h-20 z-50"
           } `}
         />
         <div
-          className={`m-10 ${isExpanded
+          className={`m-10 ${
+            isExpanded
               ? "w-[1000px] justify-center space-x-10 px-20 relative"
               : "w-[500px] justify-center"
-            } h-[550px] rounded-lg flex items-center border-2 border-peach-fuzz`}
+          } h-[550px] rounded-lg flex items-center border-2 border-peach-fuzz`}
         >
           <div className="flex flex-col items-center space-y-6">
-            <p className="font-semibold text-xl">헬스권 등록</p>
+            <p className="font-semibold text-xl">회원권 등록</p>
             {/* 이름 */}
             <Input
               label="이름"
@@ -270,8 +273,9 @@ const MemberRegister = () => {
                   onFocus={handleGenderFocus}
                   onBlur={handleGenderBlur}
                   type="button"
-                  className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${genderFocus ? "border-peach-fuzz" : "border-gray-400"
-                    } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                  className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${
+                    genderFocus ? "border-peach-fuzz" : "border-gray-400"
+                  } focus:border-2 focus:outline-none text-sm peer my-2 `}
                   value={userGender}
                   onChange={handleChangeGender}
                 >
@@ -297,8 +301,9 @@ const MemberRegister = () => {
                   onFocus={handleAgeFocus}
                   onBlur={handleAgeBlur}
                   type="button"
-                  className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm  ${ageFocus ? "border-peach-fuzz" : "border-gray-400"
-                    } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                  className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm  ${
+                    ageFocus ? "border-peach-fuzz" : "border-gray-400"
+                  } focus:border-2 focus:outline-none text-sm peer my-2 `}
                   value={userAge}
                   onChange={handleChangeAge}
                 >
@@ -380,7 +385,6 @@ const MemberRegister = () => {
                 )}
               </div>
               <div className="flex flex-row space-x-3 relative items-center justify-between">
-
                 {/* 등록일 만료일 */}
                 <div className="relative">
                   <label
@@ -422,10 +426,11 @@ const MemberRegister = () => {
                     onFocus={handleMemberReasonFocus}
                     onBlur={handleMemberReasonBlur}
                     type="button"
-                    className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userMemberReasonFocus
+                    className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
+                      userMemberReasonFocus
                         ? "border-peach-fuzz"
                         : "border-gray-400"
-                      } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                    } focus:border-2 focus:outline-none text-sm peer my-2 `}
                     value={userMemberReason}
                     onChange={handleChangeMemberReason}
                   >
@@ -456,10 +461,11 @@ const MemberRegister = () => {
                     onFocus={handleWorkoutDurationFocus}
                     onBlur={handleWorkoutDurationBlur}
                     type="button"
-                    className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userWorkoutDurationFocus
+                    className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
+                      userWorkoutDurationFocus
                         ? "border-peach-fuzz"
                         : "border-gray-400"
-                      } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                    } focus:border-2 focus:outline-none text-sm peer my-2 `}
                     value={userWorkoutDuration}
                     onChange={handleChangeWorkoutDuration}
                   >
@@ -479,7 +485,7 @@ const MemberRegister = () => {
                 {/* @@@@@@@@@상품 가격 표시 */}
                 {/* @@@@@@@@@상품 가격 표시 */}
                 {/* @@@@@@@@@상품 가격 표시 */}
-                <div >{selectedProductPrice}원</div>
+                <div>{selectedProductPrice}원</div>
                 <div className="ml-3">
                   <Button
                     width="120px"
@@ -499,11 +505,11 @@ const MemberRegister = () => {
         )}
       </div>
       {isExpanded && (
-          <button className="flex items-center mb-10 text-lg text-grayish-red hover:border-b hover:border-gray-400 hover:font-semibold mx-auto animate-bounce" >
-          <box-icon name='wallet-alt' color="#9F8D8D" size="sm"></box-icon>
-            결제하기
+        <button className="flex items-center mb-10 text-lg text-grayish-red hover:border-b hover:border-gray-400 hover:font-semibold mx-auto animate-bounce">
+          <box-icon name="wallet-alt" color="#9F8D8D" size="sm"></box-icon>
+          결제하기
         </button>
-        )}
+      )}
       {isAddressModalVisible && (
         <AddressModal
           userData={userData}
