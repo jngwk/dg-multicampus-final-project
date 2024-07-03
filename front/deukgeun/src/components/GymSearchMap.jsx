@@ -10,6 +10,7 @@ import { useLoginModalContext } from "../context/LoginModalContext";
 import { useAuth } from "../context/AuthContext";
 import Fallback from "./shared/Fallback";
 import MemberRegisterModal from "./modals/MemberRegisterModal";
+import MembershipPtSelectModal from "./modals/MembershipPtSelectModal";
 const { kakao } = window;
 
 const GymSearchMap = () => {
@@ -40,6 +41,7 @@ const GymSearchMap = () => {
   const [selectedGym, setSelectedGym] = useState([]);
   const [useCurrentLoc, setUseCurrentLoc] = useState(false);
   const [isChatModalVisible, setIsChatModalVisible] = useState(false);
+  const [isSelectModalVisible, setIsSelectModalVisible] = useState(false);
   const [mapLoading, setMapLoading] = useState(true);
   const { toggleLoginModal } = useLoginModalContext();
   const customNavigate = useCustomNavigate();
@@ -56,6 +58,7 @@ const GymSearchMap = () => {
       handleSearch();
       return;
     }
+    setFilter("general");
     if (navigator.geolocation) {
       setUseCurrentLoc(true);
       navigator.geolocation.getCurrentPosition(
@@ -121,10 +124,13 @@ const GymSearchMap = () => {
   };
 
   const convertAddressToLatLng = (address) => {
+    // console.log("address", address);
     return new Promise((resolve, reject) => {
       const geocoder = new kakao.maps.services.Geocoder();
       geocoder.addressSearch(address, function (result, status) {
+        // console.log("result in convert address", result, status);
         if (status === kakao.maps.services.Status.OK) {
+          // console.log("okay");
           resolve({ lat: result[0].y, lng: result[0].x });
         } else {
           reject(new Error("Failed to convert address to lat/lng"));
@@ -213,9 +219,7 @@ const GymSearchMap = () => {
       setGyms(res);
       const promises = res.map(async (gym) => {
         try {
-          const latlng = await convertAddressToLatLng(
-            gym.address + " " + gym.detailAddress
-          );
+          const latlng = await convertAddressToLatLng(gym.address);
           return {
             // content
             content: (
@@ -294,12 +298,14 @@ const GymSearchMap = () => {
   };
 
   const handleRegister = async (gym) => {
-    try {
-      const data = await GymInfo(gym.gymId); // Fetch complete gym data
-      customNavigate("/memberregister", { state: { gym: data } });
-    } catch (error) {
-      console.error("Error fetching gym data:", error);
-    }
+    setSelectedGym(gym);
+    setIsSelectModalVisible(true);
+    // try {
+    //   const data = await GymInfo(gym.gymId); // Fetch complete gym data
+    //   customNavigate("/memberregister", { state: { gym: data } });
+    // } catch (error) {
+    //   console.error("Error fetching gym data:", error);
+    // }
   };
 
   const handleKeyPress = (event) => {
@@ -398,9 +404,8 @@ const GymSearchMap = () => {
                     onClick={() => handleListClick(gym)}
                   >
                     <span className="text-blue-600">{gym.user.userName}</span>
-                    <span className="text-sm">
-                      {gym.operatingHours || "24시간 운영"}
-                    </span>
+                    <span className="text-sm">{gym.operatingHours || ""}</span>
+                    {/* <span className="text-sm">{gym.operatingHours || ""}</span> */}
                     <span className="text-ellipsis overflow-hidden text-sm">
                       {gym.address}
                     </span>
@@ -413,26 +418,31 @@ const GymSearchMap = () => {
                       >
                         상세보기
                       </button>
-                      <button
-                        className="border border-gray-500 py-2 px-4 text-xs rounded-md bg-grayish-red/30 hover:border-grayish-red hover:bg-grayish-red hover:text-white transition-all"
-                        onClick={() =>
-                          sessionStorage.getItem("isLoggedIn")
-                            ? handleContactButton(gym)
-                            : toggleLoginModal()
-                        }
-                      >
-                        문의하기
-                      </button>
-                      <button
-                        className="border border-gray-500 py-2 px-4 text-xs text-gray-800 rounded-md bg-bright-orange/50 hover:border-bright-orange/80 hover:bg-bright-orange/80 hover:text-white transition-all"
-                        onClick={() =>
-                          sessionStorage.getItem("isLoggedIn")
-                            ? handleRegister(gym)
-                            : toggleLoginModal()
-                        }
-                      >
-                        등록하기
-                      </button>
+                      {(!sessionStorage.getItem("isLoggedIn") ||
+                        userData?.role === "ROLE_GENERAL") && (
+                        <>
+                          <button
+                            className="border border-gray-500 py-2 px-4 text-xs rounded-md bg-grayish-red/30 hover:border-grayish-red hover:bg-grayish-red hover:text-white transition-all"
+                            onClick={() =>
+                              sessionStorage.getItem("isLoggedIn")
+                                ? handleContactButton(gym)
+                                : toggleLoginModal()
+                            }
+                          >
+                            문의하기
+                          </button>
+                          <button
+                            className="border border-gray-500 py-2 px-4 text-xs text-gray-800 rounded-md bg-bright-orange/50 hover:border-bright-orange/80 hover:bg-bright-orange/80 hover:text-white transition-all"
+                            onClick={() =>
+                              sessionStorage.getItem("isLoggedIn")
+                                ? handleRegister(gym)
+                                : toggleLoginModal()
+                            }
+                          >
+                            등록하기
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))
@@ -450,6 +460,12 @@ const GymSearchMap = () => {
       </div>
       {isChatModalVisible && sessionStorage.getItem("isLoggedIn") && (
         <ChatModal toggleModal={toggleChatModal} selectedGym={selectedGym} />
+      )}
+      {isSelectModalVisible && sessionStorage.getItem("isLoggedIn") && (
+        <MembershipPtSelectModal
+          toggleModal={() => setIsSelectModalVisible(false)}
+          selectedGym={selectedGym}
+        />
       )}
       {/* <MemberRegisterModal /> */}
     </div>

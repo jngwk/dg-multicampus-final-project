@@ -62,3 +62,17 @@ export const updateUserInfo = async (userData) => {
     throw error;
   }
 };
+
+export const resetPasswordWithEmail = async (email, password) => {
+  try {
+    const res = await axios.post(`${prefix}/resetPassword`, {
+      email: email,
+      password: password,
+    });
+    console.log("API", res);
+    return res.data;
+  } catch (error) {
+    console.error("Error updating user info:", error);
+    throw error;
+  }
+};

@@ -303,6 +303,20 @@ public class UserService {
         return userRepository.findByEmail(email).isPresent();
     }
 
+    public ResponseEntity<String> resetPasswordWithEmail(String email, String password) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        // Hash the password
+        if (!password.equals("")) {
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String hashedPassword = passwordEncoder.encode(password);
+            user.setPassword(hashedPassword);
+        }
+
+        // Save the updated user entity
+        userRepository.save(user);
+        return ResponseEntity.ok("Password update successful");
+    }
+
     // public ResponseDTO<?> requestPasswordReset(String email) {
     // try {
     // User user = userRepository.findByEmail(email).orElse(null);

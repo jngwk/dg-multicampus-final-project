@@ -52,6 +52,7 @@ const CalendarInputForm = ({
   useEffect(() => {
     setDeletedWorkouts([]);
     if (selectedEvent) {
+      // console.log("input form 에서 이벤트", selectedEvent._def);
       setFormValues({
         ptSessionId: selectedEvent.extendedProps.ptSession?.ptSessionId || "",
         ptUserId: selectedEvent.extendedProps.ptSession?.pt?.user?.userId || "",
@@ -169,9 +170,17 @@ const CalendarInputForm = ({
       if (deletedWorkouts.length > 0) {
         deleteWorkouts(deletedWorkouts);
       }
+      console.log(
+        selectedEvent,
+        selectedEvent.id,
+        selectedEvent.extendedProps.workoutSessionId,
+        selectedEvent._def.publicId
+      );
       updateEvent(
         nestedFormValues,
-        selectedEvent.id || selectedEvent.extendedProps.workoutSessionId
+        selectedEvent.id ||
+          selectedEvent.extendedProps.workoutSessionId ||
+          selectedEvent._def.publicId
       );
     } else {
       addEvent(nestedFormValues);

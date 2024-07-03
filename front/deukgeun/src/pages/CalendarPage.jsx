@@ -187,7 +187,7 @@ const CalendarPage = () => {
   const handleEventClick = (info) => {
     if (info.event === selectedEvent) return;
     setSelectedEvent(info.event);
-
+    console.log(info);
     console.log("load workout", info.event);
     loadWorkouts(info.event);
 

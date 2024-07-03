@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Map, MapMarker, useMap } from "react-kakao-maps-sdk";
-
+import { Map, MapMarker } from "react-kakao-maps-sdk";
 import { CgDetailsMore } from "react-icons/cg";
 import { FaLocationDot } from "react-icons/fa6";
 import { PiPhoneListDuotone } from "react-icons/pi";
 import { LuTimer } from "react-icons/lu";
 import { BsPersonVcard } from "react-icons/bs";
 import { LiaChalkboardTeacherSolid } from "react-icons/lia";
-
 import Review from "../components/view/Review";
 import TrainerInfo from "../components/view/TrainerInfo";
 import Button from "../components/shared/Button";
@@ -23,24 +21,27 @@ import { useLoginModalContext } from "../context/LoginModalContext";
 import useTyping from "../hooks/useTyping";
 import { useModal } from "../hooks/useModal";
 import EventModal from "../components/modals/EventModal";
+import Fallback from "../components/shared/Fallback";
 
 const CenterView = () => {
-  const [gymData, setGymData] = useState(null);
-  const [isMembershipAlreadyRegistered, setIsMembershipAlreadyRegistered] = useState(false);
+  const location = useLocation();
+  const [gymData, setGymData] = useState(location.state?.gym);
+  const [isMembershipAlreadyRegistered, setIsMembershipAlreadyRegistered] =
+    useState(false);
   const [isPTAlreadyRegistered, setIsPTAlreadyRegistered] = useState(false);
   const { toggleLoginModal } = useLoginModalContext();
   const customNavigate = useCustomNavigate();
-  const location = useLocation();
   const gymId = location.state?.gym?.gymId || "";
-  
 
-  //헬스장 소개글 불러와야함
+  // 헬스장 소개글 불러와야함
   const introduce = "Gymdata에 introduce불러오기";
   const { text: introduceText, isEnd: isintroduceEnd } = useTyping(introduce);
 
   useEffect(() => {
+    if (gymData) return;
     const fetchGymData = async () => {
       try {
+        console.log("fetch gym data in center view");
         const data = await GymInfo(gymId);
         setGymData(data);
       } catch (error) {
@@ -78,7 +79,7 @@ const CenterView = () => {
   };
 
   if (!gymData) {
-    return <div>Loading...</div>;
+    return <Fallback />;
   }
 
   return (
@@ -89,26 +90,23 @@ const CenterView = () => {
         </div>
         {/* 헬스장 정보 */}
         <div className="flex flex-col space-y-36">
-          <div className="w-full h-[500px]  flex bg-grayish-red bg-opacity-20">
-            <div className="box-border w-[50%] flex justify-center items-center ">
-              <Map // 지도를 표시할 Container
+          <div className="w-full h-[500px] flex bg-grayish-red bg-opacity-20">
+            <div className="box-border w-[50%] flex justify-center items-center">
+              <Map
                 className="rounded-lg"
                 id="map"
                 center={{
-                  // 지도의 중심좌표
                   lat: 33.450701,
                   lng: 126.570667,
                 }}
                 style={{
-                  // 지도의 크기
                   width: "80%",
                   height: "400px",
                 }}
-                level={3} // 지도의 확대 레벨
+                level={3}
               >
-                <MapMarker // 마커를 생성합니다
+                <MapMarker
                   position={{
-                    // 마커가 표시될 위치입니다
                     lat: 33.450701,
                     lng: 126.570667,
                   }}
@@ -116,44 +114,50 @@ const CenterView = () => {
               </Map>
             </div>
             <div className="relative flex flex-col space-y-7 box-border justify-center w-[50%]">
-              <p className="text-3xl font-semibold">{gymData.gymName}</p>
+              <p className="text-3xl font-semibold">{gymData.user.userName}</p>
               <div className="flex flex-row">
                 <FaLocationDot size="32" className="mr-3" color="#fe8742" />
-                <div className="flex flex-col ">
+                <div className="flex flex-col">
                   <p className="font-semibold text-xl"> 주소 </p>
-                  <div>{gymData.address} {gymData.detailAddress}</div>
+                  <div>
+                    {gymData.address} {gymData.detailAddress}
+                  </div>
                 </div>
               </div>
               <div className="flex flex-row">
                 <LuTimer size="32" className="mr-3" color="#fe8742" />
-                <div className="flex flex-col ">
+                <div className="flex flex-col">
                   <p className="font-semibold text-xl"> 운영시간 </p>
                   <div>{gymData.operatingHours}</div>
                 </div>
               </div>
               <div className="flex flex-row">
-                <PiPhoneListDuotone size="32" className="mr-3" color="#fe8742" />
+                <PiPhoneListDuotone
+                  size="32"
+                  className="mr-3"
+                  color="#fe8742"
+                />
                 <div className="flex flex-col">
                   <p className="font-semibold text-xl"> 전화번호 </p>
                   <div>{gymData.phoneNumber}</div>
                 </div>
               </div>
               <div className="absolute right-44 bottom-8 flex flex-row space-x-3">
-                <div className="">
+                <div>
                   <Button
                     width="100px"
                     label="1:1 메시지"
                     height="40px"
-                    className="hover:font-semibold">
-                  </Button>
+                    className="hover:font-semibold"
+                  ></Button>
                 </div>
-                <div className="">
+                <div>
                   <Button
                     width="100px"
                     label="🎉 Event"
                     height="40px"
-                    className="hover:font-semibold">
-                  </Button>
+                    className="hover:font-semibold"
+                  ></Button>
                 </div>
               </div>
             </div>
@@ -162,9 +166,13 @@ const CenterView = () => {
           {/* 헬스장 설명 */}
           <div className="flex justify-center items-center w-full h-full">
             <div className="max-w-[1000px]">
-              <div className='text-base sm:text-lg'>
+              <div className="text-base sm:text-lg">
                 {introduceText}
-                <span className={`${isintroduceEnd ? 'hidden' : 'animate-typing'} `}>|</span>
+                <span
+                  className={`${isintroduceEnd ? "hidden" : "animate-typing"}`}
+                >
+                  |
+                </span>
               </div>
             </div>
           </div>
@@ -180,37 +188,38 @@ const CenterView = () => {
                 <div className="mt-2 w-16 border-b-2 border-grayish-red border-opacity-20"></div>
               </div>
             </div>
-            {/* 가격표이미지가져오기 */}
             <div className="max-w-[1000px] max-h-full bg-grayish-red bg-opacity-20">
-              <img src={priceImg} />
+              <img src={priceImg} alt="Price" />
             </div>
           </div>
 
           {/* 트레이너 소개 */}
           <TrainerInfo />
           {/* 헬스장 리뷰 */}
-          <Review />
+          <Review gymId={gymId} />
         </div>
       </div>
       {/* 헬스권/PT등록버튼 */}
       <div className="flex flex-col space-y-3">
-        <button 
+        <button
           onClick={() =>
             sessionStorage.getItem("isLoggedIn")
               ? handleMembershipInfo()
               : toggleLoginModal()
           }
-          className="flex flex-col justify-center items-center fixed bottom-32 right-16 w-20 h-20 rounded-full bg-[#4E4C4F] text-[11px] text-white hover:bg-opacity-45 hover:border-2 hover:border-stone-500">
+          className="flex flex-col justify-center items-center fixed bottom-32 right-16 w-20 h-20 rounded-full bg-[#4E4C4F] text-[11px] text-white hover:bg-opacity-45 hover:border-2 hover:border-stone-500"
+        >
           <BsPersonVcard color="white" size={33} />
           <p>회원권 등록</p>
         </button>
-        <button 
+        <button
           onClick={() =>
             sessionStorage.getItem("isLoggedIn")
               ? handlePTInfo()
               : toggleLoginModal()
           }
-          className="flex flex-col justify-center items-center fixed bottom-10 right-16 w-20 h-20 rounded-full bg-grayish-red text-[12px] text-white hover:bg-opacity-45 hover:border-2 hover:border-stone-500">
+          className="flex flex-col justify-center items-center fixed bottom-10 right-16 w-20 h-20 rounded-full bg-grayish-red text-[12px] text-white hover:bg-opacity-45 hover:border-2 hover:border-stone-500"
+        >
           <LiaChalkboardTeacherSolid color="white" size={38} />
           <p>PT 등록</p>
         </button>

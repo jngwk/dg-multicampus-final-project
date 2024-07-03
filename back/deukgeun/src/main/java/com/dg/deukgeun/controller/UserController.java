@@ -162,6 +162,10 @@ public class UserController {
         return userService.emailDuplicateCheck(requestBody.getEmail());
     }
 
+    @PostMapping("/resetPassword")
+    public ResponseEntity<?> resetPasswordWithEmail(@RequestBody User requestBody) {
+        return userService.resetPasswordWithEmail(requestBody.getEmail(), requestBody.getPassword());
+    }
     // @PostMapping("/reqPwReset")
     // public ResponseEntity<ResponseDTO<?>> requestPasswordReset(@RequestBody
     // Map<String, String> request) {
@@ -179,7 +183,8 @@ public class UserController {
 
     // 새로운 이미지를 저장하기 위한 컨트롤러 메서드 추가
     @PostMapping("/uploadImage")
-    public ResponseEntity<ResponseDTO<Void>> uploadUserImages(@RequestParam("imageFiles") List<MultipartFile> imageFiles) {
+    public ResponseEntity<ResponseDTO<Void>> uploadUserImages(
+            @RequestParam("imageFiles") List<MultipartFile> imageFiles) {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         Integer userId = userDetails.getUserId();

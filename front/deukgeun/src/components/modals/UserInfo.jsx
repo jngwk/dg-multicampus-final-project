@@ -19,7 +19,9 @@ import {
 } from "../../api/userInfoApi";
 import AlertModal from "./AlertModal";
 import { findMembership } from "../../api/membershipApi";
-import { GymInfoByUserId } from "../../api/gymApi"; 
+import { GymInfoByUserId } from "../../api/gymApi";
+import MembershipPtSelectModal from "./MembershipPtSelectModal";
+import MembershipModal from "./MembershipModal";
 
 const MyInfo = ({ toggleModal, userData, setUserData }) => {
   const initFullAddress = {
@@ -43,6 +45,9 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
   const customNavigate = useCustomNavigate();
   const { fetchUserData } = useAuth();
   const [gymInfo, setGymInfo] = useState(null);
+  // const [isSelectModalVisible, setIsSelectModalVisible] = useState(false);
+  const [isMembershipModalVisible, setIsMembershipModalVisible] =
+    useState(false);
 
   useEffect(() => {
     const fetchUserImage = async () => {
@@ -193,7 +198,9 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
             <div className="w-28 h-28 rounded-full">
               <img
                 className="w-full h-full rounded-full object-cover"
-                src={`${process.env.PUBLIC_URL}/images/${userImage}` || Bprofile}
+                src={
+                  `${process.env.PUBLIC_URL}/images/${userImage}` || Bprofile
+                }
                 alt="Profile"
               />
             </div>
@@ -305,31 +312,19 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
                           <p className="max-w-[190px] overflow-hidden text-wrap whitespace-nowrap">
                             <span
                               className="cursor-pointer hover:text-gray-700"
-                              onClick={() =>
-                                customNavigate("/gymSearch", {
-                                  state: {
-                                    searchWord: membership.gym.user.userName,
-                                  },
-                                })
-                              }
+                              onClick={() => setIsMembershipModalVisible(true)}
                             >
                               {membership.gym.user.userName}{" "}
                             </span>
-                            <br />
-                            <span
-                              className="cursor-pointer hover:text-gray-700"
-                              onClick={() =>
-                                // TODO 회원권 연장으로 이동
-                                customNavigate("/gymSearch", {
-                                  state: {
-                                    searchWord: membership.gym.user.userName,
-                                  },
-                                })
-                              }
-                            >
-                              (만료일: {membership.expDate})
-                            </span>
                           </p>
+                          {isMembershipModalVisible && (
+                            <MembershipModal
+                              membership={membership}
+                              toggleModal={() =>
+                                setIsMembershipModalVisible(false)
+                              }
+                            />
+                          )}
                         </>
                       ) : (
                         <p

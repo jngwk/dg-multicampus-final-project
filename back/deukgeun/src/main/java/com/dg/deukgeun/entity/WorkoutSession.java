@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,8 +34,10 @@ public class WorkoutSession {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "pt_session_Id", nullable = true)
+    // @ManyToOne(cascade = CascadeType.ALL)
+    // @JoinColumn(name = "pt_session_Id", nullable = true)
+    @OneToOne
+    @JoinColumn(name = "pt_session_id", nullable = true)
     private PtSession ptSession;
     private LocalDate workoutDate;
     private String content;
@@ -46,4 +49,3 @@ public class WorkoutSession {
     @OneToMany(mappedBy = "workoutSessionId", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Workout> workouts;
 }
- 
