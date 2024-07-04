@@ -9,6 +9,8 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -36,6 +38,7 @@ import com.dg.deukgeun.service.UserImageService;
 import com.dg.deukgeun.service.UserService;
 import com.dg.deukgeun.service.VerificationCodeService;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -177,46 +180,47 @@ public class UserController {
     // return ResponseEntity.ok(userService.resetPassword(token, newPassword));
     // }
 
-    // 새로운 이미지를 저장하기 위한 컨트롤러 메서드 추가
+    // 새로운 이미지를 저장하기 위한 컨트롤러 메서드
+    @PreAuthorize("hasAnyRole('ROLE_GENERAL', 'ROLE_GYM', 'ROLE_TRAINER', 'ROLE_ADMIN')")
     @PostMapping("/uploadImage")
-    public ResponseEntity<ResponseDTO<Void>> uploadUserImages(@RequestParam("imageFiles") List<MultipartFile> imageFiles) {
+    public ResponseEntity<ResponseDTO<Void>> uploadUserImage(@RequestParam("imageFile") MultipartFile imageFile) {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         Integer userId = userDetails.getUserId();
         try {
-            for (MultipartFile file : imageFiles) {
-                userImageService.insert(file, userId);
-            }
-            return ResponseEntity.ok().body(ResponseDTO.setSuccess("Images uploaded successfully"));
+            userImageService.insert(imageFile, userId);
+            return ResponseEntity.ok().body(ResponseDTO.setSuccess("Image uploaded successfully"));
         } catch (Exception e) {
-            log.error("Failed to upload images for user ID: {}", userId, e);
+            log.error("Failed to upload image for user ID: {}. Error: {}", userId, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ResponseDTO.setFailed("Failed to upload images."));
+                    .body(ResponseDTO.setFailed("Failed to upload image: " + e.getMessage()));
         }
     }
 
     // 사용자 ID에 따라 사용자 이미지를 가져오는 엔드포인트
+    @PreAuthorize("hasAnyRole('ROLE_GENERAL', 'ROLE_GYM', 'ROLE_TRAINER', 'ROLE_ADMIN')")
     @GetMapping("/getImage")
-    public ResponseEntity<ResponseDTO<UserImageDTO>> getUserImages() {
+    public ResponseEntity<ResponseDTO<UserImageDTO>> getUserImage() {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         Integer userId = userDetails.getUserId();
         try {
-            UserImageDTO userImages = userImageService.getByUserId(userId);
-            if (userImages != null) {
+            UserImageDTO userImage = userImageService.getByUserId(userId);
+            if (userImage != null) {
                 return ResponseEntity.ok()
-                        .body(ResponseDTO.setSuccessData("User images retrieved successfully", userImages));
+                        .body(ResponseDTO.setSuccessData("User image retrieved successfully", userImage));
             } else {
                 return ResponseEntity.notFound().build();
             }
         } catch (Exception e) {
-            log.error("Failed to retrieve user images for user ID: {}", userId, e);
+            log.error("Failed to retrieve user image for user ID: {}", userId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ResponseDTO.setFailed("Failed to retrieve user images."));
+                    .body(ResponseDTO.setFailed("Failed to retrieve user image."));
         }
     }
 
     // 사용자 ID에 따라 사용자 이미지를 업데이트하는 엔드포인트
+    @PreAuthorize("hasAnyRole('ROLE_GENERAL', 'ROLE_GYM', 'ROLE_TRAINER', 'ROLE_ADMIN')")
     @PutMapping("/updateImage")
     public ResponseEntity<ResponseDTO<Void>> updateUserImage(@RequestParam("imageFile") MultipartFile imageFile) {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
@@ -232,4 +236,23 @@ public class UserController {
         }
     }
 
+    // 사용자 ID에 따라 사용자 이미지를 삭제하는 엔드포인트
+    @PreAuthorize("hasAnyRole('ROLE_GENERAL', 'ROLE_GYM', 'ROLE_TRAINER', 'ROLE_ADMIN')")
+    @DeleteMapping("/deleteImage")
+    public ResponseEntity<ResponseDTO<Void>> deleteUserImage() {
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer userId = userDetails.getUserId();
+        try {
+            userImageService.delete(userId);
+            return ResponseEntity.ok().body(ResponseDTO.setSuccess("User image deleted successfully"));
+        } catch (EntityNotFoundException e) {
+            log.error("User image not found for user ID: {}", userId);
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("Failed to delete user image for user ID: {}", userId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseDTO.setFailed("Failed to delete user image."));
+        }
+    }
 }
