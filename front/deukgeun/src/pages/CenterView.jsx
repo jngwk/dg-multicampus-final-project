@@ -43,7 +43,7 @@ const CenterView = () => {
   const gymId = location.state?.gym?.gymId || "";
 
   // 헬스장 소개글 불러와야함
-  const introduce = "Gymdata에 introduce불러오기";
+  const introduce = gymData.introduce;
   const { text: introduceText, isEnd: isintroduceEnd } = useTyping(introduce);
 
   useEffect(() => {
@@ -231,7 +231,7 @@ const CenterView = () => {
           <div className="flex justify-center items-center w-full h-full">
             <div className="max-w-[1000px]">
               <div className="text-base sm:text-lg">
-                {gymData.introduce}
+                {introduceText}
                 <span
                   className={`${isintroduceEnd ? "hidden" : "animate-typing"}`}
                 >

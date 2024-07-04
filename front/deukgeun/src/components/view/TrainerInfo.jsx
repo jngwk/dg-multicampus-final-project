@@ -101,7 +101,9 @@ const TrainerInfo = ({ trainers }) => {
                 className="list-none border-light-black border-b-2 border-opacity-40"
               >
                 <div className="flex justify-between items-center py-5 px-4">
-                  <p className="font-semibold text-lg">{trainer.userName}</p>
+                  <p className="font-semibold text-lg">
+                    {trainer.user.userName}
+                  </p>
                   <button onClick={() => toggleOpen(index)}>
                     {openIndex === index ? <FaMinus /> : <FaPlus />}
                   </button>
