@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -205,6 +206,24 @@ public class UserController {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         Integer userId = userDetails.getUserId();
+        try {
+            UserImageDTO userImage = userImageService.getByUserId(userId);
+            if (userImage != null) {
+                return ResponseEntity.ok()
+                        .body(ResponseDTO.setSuccessData("User image retrieved successfully", userImage));
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            log.error("Failed to retrieve user image for user ID: {}", userId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseDTO.setFailed("Failed to retrieve user image."));
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_GENERAL', 'ROLE_GYM', 'ROLE_TRAINER', 'ROLE_ADMIN')")
+    @GetMapping("/getImage/{userId}")
+    public ResponseEntity<ResponseDTO<UserImageDTO>> getUserImageById(@PathVariable(name = "userId") Integer userId) {
         try {
             UserImageDTO userImage = userImageService.getByUserId(userId);
             if (userImage != null) {

@@ -121,10 +121,10 @@ export default function ChatRoom() {
                     >
                       {room.users.length === 2 && (
                         <Chatlist
-                          userName={
+                          user={
                             room.users[0].userId === userData.userId
-                              ? room.users[1].userName
-                              : room.users[0].userName
+                              ? room.users[1]
+                              : room.users[0]
                           }
                           latestMessage={room.latestMessage}
                           room={room}

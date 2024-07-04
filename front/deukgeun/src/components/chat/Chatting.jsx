@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import Clock from "react-live-clock";
 import { FaAngleLeft, FaRegCalendarPlus } from "react-icons/fa";
+import Bprofile from "../../assets/blank_profile.png";
+
 import { LuSend } from "react-icons/lu";
 import {
   TbLayoutSidebarLeftCollapseFilled,
@@ -13,6 +15,8 @@ import profileImg from "../../assets/profileImg.jpg";
 import useWindowSize from "../../hooks/useWindowResize";
 import Loader from "../shared/Loader";
 import { format, isSameDay, parseISO } from "date-fns";
+import { getImage, getImageById } from "../../api/userInfoApi";
+import useProfileImage from "../../hooks/useProfileImage";
 
 const Chatting = ({
   setIsChatVisible,
@@ -31,6 +35,7 @@ const Chatting = ({
   const [isOpen, setIsOpen] = useState(false); //userInfo Open/Close
   const windowSize = useWindowSize();
   // const [recipient, setRecipient ] = useState(chatRoom ? chatRoom.user.userId ?)
+  const { userImage, fetchUserImage } = useProfileImage();
   const roles = {
     ROLE_GENERAL: "회원",
     ROLE_GYM: "헬스장",
@@ -61,6 +66,12 @@ const Chatting = ({
   useEffect(() => {
     messageEndRef.current.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // useEffect(() => {
+  //   if (userImage) return;
+  //   console.log("before getting image", chatReceiver);
+  //   fetchUserImage(chatReceiver.userId);
+  // }, [isOpen]);
 
   return (
     <>
@@ -140,7 +151,7 @@ const Chatting = ({
             <div className="p-3 flex flex-col items-center ">
               <img
                 className="w-24 h-24 rounded-full object-cover"
-                src={profileImg}
+                src={`images/${chatReceiver.userImage.userImage}` || Bprofile}
                 alt="profile"
               />
               <div className="text-sm font-semibold p-3">

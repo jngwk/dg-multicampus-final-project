@@ -28,7 +28,9 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
     address: userData.address || "",
     detailAddress: userData.detailAddress || "",
   };
-  const [userImage, setUserImage] = useState(null);
+  const [userImage, setUserImage] = useState(
+    `/images/${userData.userImage?.userImage}`
+  );
   const fileInput = useRef(null);
   const [passwordType, setPasswordType] = useState({
     type: "password",
@@ -62,7 +64,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
       }
     };
 
-    fetchUserImage();
+    if (!userData?.userImage) fetchUserImage();
   }, []);
 
   useEffect(() => {

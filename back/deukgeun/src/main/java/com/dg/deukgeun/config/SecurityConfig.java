@@ -88,7 +88,7 @@ public class SecurityConfig {
                         // .requestMatchers("/**").permitAll()
                         .requestMatchers("/api/user/login", "/api/qna", "/api/qna/**",
                                 "/api/user/logout", "/api/user/sendCode", "/api/user/emailCheck/*", "/api/chart",
-                                "/api/gym/search", "/api/user/putImage", "/api/user/getImage",
+                                "/api/gym/search", "/api/user/putImage", "/api/user/getImage", "/api/user/getImage/**",
                                 "/api/user/uploadImage",
                                 "/api/user/updateImage",
                                 "/api/gym/search/**", "/api/gym/get/**", "/api/gym/getList",
@@ -113,7 +113,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/reviews/delete/**", "api/reviews/update/**")
                         .hasAnyAuthority("ROLE_GENERAL", "ROLE_ADMIN")
                         .requestMatchers("/api/reviews/registerReview", "api/reviews/uploadImages/**",
-                                "api/reviews/insertImage/**", "api/reviews/deleteImages/**", "api/reviews/updateImages/**", "api/payment/verify/**")
+                                "api/reviews/insertImage/**", "api/reviews/deleteImages/**",
+                                "api/reviews/updateImages/**", "api/payment/verify/**")
                         .hasAuthority("ROLE_GENERAL") // 일반 회원만 가능 (합치기)
                         .requestMatchers("/api/reviews/reviewList/**", "/api/ptSession/**", "/api/gym/products/**",
                                 "/api/gym/trainers/**")
