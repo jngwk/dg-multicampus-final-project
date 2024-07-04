@@ -19,4 +19,6 @@ public class PersonalTrainingDTO {
     private int ptCountRemain;
     private String ptContent;
     private String userPtReason;
+    private Integer membershipId;
+    private String impUid;
 }

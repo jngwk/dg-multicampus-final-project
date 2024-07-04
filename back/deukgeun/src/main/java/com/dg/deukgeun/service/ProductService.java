@@ -66,7 +66,13 @@ public class ProductService {
     //     productRepository.deleteBygymGymId(gymId);
     // }
 
-    public void deleteProductById(Integer productId){
+    public void deleteProductByGymId(Integer gymId){
+        Optional<Product> result = productRepository.findBygymGymId(gymId);
+        Product product = result.orElseThrow();
+        product.setStatus(false);
+        productRepository.save(product);
+    }
+    public void deleteProductByProductId(Integer productId){
         Optional<Product> result = productRepository.findById(productId);
         Product product = result.orElseThrow();
         product.setStatus(false);
