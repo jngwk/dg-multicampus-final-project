@@ -557,7 +557,7 @@ const MemberRegister = () => {
       {hasNoProduct && (
         <AlertModal
           headerEmoji={"⚠️"}
-          line1={"헬스장에 등록 할 수 있는 상품이 없습니다."}
+          line1={"등록 할 수 있는 상품이 없습니다."}
           button2={{
             label: "확인",
             onClick: () =>
