@@ -42,13 +42,19 @@ const MemberRegister = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [hasNoProduct, setHasNoProduct] = useState(false);
-  const [selectedPeriod, setSelectedPeriod] = useState(
+  const [selectedProductName, setSelectedProductName] = useState(
     gym.productList && gym.productList.length > 0
-      ? gym.productList[0].productName
+      ? location.state?.product
+        ? location.state.product.productName
+        : gym.productList[0].productName
       : ""
   ); //선택상품
   const [selectedProductPrice, setSelectedProductPrice] = useState(
-    gym.productList && gym.productList.length > 0 ? gym.productList[0].price : 0
+    gym.productList && gym.productList.length > 0
+      ? location.state?.product
+        ? location.state.product.price
+        : gym.productList[0].price
+      : 0
   );
   const { validateInput } = useValidation();
 
@@ -61,7 +67,9 @@ const MemberRegister = () => {
   const [userWorkoutDuration, setUserWorkoutDuration] = useState(1);
   const [productId, setProductId] = useState(
     gym.productList && gym.productList.length > 0
-      ? gym.productList[0].productId
+      ? location.state?.product
+        ? location.state.product.productId
+        : gym.productList[0].productId
       : ""
   );
   const customNavigate = useCustomNavigate();
@@ -86,7 +94,7 @@ const MemberRegister = () => {
     const updatedGym = { ...gym, productList: filteredProductList };
     setGym(updatedGym);
     if (filteredProductList.length > 0) {
-      setSelectedPeriod(filteredProductList[0].productName);
+      setSelectedProductName(filteredProductList[0].productName);
       setSelectedProductPrice(filteredProductList[0].price);
       setProductId(filteredProductList[0].productId);
     }
@@ -148,7 +156,7 @@ const MemberRegister = () => {
     const selectedProduct = gym.productList.find(
       (product) => product.productName === value
     );
-    setSelectedPeriod(value);
+    setSelectedProductName(value);
     setSelectedProductPrice(selectedProduct.price);
     setProductId(selectedProduct.productId);
     setDateRange(selectedProduct);
@@ -165,11 +173,11 @@ const MemberRegister = () => {
   useEffect(() => {
     if (gym.productList && gym.productList.length > 0) {
       const initialProduct = gym.productList.find(
-        (product) => product.productName === selectedPeriod
+        (product) => product.productName === selectedProductName
       );
       setDateRange(initialProduct);
     }
-  }, [regDate, selectedPeriod, gym.productList]);
+  }, [regDate, selectedProductName, gym.productList]);
 
   const handleRegDateChange = (date) => {
     const today = new Date();
@@ -179,7 +187,7 @@ const MemberRegister = () => {
     } else {
       setRegDate(date);
       const selectedProduct = gym.productList.find(
-        (product) => product.productName === selectedPeriod
+        (product) => product.productName === selectedProductName
       );
       setDateRange(selectedProduct);
     }
@@ -196,7 +204,7 @@ const MemberRegister = () => {
       buyer_email: userData.email,
       buyer_name: userData.userName,
       merchantUid: `mid_${new Date().getTime()}`,
-      name: selectedPeriod,
+      name: selectedProductName,
     };
 
     try {
@@ -229,7 +237,7 @@ const MemberRegister = () => {
         userAge,
         regDate: formatDate(regDate),
         expDate: formatDate(expDate),
-        selectedPeriod,
+        selectedProductName,
         gymId: gym.gymId,
         userMemberReason,
         userWorkoutDuration,
@@ -387,24 +395,27 @@ const MemberRegister = () => {
                   onClick={toggleDropdown}
                   className="w-[120px] h-11 flex justify-between items-center border border-gray-400 rounded-lg p-2 "
                 >
-                  {selectedPeriod}
+                  {selectedProductName}
                   <BsChevronDown />
                 </button>
                 {isDropdownOpen && (
                   <ul className="absolute w-full border border-gray-400 rounded-lg list-none z-10 bg-white">
-                    {gym.productList.map((product) => (
-                      <li
-                        key={product.productId}
-                        className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
-                        onClick={() =>
-                          onClickPeriod({
-                            target: { value: product.productName },
-                          })
-                        }
-                      >
-                        {product.productName}
-                      </li>
-                    ))}
+                    {gym.productList
+                      .filter((product) => product.status !== false)
+                      .sort((a, b) => a.days - b.days)
+                      .map((product) => (
+                        <li
+                          key={product.productId}
+                          className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
+                          onClick={() =>
+                            onClickPeriod({
+                              target: { value: product.productName },
+                            })
+                          }
+                        >
+                          {product.productName}
+                        </li>
+                      ))}
                   </ul>
                 )}
               </div>

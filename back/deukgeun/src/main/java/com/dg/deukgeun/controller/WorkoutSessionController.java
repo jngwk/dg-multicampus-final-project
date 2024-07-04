@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dg.deukgeun.dto.WorkoutDTO;
@@ -43,7 +44,8 @@ public class WorkoutSessionController {
     // arrayList 형태로 출력한다.
     @GetMapping("/get/{startDate}/{endDate}")
     public List<WorkoutSessionDTO> get(@PathVariable(name = "startDate") String startDate,
-            @PathVariable(name = "endDate") String endDate) {
+            @PathVariable(name = "endDate") String endDate,
+            @RequestParam(name = "trainerId", required = false) Integer trainerId) {
         log.info("startDate: " + startDate);
         log.info("endDate: " + endDate);
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
@@ -52,11 +54,14 @@ public class WorkoutSessionController {
         String authority = userDetails.getAuthorities().iterator().next().getAuthority();
 
         // 운동일지
-        if ("ROLE_GENERAL".equals(authority)) {
+        if ("ROLE_GENERAL".equals(authority) && trainerId == null) {
             return service.get(userId, LocalDate.parse(startDate), LocalDate.parse(endDate));
         }
         // PT 캘린더
-        else if ("ROLE_TRAINER".equals(authority)) {
+        else if ("ROLE_TRAINER".equals(authority) || trainerId != null) {
+            if (trainerId != null) {
+                userId = trainerId;
+            }
             return service.getForTrainer(userId, LocalDate.parse(startDate), LocalDate.parse(endDate));
         } else {
             throw new IllegalArgumentException("Unknown authority: " + authority);
