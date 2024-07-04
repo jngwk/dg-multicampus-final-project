@@ -83,7 +83,7 @@ const ProfileDropdown = () => {
                   </li>
                   <li
                     className="profile-dropdown-list"
-                    onClick={() => customNavigate("/trainer")}
+                    onClick={() => customNavigate("/trainerList")}
                   >
                     <box-icon
                       name="user-account"
