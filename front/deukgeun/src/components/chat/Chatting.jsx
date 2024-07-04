@@ -198,13 +198,15 @@ const Chatting = ({
                   <p className="text-xs">{chatReceiver.email}</p>
                 </div>
               </div>
-              <div className="flex items-center whitespace-pre-line m-2 p-2">
-                <FaMapLocationDot className="mr-10" size="28" />
-                <div className="flex-col">
-                  <p className="text-sm">주소</p>
-                  <p className="text-xs">{chatReceiver.address}</p>
+              {chatReceiver.address && (
+                <div className="flex items-center whitespace-pre-line m-2 p-2">
+                  <FaMapLocationDot className="mr-10" size="28" />
+                  <div className="flex-col">
+                    <p className="text-sm">주소</p>
+                    <p className="text-xs">{chatReceiver.address}</p>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         )}

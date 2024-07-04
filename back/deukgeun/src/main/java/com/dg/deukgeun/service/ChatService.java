@@ -92,10 +92,18 @@ public class ChatService { // 채팅 기록을 불러오고 발행/구독을 하
         ChatMessage savedMessage = chatMessageRepository.save(chatMessage); // db에 저장
         log.info("Message saved in DB: " + savedMessage);
 
-        ChatRoom chatRoom = savedMessage.getChatRoom();
-        chatRoom.setLatestMessage(savedMessage.getMessage());
-        chatRoomRepository.save(chatRoom);
-        log.info("Latest message saved in DB: " + chatRoom.getLatestMessage());
+        Optional<ChatRoom> chatRoomOpt = chatRoomRepository.findById(chatMessage.getChatRoom().getId());
+        if (chatRoomOpt.isPresent()) {
+            ChatRoom chatRoom = chatRoomOpt.get();
+            chatRoom.setLatestMessage(savedMessage.getMessage());
+            chatRoomRepository.save(chatRoom);
+            log.info("Latest message saved in DB: " + chatRoom.getLatestMessage());
+        }
+        // else {
+        // ChatRoom chatRoom = new ChatRoom();
+        // chatRoom.setLatestMessage(savedMessage.getMessage());
+        // chatRoomRepository.save(chatRoom);
+        // }
 
         // websocket을 사용해 broadcast 할 때 SimpMessagingTemplate을 사용
         messagingTemplate.convertAndSend("/topic/" + savedMessage.getChatRoom().getId(), savedMessage);

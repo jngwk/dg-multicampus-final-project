@@ -84,7 +84,7 @@ export default function ChatRoom() {
 
   const handleNewChatClick = async (receiverId) => {
     const newChatRoom = await findOrCreateChatRoom(receiverId);
-    console.log("newChatRoom @@@@@@@@", newChatRoom);
+    // console.log("newChatRoom @@@@@@@@", newChatRoom);
     handleChatListClick(newChatRoom);
   };
   // console.log("from chat Room", isAvailableUsersModalVisible);

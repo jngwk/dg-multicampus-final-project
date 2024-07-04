@@ -92,14 +92,14 @@ public class SecurityConfig {
                                 "/api/user/uploadImage",
                                 "/api/user/updateImage",
                                 "/api/gym/search/**", "/api/gym/get/**", "/api/gym/getList",
-                                "/api/gym/getListWithPaging", "/api/reviews/reviewList/**")
+                                "/api/gym/getListWithPaging", "/api/reviews/reviewList/**", "/api/trainer/get/**")
                         .permitAll() // 이 API는 인증 없이 접근 가능하도록 설정합니다.
                         .requestMatchers("/api/user/signUp/gym", "/api/user/signUp/general",
                                 "/api/gym/crNumberCheck", "/api/gym/crNumberCheck/**",
                                 "/api/user/resetPassword")
                         .anonymous() // 비회원만 가능
                         .requestMatchers("/api/user/userInfo", "/ws/**",
-                                "/api/membership/findMembership", "/api/trainer/get/**")
+                                "/api/membership/findMembership")
                         .hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM", "ROLE_TRAINER", "ROLE_ADMIN") // 모든 회원 타입
                         .requestMatchers("/api/personalTraining/get/**",
                                 "/api/personalTraining/post", "/api/membership/register",
@@ -117,7 +117,7 @@ public class SecurityConfig {
                                 "api/reviews/updateImages/**", "api/payment/verify/**")
                         .hasAuthority("ROLE_GENERAL") // 일반 회원만 가능 (합치기)
                         .requestMatchers("/api/reviews/reviewList/**", "/api/ptSession/**", "/api/gym/products/**",
-                                "/api/gym/trainer/**")
+                                "/api/gym/trainers/**")
                         .permitAll()
                         .requestMatchers("/api/trainer/update/**", "/api/ptSession/**")
                         .hasAuthority("ROLE_TRAINER") // 트레이너만 가능
