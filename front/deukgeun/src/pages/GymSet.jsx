@@ -183,7 +183,18 @@ const Gymset = () => {
         SNSLink: GymData.SNSLink,
         operatingHours: GymData.operatingHours,
         introduce: GymData.introduce,
+        productList: [
+          ...healthProducts.map(product => ({
+            ...product,
+            productType: "HEALTH"
+          })),
+          ...ptProducts.map(product => ({
+            ...product,
+            productType: "PT"
+          }))
+        ]
       };
+      console.log("gymData: ", gymData);
       const gymId = gymData.gymId;
       const gymRes = await updateGym(gymId, gymData);
       console.log("gymRes", gymRes);
