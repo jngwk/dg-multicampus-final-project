@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PaymentDTO {
     private String impUid; // 아임포트에서 발급한 결제 고유 번호
+    private String name; //상품 명
     private String merchantUid; // 가맹점에서 생성한 주문 번호
     private Integer amount; // 결제 금액
     private String status; // 결제 상태 (paid, failed 등)

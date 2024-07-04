@@ -171,10 +171,11 @@ const MemberRegister = () => {
     e.preventDefault();
 
     const paymentData = {
-      amount: 100,
+      amount: selectedProductPrice,
       buyer_email: userData.email,
       buyer_name: userData.userName,
       merchantUid: `mid_${new Date().getTime()}`,
+      name: selectedPeriod,
     };
 
     try {
@@ -194,6 +195,7 @@ const MemberRegister = () => {
   const handleModify = async (paymentResponse) => {
     try {
       if (!location.state) {
+        console.log("no gym");
         console.log("no gym");
         return;
       }
@@ -482,7 +484,7 @@ const MemberRegister = () => {
                 <div className="ml-3">
 
                   <button
-                    onClick={handleModify}
+                    onClick={handleSubmit}
                     className="flex items-center text-lg text-grayish-red hover:border-b  hover:font-semibold mx-auto animate-bounce" >
                     <div className="mb-4 text-3xl">💳</div> 결제하기
                   </button>

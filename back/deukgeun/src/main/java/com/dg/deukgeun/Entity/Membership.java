@@ -33,6 +33,7 @@ public class Membership {
     private String userGender;
     private Integer userAge;
     private String userWorkoutDuration;
+    
     @ManyToOne 
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;

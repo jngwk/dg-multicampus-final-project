@@ -83,21 +83,20 @@ public class QnaService {
 
     public PageResponseDTO<QnaDTO> list(PageRequestDTO pageRequestDTO) {
         Pageable pageable = PageRequest.of(
-            pageRequestDTO.getPage() - 1, // Page number starts from 0
-            pageRequestDTO.getSize(),
-            Sort.by("qnaId").descending()
-        );
+                pageRequestDTO.getPage() - 1, // Page number starts from 0
+                pageRequestDTO.getSize(),
+                Sort.by("qnaId").descending());
 
         Page<Qna> result = qnaRepository.findAll(pageable);
         List<QnaDTO> dtoList = result.getContent().stream()
-            .map(qna -> modelMapper.map(qna, QnaDTO.class))
-            .collect(Collectors.toList());
+                .map(qna -> modelMapper.map(qna, QnaDTO.class))
+                .collect(Collectors.toList());
 
         long totalCount = result.getTotalElements();
         return PageResponseDTO.<QnaDTO>withAll()
-            .dtoList(dtoList)
-            .pageRequestDTO(pageRequestDTO)
-            .totalCount(totalCount)
-            .build();
+                .dtoList(dtoList)
+                .pageRequestDTO(pageRequestDTO)
+                .totalCount(totalCount)
+                .build();
     }
 }

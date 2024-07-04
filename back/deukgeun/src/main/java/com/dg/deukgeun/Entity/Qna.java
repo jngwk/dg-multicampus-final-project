@@ -15,7 +15,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="qna")
+@Table(name = "qna")
 @Data
 @Builder
 @AllArgsConstructor
@@ -35,5 +35,6 @@ public class Qna {
     private String title;
     private String content;
 
+    private String reply;
     private LocalDate regDate; // Change LocalDateTime to LocalDate
 }

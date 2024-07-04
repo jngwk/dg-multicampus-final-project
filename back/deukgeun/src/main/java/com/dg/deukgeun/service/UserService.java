@@ -200,7 +200,7 @@ public class UserService {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')")
+    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER') || hasRole('ROLE_ADMIN')")
     public ResponseDTO<UserWithTrainerDTO> getUserInfo(Integer userId) {
         try {
             Optional<User> userOptional = userRepository.findByUserId(userId);
