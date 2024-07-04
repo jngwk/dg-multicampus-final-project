@@ -3,6 +3,11 @@ import profileImg from "../../assets/profileImg.jpg";
 
 const Chatlist = ({ user, latestMessage, room }) => {
   // console.log("Chat list data passed in", data);
+  const roles = {
+    ROLE_GENERAL: "회원",
+    ROLE_GYM: "헬스장",
+    ROLE_TRAINER: "트레이너",
+  };
   const [state, setState] = useState(latestMessage ? latestMessage : "");
   useEffect(() => {
     // if (state === latestMessage) return;
@@ -27,11 +32,14 @@ const Chatlist = ({ user, latestMessage, room }) => {
           ></box-icon>
         )}
       </div>
-      <div className="px-4 py-2 w-full">
+      <div className="px-4 py-2 w-full space-y-1">
         {/*선택한 회원 이름 가져오기*/}
-        <p className="flex align-middle text-center text-xs font-semibold ">
-          {user.userName}
-        </p>
+        <div className="flex justify-between items-center">
+          <span className="text-sm font-semibold overflow-hidden text-ellipsis">
+            {user.userName}
+          </span>
+          <span className="text-xs">{roles[user.role]}</span>
+        </div>
         {/* 마지막 메시지 가져오기 */}
         <p className="text-xs max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap">
           {state}

@@ -155,4 +155,9 @@ public class TrainerService {
             logger.warn("Trainer not found.");
         }
     }
+
+    public Trainer get(Integer userId) {
+        return trainerRepository.findByUser_UserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Trainer not found"));
+    }
 }

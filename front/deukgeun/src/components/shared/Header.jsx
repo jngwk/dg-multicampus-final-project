@@ -36,7 +36,10 @@ export default function Header() {
 
   useEffect(() => {
     setUserImage();
-    if (sessionStorage.getItem("isLoggedIn") && userData.userImage?.userImage) {
+    if (
+      sessionStorage.getItem("isLoggedIn") &&
+      userData?.userImage?.userImage
+    ) {
       fetchUserImage();
     }
   }, [userData]);

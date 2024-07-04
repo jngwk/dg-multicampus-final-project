@@ -17,6 +17,7 @@ import Loader from "../shared/Loader";
 import { format, isSameDay, parseISO } from "date-fns";
 import { getImage, getImageById } from "../../api/userInfoApi";
 import useProfileImage from "../../hooks/useProfileImage";
+import { getTrainerById } from "../../api/trainerApi";
 
 const Chatting = ({
   setIsChatVisible,
@@ -36,6 +37,7 @@ const Chatting = ({
   const windowSize = useWindowSize();
   // const [recipient, setRecipient ] = useState(chatRoom ? chatRoom.user.userId ?)
   const { userImage, fetchUserImage } = useProfileImage();
+  const [gymName, setGymName] = useState();
   const roles = {
     ROLE_GENERAL: "회원",
     ROLE_GYM: "헬스장",
@@ -65,13 +67,23 @@ const Chatting = ({
   //마지막 메시지로 이동
   useEffect(() => {
     messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    console.log("chat receiver", chatReceiver);
   }, [messages]);
 
-  // useEffect(() => {
-  //   if (userImage) return;
-  //   console.log("before getting image", chatReceiver);
-  //   fetchUserImage(chatReceiver.userId);
-  // }, [isOpen]);
+  useEffect(() => {
+    const getTrainer = async (id) => {
+      try {
+        const trainer = await getTrainerById(id);
+        console.log("trainer in chat", trainer);
+        if (trainer) setGymName(trainer.gym.user.userName);
+      } catch (error) {
+        console.log("error fetching trainer");
+      }
+    };
+    if (chatReceiver.role === "ROLE_TRAINER") {
+      getTrainer(chatReceiver.userId);
+    }
+  }, [chatReceiver]);
 
   return (
     <>
@@ -149,24 +161,36 @@ const Chatting = ({
             } mx-1 border-2 rounded-lg border-grayish-red transition-all duration-300`}
           >
             <div className="p-3 flex flex-col items-center ">
-              <img
-                className="w-24 h-24 rounded-full object-cover"
-                src={`images/${chatReceiver.userImage.userImage}` || Bprofile}
-                alt="profile"
-              />
+              {chatReceiver.userImage ? (
+                <img
+                  className="w-24 h-24 rounded-full object-cover"
+                  src={`images/${chatReceiver.userImage.userImage}`}
+                  alt="profile"
+                />
+              ) : (
+                <box-icon
+                  name="user-circle"
+                  type="solid"
+                  size="lg"
+                  color="#9f8d8d"
+                  style={{ width: "112px", height: "112px" }}
+                ></box-icon>
+              )}
               <div className="text-sm font-semibold p-3">
                 {chatReceiver.userName}
               </div>
             </div>
 
             <div className="p-3 text-sm">
-              <div className="flex items-center whitespace-pre-line m-2 p-2">
-                <GiGymBag className="mr-10" size="28" />
-                <div className="flex-col">
-                  <p className="text-sm">헬스장</p>
-                  <p className="text-xs">바디채널 OO점</p>
+              {chatReceiver.role === "ROLE_TRAINER" && (
+                <div className="flex items-center whitespace-pre-line m-2 p-2">
+                  <GiGymBag className="mr-10" size="28" />
+                  <div className="flex-col">
+                    <p className="text-sm">헬스장</p>
+                    <p className="text-xs">{gymName}</p>
+                  </div>
                 </div>
-              </div>
+              )}
               <div className="flex items-center whitespace-pre-line m-2 p-2">
                 <MdAttachEmail className="mr-10" size="28" />
                 <div className="flex-col">
