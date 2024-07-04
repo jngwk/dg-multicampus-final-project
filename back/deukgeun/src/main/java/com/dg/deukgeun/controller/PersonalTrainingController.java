@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dg.deukgeun.dto.personalTraining.PersonalTrainingDTO;
 import com.dg.deukgeun.dto.personalTraining.PersonalTrainingRequestDTO;
 import com.dg.deukgeun.dto.personalTraining.PersonalTrainingResponseDTO;
 import com.dg.deukgeun.entity.PersonalTraining;
@@ -25,7 +26,9 @@ import com.dg.deukgeun.service.ProductService;
 import com.dg.deukgeun.service.TrainerService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/personalTraining")
@@ -103,21 +106,20 @@ public class PersonalTrainingController {
     // postman에서 작동 확인은 완료했으나, CustomUserDetails에 대한 테스트 필요.
     @PostMapping("/post")
     public ResponseEntity<?> post(@RequestBody PersonalTrainingRequestDTO requestDTO) {
-        try {
-            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
                     .getPrincipal();
-            Integer userId = userDetails.getUserId();
+        Integer userId = userDetails.getUserId();
+        log.info("Received requestDTO: {}", requestDTO);
+        requestDTO.getPersonalTrainingDTO().setUserId(userId);
+        
+        // Integer trainerId = requestDTO.getPersonalTrainingDTO().getTrainerId();
 
-            requestDTO.getPersonalTrainingDTO().setUserId(userId);
-            requestDTO.getMembershipDTO().setUserMemberReason(requestDTO.getPersonalTrainingDTO().getUserPtReason());
+        requestDTO.getMembershipDTO().setUserMemberReason(requestDTO.getPersonalTrainingDTO().getUserPtReason());
 
             // Register both membership and PT
-            Integer ptId = service.registerPersonalTraining(requestDTO, userId);
+        Integer ptId = service.registerPersonalTraining(requestDTO, userId);
 
-            return ResponseEntity.ok(Map.of("ptId", ptId));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("PT 등록에 실패했습니다.");
-        }
+        return ResponseEntity.ok(Map.of("ptId", ptId));
     }
 
     @GetMapping("/findPT")
