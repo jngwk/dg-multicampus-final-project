@@ -10,7 +10,7 @@ import ReviewModal from "../modals/ReviewModal";
 import AlertModal from "../modals/AlertModal";
 import { useModal } from "../../hooks/useModal";
 
-const ReviewContent = ({ gymId, renderReviewCount = false, onReviewAdded, onReviewDeleted }) => {
+const ReviewContent = ({ gymId, renderReviewCount = false, onReviewAdded, onReviewDeleted, onReviewUpdated }) => {
   const [reviews, setReviews] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentReview, setCurrentReview] = useState(null);
@@ -74,11 +74,18 @@ const ReviewContent = ({ gymId, renderReviewCount = false, onReviewAdded, onRevi
   if (renderReviewCount) {
     return <div>등록 리뷰 수: {reviews.length}</div>;
   }
+  
+
+  const renderStars = (rating) => {
+    return (
+      <span className="text-yellow-400">
+        {'★'.repeat(6-rating)}
+      </span>
+    );
+  };
 
   const getColorClassById = (id) => {
     const colors = [
-      "bg-orange-300",
-      "bg-yellow-200",
       "bg-indigo-200",
     ];
     const strId = String(id);
@@ -104,8 +111,10 @@ const ReviewContent = ({ gymId, renderReviewCount = false, onReviewAdded, onRevi
               <div className="border-white shadow-lg border-2 rounded-full overflow-hidden">
                 <FcManager className="w-8 h-8" />
               </div>
-              <div className="font-bold ml-3 text-sm">{item.userName}</div>
+              <div className="font-bold ml-3 mr-7 text-sm">{item.userName}</div>
+              <div className="mb-2">{renderStars(item.rating)}</div>
             </div>
+            
             <p className="text-sm mb-2 h-20 overflow-y-auto">{item.comment}</p>
             {item.images && item.images.length > 0 && (
               <div className="flex space-x-2 mt-2">
@@ -144,6 +153,7 @@ const ReviewContent = ({ gymId, renderReviewCount = false, onReviewAdded, onRevi
           gymId={gymId}
           review={currentReview}
           onUpdateReview={handleUpdateReview}
+          onReviewUpdated={onReviewUpdated}
         />
       )}
     </div>
@@ -154,6 +164,7 @@ const Review = ({ gymId }) => {
   const { isModalVisible, toggleModal } = useModal();
   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
   const [reviews, setReviews] = useState([]);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -165,7 +176,7 @@ const Review = ({ gymId }) => {
       }
     };
     fetchReviews();
-  }, [gymId]);
+  }, [gymId, refreshKey]);
 
   const handleReviewSubmit = async (reviewData) => {
     try {
@@ -190,6 +201,10 @@ const Review = ({ gymId }) => {
     setReviews((prevReviews) => prevReviews.filter((r) => r.id !== reviewId));
   };
 
+  const handleReviewUpdated = () => {
+    setRefreshKey(oldKey => oldKey + 1);
+  };
+
   return (
     <div>
       <div className="relative h-full">
@@ -198,10 +213,8 @@ const Review = ({ gymId }) => {
             리뷰
             <div className="mt-2 w-16 border-b-2 border-grayish-red border-opacity-20"></div>
           </div>
-          {/* Display Review Count */}
           <div>등록 리뷰 수: {reviews.length}</div>
         </div>
-        {/* Button to Open Review Modal */}
         <button
           className="absolute top-12 right-0 flex items-center mr-5"
           onClick={toggleModal}
@@ -209,7 +222,6 @@ const Review = ({ gymId }) => {
           <div className="hover:font-bold">리뷰작성</div>
           <MdOutlineRateReview className="mx-1 mb-1" size="25" color="#9F8D8D" />
         </button>
-        {/* Review Modal */}
         {isModalVisible && (
           <ReviewModal
             toggleModal={toggleModal}
@@ -218,13 +230,16 @@ const Review = ({ gymId }) => {
           />
         )}
       </div>
-      {/* Review Content */}
       <div className="w-full p-5 mb-10 flex justify-center bg-grayish-red bg-opacity-20 border-y border-grayish-red">
         <div className="w-full flex justify-center flex-wrap overflow-y-auto scrollbar-hide">
-          <ReviewContent gymId={gymId} onReviewAdded={handleReviewAdded} onReviewDeleted={handleReviewDeleted} />
+          <ReviewContent 
+            gymId={gymId} 
+            onReviewAdded={handleReviewAdded} 
+            onReviewDeleted={handleReviewDeleted}
+            onReviewUpdated={handleReviewUpdated}
+          />
         </div>
       </div>
-      {/* Alert Modal for Review Submission */}
       {isAlertModalVisible && (
         <AlertModal
           headerEmoji={"✔️"}

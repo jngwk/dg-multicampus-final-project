@@ -1,8 +1,11 @@
 package com.dg.deukgeun.controller;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,7 +47,6 @@ public class ReviewController {
     @PreAuthorize("hasRole('ROLE_GENERAL')")
     @PostMapping("/registerReview")
     public Map<String, String> registerReview(@RequestBody ReviewRequestDTO reviewRequestDTO) {
-        log.info("Received ReviewRequestDTO: {}", reviewRequestDTO);
         try {
             ReviewDTO reviewDTO = new ReviewDTO();
             reviewDTO.setUserId(reviewRequestDTO.getUserId());
@@ -55,7 +58,6 @@ public class ReviewController {
             reviewDTO.setEmail(reviewRequestDTO.getEmail());
 
             Integer reviewId = reviewService.registerReview(reviewDTO);
-            log.info("Review registered with ID: {}", reviewId);
 
             return Map.of("RESULT", "SUCCESS", "reviewId", reviewId.toString());
         } catch (Exception e) {
@@ -67,7 +69,6 @@ public class ReviewController {
     @PreAuthorize("hasRole('ROLE_GENERAL')")
     @PutMapping("/update/{reviewId}")
     public ResponseDTO<?> updateReview(@PathVariable Integer reviewId, @RequestBody ReviewDTO reviewDTO) {
-        log.info("reviewDTO: " + reviewDTO);
         try {
             CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Integer userId = userDetails.getUserId();
@@ -88,10 +89,8 @@ public class ReviewController {
     @PreAuthorize("hasRole('ROLE_GENERAL')")
     @PostMapping("/uploadImages/{reviewId}")
     public Map<String, String> uploadImages(@PathVariable Integer reviewId, @RequestPart("files") List<MultipartFile> files) {
-        log.info("Received files for review ID: {}", reviewId);
         try {
             List<String> uploadFileNames = fileUtil.saveFile(files);
-            log.info("Uploaded file names: {}", uploadFileNames);
 
             List<ReviewImageDTO> reviewImageDTOList = new ArrayList<>();
             for (String fileName : uploadFileNames) {
@@ -99,7 +98,6 @@ public class ReviewController {
             }
 
             reviewImageService.insertList(reviewImageDTOList);
-            log.info("Images inserted for review ID: {}", reviewId);
             return Map.of("RESULT", "SUCCESS");
         } catch (Exception e) {
             log.error("Error uploading images for review ID: {}", reviewId, e);
@@ -109,7 +107,6 @@ public class ReviewController {
     @PreAuthorize("hasRole('ROLE_GENERAL')")
     @DeleteMapping("/deleteImages/{reviewId}")
     public Map<String, String> deleteImages(@PathVariable Integer reviewId) {
-        log.info("Deleting images for review ID: {}", reviewId);
         try {
             reviewImageService.deleteImages(reviewId);
             return Map.of("RESULT", "SUCCESS");
@@ -120,17 +117,20 @@ public class ReviewController {
     }
 
     @PreAuthorize("hasRole('ROLE_GENERAL')")
-    @PutMapping("/updateImages/{reviewId}")
-    public Map<String, String> updateImages(@PathVariable Integer reviewId, @RequestBody List<MultipartFile> updatedImages) {
-        log.info("Updating images for review ID: {}", reviewId);
-        try {
-            reviewImageService.updateImages(reviewId, updatedImages);
-            return Map.of("RESULT", "SUCCESS");
-        } catch (Exception e) {
-            log.error("Error updating images for review ID: {}", reviewId, e);
-            return Map.of("RESULT", "FAILURE");
-        }
+@PutMapping(value = "/updateImages/{reviewId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+public Map<String, String> updateImages(@PathVariable Integer reviewId,
+                                        @RequestPart(required = false) List<MultipartFile> newFiles,
+                                        @RequestParam(required = false) List<String> imageNames) {
+    log.info("Updating images for review ID: {}", reviewId);
+    log.info("Image names to delete: {}", imageNames);
+    try {
+        reviewImageService.updateImages(reviewId, newFiles, imageNames);
+        return Map.of("RESULT", "SUCCESS");
+    } catch (Exception e) {
+        log.error("Error updating images for review ID: {}", reviewId, e);
+        return Map.of("RESULT", "FAILURE");
     }
+}
     
     // @GetMapping("/reviewList/{gymId}")
     // public List<ReviewDTO> getReviewsByGymId(@PathVariable Integer gymId) {
@@ -140,7 +140,6 @@ public class ReviewController {
     public List<ReviewResponseDTO> getReviewsByGymId(@PathVariable Integer gymId) {
         try {
             List<ReviewResponseDTO> reviews = reviewService.getReviewsByGymId(gymId);
-            log.info("Fetched reviews for gym ID: " + gymId);
             return reviews;
         } catch (Exception e) {
             log.error("Error fetching reviews for gym ID: " + gymId, e);
