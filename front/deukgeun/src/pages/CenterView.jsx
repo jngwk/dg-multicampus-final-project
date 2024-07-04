@@ -22,14 +22,17 @@ import useTyping from "../hooks/useTyping";
 import { useModal } from "../hooks/useModal";
 import EventModal from "../components/modals/EventModal";
 import Fallback from "../components/shared/Fallback";
+import ChatModal from "../components/modals/ChatModal";
 
 const CenterView = () => {
   const location = useLocation();
-  const [gymData, setGymData] = useState(location.state?.gym);
+  const [gymData, setGymData] = useState(location.state?.gym || "");
   const [isMembershipAlreadyRegistered, setIsMembershipAlreadyRegistered] =
     useState(false);
   const [isPTAlreadyRegistered, setIsPTAlreadyRegistered] = useState(false);
   const { toggleLoginModal } = useLoginModalContext();
+  const [gymDataLoading, setGymDataLoading] = useState(false);
+  const [isChatModalVisible, setIsChatModalVisible] = useState(false);
   const customNavigate = useCustomNavigate();
   const gymId = location.state?.gym?.gymId || "";
 
@@ -38,14 +41,20 @@ const CenterView = () => {
   const { text: introduceText, isEnd: isintroduceEnd } = useTyping(introduce);
 
   useEffect(() => {
-    if (gymData) return;
+    if (gymData) {
+      console.log("gymData from location in center view", gymData);
+      return;
+    }
     const fetchGymData = async () => {
       try {
-        console.log("fetch gym data in center view");
+        setGymDataLoading(true);
+        console.log("@@@@@@@@@@@@@@@@@@@fetch gym data in center view");
         const data = await GymInfo(gymId);
         setGymData(data);
       } catch (error) {
         console.error("Error fetching gym info:", error);
+      } finally {
+        setGymDataLoading(false);
       }
     };
 
@@ -78,7 +87,7 @@ const CenterView = () => {
     }
   };
 
-  if (!gymData) {
+  if (gymDataLoading) {
     return <Fallback />;
   }
 
@@ -147,9 +156,14 @@ const CenterView = () => {
                 <div>
                   <Button
                     width="100px"
-                    label="1:1 메시지"
+                    label="문의하기"
                     height="40px"
                     className="hover:font-semibold"
+                    onClick={() =>
+                      sessionStorage.getItem("isLoggedIn")
+                        ? setIsChatModalVisible(true)
+                        : toggleLoginModal()
+                    }
                   ></Button>
                 </div>
                 <div>
@@ -226,6 +240,12 @@ const CenterView = () => {
         </button>
       </div>
 
+      {isChatModalVisible && sessionStorage.getItem("isLoggedIn") && (
+        <ChatModal
+          toggleModal={() => setIsChatModalVisible(false)}
+          selectedGym={gymData}
+        />
+      )}
       {/* Alert modal to display if membership is already registered */}
       {isMembershipAlreadyRegistered && (
         <AlertModal

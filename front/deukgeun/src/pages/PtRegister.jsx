@@ -44,6 +44,7 @@ const PtRegister = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isTraineDropdownOpen, setIsTrainerDropdownOpen] = useState(false);
+  const [hasNoProduct, setHasNoProduct] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState(
     gym.productList && gym.productList.length > 0
       ? gym.productList[0].productName
@@ -53,8 +54,8 @@ const PtRegister = () => {
     gym.productList && gym.productList.length > 0 ? gym.productList[0].price : 0
   );
   const [selectedTrainer, setSelectedTrainer] = useState(
-    gym.trainersList && gym.trainersList.length > 0
-      ? gym.trainersList[0].userName
+    gym.trainerList && gym.trainerList.length > 0
+      ? gym.trainerList[0].userName
       : ""
   );
   const { validateInput } = useValidation();
@@ -73,8 +74,8 @@ const PtRegister = () => {
       : ""
   );
   const [trainerId, setTrainerId] = useState(
-    gym.trainersList && gym.trainersList.length > 0
-      ? gym.trainersList[0].trainerId
+    gym.trainerList && gym.trainerList.length > 0
+      ? gym.trainerList[0].trainerId
       : ""
   );
   const [paymentStatus, setPaymentStatus] = useState(null);
@@ -85,8 +86,25 @@ const PtRegister = () => {
   const customNavigate = useCustomNavigate();
   const { fetchUserData } = useAuth();
 
-  // useEffect(( ) => {console.log(gym)});
+  useEffect(() => {
+    if (!gym.productList || gym.productList.length === 0) {
+      setHasNoProduct(true);
+    } else {
+      filterProducts();
+    }
+  }, []);
 
+  const filterProducts = () => {
+    const filteredProductList =
+      gym.productList?.filter((product) => product.ptCountTotal > 0) || [];
+    const updatedGym = { ...gym, productList: filteredProductList };
+    setGym(updatedGym);
+    if (filteredProductList.length > 0) {
+      setSelectedPeriod(filteredProductList[0].productName);
+      setSelectedProductPrice(filteredProductList[0].price);
+      setProductId(filteredProductList[0].productId);
+    }
+  };
   const handleUserDataChange = (e) => {
     const { name, value } = e.target;
     setUserData({
@@ -169,7 +187,7 @@ const PtRegister = () => {
     const selectedProduct = gym.productList.find(
       (product) => product.productName === value
     );
-    console.log(selectedProduct)
+    console.log(selectedProduct);
     setSelectedPeriod(value);
     setSelectedProductPrice(selectedProduct.price);
     setProductId(selectedProduct.productId);
@@ -179,7 +197,7 @@ const PtRegister = () => {
 
   const onClickTrainer = (e) => {
     const { value } = e.target;
-    const selectedTrainer = gym.trainersList.find(
+    const selectedTrainer = gym.trainerList.find(
       (trainer) => trainer.userName === value
     );
     setSelectedTrainer(value);
@@ -306,7 +324,6 @@ const PtRegister = () => {
     }
   };
 
-
   const handleConfirmClick = async () => {
     setIsAlertModalVisible(false);
     await fetchUserData();
@@ -319,8 +336,9 @@ const PtRegister = () => {
         <div className="text-6xl absolute left-1/4">🏋🏻</div>
         <div className="flex flex-row items-center">
           <div
-            className={`m-8 max-h-[590px] transition-max-height duration-500 overflow-hidden ${isExpanded ? "h-[700px]" : "h-[400px]"
-              } w-[800px] space-x-10 px-20 justify-center flex items-center border-y-8 border-dotted border-peach-fuzz border-opacity-50`}
+            className={`m-8 max-h-[590px] transition-max-height duration-500 overflow-hidden ${
+              isExpanded ? "h-[700px]" : "h-[400px]"
+            } w-[800px] space-x-10 px-20 justify-center flex items-center border-y-8 border-dotted border-peach-fuzz border-opacity-50`}
           >
             <div className="flex flex-col items-center space-y-7 ">
               <p className="font-semibold text-xl">PT 등록</p>
@@ -391,7 +409,7 @@ const PtRegister = () => {
                       </button>
                       {isTraineDropdownOpen && (
                         <ul className="absolute w-full border border-gray-400 rounded-lg list-none z-10 bg-white">
-                          {gym.trainersList.map((trainer) => (
+                          {gym.trainerList.map((trainer) => (
                             <li
                               key={trainer.trainerId}
                               className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
@@ -450,10 +468,11 @@ const PtRegister = () => {
                           onFocus={handleMemberReasonFocus}
                           onBlur={handleMemberReasonBlur}
                           type="button"
-                          className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userMemberReasonFocus
+                          className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
+                            userMemberReasonFocus
                               ? "border-peach-fuzz"
                               : "border-gray-400"
-                            } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                          } focus:border-2 focus:outline-none text-sm peer my-2 `}
                           value={userMemberReason}
                           onChange={handleChangeMemberReason}
                         >
@@ -489,8 +508,9 @@ const PtRegister = () => {
                         onFocus={handleGenderFocus}
                         onBlur={handleGenderBlur}
                         type="button"
-                        className={`h-11 py-3 px-4 w-[150px]  appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${genderFocus ? "border-peach-fuzz" : "border-gray-400"
-                          } focus:border-2 focus:outline-none text-sm peer mt-2 `}
+                        className={`h-11 py-3 px-4 w-[150px]  appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${
+                          genderFocus ? "border-peach-fuzz" : "border-gray-400"
+                        } focus:border-2 focus:outline-none text-sm peer mt-2 `}
                         value={userGender}
                         onChange={handleChangeGender}
                       >
@@ -517,8 +537,9 @@ const PtRegister = () => {
                         onFocus={handleAgeFocus}
                         onBlur={handleAgeBlur}
                         type="button"
-                        className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${ageFocus ? "border-peach-fuzz" : "border-gray-400"
-                          } focus:border-2 focus:outline-none text-sm peer mt-2 `}
+                        className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${
+                          ageFocus ? "border-peach-fuzz" : "border-gray-400"
+                        } focus:border-2 focus:outline-none text-sm peer mt-2 `}
                         value={userAge}
                         onChange={handleChangeAge}
                       >
@@ -570,8 +591,9 @@ const PtRegister = () => {
                         onFocus={handleTimeFocus}
                         onBlur={handleTimeBlur}
                         type="button"
-                        className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${timeFocus ? "border-peach-fuzz" : "border-gray-400"
-                          } focus:border-2 focus:outline-none text-sm peer `}
+                        className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${
+                          timeFocus ? "border-peach-fuzz" : "border-gray-400"
+                        } focus:border-2 focus:outline-none text-sm peer `}
                         value={selectedTime}
                         onChange={handleChangeTime}
                       >
@@ -599,10 +621,11 @@ const PtRegister = () => {
                             onFocus={handleWorkoutDurationFocus}
                             onBlur={handleWorkoutDurationBlur}
                             type="button"
-                            className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userWorkoutDurationFocus
+                            className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
+                              userWorkoutDurationFocus
                                 ? "border-peach-fuzz"
                                 : "border-gray-400"
-                              } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                            } focus:border-2 focus:outline-none text-sm peer my-2 `}
                             value={userWorkoutDuration}
                             onChange={handleChangeWorkoutDuration}
                           >
@@ -622,11 +645,12 @@ const PtRegister = () => {
                         {/* @@@@@@@@@상품 가격 표시 */}
                         {/* @@@@@@@@@상품 가격 표시 */}
                         {/* @@@@@@@@@상품 가격 표시 */}
-                        <div >{selectedProductPrice}원</div>
+                        <div>{selectedProductPrice}원</div>
                         <div className="ml-3">
                           <button
                             onClick={handleSubmit}
-                            className="flex items-center text-lg text-grayish-red hover:border-b  hover:font-semibold mx-auto animate-bounce" >
+                            className="flex items-center text-lg text-grayish-red hover:border-b  hover:font-semibold mx-auto animate-bounce"
+                          >
                             <div className="mb-4 text-3xl">💳</div> 결제하기
                           </button>
                         </div>
@@ -659,6 +683,20 @@ const PtRegister = () => {
           button2={{
             label: "확인",
             onClick: handleConfirmClick,
+          }}
+        />
+      )}
+      {hasNoProduct && (
+        <AlertModal
+          headerEmoji={"⚠️"}
+          line1={"등록 할 수 있는 상품이 없습니다."}
+          button2={{
+            label: "확인",
+            onClick: () =>
+              customNavigate("/centerView", {
+                state: { gym: gym },
+                replace: true,
+              }),
           }}
         />
       )}

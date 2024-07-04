@@ -29,6 +29,7 @@ import com.dg.deukgeun.dto.gym.GymImageDTO;
 import com.dg.deukgeun.dto.gym.GymRequestDTO;
 import com.dg.deukgeun.dto.gym.GymResponseDTO;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
+import com.dg.deukgeun.dto.gym.TrainerDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.security.CustomUserDetails;
@@ -406,5 +407,15 @@ public class GymController {
             default:
                 return gymService.searchGyms(searchWord);
         }
+    }
+
+    @GetMapping("/products/{gymId}")
+    public List<ProductDTO> getProductList(@PathVariable(name = "gymId") Integer gymId) {
+        return productService.getList(gymId);
+    }
+
+    @GetMapping("/trainers/{gymId}")
+    public List<TrainerDTO> getTrainerList(@PathVariable(name = "gymId") Integer gymId) {
+        return trainerService.getList(gymId);
     }
 }
