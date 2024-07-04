@@ -327,8 +327,8 @@ public class GymController {
         gymDTO.setUserName(gymRequestDTO.getUserName());
         log.info("Modify: " + gymDTO);
         gymService.modify(gymDTO);
-        // productService.deleteByGymId(gymId);
-        // productService.insertList(gymRequestDTO.getProductList());
+        productService.deleteProductByGymId(gymId);
+        productService.insertList(gymRequestDTO.getProductList());
         return Map.of("RESULT", "SUCCESS");
     }
 
