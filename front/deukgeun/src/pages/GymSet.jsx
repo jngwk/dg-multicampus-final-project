@@ -23,8 +23,8 @@ const initGymData = {
   introduce: "",
   priceImage: null,
   imgList: [],
-  // healthProducts: [],
-  // ptPrdoucts: [],
+  healthProducts: [],
+  ptPrdoucts: [],
 };
 
 const Gymset = () => {
@@ -32,13 +32,13 @@ const Gymset = () => {
 
   const { gymId } = useParams();
   const [GymData, setGymData] = useState(initGymData);
-  // const [healthProducts, setHealthProducts] = useState([]);
-  // const [newHealthProduct, setNewHealthProduct] = useState({ productName: "", days: "", price: "" });
-  // const [ptProducts, setPTProducts] = useState([]);
-  // const [newPTProduct, setNewPTProduct] = useState({ productName: "", ptCountTotal: "", days: "", price: "" });
+  const [healthProducts, setHealthProducts] = useState([]);
+  const [newHealthProduct, setNewHealthProduct] = useState({ productName: "", days: "", price: "" });
+  const [ptProducts, setPTProducts] = useState([]);
+  const [newPTProduct, setNewPTProduct] = useState({ productName: "", ptCountTotal: "", days: "", price: "" });
   const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
-  // const [healthErrors, setHealthErrors] = useState({});
-  // const [ptErrors, setPTErrors] = useState({});
+  const [healthErrors, setHealthErrors] = useState({});
+  const [ptErrors, setPTErrors] = useState({});
   const { validateInput } = useValidation();
   const [images, setImages] = useState([]);
 
@@ -57,8 +57,8 @@ const Gymset = () => {
         ...gymData,
         imgList: gymData.imgList || [], // Ensure imgList is an array
       });
-      // setHealthProducts(gymData.healthProducts || []);
-      // setPTProducts(gymData.ptProducts || []);
+      setHealthProducts(gymData.healthProducts || []);
+      setPTProducts(gymData.ptProducts || []);
     } catch (error) {
       console.error("Error fetching gym data:", error);
     }
@@ -73,84 +73,84 @@ const Gymset = () => {
     validateInput(name, value);
   };
 
-  // const handleNewHealthProductChange = (e) => {
-  //   const { name, value } = e.target;
+  const handleNewHealthProductChange = (e) => {
+    const { name, value } = e.target;
 
-  //   // 숫자가 아닌 경우에 대한 유효성 검사
-  //   const newErrors = {};
-  //   if (name === "days" && !/^\d+$/.test(value)) {
-  //     newErrors.days = "숫자만 입력하세요.";
-  //   }
+    // 숫자가 아닌 경우에 대한 유효성 검사
+    const newErrors = {};
+    if (name === "days" && !/^\d+$/.test(value)) {
+      newErrors.days = "숫자만 입력하세요.";
+    }
 
-  //   setNewHealthProduct({
-  //     ...newHealthProduct,
-  //     [name]: value,
-  //   });
+    setNewHealthProduct({
+      ...newHealthProduct,
+      [name]: value,
+    });
 
-  //   setHealthErrors(newErrors); // 오류 상태 업데이트
-  // };
+    setHealthErrors(newErrors); // 오류 상태 업데이트
+  };
 
-  // const handleAddHealthProduct = () => {
-  //   const newErrors = {};
-  //   if (!newHealthProduct.productName) {
-  //     newErrors.productName = "상품이름을 입력하세요.";
-  //   }
-  //   if (!newHealthProduct.days) {
-  //     newErrors.days = "상품 기간을 입력하세요.";
-  //   }
-  //   if (!newHealthProduct.price) {
-  //     newErrors.price = "상품 가격을 입력하세요.";
-  //   }
+  const handleAddHealthProduct = () => {
+    const newErrors = {};
+    if (!newHealthProduct.productName) {
+      newErrors.productName = "상품이름을 입력하세요.";
+    }
+    if (!newHealthProduct.days) {
+      newErrors.days = "상품 기간을 입력하세요.";
+    }
+    if (!newHealthProduct.price) {
+      newErrors.price = "상품 가격을 입력하세요.";
+    }
 
-  //   if (Object.keys(newErrors).length > 0) {
-  //     setHealthErrors(newErrors);
-  //     return;
-  //   }
+    if (Object.keys(newErrors).length > 0) {
+      setHealthErrors(newErrors);
+      return;
+    }
 
-  //   setHealthProducts([...healthProducts, newHealthProduct]);
-  //   setNewHealthProduct({ productName: "", days: "", price: "" });
-  //   setHealthErrors({});
-  // };
+    setHealthProducts([...healthProducts, newHealthProduct]);
+    setNewHealthProduct({ productName: "", days: "", price: "" });
+    setHealthErrors({});
+  };
 
-  // const handleNewPTProductChange = (e) => {
-  //   const { name, value } = e.target;
-  //   const newErrors = {};
-  //   if (name === "days" && !/^\d+$/.test(value)) {
-  //     newErrors.days = "숫자만 입력하세요.";
-  //   } else if (name === "ptCountTotal" && !/^\d+$/.test(value)) {
-  //       newErrors.ptCountTotal = "숫자만 입력하세요.";
-  //   }
+  const handleNewPTProductChange = (e) => {
+    const { name, value } = e.target;
+    const newErrors = {};
+    if (name === "days" && !/^\d+$/.test(value)) {
+      newErrors.days = "숫자만 입력하세요.";
+    } else if (name === "ptCountTotal" && !/^\d+$/.test(value)) {
+        newErrors.ptCountTotal = "숫자만 입력하세요.";
+    }
 
-  //   setNewPTProduct({
-  //     ...newPTProduct,
-  //     [name]: value,
-  //   });
-  //   setPTErrors(newErrors); // PT 오류 상태 업데이트
-  // };
+    setNewPTProduct({
+      ...newPTProduct,
+      [name]: value,
+    });
+    setPTErrors(newErrors); // PT 오류 상태 업데이트
+  };
 
-  // const handleAddPTProduct = () => {
-  //   const newErrors = {};
-  //   if (!newPTProduct.productName) {
-  //     newErrors.productName = "상품이름을 입력하세요.";
-  //   }
-  //   if (!newPTProduct.ptCountTotal) {
-  //     newErrors.ptCountTotal = "PT 횟수를 입력하세요.";
-  //   }
-  //   if (!newPTProduct.days) {
-  //     newErrors.days = "상품 기간을 입력하세요.";
-  //   }
-  //   if (!newPTProduct.price) {
-  //     newErrors.price = "상품 가격을 입력하세요.";
-  //   }
+  const handleAddPTProduct = () => {
+    const newErrors = {};
+    if (!newPTProduct.productName) {
+      newErrors.productName = "상품이름을 입력하세요.";
+    }
+    if (!newPTProduct.ptCountTotal) {
+      newErrors.ptCountTotal = "PT 횟수를 입력하세요.";
+    }
+    if (!newPTProduct.days) {
+      newErrors.days = "상품 기간을 입력하세요.";
+    }
+    if (!newPTProduct.price) {
+      newErrors.price = "상품 가격을 입력하세요.";
+    }
 
-  //   if (Object.keys(newErrors).length > 0) {
-  //     setPTErrors(newErrors);
-  //     return;
-  //   }
-  //   setPTProducts([...ptProducts, newPTProduct]);
-  //   setNewPTProduct({ productName: "", ptCountTotal: "", days: "", price: "" });
-  //   setPTErrors({});
-  // };
+    if (Object.keys(newErrors).length > 0) {
+      setPTErrors(newErrors);
+      return;
+    }
+    setPTProducts([...ptProducts, newPTProduct]);
+    setNewPTProduct({ productName: "", ptCountTotal: "", days: "", price: "" });
+    setPTErrors({});
+  };
 
   const handlePriceImageChange = (files) => {
     const priceImage = files[0];
@@ -226,15 +226,15 @@ const Gymset = () => {
       alert("Failed to delete image");
     }
   };
-  // const handleDeleteHealthProduct = (index) => {
-  //   const updatedHealthProducts = healthProducts.filter((_, i) => i !== index);
-  //   setHealthProducts(updatedHealthProducts);
-  // };
+  const handleDeleteHealthProduct = (index) => {
+    const updatedHealthProducts = healthProducts.filter((_, i) => i !== index);
+    setHealthProducts(updatedHealthProducts);
+  };
 
-  // const handleDeletePTProduct = (index) => {
-  //   const updatedPTProducts = ptProducts.filter((_, i) => i !== index);
-  //   setPTProducts(updatedPTProducts);
-  // };
+  const handleDeletePTProduct = (index) => {
+    const updatedPTProducts = ptProducts.filter((_, i) => i !== index);
+    setPTProducts(updatedPTProducts);
+  };
 
   const handleTrainerRegisterClick = () => {
     customNavigate("/trainerSet");
@@ -338,7 +338,7 @@ const Gymset = () => {
                 onChange={handleGymDataChange}
               />
             </div>
-            {/* 헬스권
+            {/* 헬스권*/}
             <div className="flex flex-row space-x-36">
               <p className="mt-3 w-20 pre-line">헬스권 <br></br>상품 설정</p>
               <div className="flex flex-row space-x-5">
@@ -398,8 +398,8 @@ const Gymset = () => {
                   ))}
                 </div>
               </div>
-            </div> */}
-            {/* PT권
+            </div>
+            {/* PT권*/}
              <div className="flex flex-row space-x-36">
             <p className="mt-3 w-20 pre-line">PT권 <br></br>상품 설정</p>
               <div className="flex flex-row space-x-5">
@@ -468,7 +468,7 @@ const Gymset = () => {
                   ))}
                 </div>
               </div>
-            </div> */}
+            </div> *
             {/* 가격표 이미지 */}
             <div className="flex flex-row space-x-40">
               <p className="mt-3 w-[73px]">가격표 이미지</p>
