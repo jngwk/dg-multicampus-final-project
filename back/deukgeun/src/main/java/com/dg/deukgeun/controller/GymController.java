@@ -370,7 +370,11 @@ public class GymController {
         gymImageService.insertList(dtoList);
         return Map.of("RESULT", "SUCCESS");
     }
-
+    //이미지 리스트
+    @GetMapping("/imageList/{gymId}")
+    public List<GymImageDTO> getImagesByGymId(@PathVariable Integer gymId) {
+        return gymImageService.getByGymId(gymId);
+    }
     // 헬스장 이미지 삭제
     @DeleteMapping("/deleteImage/{gymImage}")
     public Map<String, String> removeImage(@PathVariable(name = "gymImage") String gymImage) {
