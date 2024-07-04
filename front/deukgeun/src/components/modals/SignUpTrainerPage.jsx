@@ -76,7 +76,7 @@ function SignUpTrainerModal({ toggleModal }) {
   };
 
   return (
-    <ModalLayout>
+    <ModalLayout toggleModal={toggleModal}>
       {/* min-h-screen  */}
       <div className="flex justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-xl w-full space-y-8">

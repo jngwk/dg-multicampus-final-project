@@ -1,10 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
+import SignUpTrainerModal from "../components/modals/SignUpTrainerPage"; // Adjust the path as necessary
+import Input from "../components/shared/Input";
 
-const trainers = [
-        { name: "김종국", email: "Kim@naver.com" }
+
+const initialTrainers = [
+    { name: "김종국", email: "Kim@naver.com" }
 ];
 
 const TrainerList = () => {
+    const [trainers, setTrainers] = useState(initialTrainers);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isEditing, setIsEditing] = useState(null);
+
+    const toggleModal = () => {
+        setIsModalVisible(!isModalVisible);
+    };
+
+    const handleSaveEdit = () => {
+        setIsEditing(null);
+    };
+
+
+    const handleEditTrainer = (index, key, value) => {
+        const updatedTrainers = trainers.map((trainer, i) => 
+            i === index ? { ...trainer, [key]: value } : trainer
+        );
+        setTrainers(updatedTrainers);
+    };
+
+    const handleDeleteTrainer = (index) => {
+        const updatedTrainers = trainers.filter((_, i) => i !== index);
+        setTrainers(updatedTrainers);
+    };
+
     return (
         <div className="flex flex-col items-center space-y-14 my-10">
             <div className="flex flex-row items-center absolute left-64">
@@ -30,12 +58,36 @@ const TrainerList = () => {
                 {trainers.map((trainer, index) => (
                     <div key={index} className="flex justify-between items-center w-[800px] h-16 rounded-lg px-10 bg-light-gray bg-opacity-20 hover:bg-grayish-red hover:bg-opacity-10">
                         <div className="flex flex-row items-center w-2/3">
-                            <p className="text-sm w-1/3">{trainer.name}</p>
-                            <p className="text-sm w-2/3">{trainer.email}</p>
+                            {isEditing === index ? (
+                                <>
+                                    <Input 
+                                        width="100px"
+                                        className="text-sm"
+                                        value={trainer.name}
+                                        onChange={(e) => handleEditTrainer(index, "name", e.target.value)}
+                                    />
+                                    <Input
+        
+                                        width="200px"
+                                        className="text-sm ml-16"
+                                        value={trainer.email}
+                                        onChange={(e) => handleEditTrainer(index, "email", e.target.value)}
+                                    />
+                                </>
+                            ) : (
+                                <>
+                                    <p className="text-sm w-1/3">{trainer.name}</p>
+                                    <p className="text-sm w-2/3">{trainer.email}</p>
+                                </>
+                            )}
                         </div>
                         <div className="flex flex-row items-center text-sm w-1/6">
-                            <button className="w-1/2">✏️</button>
-                            <button className="w-1/2">❌</button>
+                            {isEditing === index ? (
+                                <button onClick={handleSaveEdit} className="w-1/2">💾</button>
+                            ) : (
+                                <button onClick={() => setIsEditing(index)} className="w-1/2">✏️</button>
+                            )}
+                            <button onClick={() => handleDeleteTrainer(index)} className="w-1/2">❌</button>
                         </div>
                     </div>
                 ))}
@@ -43,12 +95,18 @@ const TrainerList = () => {
                 
 
                 {/* 트레이너 추가 */}
-                <button className="font-semibold text-light-black relative float-end w-24 h-10 bg-light-gray bg-opacity-20 rounded-lg hover:bg-peach-fuzz hover:bg-opacity-10">
+                <button 
+                onClick={toggleModal}
+                className="font-semibold text-light-black relative float-end w-24 h-10 bg-light-gray bg-opacity-20 rounded-lg hover:bg-peach-fuzz hover:bg-opacity-10">
                     ➕ 추가
                 </button>
             </div>
 
-
+            {isModalVisible && (
+                <SignUpTrainerModal
+                    toggleModal={toggleModal}
+                />
+            )}
         </div>
 
     );
