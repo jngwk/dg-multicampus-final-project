@@ -1,7 +1,5 @@
 package com.dg.deukgeun.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -9,9 +7,9 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,8 +25,8 @@ import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.dto.user.UpdateUserDTO;
 import com.dg.deukgeun.dto.user.UserImageDTO;
 import com.dg.deukgeun.dto.user.UserSignUpDTO;
-import com.dg.deukgeun.entity.VerificationCode;
 import com.dg.deukgeun.entity.User;
+import com.dg.deukgeun.entity.VerificationCode;
 import com.dg.deukgeun.repository.UserRepository;
 import com.dg.deukgeun.security.CustomUserDetails;
 import com.dg.deukgeun.service.EmailService;
@@ -165,6 +163,10 @@ public class UserController {
         return userService.emailDuplicateCheck(requestBody.getEmail());
     }
 
+    @PostMapping("/resetPassword")
+    public ResponseEntity<?> resetPasswordWithEmail(@RequestBody User requestBody) {
+        return userService.resetPasswordWithEmail(requestBody.getEmail(), requestBody.getPassword());
+    }
     // @PostMapping("/reqPwReset")
     // public ResponseEntity<ResponseDTO<?>> requestPasswordReset(@RequestBody
     // Map<String, String> request) {
@@ -204,6 +206,24 @@ public class UserController {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         Integer userId = userDetails.getUserId();
+        try {
+            UserImageDTO userImage = userImageService.getByUserId(userId);
+            if (userImage != null) {
+                return ResponseEntity.ok()
+                        .body(ResponseDTO.setSuccessData("User image retrieved successfully", userImage));
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            log.error("Failed to retrieve user image for user ID: {}", userId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ResponseDTO.setFailed("Failed to retrieve user image."));
+        }
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_GENERAL', 'ROLE_GYM', 'ROLE_TRAINER', 'ROLE_ADMIN')")
+    @GetMapping("/getImage/{userId}")
+    public ResponseEntity<ResponseDTO<UserImageDTO>> getUserImageById(@PathVariable(name = "userId") Integer userId) {
         try {
             UserImageDTO userImage = userImageService.getByUserId(userId);
             if (userImage != null) {

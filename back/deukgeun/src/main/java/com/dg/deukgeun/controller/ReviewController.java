@@ -70,14 +70,15 @@ public class ReviewController {
     @PutMapping("/update/{reviewId}")
     public ResponseDTO<?> updateReview(@PathVariable Integer reviewId, @RequestBody ReviewDTO reviewDTO) {
         try {
-            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                    .getPrincipal();
             Integer userId = userDetails.getUserId();
-        
-        // Ensure reviewId is provided and matches the path variable
+
+            // Ensure reviewId is provided and matches the path variable
             if (!reviewId.equals(reviewDTO.getId())) {
                 return ResponseDTO.setFailed("Mismatch between path variable and review ID in payload.");
             }
-        
+
             reviewImageService.getByReviewId(reviewId);
             reviewService.updateReview(reviewDTO, userId);
             return ResponseDTO.setSuccess("Review updated successfully.");
@@ -88,7 +89,8 @@ public class ReviewController {
 
     @PreAuthorize("hasRole('ROLE_GENERAL')")
     @PostMapping("/uploadImages/{reviewId}")
-    public Map<String, String> uploadImages(@PathVariable Integer reviewId, @RequestPart("files") List<MultipartFile> files) {
+    public Map<String, String> uploadImages(@PathVariable Integer reviewId,
+            @RequestPart("files") List<MultipartFile> files) {
         try {
             List<String> uploadFileNames = fileUtil.saveFile(files);
 
@@ -104,6 +106,7 @@ public class ReviewController {
             return Map.of("RESULT", "FAILURE");
         }
     }
+
     @PreAuthorize("hasRole('ROLE_GENERAL')")
     @DeleteMapping("/deleteImages/{reviewId}")
     public Map<String, String> deleteImages(@PathVariable Integer reviewId) {
@@ -117,24 +120,24 @@ public class ReviewController {
     }
 
     @PreAuthorize("hasRole('ROLE_GENERAL')")
-@PutMapping(value = "/updateImages/{reviewId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-public Map<String, String> updateImages(@PathVariable Integer reviewId,
-                                        @RequestPart(required = false) List<MultipartFile> newFiles,
-                                        @RequestParam(required = false) List<String> imageNames) {
-    log.info("Updating images for review ID: {}", reviewId);
-    log.info("Image names to delete: {}", imageNames);
-    try {
-        reviewImageService.updateImages(reviewId, newFiles, imageNames);
-        return Map.of("RESULT", "SUCCESS");
-    } catch (Exception e) {
-        log.error("Error updating images for review ID: {}", reviewId, e);
-        return Map.of("RESULT", "FAILURE");
+    @PutMapping(value = "/updateImages/{reviewId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Map<String, String> updateImages(@PathVariable Integer reviewId,
+            @RequestPart(required = false) List<MultipartFile> newFiles,
+            @RequestParam(required = false) List<String> imageNames) {
+        log.info("Updating images for review ID: {}", reviewId);
+        log.info("Image names to delete: {}", imageNames);
+        try {
+            reviewImageService.updateImages(reviewId, newFiles, imageNames);
+            return Map.of("RESULT", "SUCCESS");
+        } catch (Exception e) {
+            log.error("Error updating images for review ID: {}", reviewId, e);
+            return Map.of("RESULT", "FAILURE");
+        }
     }
-}
-    
+
     // @GetMapping("/reviewList/{gymId}")
     // public List<ReviewDTO> getReviewsByGymId(@PathVariable Integer gymId) {
-    //     return reviewService.getReviewsByGymId(gymId);
+    // return reviewService.getReviewsByGymId(gymId);
     // }
     @GetMapping("/reviewList/{gymId}")
     public List<ReviewResponseDTO> getReviewsByGymId(@PathVariable Integer gymId) {
@@ -149,8 +152,9 @@ public Map<String, String> updateImages(@PathVariable Integer reviewId,
 
     @DeleteMapping("/delete/{reviewId}")
     public ResponseDTO<?> deleteReview(@PathVariable Integer reviewId) {
-         try {
-            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        try {
+            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                    .getPrincipal();
             Integer userId = userDetails.getUserId();
             reviewService.deleteReview(reviewId, userId);
             return ResponseDTO.setSuccess("Review deleted successfully.");
@@ -159,9 +163,9 @@ public Map<String, String> updateImages(@PathVariable Integer reviewId,
         }
     }
 
-
     @PostMapping("/insertImage/{reviewId}")
-    public Map<String, String> insertImage(@PathVariable(name = "reviewId") Integer reviewId, @RequestBody ReviewRequestDTO reviewRequestDTO) {
+    public Map<String, String> insertImage(@PathVariable(name = "reviewId") Integer reviewId,
+            @RequestBody ReviewRequestDTO reviewRequestDTO) {
         List<ReviewImageDTO> dtoList = new ArrayList<>();
         List<MultipartFile> files = reviewRequestDTO.getFiles();
         List<String> uploadFileNames = fileUtil.saveFile(files);

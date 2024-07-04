@@ -12,7 +12,8 @@ export default function Header() {
   const [userImage, setUserImage] = useState(null);
   const { userData, loading } = useAuth();
   const location = useLocation();
-  const [isProfileDropdownVisible, setIsProfileDropdownVisible] = useState(false);
+  const [isProfileDropdownVisible, setIsProfileDropdownVisible] =
+    useState(false);
   const badge = useRef(null);
   const dropdown = useRef(null);
   const navigate = useNavigate();
@@ -34,7 +35,11 @@ export default function Header() {
   }, [location]);
 
   useEffect(() => {
-    if (sessionStorage.getItem("isLoggedIn")) {
+    setUserImage();
+    if (
+      sessionStorage.getItem("isLoggedIn") &&
+      !userData?.userImage?.userImage
+    ) {
       fetchUserImage();
     }
   }, [userData]);
@@ -83,11 +88,20 @@ export default function Header() {
                 ref={badge}
                 onClick={toggleProfileDropdown}
               >
-                <img
-                  src={userImage ? `/images/${userImage}` : Bprofile}
-                  alt="Profile"
-                  className="w-8 h-8 rounded-full object-cover"
-                />
+                {userData.userImage?.userImage ? (
+                  <img
+                    src={`/images/${userData.userImage.userImage}`}
+                    alt="Profile"
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <box-icon
+                    name="user-circle"
+                    type="solid"
+                    size="md"
+                    color="#9f8d8d"
+                  ></box-icon>
+                )}
               </div>
               <div ref={dropdown} className="absolute right-0 top-10">
                 {isProfileDropdownVisible ? (

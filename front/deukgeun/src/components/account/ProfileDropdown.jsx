@@ -24,78 +24,94 @@ const ProfileDropdown = () => {
         ) : (
           <>
             <span className="block">{userData.userName}</span>
-            <span className="block text-gray-600">{userData.email}</span>
+            <span className="block text-gray-600 text-ellipsis overflow-hidden">
+              {userData.email}
+            </span>
           </>
         )}
       </div>
       <div>
         <ul className="mt-4">
-          <li className="profile-dropdown-list" onClick={toggleModal}>
-            <box-icon name="id-card" color="#ffbe98" size="sm"></box-icon>
-            <span className="ml-3">
-              {(userData.role === "ROLE_GENERAL" ||
-                userData.role === "ROLE_TRAINER") &&
-                "내 정보"}
-              {userData.role === "ROLE_GYM" && "헬스장 정보"}
-            </span>
-          </li>
-          {isModalVisible ? (
-            <UserInfo
-              toggleModal={toggleModal}
-              userData={userData}
-              setUserData={setUserData}
-            />
-          ) : (
-            ""
-          )}
-          {(userData.role === "ROLE_GENERAL" ||
-            userData.role === "ROLE_TRAINER") && (
-            <li
-              className="profile-dropdown-list"
-              onClick={() => customNavigate("/calendar")}
-            >
-              <box-icon name="calendar" color="#ffbe98" size="sm"></box-icon>
-              <span className="ml-3">
-                {userData.role === "ROLE_GENERAL" ? "운동일지" : "캘린더"}
-              </span>
-            </li>
-          )}
-          {userData.role === "ROLE_GYM" && (
+          {userData.role !== "ROLE_ADMIN" && (
             <>
-              <li
-                className="profile-dropdown-list"
-                onClick={() => customNavigate("/stats")}
-              >
-                <box-icon
-                  name="line-chart"
-                  color="#ffbe98"
-                  size="sm"
-                ></box-icon>
-                <span className="ml-3">회원통계</span>
+              <li className="profile-dropdown-list" onClick={toggleModal}>
+                <box-icon name="id-card" color="#ffbe98" size="sm"></box-icon>
+                <span className="ml-3">
+                  {(userData.role === "ROLE_GENERAL" ||
+                    userData.role === "ROLE_TRAINER") &&
+                    "내 정보"}
+                  {userData.role === "ROLE_GYM" && "헬스장 정보"}
+                </span>
               </li>
+              {isModalVisible ? (
+                <UserInfo
+                  toggleModal={toggleModal}
+                  userData={userData}
+                  setUserData={setUserData}
+                />
+              ) : (
+                ""
+              )}
+              {(userData.role === "ROLE_GENERAL" ||
+                userData.role === "ROLE_TRAINER") && (
+                <li
+                  className="profile-dropdown-list"
+                  onClick={() => customNavigate("/calendar")}
+                >
+                  <box-icon
+                    name="calendar"
+                    color="#ffbe98"
+                    size="sm"
+                  ></box-icon>
+                  <span className="ml-3">
+                    {userData.role === "ROLE_GENERAL" ? "운동일지" : "캘린더"}
+                  </span>
+                </li>
+              )}
+              {userData.role === "ROLE_GYM" && (
+                <>
+                  <li
+                    className="profile-dropdown-list"
+                    onClick={() => customNavigate("/stats")}
+                  >
+                    <box-icon
+                      name="line-chart"
+                      color="#ffbe98"
+                      size="sm"
+                    ></box-icon>
+                    <span className="ml-3">회원통계</span>
+                  </li>
+                  <li
+                    className="profile-dropdown-list"
+                    onClick={() => customNavigate("/trainer")}
+                  >
+                    <box-icon
+                      name="user-account"
+                      type="solid"
+                      color="#ffbe98"
+                      size="sm"
+                    ></box-icon>
+                    <span className="ml-3">트레이너 관리</span>
+                  </li>
+                </>
+              )}
               <li
                 className="profile-dropdown-list"
-                onClick={() => customNavigate("/trainer")}
+                onClick={() => customNavigate("/chat")}
               >
                 <box-icon
-                  name="user-account"
-                  type="solid"
+                  name="conversation"
                   color="#ffbe98"
                   size="sm"
                 ></box-icon>
-                <span className="ml-3">트레이너 관리</span>
+                <span className="ml-3">대화방</span>
               </li>
             </>
           )}
           <li
             className="profile-dropdown-list"
-            onClick={() => customNavigate("/chat")}
+            onClick={() => customNavigate("/qnaList")}
           >
-            <box-icon name="conversation" color="#ffbe98" size="sm"></box-icon>
-            <span className="ml-3">대화방</span>
-          </li>
-          <li className="profile-dropdown-list"
-            onClick={() => customNavigate("/qnaList")}>
             <box-icon name="question-mark" color="#ffbe98" size="sm"></box-icon>
             <span className="ml-3">문의내역</span>
           </li>

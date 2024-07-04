@@ -193,7 +193,7 @@ const ReviewEditModal = ({ toggleModal, gymId, review, onUpdateReview, onReviewU
                         </div>
                         <label className="w-[400px] h-[40px] pl-2 flex text-sm items-center cursor-pointer">
                             <IoMdPhotos className="w-7 h-7 px-1" />
-                            이미지 수정
+                            이미지 추가
                             <input
                                 type="file"
                                 className="hidden"

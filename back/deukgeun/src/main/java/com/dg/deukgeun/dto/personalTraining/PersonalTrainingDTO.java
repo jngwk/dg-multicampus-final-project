@@ -3,10 +3,12 @@ package com.dg.deukgeun.dto.personalTraining;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class PersonalTrainingDTO {
@@ -18,4 +20,5 @@ public class PersonalTrainingDTO {
     private String ptContent;
     private String userPtReason;
     private Integer membershipId;
+    private String impUid;
 }

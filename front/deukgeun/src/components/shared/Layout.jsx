@@ -9,7 +9,7 @@ const Layout = ({ children }) => {
   return (
     <div>
       <Header />
-      <div className="justify-center min-h-[90dvh] w-full">{children}</div>
+      <div className="justify-center min-h-[86dvh] w-full">{children}</div>
       {isLoginModalVisible && <LoginModal toggleModal={toggleLoginModal} />}
     </div>
   );

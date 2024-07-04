@@ -29,6 +29,7 @@ public class WorkoutSessionService {
     private final WorkoutSessionRepository workoutSessionRepository;
     private final TrainerRepository trainerRepository;
     private final UserRepository userRepository;
+    private final PersonalTrainingService personalTrainingService;
 
     public Integer register(WorkoutSessionDTO workoutSessionDTO) {
         log.info("--------------------");
@@ -98,6 +99,10 @@ public class WorkoutSessionService {
     }
 
     public void remove(Integer workoutSessionId) {
+        WorkoutSession session = workoutSessionRepository.findById(workoutSessionId).get();
+        if (session.getPtSession() != null) {
+            personalTrainingService.plusRemain(session.getPtSession().getPt().getPtId());
+        }
         workoutSessionRepository.deleteById(workoutSessionId);
     }
 

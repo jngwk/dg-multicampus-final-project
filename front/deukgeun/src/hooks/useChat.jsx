@@ -36,7 +36,7 @@ const useChat = () => {
         const fetchedToken = response.data;
         setToken(fetchedToken);
         connect(fetchedToken);
-        console.log("fetchedToken: ", fetchedToken);
+        // console.log("fetchedToken: ", fetchedToken);
       } catch (error) {
         console.error("Error fetching token");
         throw error;
@@ -93,7 +93,7 @@ const useChat = () => {
   // 메시지 수신
   const onMessageReceived = (payload) => {
     const message = JSON.parse(payload.body);
-    console.log("msg received", message.message);
+    // console.log("msg received", message.message);
 
     // Update the specific chat room with the latest message
     setChatRooms((prevChatRooms) => {
@@ -105,26 +105,31 @@ const useChat = () => {
       });
     });
 
-    if (!chatRooms.find((room) => room.id === message.chatRoom.id)) {
-      setChatRooms([message.chatRoom, ...chatRooms]);
-    }
-    setMessages((prevMessages) => [...prevMessages, message]);
-    console.log("set latest message @@@");
-    // Update the current chat room if it's the same room
+    let tempChatRoom = message.chatRoom;
     if (chatRoom.id === message.chatRoom.id) {
+      console.log("들어왔는데?????", chatRoom);
+      tempChatRoom = { ...tempChatRoom, latestMessage: message.message };
       setChatRoom({ ...chatRoom, latestMessage: message.message });
     }
+    if (!chatRooms.find((room) => room.id === message.chatRoom.id)) {
+      setChatRooms([tempChatRoom, ...chatRooms]);
+      // setChatRoom({ ...chatRoom, latestMessage: message.message })
+    }
+    setMessages((prevMessages) => [...prevMessages, message]);
+    // console.log("set latest message @@@");
+    // update current chat room if same room
   };
 
   // 메시지 발신
   const sendMessage = () => {
-    console.log("Send message called");
+    // console.log("Send message called");
     if (stompClientRef.current && stompClientRef.current.connected) {
-      console.log("Client connected");
+      // console.log("Client connected");
       const receiver =
         chatRoom.users[0].userId === userData.userId
           ? chatRoom.users[1]
           : chatRoom.users[0];
+      console.log("@@@ receiver", receiver); // 20번
       const messageToSend = {
         chatRoom: chatRoom,
         sender: userData,
@@ -159,7 +164,7 @@ const useChat = () => {
   const loadChatRooms = async () => {
     try {
       const chatRoomsList = await getChatRooms();
-      console.log("chatRoomsList from use Chat", chatRoomsList);
+      // console.log("chatRoomsList from use Chat", chatRoomsList);
       setChatRooms(chatRoomsList);
     } catch (error) {
       console.error("Error loading chat rooms", error);
@@ -173,6 +178,7 @@ const useChat = () => {
     try {
       const newChatRoom = await getChatRoom(selectedUserId);
       setChatRoom(newChatRoom);
+      console.log("@@@ new chat room", newChatRoom);
       return newChatRoom;
     } catch (error) {
       console.error("Error creating chat room", error);
@@ -191,14 +197,14 @@ const useChat = () => {
       throw error;
     } finally {
       setAvailableUsersLoading(false);
-      console.log("Loading", availableUsersLoading);
+      // console.log("Loading", availableUsersLoading);
     }
   };
 
   const toggleAvailableUsersModal = () => {
     if (!isAvailableUsersModalVisible) loadAvailableUsers();
     setIsAvailableUsersModalVisible(!isAvailableUsersModalVisible);
-    console.log("From useChat", isAvailableUsersModalVisible);
+    // console.log("From useChat", isAvailableUsersModalVisible);
   };
 
   // http로 메시지 보내기

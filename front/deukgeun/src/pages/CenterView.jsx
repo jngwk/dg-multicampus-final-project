@@ -19,14 +19,21 @@ import { findPT } from "../api/ptApi";
 import { GymInfo } from "../api/gymApi";
 import { useLoginModalContext } from "../context/LoginModalContext";
 import useTyping from "../hooks/useTyping";
+import { useModal } from "../hooks/useModal";
+import EventModal from "../components/modals/EventModal";
+import Fallback from "../components/shared/Fallback";
+import ChatModal from "../components/modals/ChatModal";
 
 const CenterView = () => {
-  const [gymData, setGymData] = useState(null);
-  const [isMembershipAlreadyRegistered, setIsMembershipAlreadyRegistered] = useState(false);
+  const location = useLocation();
+  const [gymData, setGymData] = useState(location.state?.gym || "");
+  const [isMembershipAlreadyRegistered, setIsMembershipAlreadyRegistered] =
+    useState(false);
   const [isPTAlreadyRegistered, setIsPTAlreadyRegistered] = useState(false);
   const { toggleLoginModal } = useLoginModalContext();
+  const [gymDataLoading, setGymDataLoading] = useState(false);
+  const [isChatModalVisible, setIsChatModalVisible] = useState(false);
   const customNavigate = useCustomNavigate();
-  const location = useLocation();
   const gymId = location.state?.gym?.gymId || "";
 
   // 헬스장 소개글 불러와야함
@@ -34,12 +41,20 @@ const CenterView = () => {
   const { text: introduceText, isEnd: isintroduceEnd } = useTyping(introduce);
 
   useEffect(() => {
+    if (gymData) {
+      // console.log("gymData from location in center view", gymData);
+      return;
+    }
     const fetchGymData = async () => {
       try {
+        setGymDataLoading(true);
+        console.log("@@@@@@@@@@@@@@@@@@@fetch gym data in center view");
         const data = await GymInfo(gymId);
         setGymData(data);
       } catch (error) {
         console.error("Error fetching gym info:", error);
+      } finally {
+        setGymDataLoading(false);
       }
     };
 
@@ -72,8 +87,8 @@ const CenterView = () => {
     }
   };
 
-  if (!gymData) {
-    return <div>Loading...</div>;
+  if (gymDataLoading) {
+    return <Fallback />;
   }
 
   return (
@@ -109,7 +124,7 @@ const CenterView = () => {
               </Map>
             </div>
             <div className="relative flex flex-col space-y-7 box-border justify-center w-[50%]">
-              <p className="text-3xl font-semibold">{gymData.gymName}</p>
+              <p className="text-3xl font-semibold">{gymData.user.userName}</p>
               <div className="flex flex-row">
                 <FaLocationDot size="32" className="mr-3" color="#fe8742" />
                 <div className="flex flex-col">
@@ -127,7 +142,11 @@ const CenterView = () => {
                 </div>
               </div>
               <div className="flex flex-row">
-                <PiPhoneListDuotone size="32" className="mr-3" color="#fe8742" />
+                <PiPhoneListDuotone
+                  size="32"
+                  className="mr-3"
+                  color="#fe8742"
+                />
                 <div className="flex flex-col">
                   <p className="font-semibold text-xl"> 전화번호 </p>
                   <div>{gymData.phoneNumber}</div>
@@ -137,10 +156,15 @@ const CenterView = () => {
                 <div>
                   <Button
                     width="100px"
-                    label="1:1 메시지"
+                    label="문의하기"
                     height="40px"
                     className="hover:font-semibold"
-                  />
+                    onClick={() =>
+                      sessionStorage.getItem("isLoggedIn")
+                        ? setIsChatModalVisible(true)
+                        : toggleLoginModal()
+                    }
+                  ></Button>
                 </div>
                 <div>
                   <Button
@@ -148,7 +172,7 @@ const CenterView = () => {
                     label="🎉 Event"
                     height="40px"
                     className="hover:font-semibold"
-                  />
+                  ></Button>
                 </div>
               </div>
             </div>
@@ -159,7 +183,11 @@ const CenterView = () => {
             <div className="max-w-[1000px]">
               <div className="text-base sm:text-lg">
                 {introduceText}
-                <span className={`${isintroduceEnd ? "hidden" : "animate-typing"}`}>|</span>
+                <span
+                  className={`${isintroduceEnd ? "hidden" : "animate-typing"}`}
+                >
+                  |
+                </span>
               </div>
             </div>
           </div>
@@ -190,7 +218,9 @@ const CenterView = () => {
       <div className="flex flex-col space-y-3">
         <button
           onClick={() =>
-            sessionStorage.getItem("isLoggedIn") ? handleMembershipInfo() : toggleLoginModal()
+            sessionStorage.getItem("isLoggedIn")
+              ? handleMembershipInfo()
+              : toggleLoginModal()
           }
           className="flex flex-col justify-center items-center fixed bottom-32 right-16 w-20 h-20 rounded-full bg-[#4E4C4F] text-[11px] text-white hover:bg-opacity-45 hover:border-2 hover:border-stone-500"
         >
@@ -199,7 +229,9 @@ const CenterView = () => {
         </button>
         <button
           onClick={() =>
-            sessionStorage.getItem("isLoggedIn") ? handlePTInfo() : toggleLoginModal()
+            sessionStorage.getItem("isLoggedIn")
+              ? handlePTInfo()
+              : toggleLoginModal()
           }
           className="flex flex-col justify-center items-center fixed bottom-10 right-16 w-20 h-20 rounded-full bg-grayish-red text-[12px] text-white hover:bg-opacity-45 hover:border-2 hover:border-stone-500"
         >
@@ -208,6 +240,12 @@ const CenterView = () => {
         </button>
       </div>
 
+      {isChatModalVisible && sessionStorage.getItem("isLoggedIn") && (
+        <ChatModal
+          toggleModal={() => setIsChatModalVisible(false)}
+          selectedGym={gymData}
+        />
+      )}
       {/* Alert modal to display if membership is already registered */}
       {isMembershipAlreadyRegistered && (
         <AlertModal
