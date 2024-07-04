@@ -173,7 +173,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
       const gymData = await GymInfoByUserId(userData.userId); // userId를 사용하여 체육관 정보를 가져옵니다
       setGymInfo(gymData);
       // 체육관 정보를 사용하여 새 페이지로 이동합니다
-      customNavigate(`/GymInfo`); // 라우팅 설정에 따라 URL 구조를 조정해야 합니다
+      customNavigate(`/GymSet/${gymData.gymId}`); // 라우팅 설정에 따라 URL 구조를 조정해야 합니다
     } catch (error) {
       console.error("체육관 정보를 불러오는 중 오류 발생:", error);
     }

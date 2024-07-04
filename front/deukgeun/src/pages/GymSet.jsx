@@ -9,6 +9,7 @@ import Button from "../components/shared/Button";
 import useCustomNavigate from "../hooks/useCustomNavigate";
 import { insertImage, deleteImage, GymInfo, updateGym } from "../api/gymApi";
 import { useParams } from "react-router-dom";
+import Select from "../components/shared/Select";
 
 // 회원 정보
 const initGymData = {
@@ -362,15 +363,20 @@ const Gymset = () => {
                     required={true}
                     onChange={handleNewHealthProductChange}
                   />
-                  <Input
-                    label="상품 기간 (ex. 2개월 -> 60)"
-                    width="290px"
+                   <Select
+                    label="상품 기간"
                     name="days"
+                    width="290px"
                     value={newHealthProduct.days}
                     error={healthErrors.days}
                     required={true}
                     onChange={handleNewHealthProductChange}
-                  />
+                    className="flex flex-col justify-center items-center border border-gray-400 p-3 rounded-lg"
+                  >
+                      {[ 30, 90, 180, 200, 365].map(count => (
+                          <option key={count} value={count}>{count}일</option>
+                       ))}
+                  </Select>
                   <Input
                     label="상품 가격 (원 제외)"
                     width="290px"
@@ -423,24 +429,34 @@ const Gymset = () => {
                     required={true}
                     onChange={handleNewPTProductChange}
                   />
-                  <Input
-                    label="PT 횟수 (ex. 10회 -> 10)"
-                    width="290px"
+                  <Select
+                    label="PT횟수"
                     name="ptCountTotal"
+                    width="290px"
                     value={newPTProduct.ptCountTotal}
                     error={ptErrors.ptCountTotal}
                     required={true}
                     onChange={handleNewPTProductChange}
-                  />
-                  <Input
-                    label="상품 기간 (ex. 60일 -> 60)"
-                    width="290px"
+                    className="flex flex-col justify-center items-center border border-gray-400 p-3 rounded-lg"
+                  >
+                      {[10, 20, 30, 40, 50, 60].map(count => (
+                          <option key={count} value={count}>{count}회</option>
+                       ))}
+                  </Select>
+                  <Select
+                    label="상품 기간"
                     name="days"
+                    width="290px"
                     value={newPTProduct.days}
                     error={ptErrors.days}
                     required={true}
                     onChange={handleNewPTProductChange}
-                  />
+                    className="flex flex-col justify-center items-center border border-gray-400 p-3 rounded-lg"
+                  >
+                      {[ 30, 90, 180, 200, 365].map(count => (
+                          <option key={count} value={count}>{count}일</option>
+                       ))}
+                  </Select>
                   <Input
                     label="상품 가격 (원 제외)"
                     width="290px"
