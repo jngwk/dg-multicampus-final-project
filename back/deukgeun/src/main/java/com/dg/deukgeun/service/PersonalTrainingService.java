@@ -19,14 +19,15 @@ import com.dg.deukgeun.entity.Trainer;
 import com.dg.deukgeun.entity.User;
 import com.dg.deukgeun.repository.PersonalTrainingRepository;
 import com.dg.deukgeun.repository.TrainerRepository;
+import com.dg.deukgeun.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-// import lombok.extern.log4j.Log4j2;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @Transactional
-// @Log4j2
+@Log4j2
 @RequiredArgsConstructor
 public class PersonalTrainingService {
     private final ModelMapper modelMapper;
@@ -35,43 +36,77 @@ public class PersonalTrainingService {
     private final ProductService productService;
     @Autowired
     private TrainerRepository trainerRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     // 서비스를 구분하기 쉽도록 메서드의 이름은 각각 대응되는 mysql 쿼리 이름으로 적어두겠습니다.
     @PreAuthorize("(hasRole('ROLE_GENERAL')) && #userId == principal.userId")
     public Integer registerPersonalTraining(PersonalTrainingRequestDTO requestDTO, Integer userId) {
         // Check if membership exists for the user
-        Optional<Membership> existingMembership = membershipService.findMembership(userId);
-
-        // Initialize membershipId for use
-        Integer membershipId;
-
-        if (existingMembership.isPresent()) {
-            // Membership already exists, use the existing membershipId
-            membershipId = existingMembership.get().getMembershipId();
-        } else {
-            // Register new membership if it does not exist
-            membershipId = membershipService.register(requestDTO.getMembershipDTO(), userId);
+        log.info("Received ptRequestDTO:{}", requestDTO);
+        log.info("Entering registerPersonalTraining with userId: {}", userId);
+        try {
+            validateRequest(requestDTO);
+            Optional<Membership> existingMembership = membershipService.findMembership(userId);
+            System.out.println(existingMembership.get().getMembershipId());
+            // Initialize membershipId for use
+            Integer membershipId;
+    
+            if (existingMembership.isPresent()) {
+                // Membership already exists, use the existing membershipId
+                membershipId = existingMembership.get().getMembershipId();
+                System.out.println(membershipId);
+            } else {
+                // Register new membership if it does not exist
+                log.info("membership doesn't exist");
+                System.out.println("membership doesn't exist");
+                membershipId = membershipService.register(requestDTO.getMembershipDTO(), userId);
+                log.info("New membership registered with id: {}", membershipId);
+                System.out.println("New membership registered with id: {}"+ membershipId);
+            }
+    
+            // Get product details
+            ProductDTO productDTO = productService.get(requestDTO.getMembershipDTO().getProductId());
+    
+            // Set additional PT details
+            PersonalTrainingDTO ptDTO = requestDTO.getPersonalTrainingDTO();
+            ptDTO.setUserId(userId);
+            ptDTO.setPtCountTotal(productDTO.getPtCountTotal());
+            ptDTO.setPtCountRemain(productDTO.getPtCountTotal());
+            ptDTO.setPtContent(productDTO.getProductName());
+            ptDTO.setMembershipId(membershipId);
+            log.info("PT details set: {}", ptDTO);
+            System.out.println("PT details set"+ ptDTO.getPtId());
+            
+    
+            // Save PT
+            PersonalTraining personalTraining = modelMapper.map(ptDTO, PersonalTraining.class);
+            Integer trainerId = ptDTO.getTrainerId();
+            personalTraining.setUser(userRepository.findById(userId).get());
+            personalTraining.setTrainer(trainerRepository.findById(trainerId).get());
+            PersonalTraining savedPersonalTraining = personalTrainingRepository.save(personalTraining);
+    
+            // Find and return the registered membership
+            return savedPersonalTraining.getPtId();
+        }catch(Exception e){
+            log.error("Error occurred while registering personal training: ");
+            throw new RuntimeException("PT registration failed", e);
         }
-
-        // Get product details
-        ProductDTO productDTO = productService.get(requestDTO.getMembershipDTO().getProductId());
-
-        // Set additional PT details
-        PersonalTrainingDTO ptDTO = requestDTO.getPersonalTrainingDTO();
-        ptDTO.setUserId(userId);
-        ptDTO.setPtCountTotal(productDTO.getPtCountTotal());
-        ptDTO.setPtCountRemain(productDTO.getPtCountTotal());
-        ptDTO.setPtContent(productDTO.getProductName());
-        ptDTO.setMembershipId(membershipId);
-
-        // Save PT
-        PersonalTraining personalTraining = modelMapper.map(ptDTO, PersonalTraining.class);
-        PersonalTraining savedPersonalTraining = personalTrainingRepository.save(personalTraining);
-
-        // Find and return the registered membership
-        return savedPersonalTraining.getPtId();
     }
-
+    private void validateRequest(PersonalTrainingRequestDTO requestDTO) {
+        if (requestDTO == null) {
+            throw new IllegalArgumentException("RequestDTO is null");
+        }
+        if (requestDTO.getMembershipDTO() == null) {
+            throw new IllegalArgumentException("MembershipDTO is null");
+        }
+        if (requestDTO.getPersonalTrainingDTO() == null) {
+            throw new IllegalArgumentException("PersonalTrainingDTO is null");
+        }
+        if (requestDTO.getMembershipDTO().getProductId() == null) {
+            throw new IllegalArgumentException("Product ID is null");
+        }
+    }
     // ptId로 search가 필요할 때 사용
     // ptSession에서 정보가 필요할 때 등
     public PersonalTrainingDTO selectByptId(Integer ptId) {

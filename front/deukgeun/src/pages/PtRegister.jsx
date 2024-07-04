@@ -17,6 +17,7 @@ import { updateUserInfo } from "../api/userInfoApi";
 import Button from "../components/shared/Button";
 import useCustomNavigate from "../hooks/useCustomNavigate";
 import { useLocation } from "react-router-dom";
+import useIamport from "../hooks/useIamport";
 
 const PtRegister = () => {
   const location = useLocation();
@@ -76,6 +77,10 @@ const PtRegister = () => {
       ? gym.trainersList[0].trainerId
       : ""
   );
+  const [paymentStatus, setPaymentStatus] = useState(null);
+  const [impUid, setImpUid] = useState(""); // 여기에 imp_uid를 저장합니다.
+  const [merchantUid, setMerchantUid] = useState("");
+  const { requestPayment, verifyPayment, loading, error } = useIamport();
 
   const customNavigate = useCustomNavigate();
   const { fetchUserData } = useAuth();
@@ -164,6 +169,7 @@ const PtRegister = () => {
     const selectedProduct = gym.productList.find(
       (product) => product.productName === value
     );
+    console.log(selectedProduct)
     setSelectedPeriod(value);
     setSelectedProductPrice(selectedProduct.price);
     setProductId(selectedProduct.productId);
@@ -178,6 +184,7 @@ const PtRegister = () => {
     );
     setSelectedTrainer(value);
     setTrainerId(selectedTrainer.trainerId);
+    console.log(trainerId);
     toggleTrainerDropdown(); // 드롭다운 닫기
   };
 
@@ -215,8 +222,32 @@ const PtRegister = () => {
   const handleExpDateChange = (date) => {
     setExpDate(date);
   };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const handleModify = async () => {
+    const paymentData = {
+      amount: selectedProductPrice,
+      buyer_email: userData.email,
+      buyer_name: userData.userName,
+      merchantUid: `mid_${new Date().getTime()}`,
+      name: selectedPeriod,
+    };
+    console.log(paymentData);
+    try {
+      const paymentResponse = await requestPayment(paymentData);
+      console.log("Payment response:", paymentResponse);
+
+      if (paymentResponse.success) {
+        setImpUid(paymentResponse.impUid);
+        await handleModify(paymentResponse); // 결제 성공 후 회원 정보 수정 처리
+      } else {
+        console.log("Payment failed:", paymentResponse.error_msg);
+      }
+    } catch (error) {
+      console.error("Payment process failed:", error);
+    }
+  };
+  const handleModify = async (paymentResponse) => {
     try {
       const updateRes = await updateUserInfo(userData);
       console.log(updateRes);
@@ -232,6 +263,8 @@ const PtRegister = () => {
         userMemberReason,
         userWorkoutDuration,
         productId,
+        impUid: paymentResponse.impUid,
+        merchantUid: paymentResponse.merchantUid,
       };
       console.log(membershipData);
 
@@ -253,6 +286,8 @@ const PtRegister = () => {
         ptCountTotal: selectedProduct.ptCountTotal,
         trainerId,
         userPtReason: userMemberReason,
+        impUid: paymentResponse.impUid,
+        merchantUid: paymentResponse.merchantUid,
       };
       const ptRequestData = {
         membershipDTO: membershipData,
@@ -270,6 +305,7 @@ const PtRegister = () => {
       console.error("Failed to register membership or PT:", error);
     }
   };
+
 
   const handleConfirmClick = async () => {
     setIsAlertModalVisible(false);
@@ -589,7 +625,7 @@ const PtRegister = () => {
                         <div >{selectedProductPrice}원</div>
                         <div className="ml-3">
                           <button
-                            onClick={handleModify}
+                            onClick={handleSubmit}
                             className="flex items-center text-lg text-grayish-red hover:border-b  hover:font-semibold mx-auto animate-bounce" >
                             <div className="mb-4 text-3xl">💳</div> 결제하기
                           </button>
