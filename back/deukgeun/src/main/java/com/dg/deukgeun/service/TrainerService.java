@@ -50,6 +50,10 @@ public class TrainerService {
         return dtoList;
     }
 
+    public List<Trainer> getTrainerListWithInfo(Integer gymId) {
+        return trainerRepository.findAllBygymGymId(gymId);
+    }
+
     public ResponseDTO<?> signUp(TrainerDTO trainerDTO, Integer userId) {
         String email = trainerDTO.getEmail();
         String password = trainerDTO.getPassword();

@@ -32,6 +32,7 @@ import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 import com.dg.deukgeun.dto.gym.TrainerDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.entity.Gym;
+import com.dg.deukgeun.entity.Trainer;
 import com.dg.deukgeun.security.CustomUserDetails;
 import com.dg.deukgeun.service.GymImageService;
 import com.dg.deukgeun.service.GymService;
@@ -407,5 +408,10 @@ public class GymController {
     @GetMapping("/trainers/{gymId}")
     public List<TrainerDTO> getTrainerList(@PathVariable(name = "gymId") Integer gymId) {
         return trainerService.getList(gymId);
+    }
+
+    @GetMapping("/trainersWithInfo/{gymId}")
+    public List<Trainer> getTrainersWithInfo(@PathVariable(name = "gymId") Integer gymId) {
+        return trainerService.getTrainerListWithInfo(gymId);
     }
 }
