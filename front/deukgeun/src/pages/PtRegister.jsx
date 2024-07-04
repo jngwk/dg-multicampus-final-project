@@ -87,7 +87,7 @@ const PtRegister = () => {
   const { fetchUserData } = useAuth();
 
   useEffect(() => {
-    if (!gym.productList) {
+    if (!gym.productList || gym.productList.length === 0) {
       setHasNoProduct(true);
     } else {
       filterProducts();
