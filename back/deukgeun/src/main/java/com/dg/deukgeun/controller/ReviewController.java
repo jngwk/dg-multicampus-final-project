@@ -65,6 +65,27 @@ public class ReviewController {
     }
 
     @PreAuthorize("hasRole('ROLE_GENERAL')")
+    @PutMapping("/update/{reviewId}")
+    public ResponseDTO<?> updateReview(@PathVariable Integer reviewId, @RequestBody ReviewDTO reviewDTO) {
+        log.info("reviewDTO: " + reviewDTO);
+        try {
+            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Integer userId = userDetails.getUserId();
+        
+        // Ensure reviewId is provided and matches the path variable
+            if (!reviewId.equals(reviewDTO.getId())) {
+                return ResponseDTO.setFailed("Mismatch between path variable and review ID in payload.");
+            }
+        
+            reviewImageService.getByReviewId(reviewId);
+            reviewService.updateReview(reviewDTO, userId);
+            return ResponseDTO.setSuccess("Review updated successfully.");
+        } catch (Exception e) {
+            return ResponseDTO.setFailed("Failed to update review.");
+        }
+    }
+
+    @PreAuthorize("hasRole('ROLE_GENERAL')")
     @PostMapping("/uploadImages/{reviewId}")
     public Map<String, String> uploadImages(@PathVariable Integer reviewId, @RequestPart("files") List<MultipartFile> files) {
         log.info("Received files for review ID: {}", reviewId);
@@ -82,6 +103,31 @@ public class ReviewController {
             return Map.of("RESULT", "SUCCESS");
         } catch (Exception e) {
             log.error("Error uploading images for review ID: {}", reviewId, e);
+            return Map.of("RESULT", "FAILURE");
+        }
+    }
+    @PreAuthorize("hasRole('ROLE_GENERAL')")
+    @DeleteMapping("/deleteImages/{reviewId}")
+    public Map<String, String> deleteImages(@PathVariable Integer reviewId) {
+        log.info("Deleting images for review ID: {}", reviewId);
+        try {
+            reviewImageService.deleteImages(reviewId);
+            return Map.of("RESULT", "SUCCESS");
+        } catch (Exception e) {
+            log.error("Error deleting images for review ID: {}", reviewId, e);
+            return Map.of("RESULT", "FAILURE");
+        }
+    }
+
+    @PreAuthorize("hasRole('ROLE_GENERAL')")
+    @PutMapping("/updateImages/{reviewId}")
+    public Map<String, String> updateImages(@PathVariable Integer reviewId, @RequestBody List<MultipartFile> updatedImages) {
+        log.info("Updating images for review ID: {}", reviewId);
+        try {
+            reviewImageService.updateImages(reviewId, updatedImages);
+            return Map.of("RESULT", "SUCCESS");
+        } catch (Exception e) {
+            log.error("Error updating images for review ID: {}", reviewId, e);
             return Map.of("RESULT", "FAILURE");
         }
     }
@@ -114,25 +160,7 @@ public class ReviewController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_GENERAL')")
-    @PutMapping("/update/{reviewId}")
-    public ResponseDTO<?> updateReview(@PathVariable Integer reviewId, @RequestBody ReviewDTO reviewDTO) {
-        log.info("reviewDTO: " + reviewDTO);
-        try {
-            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            Integer userId = userDetails.getUserId();
-        
-        // Ensure reviewId is provided and matches the path variable
-            if (!reviewId.equals(reviewDTO.getId())) {
-                return ResponseDTO.setFailed("Mismatch between path variable and review ID in payload.");
-            }
-        
-            reviewService.updateReview(reviewDTO, userId);
-            return ResponseDTO.setSuccess("Review updated successfully.");
-        } catch (Exception e) {
-            return ResponseDTO.setFailed("Failed to update review.");
-        }
-    }
+
     @PostMapping("/insertImage/{reviewId}")
     public Map<String, String> insertImage(@PathVariable(name = "reviewId") Integer reviewId, @RequestBody ReviewRequestDTO reviewRequestDTO) {
         List<ReviewImageDTO> dtoList = new ArrayList<>();

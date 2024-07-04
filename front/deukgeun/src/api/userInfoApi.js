@@ -38,6 +38,16 @@ export const getImage = async () => {
   }
 };
 
+export const deleteImage = async () => {
+  try {
+    const res = await axios.delete(`${prefix}/deleteImage`);
+    return res.data.data;
+  } catch (error) {
+    console.error("Error fetching user images:", error);
+    throw error;
+  }
+};
+
 export const updateImage = async (formData) => {
   try {
     const res = await axios.put(`${prefix}/updateImage`, formData, {

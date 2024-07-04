@@ -1,44 +1,44 @@
-import logo from "../../assets/dg_logo.png";
-import LoginModal from "../modals/LoginModal";
-import { useAuth } from "../../context/AuthContext";
-import ProfileDropdown from "../account/ProfileDropdown";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import logo from "../../assets/dg_logo.png";
+import { useAuth } from "../../context/AuthContext";
+import ProfileDropdown from "../account/ProfileDropdown";
 import Fallback from "./Fallback";
 import Bprofile from "../../assets/blank_profile.png";
-import { userInfo, uploadImage, getImage, updateImage } from "../../api/userInfoApi";
+import { getImage } from "../../api/userInfoApi";
 import { useLoginModalContext } from "../../context/LoginModalContext";
 
-// console.log(logo);
 export default function Header() {
   const [userImage, setUserImage] = useState(null);
   const { userData, loading } = useAuth();
   const location = useLocation();
-  const [isProfileDropdownVisible, setIsProfileDropdownVisible] =
-    useState(false);
+  const [isProfileDropdownVisible, setIsProfileDropdownVisible] = useState(false);
   const badge = useRef(null);
   const dropdown = useRef(null);
   const navigate = useNavigate();
   const { toggleLoginModal } = useLoginModalContext();
+
+  const fetchUserImage = async () => {
+    try {
+      const images = await getImage();
+      if (images) {
+        setUserImage(images.userImage);
+      }
+    } catch (error) {
+      console.error("Error fetching user image:", error);
+    }
+  };
 
   useEffect(() => {
     setIsProfileDropdownVisible(false);
   }, [location]);
 
   useEffect(() => {
-    const fetchUserImage = async () => {
-      try {
-        const images = await getImage();
-        if (images) {
-          setUserImage(images.userImage);
-        }
-      } catch (error) {
-        console.error("Error fetching user image:", error);
-      }
-    };
+    if (sessionStorage.getItem("isLoggedIn")) {
+      fetchUserImage();
+    }
+  }, [userData]);
 
-    fetchUserImage();
-  }, []);
   useEffect(() => {
     const closeWhenClickedOutside = (e) => {
       if (
@@ -58,7 +58,6 @@ export default function Header() {
 
   const toggleProfileDropdown = () => {
     setIsProfileDropdownVisible(!isProfileDropdownVisible);
-    // console.log(isProfileDropdownVisible);
   };
 
   if (loading) {
@@ -66,7 +65,6 @@ export default function Header() {
   }
 
   return (
-    // 헤더 중앙 정렬
     <div className="relative h-[14dvh] flex justify-center items-center">
       <div className="flex justify-between items-center w-5/6 px-5 border-b-2 border-black">
         <img
@@ -86,12 +84,11 @@ export default function Header() {
                 onClick={toggleProfileDropdown}
               >
                 <img
-                  src={`${process.env.PUBLIC_URL}/images/${userImage}` || Bprofile}
+                  src={userImage ? `/images/${userImage}` : Bprofile}
                   alt="Profile"
                   className="w-8 h-8 rounded-full object-cover"
                 />
               </div>
-              {/* User type 지정해서 안에 메뉴 변경 */}
               <div ref={dropdown} className="absolute right-0 top-10">
                 {isProfileDropdownVisible ? (
                   <ProfileDropdown type="user" userData={userData} />

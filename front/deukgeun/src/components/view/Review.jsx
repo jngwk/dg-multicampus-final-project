@@ -2,45 +2,61 @@ import React, { useState, useEffect } from "react";
 import { FcManager } from "react-icons/fc";
 import { BsPinAngle } from "react-icons/bs";
 import { MdOutlineRateReview } from "react-icons/md";
-import { getReviews, deleteReview, updateReview, addReview } from "../../api/reviewApi"; // createReview 추가
+import classNames from 'classnames';
+import { getReviews, deleteReview, addReview, deleteReviewImages  } from "../../api/reviewApi";
 import { useAuth } from "../../context/AuthContext";
 import ReviewEditModal from "../modals/ReviewEditModal";
 import ReviewModal from "../modals/ReviewModal";
 import AlertModal from "../modals/AlertModal";
 import { useModal } from "../../hooks/useModal";
 
-const ReviewContent = ({ gymId, renderReviewCount = false, onReviewAdded }) => {
+const ReviewContent = ({ gymId, renderReviewCount = false, onReviewAdded, onReviewDeleted }) => {
   const [reviews, setReviews] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentReview, setCurrentReview] = useState(null);
   const { userData } = useAuth();
+  const [colorMapping, setColorMapping] = useState({});
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
         const data = await getReviews(gymId);
         setReviews(data);
+        const initialMapping = data.reduce((acc, review) => {
+          acc[review.id] = getColorClassById(review.id);
+          return acc;
+        }, {});
+        setColorMapping(initialMapping);
       } catch (error) {
         console.error("Error fetching reviews:", error);
       }
     };
     fetchReviews();
-  }, [gymId, onReviewAdded]);
+  }, [gymId, onReviewAdded, onReviewDeleted]);
 
   const handleEdit = (review) => {
     setCurrentReview(review);
     setIsModalOpen(true);
   };
 
-  const handleDelete = (reviewId) => {
+  const handleDelete = async (reviewId,images) => {
     if (window.confirm("정말 리뷰를 삭제하시겠습니까?")) {
-      deleteReview(reviewId)
-        .then(() => {
-          setReviews(reviews.filter((r) => r.id !== reviewId));
-        })
-        .catch((error) => {
-          console.error("Error deleting review:", error);
+      try {
+        await deleteReview(reviewId);
+        if (images && images.length > 0) {
+          await deleteReviewImages(reviewId);
+        }
+
+        setReviews((prevReviews) => prevReviews.filter((r) => r.id !== reviewId));
+        setColorMapping((prevMapping) => {
+          const newMapping = { ...prevMapping };
+          delete newMapping[reviewId];
+          return newMapping;
         });
+        onReviewDeleted();
+      } catch (error) {
+        console.error("Error deleting review:", error);
+      }
     }
   };
 
@@ -50,26 +66,38 @@ const ReviewContent = ({ gymId, renderReviewCount = false, onReviewAdded }) => {
   };
 
   const handleUpdateReview = (updatedReview) => {
-    setReviews(reviews.map((r) => (r.id === updatedReview.id ? updatedReview : r)));
+    setReviews((prevReviews) =>
+      prevReviews.map((r) => (r.id === updatedReview.id ? updatedReview : r))
+    );
   };
 
   if (renderReviewCount) {
     return <div>등록 리뷰 수: {reviews.length}</div>;
   }
 
-  const getRandomColor = () => {
-    const colors = ["orange-300", "yellow-200", "green-200", "blue-200", "indigo-200", "purple-200", "pink-200"];
-    return colors[Math.floor(Math.random() * colors.length)];
+  const getColorClassById = (id) => {
+    const colors = [
+      "bg-orange-300",
+      "bg-yellow-200",
+      "bg-indigo-200",
+    ];
+    const strId = String(id);
+    const hash = strId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return colors[hash % colors.length];
   };
 
   return (
     <div className="flex flex-wrap justify-center">
-      {reviews.map((item, index) => {
-        const color = getRandomColor();
+      {reviews.map((item) => {
+        const colorClass = colorMapping[item.id] || getColorClassById(item.id);
         return (
           <div
-            key={index}
-            className={`sticky-note bg-${color} w-64 h-64 p-6 m-4 shadow-lg transform rotate-2 transition duration-300 ease-in-out hover:rotate-0 hover:scale-105 relative`}
+            key={item.id}
+            className={classNames(
+              "sticky-note",
+              colorClass,
+              "w-64 h-64 p-6 m-4 shadow-lg transform rotate-2 transition duration-300 ease-in-out hover:rotate-0 hover:scale-105 relative"
+            )}
           >
             <BsPinAngle className="absolute -top-3 -left-3 text-gray-700 text-2xl" />
             <div className="flex items-center mb-3">
@@ -78,7 +106,7 @@ const ReviewContent = ({ gymId, renderReviewCount = false, onReviewAdded }) => {
               </div>
               <div className="font-bold ml-3 text-sm">{item.userName}</div>
             </div>
-            <p className="text-sm mb-2 h-24 overflow-y-auto">{item.comment}</p>
+            <p className="text-sm mb-2 h-20 overflow-y-auto">{item.comment}</p>
             {item.images && item.images.length > 0 && (
               <div className="flex space-x-2 mt-2">
                 {item.images.map((image, idx) => (
@@ -86,7 +114,7 @@ const ReviewContent = ({ gymId, renderReviewCount = false, onReviewAdded }) => {
                     key={idx}
                     src={`/images/${image}`}
                     alt={`Review Image ${idx}`}
-                    className="w-12 h-12 object-cover rounded-lg border-gray-200 border-2"
+                    className="w-24 h-22 object-cover rounded-lg border-gray-200 border-2"
                   />
                 ))}
               </div>
@@ -100,7 +128,7 @@ const ReviewContent = ({ gymId, renderReviewCount = false, onReviewAdded }) => {
                   수정
                 </button>
                 <button
-                  onClick={() => handleDelete(item.id)}
+                  onClick={() => handleDelete(item.id,item.images)}
                   className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600"
                 >
                   삭제
@@ -125,10 +153,24 @@ const ReviewContent = ({ gymId, renderReviewCount = false, onReviewAdded }) => {
 const Review = ({ gymId }) => {
   const { isModalVisible, toggleModal } = useModal();
   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
+  const [reviews, setReviews] = useState([]);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const data = await getReviews(gymId);
+        setReviews(data);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
+    fetchReviews();
+  }, [gymId]);
 
   const handleReviewSubmit = async (reviewData) => {
     try {
       const newReview = await addReview(gymId, reviewData);
+      setReviews([...reviews, newReview]);
       setIsAlertModalVisible(true);
     } catch (error) {
       console.error("Error creating review:", error);
@@ -140,8 +182,12 @@ const Review = ({ gymId }) => {
   };
 
   const handleReviewAdded = (newReview) => {
-    // Optional: Add newReview to state if needed
-    // This function is called when a new review is successfully added
+    setIsAlertModalVisible(true);
+    setReviews([...reviews, newReview]);
+  };
+
+  const handleReviewDeleted = (reviewId) => {
+    setReviews((prevReviews) => prevReviews.filter((r) => r.id !== reviewId));
   };
 
   return (
@@ -152,8 +198,10 @@ const Review = ({ gymId }) => {
             리뷰
             <div className="mt-2 w-16 border-b-2 border-grayish-red border-opacity-20"></div>
           </div>
-          <ReviewContent gymId={gymId} renderReviewCount={true} />
+          {/* Display Review Count */}
+          <div>등록 리뷰 수: {reviews.length}</div>
         </div>
+        {/* Button to Open Review Modal */}
         <button
           className="absolute top-12 right-0 flex items-center mr-5"
           onClick={toggleModal}
@@ -161,6 +209,7 @@ const Review = ({ gymId }) => {
           <div className="hover:font-bold">리뷰작성</div>
           <MdOutlineRateReview className="mx-1 mb-1" size="25" color="#9F8D8D" />
         </button>
+        {/* Review Modal */}
         {isModalVisible && (
           <ReviewModal
             toggleModal={toggleModal}
@@ -169,11 +218,13 @@ const Review = ({ gymId }) => {
           />
         )}
       </div>
+      {/* Review Content */}
       <div className="w-full p-5 mb-10 flex justify-center bg-grayish-red bg-opacity-20 border-y border-grayish-red">
         <div className="w-full flex justify-center flex-wrap overflow-y-auto scrollbar-hide">
-          <ReviewContent gymId={gymId} onReviewAdded={handleReviewAdded} />
+          <ReviewContent gymId={gymId} onReviewAdded={handleReviewAdded} onReviewDeleted={handleReviewDeleted} />
         </div>
       </div>
+      {/* Alert Modal for Review Submission */}
       {isAlertModalVisible && (
         <AlertModal
           headerEmoji={"✔️"}

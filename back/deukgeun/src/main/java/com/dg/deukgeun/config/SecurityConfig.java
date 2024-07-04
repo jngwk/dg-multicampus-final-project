@@ -113,7 +113,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/reviews/delete/**", "api/reviews/update/**")
                         .hasAnyAuthority("ROLE_GENERAL", "ROLE_ADMIN")
                         .requestMatchers("/api/reviews/registerReview", "api/reviews/uploadImages/**",
-                                "api/reviews/insertImage/**", "api/reviews/deleteImage/**", "api/payment/verify/**")
+                                "api/reviews/insertImage/**", "api/reviews/deleteImages/**", "api/reviews/updateImages/**", "api/payment/verify/**")
                         .hasAuthority("ROLE_GENERAL") // 일반 회원만 가능 (합치기)
                         .requestMatchers("/api/reviews/reviewList/**", "/api/ptSession/**", "/api/gym/products/**",
                                 "/api/gym/trainers/**")
