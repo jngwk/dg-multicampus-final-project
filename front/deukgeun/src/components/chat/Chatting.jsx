@@ -107,7 +107,8 @@ const Chatting = ({
     };
     if (chatReceiver.role === "ROLE_TRAINER") {
       getTrainer();
-    } else if (
+    }
+    if (
       (chatReceiver.role === "ROLE_GENERAL" &&
         userData.role === "ROLE_TRAINER") ||
       (chatReceiver.role === "ROLE_TRAINER" && userData.role === "ROLE_GENERAL")
