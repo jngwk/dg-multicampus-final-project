@@ -49,7 +49,7 @@ const GymSearchMap = () => {
   useEffect(() => {
     // console.log(userLocation);
     // 현재 위치 지도 표시
-    if (mapLoading) return;
+    if (mapLoading || !kakao) return;
     console.log(location.state);
     if (
       location.state &&
@@ -243,7 +243,7 @@ const GymSearchMap = () => {
         // console.log("@@@@ results", results);
         setState((prev) => ({
           ...prev,
-          center: { lat: results[0].latlng.lat, lng: results[0].latlng.lng },
+          center: { lat: results[0]?.latlng?.lat, lng: results[0]?.latlng?.lng },
           isLoading: false,
         }));
       }
