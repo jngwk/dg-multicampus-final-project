@@ -9,6 +9,7 @@ import Button from "../components/shared/Button";
 import useCustomNavigate from "../hooks/useCustomNavigate";
 import { insertImage, deleteImage, GymInfo, updateGym } from "../api/gymApi";
 import { useParams } from "react-router-dom";
+import Select from "../components/shared/Select";
 
 // 회원 정보
 const initGymData = {
@@ -55,7 +56,7 @@ const Gymset = () => {
 
       setGymData({
         ...gymData,
-        imgList: gymData.imgList || [], // Ensure imgList is an array
+        imgList: gymData.uploadFileName || [], // Ensure imgList is an array
       });
       setHealthProducts(gymData.healthProducts || []);
       setPTProducts(gymData.ptProducts || []);
@@ -363,15 +364,21 @@ const Gymset = () => {
                     required={true}
                     onChange={handleNewHealthProductChange}
                   />
-                  <Input
-                    label="상품 기간 (ex. 2개월 -> 60)"
-                    width="290px"
+                   <Select
+                    label="상품 기간"
                     name="days"
+                    width="290px"
                     value={newHealthProduct.days}
                     error={healthErrors.days}
                     required={true}
                     onChange={handleNewHealthProductChange}
-                  />
+                    className="flex flex-col justify-center items-center border border-gray-400 p-3 rounded-lg"
+                  >
+                      <option value="">선택해주세요.</option>
+                      {[ 30, 90, 180, 200, 365].map(count => (
+                          <option key={count} value={count}>{count}일</option>
+                       ))}
+                  </Select>
                   <Input
                     label="상품 가격 (원 제외)"
                     width="290px"
@@ -424,24 +431,36 @@ const Gymset = () => {
                     required={true}
                     onChange={handleNewPTProductChange}
                   />
-                  <Input
-                    label="PT 횟수 (ex. 10회 -> 10)"
-                    width="290px"
+                  <Select
+                    label="PT횟수"
                     name="ptCountTotal"
+                    width="290px"
                     value={newPTProduct.ptCountTotal}
                     error={ptErrors.ptCountTotal}
                     required={true}
                     onChange={handleNewPTProductChange}
-                  />
-                  <Input
-                    label="상품 기간 (ex. 60일 -> 60)"
-                    width="290px"
+                    className="flex flex-col justify-center items-center border border-gray-400 p-3 rounded-lg"
+                  >
+                    <option value="">선택해주세요.</option>
+                      {[10, 20, 30, 40, 50, 60].map(count => (
+                          <option key={count} value={count}>{count}회</option>
+                       ))}
+                  </Select>
+                  <Select
+                    label="상품 기간"
                     name="days"
+                    width="290px"
                     value={newPTProduct.days}
                     error={ptErrors.days}
                     required={true}
                     onChange={handleNewPTProductChange}
-                  />
+                    className="flex flex-col justify-center items-center border border-gray-400 p-3 rounded-lg"
+                  >
+                    <option value="">선택해주세요.</option>
+                      {[ 30, 90, 180, 200, 365].map(count => (
+                          <option key={count} value={count}>{count}일</option>
+                       ))}
+                  </Select>
                   <Input
                     label="상품 가격 (원 제외)"
                     width="290px"
@@ -497,6 +516,23 @@ const Gymset = () => {
                 required={true}
                 onChange={handleImgListChange}
               />
+              <div className="flex flex-wrap space-x-4 mt-4">
+    {GymData.imgList && GymData.imgList.map((img, index) => (
+        <div key={index} className="relative">
+            <img
+                src={`/images/${img}`}
+                alt={`Gym image ${index}`}
+                className="w-24 h-24 object-cover rounded-lg border"
+            />
+            <FaCircleMinus
+                size="20"
+                color="red"
+                className="absolute top-0 right-0 cursor-pointer"
+                onClick={() => handleDeleteImage(img)}
+            />
+        </div>
+    ))}
+</div>
             </div>
             {/* 센터 설명 */}
             <div className="flex flex-row space-x-40">

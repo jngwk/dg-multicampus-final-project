@@ -18,6 +18,25 @@ export const uploadReviewImages = async (reviewId, formData) => {
     });
     return res.data;
 };
+
+export const deleteReviewImages = async (reviewId, formData) => {
+    const res = await axios.delete(`${prefix}/deleteImages/${reviewId}`, formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+    return res.data;
+};
+
+export const updateReviewImages = async (reviewId, formData) => {
+    const res = await axios.put(`${prefix}//updateImages/${reviewId}`, formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+    return res.data;
+};
+
 export const getReviews = async (gymId) => {
     try {
         const res = await axios.get(`${prefix}/reviewList/${gymId}`);

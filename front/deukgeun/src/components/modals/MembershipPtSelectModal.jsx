@@ -10,6 +10,7 @@ const MembershipPtSelectModal = ({ toggleModal, selectedGym }) => {
 
   useEffect(() => {
     const getMembership = async () => {
+      console.log("gym is select modal", selectedGym);
       try {
         const data = await findMembership();
         console.log("find membership in modal", data);

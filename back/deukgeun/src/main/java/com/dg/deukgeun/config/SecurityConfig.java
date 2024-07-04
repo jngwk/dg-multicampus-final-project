@@ -88,7 +88,7 @@ public class SecurityConfig {
                         // .requestMatchers("/**").permitAll()
                         .requestMatchers("/api/user/login", "/api/qna", "/api/qna/**",
                                 "/api/user/logout", "/api/user/sendCode", "/api/user/emailCheck/*", "/api/chart",
-                                "/api/gym/search", "/api/user/putImage", "/api/user/getImage",
+                                "/api/gym/search", "/api/user/putImage", "/api/user/getImage", "/api/user/getImage/**",
                                 "/api/user/uploadImage",
                                 "/api/user/updateImage",
                                 "/api/gym/search/**", "/api/gym/get/**", "/api/gym/getList",
@@ -99,24 +99,27 @@ public class SecurityConfig {
                                 "/api/user/resetPassword")
                         .anonymous() // 비회원만 가능
                         .requestMatchers("/api/user/userInfo", "/ws/**",
-                                "/api/membership/findMembership")
+                                "/api/membership/findMembership", "/api/trainer/get/**")
                         .hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM", "ROLE_TRAINER", "ROLE_ADMIN") // 모든 회원 타입
                         .requestMatchers("/api/personalTraining/get/**",
                                 "/api/personalTraining/post", "/api/membership/register",
                                 "/api/membership/findPT")
                         .hasAnyAuthority("ROLE_GENERAL") // 일반 회원만 가능
                         .requestMatchers("/api/membership/stats", "/api/membership/stats/**",
-                                "/api/user/signUp/trainer", "/api/trainers/update/**", "/api/gym/put/**",
+                                "/api/user/signUp/trainer", "/api/trainer/update/**", "/api/gym/put/**",
                                 "/api/gym/getGymByUserId", "/api/gym/insertImage/**", "/api/gym/getGymByUserId")
                         .hasAnyAuthority("ROLE_GYM")
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/reviews/delete/**", "api/reviews/update/**")
                         .hasAnyAuthority("ROLE_GENERAL", "ROLE_ADMIN")
                         .requestMatchers("/api/reviews/registerReview", "api/reviews/uploadImages/**",
-                                "api/reviews/insertImage/**", "api/reviews/deleteImage/**", "api/payment/verify/**")
+                                "api/reviews/insertImage/**", "api/reviews/deleteImages/**",
+                                "api/reviews/updateImages/**", "api/payment/verify/**")
                         .hasAuthority("ROLE_GENERAL") // 일반 회원만 가능 (합치기)
-                        .requestMatchers("/api/reviews/reviewList/**", "/api/ptSession/**").permitAll()
-                        .requestMatchers("/api/trainers/update/**", "/api/ptSession/**")
+                        .requestMatchers("/api/reviews/reviewList/**", "/api/ptSession/**", "/api/gym/products/**",
+                                "/api/gym/trainer/**")
+                        .permitAll()
+                        .requestMatchers("/api/trainer/update/**", "/api/ptSession/**")
                         .hasAuthority("ROLE_TRAINER") // 트레이너만 가능
                         .requestMatchers("/api/workoutSession/**",
                                 "/api/workout/**")
