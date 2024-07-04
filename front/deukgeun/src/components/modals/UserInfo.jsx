@@ -29,7 +29,9 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
     detailAddress: userData.detailAddress || "",
   };
   const [userImage, setUserImage] = useState(
-    `/images/${userData.userImage?.userImage}`
+    userData.userImage?.userImage
+      ? `/images/${userData.userImage?.userImage}`
+      : null
   );
   const fileInput = useRef(null);
   const [passwordType, setPasswordType] = useState({
@@ -208,11 +210,21 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
         <div className="userEdit-img flex justify-center items-center">
           <label className="profileImg-label relative" htmlFor="profileImg">
             <div className="w-28 h-28 rounded-full">
-              <img
-                className="w-full h-full rounded-full object-cover"
-                src={userImage || Bprofile}
-                alt="Profile"
-              />
+              {userImage ? (
+                <img
+                  className="w-full h-full rounded-full object-cover"
+                  src={userImage}
+                  alt="Profile"
+                />
+              ) : (
+                <box-icon
+                  name="user-circle"
+                  type="solid"
+                  size="lg"
+                  color="#9f8d8d"
+                  style={{ width: "112px", height: "112px" }}
+                ></box-icon>
+              )}
             </div>
             <input
               className="profileImg-input hidden"
