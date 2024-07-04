@@ -47,12 +47,14 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
   // const [isSelectModalVisible, setIsSelectModalVisible] = useState(false);
   const [isMembershipModalVisible, setIsMembershipModalVisible] =
     useState(false);
+  const [imagetUpdate, setImageUpdate] = useState(false);
 
   useEffect(() => {
     const fetchUserImage = async () => {
       try {
         const imageData = await getImage();
         if (imageData && imageData.userImage) {
+          setImageUpdate(true);
           setUserImage(`/images/${imageData.userImage}`);
         }
       } catch (error) {
@@ -132,7 +134,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
 
       if (fileInput.current.formData) {
         let imageResponse;
-        if (userImage === null) {
+        if (imagetUpdate === false) {
           imageResponse = await uploadImage(fileInput.current.formData);
         } else {
           imageResponse = await updateImage(fileInput.current.formData);
