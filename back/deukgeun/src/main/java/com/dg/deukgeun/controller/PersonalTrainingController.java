@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,9 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dg.deukgeun.dto.personalTraining.PersonalTrainingDTO;
 import com.dg.deukgeun.dto.personalTraining.PersonalTrainingRequestDTO;
 import com.dg.deukgeun.dto.personalTraining.PersonalTrainingResponseDTO;
 import com.dg.deukgeun.entity.PersonalTraining;
@@ -107,34 +106,44 @@ public class PersonalTrainingController {
     @PostMapping("/post")
     public ResponseEntity<?> post(@RequestBody PersonalTrainingRequestDTO requestDTO) {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-                    .getPrincipal();
+                .getPrincipal();
         Integer userId = userDetails.getUserId();
         log.info("Received requestDTO: {}", requestDTO);
         requestDTO.getPersonalTrainingDTO().setUserId(userId);
-        
+
         // Integer trainerId = requestDTO.getPersonalTrainingDTO().getTrainerId();
 
         requestDTO.getMembershipDTO().setUserMemberReason(requestDTO.getPersonalTrainingDTO().getUserPtReason());
 
-            // Register both membership and PT
+        // Register both membership and PT
         Integer ptId = service.registerPersonalTraining(requestDTO, userId);
 
         return ResponseEntity.ok(Map.of("ptId", ptId));
     }
 
     @GetMapping("/findPT")
-    public ResponseEntity<?> checkPersonalTraining() {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        Integer userId = userDetails.getUserId();
+    public ResponseEntity<?> checkPersonalTraining(
+            @RequestParam(name = "clientId", required = false) Integer clientId) {
+        Integer userId = 0;
+        if (clientId == null) {
+            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                    .getPrincipal();
+            // String authority =
+            // userDetails.getAuthorities().iterator().next().getAuthority();
+            userId = userDetails.getUserId();
+
+        } else if (clientId != null) {
+            userId = clientId;
+        }
 
         Optional<PersonalTraining> pt = service.findPT(userId);
-
         if (pt.isPresent()) {
             return ResponseEntity.ok(pt.get());
         } else {
+
             return ResponseEntity.ok(null);
         }
+
     }
 
     @GetMapping("/getUsersList")
