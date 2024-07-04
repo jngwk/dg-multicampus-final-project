@@ -115,7 +115,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/reviews/registerReview", "api/reviews/uploadImages/**",
                                 "api/reviews/insertImage/**", "api/reviews/deleteImage/**", "api/payment/verify/**")
                         .hasAuthority("ROLE_GENERAL") // 일반 회원만 가능 (합치기)
-                        .requestMatchers("/api/reviews/reviewList/**", "/api/ptSession/**").permitAll()
+                        .requestMatchers("/api/reviews/reviewList/**", "/api/ptSession/**", "/api/gym/products/**",
+                                "/api/gym/trainers/**")
+                        .permitAll()
                         .requestMatchers("/api/trainers/update/**", "/api/ptSession/**")
                         .hasAuthority("ROLE_TRAINER") // 트레이너만 가능
                         .requestMatchers("/api/workoutSession/**",

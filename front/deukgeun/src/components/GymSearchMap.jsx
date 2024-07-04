@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 import Input from "../components/shared/Input";
-import { getGymList, searchGyms, GymInfo } from "../api/gymApi";
+import {
+  getGymList,
+  searchGyms,
+  GymInfo,
+  getProductList,
+  getTrainerList,
+} from "../api/gymApi";
 import { Scrollbar } from "react-scrollbars-custom";
 import useCustomNavigate from "../hooks/useCustomNavigate";
 import ChatModal from "./modals/ChatModal";
@@ -219,6 +225,10 @@ const GymSearchMap = () => {
       setGyms(res);
       const promises = res.map(async (gym) => {
         try {
+          if (!gym.address) {
+            console.error("no gym address");
+            return;
+          }
           const latlng = await convertAddressToLatLng(gym.address);
           return {
             // content
@@ -297,15 +307,37 @@ const GymSearchMap = () => {
     }
   };
 
+  const handleCenterView = async (gym) => {
+    try {
+      const products = await getProductList(gym.gymId); // Fetch complete gym data
+      const trainers = await getTrainerList(gym.gymId);
+      const gymWithProducts = {
+        ...gym,
+        productList: products,
+        trainerList: trainers,
+      };
+      setSelectedGym(gymWithProducts);
+      // setIsSelectModalVisible(true);
+      customNavigate("/centerView", { state: { gym: gymWithProducts } });
+    } catch (error) {
+      console.error("Error fetching gym data:", error);
+    }
+  };
   const handleRegister = async (gym) => {
-    setSelectedGym(gym);
-    setIsSelectModalVisible(true);
-    // try {
-    //   const data = await GymInfo(gym.gymId); // Fetch complete gym data
-    //   customNavigate("/memberregister", { state: { gym: data } });
-    // } catch (error) {
-    //   console.error("Error fetching gym data:", error);
-    // }
+    try {
+      const products = await getProductList(gym.gymId); // Fetch complete gym data
+      const trainers = await getTrainerList(gym.gymId);
+      const gymWithProducts = {
+        ...gym,
+        productList: products,
+        trainerList: trainers,
+      };
+      setSelectedGym(gymWithProducts);
+      setIsSelectModalVisible(true);
+      // customNavigate("/memberregister", { state: { gym: gymWithProducts } });
+    } catch (error) {
+      console.error("Error fetching gym data:", error);
+    }
   };
 
   const handleKeyPress = (event) => {
@@ -412,9 +444,7 @@ const GymSearchMap = () => {
                     <div className="flex justify-evenly mt-3">
                       <button
                         className="border border-gray-500 py-2 px-4 text-xs rounded-md bg-grayish-red/30 hover:border-grayish-red hover:bg-grayish-red hover:text-white transition-all"
-                        onClick={() =>
-                          customNavigate("/centerView", { state: { gym: gym } })
-                        }
+                        onClick={() => handleCenterView(gym)}
                       >
                         상세보기
                       </button>

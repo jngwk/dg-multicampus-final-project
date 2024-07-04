@@ -23,11 +23,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.dg.deukgeun.api.CRNumberCheckApi;
 import com.dg.deukgeun.dto.PageRequestDTO;
 import com.dg.deukgeun.dto.PageResponseDTO;
+import com.dg.deukgeun.dto.ProductDTO;
 import com.dg.deukgeun.dto.gym.GymDTO;
 import com.dg.deukgeun.dto.gym.GymImageDTO;
 import com.dg.deukgeun.dto.gym.GymRequestDTO;
 import com.dg.deukgeun.dto.gym.GymResponseDTO;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
+import com.dg.deukgeun.dto.gym.TrainerDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.entity.Gym;
 import com.dg.deukgeun.security.CustomUserDetails;
@@ -395,5 +397,15 @@ public class GymController {
             default:
                 return gymService.searchGyms(searchWord);
         }
+    }
+
+    @GetMapping("/products/{gymId}")
+    public List<ProductDTO> getProductList(@PathVariable(name = "gymId") Integer gymId) {
+        return productService.getList(gymId);
+    }
+
+    @GetMapping("/trainers/{gymId}")
+    public List<TrainerDTO> getTrainerList(@PathVariable(name = "gymId") Integer gymId) {
+        return trainerService.getList(gymId);
     }
 }
