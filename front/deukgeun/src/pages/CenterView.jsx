@@ -22,6 +22,7 @@ import useTyping from "../hooks/useTyping";
 import { useModal } from "../hooks/useModal";
 import EventModal from "../components/modals/EventModal";
 import Fallback from "../components/shared/Fallback";
+import ChatModal from "../components/modals/ChatModal";
 
 const CenterView = () => {
   const location = useLocation();
@@ -31,6 +32,7 @@ const CenterView = () => {
   const [isPTAlreadyRegistered, setIsPTAlreadyRegistered] = useState(false);
   const { toggleLoginModal } = useLoginModalContext();
   const [gymDataLoading, setGymDataLoading] = useState(false);
+  const [isChatModalVisible, setIsChatModalVisible] = useState(false);
   const customNavigate = useCustomNavigate();
   const gymId = location.state?.gym?.gymId || "";
 
@@ -154,9 +156,14 @@ const CenterView = () => {
                 <div>
                   <Button
                     width="100px"
-                    label="1:1 메시지"
+                    label="문의하기"
                     height="40px"
                     className="hover:font-semibold"
+                    onClick={() =>
+                      sessionStorage.getItem("isLoggedIn")
+                        ? setIsChatModalVisible(true)
+                        : toggleLoginModal()
+                    }
                   ></Button>
                 </div>
                 <div>
@@ -233,6 +240,12 @@ const CenterView = () => {
         </button>
       </div>
 
+      {isChatModalVisible && sessionStorage.getItem("isLoggedIn") && (
+        <ChatModal
+          toggleModal={() => setIsChatModalVisible(false)}
+          selectedGym={gymData}
+        />
+      )}
       {/* Alert modal to display if membership is already registered */}
       {isMembershipAlreadyRegistered && (
         <AlertModal
