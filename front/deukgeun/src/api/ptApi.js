@@ -16,12 +16,14 @@ export const registerPT = async (PTData) => {
   }
 };
 
-export const findPT = async () => {
+export const findPT = async (id = null) => {
   try {
-    const res = await axios.get(`${PtPrefix}/findPT`);
+    const res = await axios.get(`${PtPrefix}/findPT`, {
+      params: { clientId: id },
+    });
     return res.data;
   } catch (error) {
-    console.error('Error findPT data:', error);
+    console.error("Error findPT data:", error);
     throw error;
   }
 };
@@ -31,27 +33,32 @@ export const registerPTSession = async (ptSessionData) => {
     const res = await axios.post(`${PtSessionPrefix}/post`, ptSessionData);
     return res.data;
   } catch (error) {
-    console.error('Error registering PT session:', error);
+    console.error("Error registering PT session:", error);
     throw error;
   }
 };
 
 export const getPTSessions = async (startDate, endDate) => {
   try {
-    const res = await axios.get(`${PtSessionPrefix}/get/${startDate}/${endDate}`);
+    const res = await axios.get(
+      `${PtSessionPrefix}/get/${startDate}/${endDate}`
+    );
     return res.data;
   } catch (error) {
-    console.error('Error fetching PT sessions:', error);
+    console.error("Error fetching PT sessions:", error);
     throw error;
   }
 };
 
 export const updatePTSession = async (ptSessionId, ptSessionData) => {
   try {
-    const res = await axios.put(`${PtSessionPrefix}/put/${ptSessionId}`, ptSessionData);
+    const res = await axios.put(
+      `${PtSessionPrefix}/put/${ptSessionId}`,
+      ptSessionData
+    );
     return res.data;
   } catch (error) {
-    console.error('Error updating PT session:', error);
+    console.error("Error updating PT session:", error);
     throw error;
   }
 };
@@ -61,7 +68,7 @@ export const deletePTSession = async (ptSessionId) => {
     const res = await axios.delete(`${PtSessionPrefix}/delete/${ptSessionId}`);
     return res.data;
   } catch (error) {
-    console.error('Error deleting PT session:', error);
+    console.error("Error deleting PT session:", error);
     throw error;
   }
 };

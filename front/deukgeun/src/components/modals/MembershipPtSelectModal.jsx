@@ -3,9 +3,15 @@ import ModalLayout from "./ModalLayout";
 import Button from "../shared/Button";
 import useCustomNavigate from "../../hooks/useCustomNavigate";
 import { findMembership } from "../../api/membershipApi";
+import {
+  getProductList,
+  getTrainerList,
+  getTrainersWithInfo,
+} from "../../api/gymApi";
 
 const MembershipPtSelectModal = ({ toggleModal, selectedGym }) => {
   const [isRegistered, setIsRegistered] = useState(false);
+  const [gymData, setGymData] = useState(selectedGym);
   const customNavigate = useCustomNavigate();
 
   useEffect(() => {
@@ -21,15 +27,30 @@ const MembershipPtSelectModal = ({ toggleModal, selectedGym }) => {
         console.error(error);
       }
     };
+    const getCompleteGymData = async () => {
+      try {
+        const products = await getProductList(gymData.gymId); // Fetch complete gym data
+        const trainers = await getTrainersWithInfo(gymData.gymId);
+        const gymWithCompleteData = {
+          ...gymData,
+          productList: products,
+          trainerList: trainers,
+        };
+        setGymData(gymWithCompleteData);
+      } catch (error) {
+        console.error("error in mem pt select modal", error);
+      }
+    };
     getMembership();
-  });
+    getCompleteGymData();
+  }, []);
 
   const handleMembershipButtonClick = () => {
     console.log("in modal", selectedGym);
-    customNavigate("/memberregister", { state: { gym: selectedGym } });
+    customNavigate("/memberregister", { state: { gym: gymData } });
   };
   const handlePtButtonClick = () => {
-    customNavigate("/PtRegister", { state: { gym: selectedGym } });
+    customNavigate("/PtRegister", { state: { gym: gymData } });
   };
 
   return (

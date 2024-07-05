@@ -32,6 +32,7 @@ import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 import com.dg.deukgeun.dto.gym.TrainerDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.entity.Gym;
+import com.dg.deukgeun.entity.Trainer;
 import com.dg.deukgeun.security.CustomUserDetails;
 import com.dg.deukgeun.service.GymImageService;
 import com.dg.deukgeun.service.GymService;
@@ -370,7 +371,11 @@ public class GymController {
         gymImageService.insertList(dtoList);
         return Map.of("RESULT", "SUCCESS");
     }
-
+    //이미지 리스트
+    @GetMapping("/imageList/{gymId}")
+    public List<GymImageDTO> getImagesByGymId(@PathVariable Integer gymId) {
+        return gymImageService.getByGymId(gymId);
+    }
     // 헬스장 이미지 삭제
     @DeleteMapping("/deleteImage/{gymImage}")
     public Map<String, String> removeImage(@PathVariable(name = "gymImage") String gymImage) {
@@ -417,5 +422,10 @@ public class GymController {
     @GetMapping("/trainers/{gymId}")
     public List<TrainerDTO> getTrainerList(@PathVariable(name = "gymId") Integer gymId) {
         return trainerService.getList(gymId);
+    }
+
+    @GetMapping("/trainersWithInfo/{gymId}")
+    public List<Trainer> getTrainersWithInfo(@PathVariable(name = "gymId") Integer gymId) {
+        return trainerService.getTrainerListWithInfo(gymId);
     }
 }

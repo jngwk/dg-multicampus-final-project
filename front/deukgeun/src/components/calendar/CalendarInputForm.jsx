@@ -6,6 +6,7 @@ import Loader from "../shared/Loader";
 import UserSearchModal from "../modals/UserSearchModal";
 import { getUsersList } from "../../api/ptApi";
 import { useAuth } from "../../context/AuthContext";
+import { isValid } from "date-fns";
 
 const initFormValues = {
   ptSessionId: "",
@@ -22,6 +23,11 @@ const initFormValues = {
   workouts: [
     { workoutName: "", workoutSet: "", workoutRep: "", workoutWeight: "" },
   ],
+};
+
+const initErrors = {
+  ptUserName: "",
+  content: "",
 };
 
 const CalendarInputForm = ({
@@ -47,6 +53,7 @@ const CalendarInputForm = ({
     useState(false);
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(false);
+  const [errors, setErrors] = useState(initErrors);
 
   // 날짜/이벤트 선택시 폼에 반영
   useEffect(() => {
@@ -142,7 +149,26 @@ const CalendarInputForm = ({
     }
   };
 
+  const validateForm = () => {
+    let isValid = true;
+    if (
+      userData.role === "ROLE_TRAINER" &&
+      (!formValues.ptUserName || formValues.ptUserName === "")
+    ) {
+      setErrors((prev) => ({ ...prev, ptUserName: "회원을 선택해주세요." }));
+      isValid = false;
+    }
+    if (!formValues.content || formValues.content === "") {
+      setErrors((prev) => ({ ...prev, content: "제목을 입력해주세요." }));
+      isValid = false;
+    }
+    console.log("validate form", isValid);
+    return isValid;
+  };
+
   const handleSubmit = () => {
+    if (!validateForm()) return;
+    // console.log("handle submit", validateForm);
     const nestedFormValues = {
       ptSession: formValues.ptUserId
         ? {
@@ -259,8 +285,10 @@ const CalendarInputForm = ({
                 </div>
               }
               featureOnClick={toggleUserSearchModal}
-              featureEnableOnLoad
+              featureEnableOnLoad={true}
+              error={errors.ptUserName}
             />
+            <hr style={{ width: "240px" }} />
             {isUserSearchModalVisible && (
               <UserSearchModal
                 toggleModal={toggleUserSearchModal}
@@ -317,6 +345,7 @@ const CalendarInputForm = ({
           name="content"
           value={formValues.content || ""}
           onChange={handleChange}
+          error={errors.content}
         />
         {workoutsLoading ? (
           <Loader />
