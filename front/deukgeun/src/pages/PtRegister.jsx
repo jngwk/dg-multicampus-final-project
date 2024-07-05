@@ -73,14 +73,17 @@ const PtRegister = () => {
   const [regDate, setRegDate] = useState(new Date()); //시작일
   const [expDate, setExpDate] = useState(new Date()); //만료일
   const [userMemberReason, setUserMemberReason] = useState("PT");
-  const [userWorkoutDuration, setUserWorkoutDuration] = useState(1);
-  const [productId, setProductId] = useState(
-    gym.productList && gym.productList.length > 0
-      ? location.state?.product
-        ? location.state.product.productId
-        : gym.productList[0].productId
-      : ""
-  );
+  const [userWorkoutDuration, setUserWorkoutDuration] = useState(0);
+  const [productId, setProductId] = useState("");
+
+  useEffect(() => {
+    if (gym.productList && gym.productList.length > 0) {
+      const initialProduct = location.state?.product || gym.productList[0];
+      setSelectedProductName(initialProduct.productName);
+      setSelectedProductPrice(initialProduct.price);
+      setProductId(initialProduct.productId);
+    }
+  }, [gym.productList]);
   const [trainerId, setTrainerId] = useState(
     gym.trainerList && gym.trainerList.length > 0
       ? gym.trainerList[0].trainerId
@@ -198,35 +201,32 @@ const PtRegister = () => {
     setIsTrainerDropdownOpen((prev) => !prev);
   };
   
-  const onClickPeriod = (e) => {
-    const { value } = e.target;
-    const selectedProduct = gym.productList.find(
-      (product) => product.productName === value
-    );
-    console.log("Selected product:", selectedProduct);
-    if (selectedProduct) {
-      setSelectedProductName(value);
-      setSelectedProductPrice(selectedProduct.price);
-      setProductId(selectedProduct.productId);
-      setDateRange(selectedProduct);
-      console.log("Updated price in onClickPeriod:", selectedProduct.price);
+  const onClickPeriod = (product) => {
+    console.log("Selected product:", product);
+    if (product) {
+      setSelectedProductName(product.productName);
+      setSelectedProductPrice(product.price);
+      setProductId(product.productId);
+      setDateRange(product);
+      console.log("Updated product:", product);
     } else {
-      console.log("Product not found:", value);
+      console.log("Product not found");
     }
     setIsDropdownOpen(false);
   };
   useEffect(() => {
-    if (selectedProductName && gym.productList) {
+    if (productId && gym.productList) {
       const selectedProduct = gym.productList.find(
-        (product) => product.productName === selectedProductName
+        (product) => product.productId === productId
       );
       if (selectedProduct) {
+        setSelectedProductName(selectedProduct.productName);
         setSelectedProductPrice(selectedProduct.price);
-        console.log("Updated price:", selectedProduct.price);
+        setDateRange(selectedProduct);
+        console.log("Updated product in effect:", selectedProduct);
       }
     }
-  }, [selectedProductName, gym.productList]);
-
+  }, [productId, gym.productList]);
   const onClickTrainer = (e) => {
     const { value } = e.target;
     const selectedTrainer = gym.trainerList.find(
@@ -245,14 +245,14 @@ const PtRegister = () => {
     setExpDate(endDate);
   };
 
-  useEffect(() => {
-    if (gym.productList && gym.productList.length > 0) {
-      const initialProduct = gym.productList.find(
-        (product) => product.productName === selectedProductName
-      );
-      setDateRange(initialProduct);
-    }
-  }, [regDate, selectedProductName, gym.productList]);
+  // useEffect(() => {
+  //   if (gym.productList && gym.productList.length > 0) {
+  //     const initialProduct = gym.productList.find(
+  //       (product) => product.productName === selectedProductName
+  //     );
+  //     setDateRange(initialProduct);
+  //   }
+  // }, [regDate, selectedProductName, gym.productList]);
   
 
   const handleRegDateChange = (date) => {
@@ -418,9 +418,7 @@ const PtRegister = () => {
                                 key={product.productId}
                                 className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
                                 onClick={() =>
-                                  onClickPeriod({
-                                    target: { value: product.productName },
-                                  })
+                                  onClickPeriod(product)
                                 }
                               >
                                 {product.productName}

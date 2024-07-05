@@ -90,13 +90,20 @@ const MemberRegister = () => {
 
   const filterProducts = () => {
     const filteredProductList =
-      gym.productList?.filter((product) => product.ptCountTotal === 0) || [];
+      gym.productList?.filter((product) => product.ptCountTotal === null) || [];
     const updatedGym = { ...gym, productList: filteredProductList };
     setGym(updatedGym);
     if (filteredProductList.length > 0) {
-      setSelectedProductName(filteredProductList[0].productName);
-      setSelectedProductPrice(filteredProductList[0].price);
-      setProductId(filteredProductList[0].productId);
+      setSelectedProductName(
+        location.state?.product?.productName ||
+          filteredProductList[0].productName
+      );
+      setSelectedProductPrice(
+        location.state?.product?.price || filteredProductList[0].price
+      );
+      setProductId(
+        location.state?.product?.productId || filteredProductList[0].productId
+      );
     }
   };
 
@@ -151,16 +158,18 @@ const MemberRegister = () => {
     setIsDropdownOpen((prev) => !prev);
   };
 
-  const onClickPeriod = (e) => {
-    const { value } = e.target;
-    const selectedProduct = gym.productList.find(
-      (product) => product.productName === value
-    );
-    setSelectedProductName(value);
-    setSelectedProductPrice(selectedProduct.price);
-    setProductId(selectedProduct.productId);
-    setDateRange(selectedProduct);
-    toggleDropdown();
+  const onClickPeriod = (product) => {
+    console.log("Selected product:", product);
+    if (product) {
+      setSelectedProductName(product.productName);
+      setSelectedProductPrice(product.price);
+      setProductId(product.productId);
+      setDateRange(product);
+      console.log("Updated product:", product);
+    } else {
+      console.log("Product not found");
+    }
+    setIsDropdownOpen(false);
   };
 
   const setDateRange = (product) => {
@@ -171,13 +180,18 @@ const MemberRegister = () => {
   };
 
   useEffect(() => {
-    if (gym.productList && gym.productList.length > 0) {
-      const initialProduct = gym.productList.find(
-        (product) => product.productName === selectedProductName
+    if (productId && gym.productList) {
+      const selectedProduct = gym.productList.find(
+        (product) => product.productId === productId
       );
-      setDateRange(initialProduct);
+      if (selectedProduct) {
+        setSelectedProductName(selectedProduct.productName);
+        setSelectedProductPrice(selectedProduct.price);
+        setDateRange(selectedProduct);
+        console.log("Updated product in effect:", selectedProduct);
+      }
     }
-  }, [regDate, selectedProductName, gym.productList]);
+  }, [productId, gym.productList]);
 
   const handleRegDateChange = (date) => {
     const today = new Date();
@@ -408,9 +422,7 @@ const MemberRegister = () => {
                           key={product.productId}
                           className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
                           onClick={() =>
-                            onClickPeriod({
-                              target: { value: product.productName },
-                            })
+                            onClickPeriod(product)
                           }
                         >
                           {product.productName}
