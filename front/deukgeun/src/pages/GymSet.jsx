@@ -11,6 +11,7 @@ import { insertImage, deleteImage, GymInfo, updateGym } from "../api/gymApi";
 import { useParams } from "react-router-dom";
 import Select from "../components/shared/Select";
 import { deleteProduct } from "../api/gymApi";
+import AlertModal from "../components/modals/AlertModal";
 
 // 회원 정보
 const initGymData = {
@@ -50,6 +51,7 @@ const Gymset = () => {
     price: "",
   });
   const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
+  const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
   const [healthErrors, setHealthErrors] = useState({});
   const [ptErrors, setPTErrors] = useState({});
   const { validateInput } = useValidation();
@@ -243,6 +245,7 @@ const Gymset = () => {
           // 이미지가 선택되지 않은 경우에 대한 처리
           console.log("No images selected for upload.");
         }
+        setIsAlertModalVisible(true);
       } else {
         // Gym 정보 업데이트 실패 시 처리
         console.error("Failed to update gym:", gymRes);
@@ -679,6 +682,16 @@ const Gymset = () => {
           GymData={GymData}
           setGymData={setGymData}
           toggleModal={() => setIsAddressModalVisible(false)}
+        />
+      )}
+      {isAlertModalVisible && (
+        <AlertModal
+          headerEmoji={"✔️"}
+          line1={"헬스장 정보가 수정됐습니다!"}
+          button2={{
+            label: "확인",
+            onClick: () => customNavigate("/", { replace: false }),
+          }}
         />
       )}
     </>
