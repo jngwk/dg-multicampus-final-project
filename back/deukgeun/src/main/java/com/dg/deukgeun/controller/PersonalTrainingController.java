@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dg.deukgeun.dto.personalTraining.PersonalTrainingRequestDTO;
@@ -27,7 +27,9 @@ import com.dg.deukgeun.service.ProductService;
 import com.dg.deukgeun.service.TrainerService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/personalTraining")
@@ -106,10 +108,9 @@ public class PersonalTrainingController {
     // postman에서 작동 확인은 완료했으나, CustomUserDetails에 대한 테스트 필요.
     @PostMapping("/post")
     public ResponseEntity<?> post(@RequestBody PersonalTrainingRequestDTO requestDTO) {
-        try {
-            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-                    .getPrincipal();
-            Integer userId = userDetails.getUserId();
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer userId = userDetails.getUserId();
             //userId와 membership이 이미 테이블에 있다면 횟수와 멤버쉽 타임 추가
             Optional<Membership> membershiOptional = membershipService.findMembershipByUserIdAndProductId(userId, requestDTO.getMembershipDTO().getProductId());
             if(!membershiOptional.isEmpty()){
@@ -117,32 +118,42 @@ public class PersonalTrainingController {
                 membershipService.plusDays(membership);
                 service.plusRemain(membership);
                 return ResponseEntity.ok(Map.of("기존의 pt 정보가 있습니다. pt 횟수 증가 및 맴버쉽 기간을 연장합니다.", membership.getMembershipId()));
-            }
-            requestDTO.getPersonalTrainingDTO().setUserId(userId);
-            requestDTO.getMembershipDTO().setUserMemberReason(requestDTO.getPersonalTrainingDTO().getUserPtReason());
+            }        log.info("Received requestDTO: {}", requestDTO);
+        requestDTO.getPersonalTrainingDTO().setUserId(userId);
 
-            // Register both membership and PT
-            Integer ptId = service.registerPersonalTraining(requestDTO, userId);
+        // Integer trainerId = requestDTO.getPersonalTrainingDTO().getTrainerId();
 
-            return ResponseEntity.ok(Map.of("ptId", ptId));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("PT 등록에 실패했습니다.");
-        }
+        requestDTO.getMembershipDTO().setUserMemberReason(requestDTO.getPersonalTrainingDTO().getUserPtReason());
+
+        // Register both membership and PT
+        Integer ptId = service.registerPersonalTraining(requestDTO, userId);
+
+        return ResponseEntity.ok(Map.of("ptId", ptId));
     }
 
     @GetMapping("/findPT")
-    public ResponseEntity<?> checkPersonalTraining() {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-        Integer userId = userDetails.getUserId();
+    public ResponseEntity<?> checkPersonalTraining(
+            @RequestParam(name = "clientId", required = false) Integer clientId) {
+        Integer userId = 0;
+        if (clientId == null) {
+            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                    .getPrincipal();
+            // String authority =
+            // userDetails.getAuthorities().iterator().next().getAuthority();
+            userId = userDetails.getUserId();
+
+        } else if (clientId != null) {
+            userId = clientId;
+        }
 
         Optional<PersonalTraining> pt = service.findPT(userId);
-
         if (pt.isPresent()) {
             return ResponseEntity.ok(pt.get());
         } else {
+
             return ResponseEntity.ok(null);
         }
+
     }
 
     @GetMapping("/getUsersList")

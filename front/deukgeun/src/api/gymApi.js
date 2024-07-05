@@ -58,6 +58,39 @@ export const GymInfoByUserId = async () => {
   }
 };
 
+export const getProductList = async (gymId) => {
+  try {
+    const res = await axios.get(`${prefix}/products/${gymId}`);
+    console.log("products", res);
+    return res.data;
+  } catch (error) {
+    console.error("Error in GymInfo", error);
+    throw error;
+  }
+};
+
+export const getTrainerList = async (gymId) => {
+  try {
+    const res = await axios.get(`${prefix}/trainers/${gymId}`);
+    console.log("trainers", res);
+    return res.data;
+  } catch (error) {
+    console.error("Error in GymInfo", error);
+    throw error;
+  }
+};
+
+export const getTrainersWithInfo = async (gymId) => {
+  try {
+    const res = await axios.get(`${prefix}/trainersWithInfo/${gymId}`);
+    console.log("trainers", res);
+    return res.data;
+  } catch (error) {
+    console.error("Error in GymInfo", error);
+    throw error;
+  }
+};
+
 export const updateGym = async (gymId, gymData) => {
   try {
     const res = await axios.put(`${prefix}/put/${gymId}`, gymData);

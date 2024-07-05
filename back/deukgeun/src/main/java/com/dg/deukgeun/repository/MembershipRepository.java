@@ -1,5 +1,6 @@
 package com.dg.deukgeun.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,4 +16,6 @@ public interface MembershipRepository extends JpaRepository<Membership, Integer>
     Optional<Membership> findByUser(User user);
     Optional<Membership> findByUserAndProduct(User user, Product product);
     List<Membership> findAllByGym_GymId(Integer gymId);
+
+    List<Membership> findByExpDate(String expirationDate);
 }

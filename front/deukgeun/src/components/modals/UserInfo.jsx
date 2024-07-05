@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { BiCommentDetail } from "react-icons/bi";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { IoSearchOutline } from "react-icons/io5";
-import { AiOutlineUser } from "react-icons/ai"; // Corrected import for AiOutlineUser
+import { AiOutlineUser } from "react-icons/ai";
 import Bprofile from "../../assets/blank_profile.png";
 import useValidation from "../../hooks/useValidation";
 import Button from "../shared/Button";
@@ -19,15 +19,20 @@ import {
 } from "../../api/userInfoApi";
 import AlertModal from "./AlertModal";
 import { findMembership } from "../../api/membershipApi";
-import { GymInfoByUserId } from "../../api/gymApi"; 
+import { GymInfoByUserId } from "../../api/gymApi";
+import MembershipPtSelectModal from "./MembershipPtSelectModal";
+import MembershipModal from "./MembershipModal";
 
 const MyInfo = ({ toggleModal, userData, setUserData }) => {
   const initFullAddress = {
     address: userData.address || "",
     detailAddress: userData.detailAddress || "",
   };
-  const [userImage, setUserImage] = useState(null);
-  const [imageUrl, setImageUrl] = useState(null);
+  const [userImage, setUserImage] = useState(
+    userData.userImage?.userImage
+      ? `/images/${userData.userImage?.userImage}`
+      : null
+  );
   const fileInput = useRef(null);
   const [passwordType, setPasswordType] = useState({
     type: "password",
@@ -43,21 +48,25 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
   const customNavigate = useCustomNavigate();
   const { fetchUserData } = useAuth();
   const [gymInfo, setGymInfo] = useState(null);
+  // const [isSelectModalVisible, setIsSelectModalVisible] = useState(false);
+  const [isMembershipModalVisible, setIsMembershipModalVisible] =
+    useState(false);
+  const [imagetUpdate, setImageUpdate] = useState(false);
 
   useEffect(() => {
     const fetchUserImage = async () => {
       try {
-        const images = await getImage();
-        console.log(images);
-        if (images) {
-          setUserImage(images.userImage);
+        const imageData = await getImage();
+        if (imageData && imageData.userImage) {
+          setImageUpdate(true);
+          setUserImage(`/images/${imageData.userImage}`);
         }
       } catch (error) {
         console.error("Error fetching user image:", error);
       }
     };
 
-    fetchUserImage();
+    if (!userData?.userImage) fetchUserImage();
   }, []);
 
   useEffect(() => {
@@ -81,7 +90,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
 
   useEffect(() => {
     checkIfModified();
-  }, [newPassword, fullAddress]);
+  }, [newPassword, fullAddress, userImage]);
 
   const handlePasswordType = () => {
     setPasswordType((prevState) => ({
@@ -112,7 +121,8 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
       !errors.password &&
       (newPassword !== "" ||
         fullAddress.address !== userData.address ||
-        fullAddress.detailAddress !== userData.detailAddress)
+        fullAddress.detailAddress !== userData.detailAddress ||
+        fileInput.current.formData)
     ) {
       setIsModified(true);
     } else {
@@ -125,12 +135,30 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
     try {
       const data = { ...fullAddress, password: newPassword };
       const res = await updateUserInfo(data);
+
+      if (fileInput.current.formData) {
+        let imageResponse;
+        if (imagetUpdate === false) {
+          imageResponse = await uploadImage(fileInput.current.formData);
+        } else {
+          imageResponse = await updateImage(fileInput.current.formData);
+        }
+        console.log("Image upload/update response:", imageResponse);
+
+        if (imageResponse.data && imageResponse.data.userImage) {
+          setUserImage(`/images/${imageResponse.data.userImage}`);
+        }
+
+        fileInput.current.formData = null;
+      }
+
       setUserData({
         address: fullAddress.address,
         detailAddress: fullAddress.detailAddress,
         ...userData,
       });
       setIsAlertModalVisible(true);
+      setIsModified(false);
     } catch (error) {
       console.error(error);
     }
@@ -141,38 +169,30 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
     await fetchUserData();
   };
 
-  const onChangeImage = async () => {
-    const file = fileInput.current.files[0];
+  const onChangeImage = (event) => {
+    const file = event.target.files[0];
     if (file) {
-      const formData = new FormData();
-      formData.append("imageFiles", file);
-      console.log(formData);
-      try {
-        let response;
-        if (userImage === null) {
-          response = await uploadImage(formData);
-        } else {
-          response = await updateImage(formData);
-        }
+      const localImageUrl = URL.createObjectURL(file);
+      setUserImage(localImageUrl);
+      setIsModified(true);
 
-        console.log("Image upload/update response:", response);
-        setUserImage(URL.createObjectURL(file));
-      } catch (error) {
-        console.error("Error uploading/updating image:", error);
-      }
+      const formData = new FormData();
+      formData.append("imageFile", file);
+      fileInput.current.formData = formData;
     }
   };
 
   const handleGymDetails = async () => {
     try {
-      const gymData = await GymInfoByUserId(userData.userId); // userId를 사용하여 체육관 정보를 가져옵니다
+      const gymData = await GymInfoByUserId(userData.userId);
       setGymInfo(gymData);
       // 체육관 정보를 사용하여 새 페이지로 이동합니다
-      customNavigate(`/GymInfo`); // 라우팅 설정에 따라 URL 구조를 조정해야 합니다
+      customNavigate(`/GymSet/${gymData.gymId}`); // 라우팅 설정에 따라 URL 구조를 조정해야 합니다
     } catch (error) {
       console.error("체육관 정보를 불러오는 중 오류 발생:", error);
     }
   };
+
   return (
     <ModalLayout toggleModal={toggleModal}>
       <div className="userEdit w-[90%]">
@@ -182,7 +202,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
           </div>
           <div
             className="text-sm pb-5 cursor-pointer hover:underline hover:underline-offset-4"
-            onClick={handleGymDetails} // Click handler for 상세정보
+            onClick={handleGymDetails}
           >
             {(userData.role === "ROLE_GYM" ||
               userData.role === "ROLE_TRAINER") && <p>상세정보</p>}
@@ -191,17 +211,27 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
         <div className="userEdit-img flex justify-center items-center">
           <label className="profileImg-label relative" htmlFor="profileImg">
             <div className="w-28 h-28 rounded-full">
-              <img
-                className="w-full h-full rounded-full object-cover"
-                src={`${process.env.PUBLIC_URL}/images/${userImage}` || Bprofile}
-                alt="Profile"
-              />
+              {userImage ? (
+                <img
+                  className="w-full h-full rounded-full object-cover"
+                  src={userImage}
+                  alt="Profile"
+                />
+              ) : (
+                <box-icon
+                  name="user-circle"
+                  type="solid"
+                  size="lg"
+                  color="#9f8d8d"
+                  style={{ width: "112px", height: "112px" }}
+                ></box-icon>
+              )}
             </div>
             <input
               className="profileImg-input hidden"
               ref={fileInput}
               type="file"
-              accept=""
+              accept="image/*"
               onChange={onChangeImage}
             />
             <button className="cursor-pointer w-full text-center">
@@ -305,31 +335,19 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
                           <p className="max-w-[190px] overflow-hidden text-wrap whitespace-nowrap">
                             <span
                               className="cursor-pointer hover:text-gray-700"
-                              onClick={() =>
-                                customNavigate("/gymSearch", {
-                                  state: {
-                                    searchWord: membership.gym.user.userName,
-                                  },
-                                })
-                              }
+                              onClick={() => setIsMembershipModalVisible(true)}
                             >
                               {membership.gym.user.userName}{" "}
                             </span>
-                            <br />
-                            <span
-                              className="cursor-pointer hover:text-gray-700"
-                              onClick={() =>
-                                // TODO 회원권 연장으로 이동
-                                customNavigate("/gymSearch", {
-                                  state: {
-                                    searchWord: membership.gym.user.userName,
-                                  },
-                                })
-                              }
-                            >
-                              (만료일: {membership.expDate})
-                            </span>
                           </p>
+                          {isMembershipModalVisible && (
+                            <MembershipModal
+                              membership={membership}
+                              toggleModal={() =>
+                                setIsMembershipModalVisible(false)
+                              }
+                            />
+                          )}
                         </>
                       ) : (
                         <p
@@ -346,7 +364,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
             </dl>
           </div>
         )}
-        {(newPassword || userImage !== null) && (
+        {isModified && (
           <div className="flex float-end">
             <div className="mr-2">
               <Button

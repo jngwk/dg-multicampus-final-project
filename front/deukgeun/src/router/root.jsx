@@ -11,27 +11,26 @@ const Chat = lazy(() => import("../pages/ChatRoom"));
 const Calendar = lazy(() => import("../pages/CalendarPage"));
 const SignUpChoice = lazy(() => import("../pages/SignUpChoicePage"));
 const SignUpForm = lazy(() => import("../pages/SignUpPage"));
-const FindPassword = lazy(()=> import("../components/modals/FindPassword"));
 const QnaForm = lazy(() => import("../pages/QnaForm"));
-const MemberList = lazy(() => import("../pages/MemberList"));
 const GymSearch = lazy(() => import("../pages/GymSearchPage"));
 
+const MemberList = lazy(() => import("../pages/MemberList"));
 const PTMemberList = lazy(() => import("../pages/PTMemberList"));
 const CenterTrainerList = lazy(() => import("../pages/CenterTrainerList"));
 const CenterMemberList = lazy(() => import("../pages/CenterMemberList"));
 const MembershipStats = lazy(() => import("../pages/MembershipStats"));
-const SignUpTrainerPage = lazy(() => import("../pages/SignUpTrainerPage"));
 const CenterView = lazy(() => import("../pages/CenterView"));
 const ReviewForm = lazy(() => import("../test/ReviewForm"));
 const ReviewList = lazy(() => import("../test/ReviewList"));
 const MemberRegister = lazy(() => import("../pages/MemberRegister"));
 const TrainerUpdateForm = lazy(() => import("../test/TrainerUpdateForm"));
-const PtRegister = lazy(() => import("../pages/PtRegister")); 
+const PtRegister = lazy(() => import("../pages/PtRegister"));
 const GymSet = lazy(() => import("../pages/GymSet"));
 const TrainerSet = lazy(() => import("../pages/TrainerSet"));
 const QnaList = lazy(() => import("../pages/QnaList"));
-const GymInfo = lazy(()=> import("../pages/GymInfo"));
+const GymInfo = lazy(() => import("../pages/GymInfo"));
 const PtSessionRegister = lazy(() => import("../pages/PtSessionForm"));
+const TrainerList = lazy(() => import("../pages/TrainerList"));
 
 const root = createBrowserRouter([
   {
@@ -89,10 +88,6 @@ const root = createBrowserRouter([
         ],
       },
       {
-        path: "find-password",
-        element: <FindPassword />,
-      },
-      {
         path: "qna",
         element: (
           <>
@@ -110,12 +105,12 @@ const root = createBrowserRouter([
         element: <MemberList />,
       },
       {
-        path: "gymSearch",
-        element: <GymSearch />,
+        path: "TrainerList",
+        element: <TrainerList />,
       },
       {
-        path: "trainer",
-        element: <SignUpTrainerPage />,
+        path: "gymSearch",
+        element: <GymSearch />,
       },
       {
         path: "centerView",
@@ -131,7 +126,7 @@ const root = createBrowserRouter([
       },
       {
         path: "TrainerUpdateForm",
-        element: <TrainerUpdateForm/>,
+        element: <TrainerUpdateForm />,
       },
       {
         path: "MemberRegister",

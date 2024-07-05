@@ -194,8 +194,8 @@ public class GymService {
 
     public List<Gym> searchGymsByLocation(String searchWord, String location) {
         String processedSearchWord = searchWord.replaceAll("\\s+", "").toLowerCase();
-        String processedLocation = location.replaceAll("\\s+", "").toLowerCase();
-        return gymRepository.searchGymsByLocation(processedSearchWord, processedLocation);
+        // String processedLocation = location.replaceAll("\\s+", "").toLowerCase();
+        return gymRepository.searchGymsByLocation(processedSearchWord, location);
     }
 
     public List<Gym> searchGymsByPrice(String searchWord, Pageable pageable) {

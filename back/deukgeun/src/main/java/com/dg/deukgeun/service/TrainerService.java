@@ -50,6 +50,10 @@ public class TrainerService {
         return dtoList;
     }
 
+    public List<Trainer> getTrainerListWithInfo(Integer gymId) {
+        return trainerRepository.findAllBygymGymId(gymId);
+    }
+
     public ResponseDTO<?> signUp(TrainerDTO trainerDTO, Integer userId) {
         String email = trainerDTO.getEmail();
         String password = trainerDTO.getPassword();
@@ -154,5 +158,10 @@ public class TrainerService {
         } else {
             logger.warn("Trainer not found.");
         }
+    }
+
+    public Trainer get(Integer userId) {
+        return trainerRepository.findByUser_UserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Trainer not found"));
     }
 }

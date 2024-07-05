@@ -8,7 +8,6 @@ export const registerInquery = async (formValues) => {
   try {
     const res = await axios.post(`${prefix}/register`, formValues);
     return res.data;
-
   } catch (error) {
     console.error("Error fetching qna data:", error);
     throw error;
@@ -18,6 +17,7 @@ export const registerInquery = async (formValues) => {
 export const ListInquery = async () => {
   try {
     const res = await axios.get(`${prefix}/list`);
+    console.log("queryList", res);
     return res.data;
   } catch (error) {
     console.error("Error fetching inquiries:", error);
@@ -27,7 +27,10 @@ export const ListInquery = async () => {
 
 export const updateInquiry = async (editedInquiry) => {
   try {
-    const res = await axios.put(`${prefix}/update/${editedInquiry.id}`, editedInquiry);
+    const res = await axios.put(
+      `${prefix}/update/${editedInquiry.id}`,
+      editedInquiry
+    );
     return res.data; // Assuming your API returns updated inquiry data
   } catch (error) {
     console.error("Error updating inquiry:", error);

@@ -6,6 +6,7 @@ import com.dg.deukgeun.entity.PersonalTraining;
 import com.dg.deukgeun.entity.Trainer;
 import com.dg.deukgeun.entity.User;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 

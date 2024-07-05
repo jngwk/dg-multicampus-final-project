@@ -43,7 +43,7 @@ const Hero = () => {
   };
 
   return (
-    <div className="relative w-full h-[90dvh] flex justify-center items-center">
+    <div className="relative w-full h-[86dvh] flex justify-center items-center">
       <div className="h-[40%] w-[400px] flex flex-col items-start gap-11">
         <div
           // pointer-events-none

@@ -9,9 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +26,10 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @RequiredArgsConstructor
 public class CustomFileUtil {
-    private final String uploadPath = System.getenv("UPLOAD_PATH");
+
+    @Value("${UPLOAD_PATH}")
+    private String uploadPath;
+    
     @PostConstruct
     public void init(){
         File tempFolder = new File(uploadPath);
@@ -54,19 +59,33 @@ public class CustomFileUtil {
         return uploadNames;
     }
 
-    //파일 데이터를 읽어서 Resource 타입으로 반환
-    public ResponseEntity<Resource> getFile(String fileName){
-        Resource resource = new FileSystemResource(uploadPath + File.separator+fileName);
-        if(!resource.isReadable()){
-            resource = new FileSystemResource(uploadPath+File.separator+"rose.png");
-        }
-        HttpHeaders headers = new HttpHeaders();
-        try{
-            headers.add("Content-type", Files.probeContentType(resource.getFile().toPath()));
-        }catch(Exception e){
+     // 파일 데이터를 읽어서 Resource 타입으로 반환
+    public ResponseEntity<Resource> getUserImage(String userId) {
+        try {
+            String fileName = getUserImageName(userId);
+            Path imagePath = Paths.get(uploadPath, fileName);
+
+            if (Files.exists(imagePath)) {
+                ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(imagePath));
+                HttpHeaders headers = new HttpHeaders();
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
+                headers.add(HttpHeaders.CONTENT_TYPE, Files.probeContentType(imagePath));
+                return ResponseEntity.ok()
+                        .headers(headers)
+                        .contentLength(Files.size(imagePath))
+                        .contentType(MediaType.parseMediaType(Files.probeContentType(imagePath)))
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (IOException e) {
             return ResponseEntity.internalServerError().build();
         }
-        return ResponseEntity.ok().headers(headers).body(resource);
+    }
+
+    // 사용자 프로필 이미지 파일명 조회 메서드
+    public String getUserImageName(String userId) {
+        return userId + "_profile.jpg"; // 예시로 파일명을 userId_profile.jpg로 가정
     }
 
     public void deleteFiles(List<String> fileNames){
@@ -81,5 +100,37 @@ public class CustomFileUtil {
                 throw new RuntimeException(e.getMessage());
             }
         });
+    }
+
+    public String updateFile(MultipartFile file, String existingFileName) throws RuntimeException {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("File is null or empty.");
+        }
+    
+        // Delete existing file
+        deleteFile(existingFileName);
+    
+        // Save new file
+        List<MultipartFile> newFiles = new ArrayList<>();
+        newFiles.add(file);
+        List<String> newFileNames = saveFile(newFiles);
+        if (!newFileNames.isEmpty()) {
+            return newFileNames.get(0); // Return the saved file name
+        } else {
+            throw new RuntimeException("Failed to update file.");
+        }
+    }
+
+    // Delete a single file from the upload directory
+    public void deleteFile(String fileName) {
+        if (fileName == null || fileName.isEmpty()) {
+            throw new IllegalArgumentException("File name is null or empty.");
+        }
+        Path filePath = Paths.get(uploadPath, fileName);
+        try {
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to delete file: " + e.getMessage());
+        }
     }
 }

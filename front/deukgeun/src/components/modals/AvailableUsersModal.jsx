@@ -26,11 +26,20 @@ const AvailableUsersModal = ({
     if (!searchWord) return;
     try {
       setSearch(true);
-      const gymList = await searchGyms(searchWord);
-      console.log("handleSearch in gym search map", gymList);
-      setSearchResult(gymList);
+      if (userData.role === "ROLE_GENERAL") {
+        const gymList = await searchGyms(searchWord);
+        console.log("handleSearch in gym search map", gymList);
+        setSearchResult(gymList);
+      } else {
+        const filteredUsers = availableUsers.filter(
+          (user) =>
+            user.userName.toLowerCase().includes(searchWord.toLowerCase()) ||
+            roles[user.role].includes(searchWord)
+        );
+        setSearchResult(filteredUsers);
+      }
     } catch (error) {
-      console.error("Error fetching gym list:", error);
+      console.error("Error fetching search results:", error);
       setSearch(false);
     }
   };
@@ -45,31 +54,27 @@ const AvailableUsersModal = ({
     <ModalLayout toggleModal={toggleModal}>
       <div className="flex flex-col w-[300px] min-h-[300px]">
         <span className="text-start text-2xl mb-2">대화 선택하기 👆</span>
-        {/* 일반 회원만 검색 가능 */}
-        {userData.role === "ROLE_GENERAL" ? (
-          <div>
-            <Input
-              name={"searchWord"}
-              value={searchWord}
-              placeholder="헬스장을 검색해주세요..."
-              onChange={(e) => setSearchWord(e.target.value)}
-              width="100%"
-              feature={
-                <div className="-translate-y-1">
-                  <box-icon name="search" color="#bdbdbd" size="s"></box-icon>
-                </div>
-              }
-              featureEnableOnLoad={true}
-              featureOnClick={handleSearch}
-              onKeyPress={handleKeyPress}
-            />
-          </div>
-        ) : (
-          <hr className="mb-4"></hr>
-        )}
-
-        {/* 검색 전 */}
-
+        <div>
+          <Input
+            name={"searchWord"}
+            value={searchWord}
+            placeholder={
+              userData.role === "ROLE_GENERAL"
+                ? "헬스장을 검색해주세요..."
+                : "검색어를 입력해주세요..."
+            }
+            onChange={(e) => setSearchWord(e.target.value)}
+            width="100%"
+            feature={
+              <div className="-translate-y-1">
+                <box-icon name="search" color="#bdbdbd" size="s"></box-icon>
+              </div>
+            }
+            featureEnableOnLoad={true}
+            featureOnClick={handleSearch}
+            onKeyPress={handleKeyPress}
+          />
+        </div>
         <div className="flex flex-col">
           {search === false && (
             <>
@@ -113,27 +118,23 @@ const AvailableUsersModal = ({
               </p>
             </>
           )}
-
-          {/* 검색 후 */}
           {search === true && (
             <>
               <div className="h-[200px] overflow-hidden overflow-y-auto">
                 {searchResult && searchResult.length > 0 ? (
-                  searchResult.map((gym, index) => {
-                    return (
+                  searchResult.map((result, index) => {
+                    return userData.role === "ROLE_GENERAL" ? (
                       <div
                         className="cursor-pointer flex justify-between items-center hover:bg-peach-fuzz/50 px-2 py-2 rounded-md transition-all ease-in-out"
                         key={index}
-                        onClick={() => handleButtonClick(gym.user.userId)}
+                        onClick={() => handleButtonClick(result.user.userId)}
                       >
-                        <b>{gym.user.userName}</b>
-
+                        <b>{result.user.userName}</b>
                         <div
                           className="translate-y-1"
-                          // TODO 클릭시 상세페이지로 이동
                           onClick={() =>
                             customNavigate("/gymSearch", {
-                              state: { searchWord: gym.user.userName },
+                              state: { searchWord: result.user.userName },
                             })
                           }
                         >
@@ -144,13 +145,24 @@ const AvailableUsersModal = ({
                           ></box-icon>
                         </div>
                       </div>
+                    ) : (
+                      <div
+                        className="cursor-pointer flex justify-between items-center hover:bg-peach-fuzz/50 px-2 py-2 rounded-md transition-all ease-in-out"
+                        key={index}
+                        onClick={() => handleButtonClick(result.userId)}
+                      >
+                        <b>{result.userName}</b>
+                        <span className="text-sm text-gray-700">
+                          {roles[result.role]}
+                        </span>
+                      </div>
                     );
                   })
                 ) : (
                   <div className="flex flex-col justify-center items-center text-center">
                     <span className="text-3xl pt-6">😔</span>
                     <span className="py-6">
-                      검색어와 일치하는 헬스장이 없습니다.
+                      검색어와 일치하는 결과가 없습니다.
                     </span>
                   </div>
                 )}

@@ -10,4 +10,5 @@ import com.dg.deukgeun.entity.GymImage;
 
 public interface GymImageRepository extends JpaRepository<GymImage,String>{
     public List<GymImage> findByGymId(Integer gymId);
+
 }

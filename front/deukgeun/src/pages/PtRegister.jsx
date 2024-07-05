@@ -17,6 +17,7 @@ import { updateUserInfo } from "../api/userInfoApi";
 import Button from "../components/shared/Button";
 import useCustomNavigate from "../hooks/useCustomNavigate";
 import { useLocation } from "react-router-dom";
+import useIamport from "../hooks/useIamport";
 
 const PtRegister = () => {
   const location = useLocation();
@@ -43,17 +44,24 @@ const PtRegister = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isTraineDropdownOpen, setIsTrainerDropdownOpen] = useState(false);
-  const [selectedPeriod, setSelectedPeriod] = useState(
+  const [hasNoProduct, setHasNoProduct] = useState(false);
+  const [selectedProductName, setSelectedProductName] = useState(
     gym.productList && gym.productList.length > 0
-      ? gym.productList[0].productName
+      ? location.state?.product
+        ? location.state.product.productName
+        : gym.productList[0].productName
       : ""
   ); //선택상품
   const [selectedProductPrice, setSelectedProductPrice] = useState(
-    gym.productList && gym.productList.length > 0 ? gym.productList[0].price : 0
+    gym.productList && gym.productList.length > 0
+      ? location.state?.product
+        ? location.state.product.price
+        : gym.productList[0].price
+      : 0
   );
   const [selectedTrainer, setSelectedTrainer] = useState(
-    gym.trainersList && gym.trainersList.length > 0
-      ? gym.trainersList[0].userName
+    gym.trainerList && gym.trainerList.length > 0
+      ? gym.trainerList[0].user.userName
       : ""
   );
   const { validateInput } = useValidation();
@@ -68,20 +76,51 @@ const PtRegister = () => {
   const [userWorkoutDuration, setUserWorkoutDuration] = useState(1);
   const [productId, setProductId] = useState(
     gym.productList && gym.productList.length > 0
-      ? gym.productList[0].productId
+      ? location.state?.product
+        ? location.state.product.productId
+        : gym.productList[0].productId
       : ""
   );
   const [trainerId, setTrainerId] = useState(
-    gym.trainersList && gym.trainersList.length > 0
-      ? gym.trainersList[0].trainerId
+    gym.trainerList && gym.trainerList.length > 0
+      ? gym.trainerList[0].trainerId
       : ""
   );
+  const [paymentStatus, setPaymentStatus] = useState(null);
+  const [impUid, setImpUid] = useState(""); // 여기에 imp_uid를 저장합니다.
+  const [merchantUid, setMerchantUid] = useState("");
+  const { requestPayment, verifyPayment, loading, error } = useIamport();
 
   const customNavigate = useCustomNavigate();
   const { fetchUserData } = useAuth();
 
-  // useEffect(( ) => {console.log(gym)});
+  useEffect(() => {
+    console.log("location state", location.state);
+    if (!gym.productList || gym.productList.length === 0) {
+      setHasNoProduct(true);
+    } else {
+      filterProducts();
+    }
+  }, []);
 
+  const filterProducts = () => {
+    const filteredProductList =
+      gym.productList?.filter((product) => product.ptCountTotal > 0) || [];
+    const updatedGym = { ...gym, productList: filteredProductList };
+    setGym(updatedGym);
+    if (filteredProductList.length > 0) {
+      setSelectedProductName(
+        location.state?.product?.productName ||
+          filteredProductList[0].productName
+      );
+      setSelectedProductPrice(
+        location.state?.product?.price || filteredProductList[0].price
+      );
+      setProductId(
+        location.state?.product?.productId || filteredProductList[0].productId
+      );
+    }
+  };
   const handleUserDataChange = (e) => {
     const { name, value } = e.target;
     setUserData({
@@ -164,7 +203,8 @@ const PtRegister = () => {
     const selectedProduct = gym.productList.find(
       (product) => product.productName === value
     );
-    setSelectedPeriod(value);
+    console.log(selectedProduct);
+    setSelectedProductName(value);
     setSelectedProductPrice(selectedProduct.price);
     setProductId(selectedProduct.productId);
     setDateRange(selectedProduct);
@@ -173,11 +213,12 @@ const PtRegister = () => {
 
   const onClickTrainer = (e) => {
     const { value } = e.target;
-    const selectedTrainer = gym.trainersList.find(
-      (trainer) => trainer.userName === value
+    const selectedTrainer = gym.trainerList.find(
+      (trainer) => trainer.user.userName === value
     );
     setSelectedTrainer(value);
     setTrainerId(selectedTrainer.trainerId);
+    console.log(trainerId);
     toggleTrainerDropdown(); // 드롭다운 닫기
   };
 
@@ -191,11 +232,11 @@ const PtRegister = () => {
   useEffect(() => {
     if (gym.productList && gym.productList.length > 0) {
       const initialProduct = gym.productList.find(
-        (product) => product.productName === selectedPeriod
+        (product) => product.productName === selectedProductName
       );
       setDateRange(initialProduct);
     }
-  }, [regDate, selectedPeriod, gym.productList]);
+  }, [regDate, selectedProductName, gym.productList]);
 
   const handleRegDateChange = (date) => {
     const today = new Date();
@@ -205,7 +246,7 @@ const PtRegister = () => {
     } else {
       setRegDate(date);
       const selectedProduct = gym.productList.find(
-        (product) => product.productName === selectedPeriod
+        (product) => product.productName === selectedProductName
       );
       setDateRange(selectedProduct);
     }
@@ -215,8 +256,32 @@ const PtRegister = () => {
   const handleExpDateChange = (date) => {
     setExpDate(date);
   };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const handleModify = async () => {
+    const paymentData = {
+      amount: selectedProductPrice,
+      buyer_email: userData.email,
+      buyer_name: userData.userName,
+      merchantUid: `mid_${new Date().getTime()}`,
+      name: selectedProductName,
+    };
+    console.log(paymentData);
+    try {
+      const paymentResponse = await requestPayment(paymentData);
+      console.log("Payment response:", paymentResponse);
+
+      if (paymentResponse.success) {
+        setImpUid(paymentResponse.impUid);
+        await handleModify(paymentResponse); // 결제 성공 후 회원 정보 수정 처리
+      } else {
+        console.log("Payment failed:", paymentResponse.error_msg);
+      }
+    } catch (error) {
+      console.error("Payment process failed:", error);
+    }
+  };
+  const handleModify = async (paymentResponse) => {
     try {
       const updateRes = await updateUserInfo(userData);
       console.log(updateRes);
@@ -227,11 +292,13 @@ const PtRegister = () => {
         userAge,
         regDate: formatDate(regDate),
         expDate: formatDate(expDate),
-        selectedPeriod,
+        selectedProductName,
         gymId: gym.gymId,
         userMemberReason,
         userWorkoutDuration,
         productId,
+        impUid: paymentResponse.impUid,
+        merchantUid: paymentResponse.merchantUid,
       };
       console.log(membershipData);
 
@@ -242,17 +309,19 @@ const PtRegister = () => {
 
       // Find the selected product to get ptCountTotal
       const selectedProduct = gym.productList.find(
-        (product) => product.productName === selectedPeriod
+        (product) => product.productName === selectedProductName
       );
 
       const PTData = {
         userId: userData.userId,
         membershipId,
-        ptContent: selectedPeriod,
+        ptContent: selectedProductName,
         ptCountRemain: selectedProduct.ptCountTotal,
         ptCountTotal: selectedProduct.ptCountTotal,
         trainerId,
         userPtReason: userMemberReason,
+        impUid: paymentResponse.impUid,
+        merchantUid: paymentResponse.merchantUid,
       };
       const ptRequestData = {
         membershipDTO: membershipData,
@@ -283,8 +352,9 @@ const PtRegister = () => {
         <div className="text-6xl absolute left-1/4">🏋🏻</div>
         <div className="flex flex-row items-center">
           <div
-            className={`m-8 max-h-[590px] transition-max-height duration-500 overflow-hidden ${isExpanded ? "h-[700px]" : "h-[400px]"
-              } w-[800px] space-x-10 px-20 justify-center flex items-center border-y-8 border-dotted border-peach-fuzz border-opacity-50`}
+            className={`m-8 max-h-[590px] transition-max-height duration-500 overflow-hidden ${
+              isExpanded ? "h-[700px]" : "h-[400px]"
+            } w-[800px] space-x-10 px-20 justify-center flex items-center border-y-8 border-dotted border-peach-fuzz border-opacity-50`}
           >
             <div className="flex flex-col items-center space-y-7 ">
               <p className="font-semibold text-xl">PT 등록</p>
@@ -318,24 +388,27 @@ const PtRegister = () => {
                         onClick={toggleDropdown}
                         className=" h-11 w-[150px] flex text-sm justify-between items-center border border-gray-400 rounded-lg px-4 py-3"
                       >
-                        {selectedPeriod}
+                        {selectedProductName}
                         <BsChevronDown />
                       </button>
                       {isDropdownOpen && (
                         <ul className="absolute w-full border border-gray-400 rounded-lg list-none z-10 bg-white">
-                          {gym.productList.map((product) => (
-                            <li
-                              key={product.productId}
-                              className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
-                              onClick={() =>
-                                onClickPeriod({
-                                  target: { value: product.productName },
-                                })
-                              }
-                            >
-                              {product.productName}
-                            </li>
-                          ))}
+                          {gym.productList
+                            .filter((product) => product.status !== false)
+                            .sort((a, b) => a.days - b.days)
+                            .map((product) => (
+                              <li
+                                key={product.productId}
+                                className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
+                                onClick={() =>
+                                  onClickPeriod({
+                                    target: { value: product.productName },
+                                  })
+                                }
+                              >
+                                {product.productName}
+                              </li>
+                            ))}
                         </ul>
                       )}
                     </div>
@@ -355,17 +428,17 @@ const PtRegister = () => {
                       </button>
                       {isTraineDropdownOpen && (
                         <ul className="absolute w-full border border-gray-400 rounded-lg list-none z-10 bg-white">
-                          {gym.trainersList.map((trainer) => (
+                          {gym.trainerList.map((trainer) => (
                             <li
                               key={trainer.trainerId}
                               className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
                               onClick={() =>
                                 onClickTrainer({
-                                  target: { value: trainer.userName },
+                                  target: { value: trainer.user.userName },
                                 })
                               }
                             >
-                              {trainer.userName}
+                              {trainer.user.userName}
                             </li>
                           ))}
                         </ul>
@@ -414,10 +487,11 @@ const PtRegister = () => {
                           onFocus={handleMemberReasonFocus}
                           onBlur={handleMemberReasonBlur}
                           type="button"
-                          className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userMemberReasonFocus
+                          className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
+                            userMemberReasonFocus
                               ? "border-peach-fuzz"
                               : "border-gray-400"
-                            } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                          } focus:border-2 focus:outline-none text-sm peer my-2 `}
                           value={userMemberReason}
                           onChange={handleChangeMemberReason}
                         >
@@ -453,8 +527,9 @@ const PtRegister = () => {
                         onFocus={handleGenderFocus}
                         onBlur={handleGenderBlur}
                         type="button"
-                        className={`h-11 py-3 px-4 w-[150px]  appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${genderFocus ? "border-peach-fuzz" : "border-gray-400"
-                          } focus:border-2 focus:outline-none text-sm peer mt-2 `}
+                        className={`h-11 py-3 px-4 w-[150px]  appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${
+                          genderFocus ? "border-peach-fuzz" : "border-gray-400"
+                        } focus:border-2 focus:outline-none text-sm peer mt-2 `}
                         value={userGender}
                         onChange={handleChangeGender}
                       >
@@ -481,8 +556,9 @@ const PtRegister = () => {
                         onFocus={handleAgeFocus}
                         onBlur={handleAgeBlur}
                         type="button"
-                        className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${ageFocus ? "border-peach-fuzz" : "border-gray-400"
-                          } focus:border-2 focus:outline-none text-sm peer mt-2 `}
+                        className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${
+                          ageFocus ? "border-peach-fuzz" : "border-gray-400"
+                        } focus:border-2 focus:outline-none text-sm peer mt-2 `}
                         value={userAge}
                         onChange={handleChangeAge}
                       >
@@ -534,8 +610,9 @@ const PtRegister = () => {
                         onFocus={handleTimeFocus}
                         onBlur={handleTimeBlur}
                         type="button"
-                        className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${timeFocus ? "border-peach-fuzz" : "border-gray-400"
-                          } focus:border-2 focus:outline-none text-sm peer `}
+                        className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${
+                          timeFocus ? "border-peach-fuzz" : "border-gray-400"
+                        } focus:border-2 focus:outline-none text-sm peer `}
                         value={selectedTime}
                         onChange={handleChangeTime}
                       >
@@ -563,10 +640,11 @@ const PtRegister = () => {
                             onFocus={handleWorkoutDurationFocus}
                             onBlur={handleWorkoutDurationBlur}
                             type="button"
-                            className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userWorkoutDurationFocus
+                            className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
+                              userWorkoutDurationFocus
                                 ? "border-peach-fuzz"
                                 : "border-gray-400"
-                              } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                            } focus:border-2 focus:outline-none text-sm peer my-2 `}
                             value={userWorkoutDuration}
                             onChange={handleChangeWorkoutDuration}
                           >
@@ -586,11 +664,12 @@ const PtRegister = () => {
                         {/* @@@@@@@@@상품 가격 표시 */}
                         {/* @@@@@@@@@상품 가격 표시 */}
                         {/* @@@@@@@@@상품 가격 표시 */}
-                        <div >{selectedProductPrice}원</div>
+                        <div>{selectedProductPrice}원</div>
                         <div className="ml-3">
                           <button
-                            onClick={handleModify}
-                            className="flex items-center text-lg text-grayish-red hover:border-b  hover:font-semibold mx-auto animate-bounce" >
+                            onClick={handleSubmit}
+                            className="flex items-center text-lg text-grayish-red hover:border-b  hover:font-semibold mx-auto animate-bounce"
+                          >
                             <div className="mb-4 text-3xl">💳</div> 결제하기
                           </button>
                         </div>
@@ -623,6 +702,20 @@ const PtRegister = () => {
           button2={{
             label: "확인",
             onClick: handleConfirmClick,
+          }}
+        />
+      )}
+      {hasNoProduct && (
+        <AlertModal
+          headerEmoji={"⚠️"}
+          line1={"등록 할 수 있는 상품이 없습니다."}
+          button2={{
+            label: "확인",
+            onClick: () =>
+              customNavigate("/centerView", {
+                state: { gym: gym },
+                replace: true,
+              }),
           }}
         />
       )}

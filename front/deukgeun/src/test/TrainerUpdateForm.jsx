@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
 
 const TrainerUpdateForm = () => {
   const [trainerDTO, setTrainerDTO] = useState({
-    trainerId: '', // 트레이너 ID
-    trainerCareer: '',
-    trainerAbout: '',
-    trainerImage: '',
-  
+    trainerId: "", // 트레이너 ID
+    trainerCareer: "",
+    trainerAbout: "",
+    trainerImage: "",
   });
 
   const handleChange = (e) => {
@@ -17,21 +16,22 @@ const TrainerUpdateForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     // PUT 요청을 보낼 API 엔드포인트 설정
-    const url = `http://localhost:8282/api/trainers/update/${trainerDTO.trainerId}`;
-    
+    const url = `http://localhost:8282/api/trainer/update/${trainerDTO.trainerId}`;
+
     // Axios를 사용하여 PUT 요청 보내기
-    axios.put(url, trainerDTO)
-      .then(response => {
-        console.log('Trainer updated successfully:', response.data);
+    axios
+      .put(url, trainerDTO)
+      .then((response) => {
+        console.log("Trainer updated successfully:", response.data);
         // 성공적으로 업데이트된 경우에 대한 처리
-        alert('Trainer updated successfully!');
+        alert("Trainer updated successfully!");
       })
-      .catch(error => {
-        console.error('Failed to update trainer:', error);
+      .catch((error) => {
+        console.error("Failed to update trainer:", error);
         // 실패한 경우에 대한 처리
-        alert('Failed to update trainer.');
+        alert("Failed to update trainer.");
       });
   };
 

@@ -1,15 +1,13 @@
-import logo from "../../assets/dg_logo.png";
-import LoginModal from "../modals/LoginModal";
-import { useAuth } from "../../context/AuthContext";
-import ProfileDropdown from "../account/ProfileDropdown";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import logo from "../../assets/dg_logo.png";
+import { useAuth } from "../../context/AuthContext";
+import ProfileDropdown from "../account/ProfileDropdown";
 import Fallback from "./Fallback";
 import Bprofile from "../../assets/blank_profile.png";
-import { userInfo, uploadImage, getImage, updateImage } from "../../api/userInfoApi";
+import { getImage } from "../../api/userInfoApi";
 import { useLoginModalContext } from "../../context/LoginModalContext";
 
-// console.log(logo);
 export default function Header() {
   const [userImage, setUserImage] = useState(null);
   const { userData, loading } = useAuth();
@@ -21,24 +19,31 @@ export default function Header() {
   const navigate = useNavigate();
   const { toggleLoginModal } = useLoginModalContext();
 
+  const fetchUserImage = async () => {
+    try {
+      const images = await getImage();
+      if (images) {
+        setUserImage(images.userImage);
+      }
+    } catch (error) {
+      console.error("Error fetching user image:", error);
+    }
+  };
+
   useEffect(() => {
     setIsProfileDropdownVisible(false);
   }, [location]);
 
   useEffect(() => {
-    const fetchUserImage = async () => {
-      try {
-        const images = await getImage();
-        if (images) {
-          setUserImage(images.userImage);
-        }
-      } catch (error) {
-        console.error("Error fetching user image:", error);
-      }
-    };
+    setUserImage();
+    if (
+      sessionStorage.getItem("isLoggedIn") &&
+      !userData?.userImage?.userImage
+    ) {
+      fetchUserImage();
+    }
+  }, [userData]);
 
-    fetchUserImage();
-  }, []);
   useEffect(() => {
     const closeWhenClickedOutside = (e) => {
       if (
@@ -58,7 +63,6 @@ export default function Header() {
 
   const toggleProfileDropdown = () => {
     setIsProfileDropdownVisible(!isProfileDropdownVisible);
-    // console.log(isProfileDropdownVisible);
   };
 
   if (loading) {
@@ -66,7 +70,6 @@ export default function Header() {
   }
 
   return (
-    // 헤더 중앙 정렬
     <div className="relative h-[14dvh] flex justify-center items-center">
       <div className="flex justify-between items-center w-5/6 px-5 border-b-2 border-black">
         <img
@@ -85,13 +88,21 @@ export default function Header() {
                 ref={badge}
                 onClick={toggleProfileDropdown}
               >
-                <img
-                  src={`${process.env.PUBLIC_URL}/images/${userImage}` || Bprofile}
-                  alt="Profile"
-                  className="w-8 h-8 rounded-full object-cover"
-                />
+                {userData.userImage?.userImage ? (
+                  <img
+                    src={`/images/${userData.userImage.userImage}`}
+                    alt="Profile"
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <box-icon
+                    name="user-circle"
+                    type="solid"
+                    size="md"
+                    color="#9f8d8d"
+                  ></box-icon>
+                )}
               </div>
-              {/* User type 지정해서 안에 메뉴 변경 */}
               <div ref={dropdown} className="absolute right-0 top-10">
                 {isProfileDropdownVisible ? (
                   <ProfileDropdown type="user" userData={userData} />

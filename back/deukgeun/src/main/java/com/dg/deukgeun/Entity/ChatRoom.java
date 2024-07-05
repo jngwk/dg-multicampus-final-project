@@ -38,6 +38,16 @@ public class ChatRoom {
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ChatMessage> messages;
 
+    public void addMessage(ChatMessage message) {
+        messages.add(message);
+        message.setChatRoom(this);
+    }
+
+    public void removeMessage(ChatMessage message) {
+        messages.remove(message);
+        message.setChatRoom(null);
+    }
+
     @Column(name = "latest_message")
     private String latestMessage;
 
