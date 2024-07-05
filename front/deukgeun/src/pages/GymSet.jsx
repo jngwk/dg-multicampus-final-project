@@ -263,37 +263,35 @@ const Gymset = () => {
       alert("Failed to delete image");
     }
   };
-  const handleDeleteHealthProduct = async (index) => {
-    const productToDelete = healthProducts[index];
-    if (productToDelete.productId) {
+  const handleDeleteHealthProduct = async (productIdOrKey) => {
+    if (typeof productIdOrKey === 'number') {
+      // 기존 상품 삭제 로직
       try {
-        const result = await deleteProduct(productToDelete.productId);
+        const result = await deleteProduct(productIdOrKey);
         if (result.RESULT === "SUCCESS") {
-          console.log("Health product deleted successfully");
-          const updatedHealthProducts = healthProducts.filter((_, i) => i !== index);
-          setHealthProducts(updatedHealthProducts);
-        } else {
-          console.error("Failed to delete health product");
+          setHealthProducts(prevProducts => 
+            prevProducts.filter(product => product.productId !== productIdOrKey)
+          );
         }
       } catch (error) {
         console.error("Error deleting health product:", error);
       }
     } else {
-      // 새로 추가된 상품이라면 그냥 state에서 제거
-      const updatedHealthProducts = healthProducts.filter((_, i) => i !== index);
-      setHealthProducts(updatedHealthProducts);
+      // 새로 추가된 상품 삭제 로직
+      setHealthProducts(prevProducts => 
+        prevProducts.filter(product => product.productId !== productIdOrKey && product.tempId !== productIdOrKey)
+      );
     }
   };
-
-  const handleDeletePTProduct = async (index) => {
-    const productToDelete = ptProducts[index];
-    if (productToDelete.productId) {
+  const handleDeletePTProduct = async (productIdOrKey) => {
+    if (typeof productIdOrKey === `number`) {
       try {
-        const result = await deleteProduct(productToDelete.productId);
+        const result = await deleteProduct(productIdOrKey);
         if (result.RESULT === "SUCCESS") {
           console.log("PT product deleted successfully");
-          const updatedPTProducts = ptProducts.filter((_, i) => i !== index);
-          setPTProducts(updatedPTProducts);
+          setPTProducts(prevProducts => 
+            prevProducts.filter(product => product.productId !== productIdOrKey)
+          );
         } else {
           console.error("Failed to delete PT product");
         }
@@ -302,8 +300,9 @@ const Gymset = () => {
       }
     } else {
       // 새로 추가된 상품이라면 그냥 state에서 제거
-      const updatedPTProducts = ptProducts.filter((_, i) => i !== index);
-      setPTProducts(updatedPTProducts);
+      setPTProducts(prevProducts => 
+        prevProducts.filter(product => product.productId !== productIdOrKey&&product.tempId !== productIdOrKey)
+      );
     }
   };
 
@@ -454,26 +453,27 @@ const Gymset = () => {
                     onClick={handleAddHealthProduct}
                   />
                 </div>
-                <div className="flex flex-col space-y-3 h-[250px] scrollbar overflow-y-auto overflow-x-hidden">
-                {healthProducts.filter(product => product.status !== false).map((product, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-row space-x-3 justify-center items-center"
-                    >
-                      <div className="w-[320px] h-20 border border-gray-400 p-3 rounded-lg flex justify-center items-center pre-line">
-                        {product.productName} 
-                        <br />
-                        {product.days}일 / {product.price}원
+                  {/* 헬스권 상품 목록 */}
+                    <div className="flex flex-col space-y-3 h-[250px] scrollbar overflow-y-auto overflow-x-hidden">
+                      {healthProducts.filter(product => product.status !== false).map((product, index) => (
+                      <div
+                          key={product.productId || `new-health-${index}`}
+                          className="flex flex-row space-x-3 justify-center items-center"
+                      >
+                        <div className="w-[320px] h-20 border border-gray-400 p-3 rounded-lg flex justify-center items-center pre-line">
+                          {product.productName} 
+                          <br />
+                          {product.days}일 / {product.price}원
+                        </div>
+                        <FaCircleMinus
+                          size="24"
+                          color="#9f8d8d"
+                          className="cursor-pointer"
+                          onClick={() => handleDeleteHealthProduct(product.productId || `new-health-${index}`)}
+                        />
                       </div>
-                      <FaCircleMinus
-                        size="24"
-                        color="#9f8d8d"
-                        className="cursor-pointer"
-                        onClick={() => handleDeleteHealthProduct(index)}
-                      />
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
               </div>
             </div>
             {/* PT권*/}
@@ -536,28 +536,29 @@ const Gymset = () => {
                     onClick={handleAddPTProduct}
                   />
                 </div>
+               {/* PT 상품 목록 */}
                 <div className="flex flex-col space-y-3 h-[250px] scrollbar overflow-y-auto overflow-x-hidden">
-                {ptProducts.filter(product => product.status !== false).map((product, index) => (
+                  {ptProducts.filter(product => product.status !== false).map((product, index) => (
                     <div
-                      key={index}
+                      key={product.productId || `new-pt-${index}`}
                       className="flex flex-row space-x-3 justify-center items-center"
                     >
-                      <div className="w-[320px] h-20 border border-gray-400 p-3 rounded-lg flex justify-center items-center pre-line">
-                        {product.productName}
-                        <br />
-                        {product.ptCountTotal}회 / {product.days}일 / {product.price}원
-                      </div>
-                      <FaCircleMinus
-                        size="24"
-                        color="#9f8d8d"
-                        className="cursor-pointer"
-                        onClick={() => handleDeletePTProduct(index)}
-                      />
+                    <div className="w-[320px] h-20 border border-gray-400 p-3 rounded-lg flex justify-center items-center pre-line">
+                      {product.productName}
+                      <br />
+                      {product.ptCountTotal}회 / {product.days}일 / {product.price}원
                     </div>
+                    <FaCircleMinus
+                      size="24"
+                      color="#9f8d8d"
+                      className="cursor-pointer"
+                      onClick={() => handleDeletePTProduct(product.productId || `new-pt-${index}`)}
+                    />
+                  </div>
                   ))}
                 </div>
               </div>
-            </div> *
+            </div>
             {/* 가격표 이미지 */}
             <div className="flex flex-row space-x-40">
               <p className="mt-3 w-[73px]">가격표 이미지</p>

@@ -107,7 +107,7 @@ public class SecurityConfig {
                         .hasAnyAuthority("ROLE_GENERAL") // 일반 회원만 가능
                         .requestMatchers("/api/membership/stats", "/api/membership/stats/**",
                                 "/api/user/signUp/trainer", "/api/trainer/update/**", "/api/gym/put/**",
-                                "/api/gym/getGymByUserId", "/api/gym/insertImage/**", "/api/gym/getGymByUserId")
+                                "/api/gym/getGymByUserId", "/api/gym/insertImage/**", "/api/gym/getGymByUserId", "/api/gym/deleteProduct/**")
                         .hasAnyAuthority("ROLE_GYM")
                         .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/reviews/delete/**", "api/reviews/update/**")
