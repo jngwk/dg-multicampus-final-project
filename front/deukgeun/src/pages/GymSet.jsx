@@ -131,7 +131,7 @@ const Gymset = () => {
   const { name, value } = e.target;
 
   const newErrors = {};
- if (name === "ptCountTotal" && !/^\d+$/.test(value)) {
+  if(name === "ptCountTotal" && !/^\d+$/.test(value)) {
     newErrors.ptCountTotal = "숫자만 입력하세요.";
   }
 
@@ -433,7 +433,7 @@ const Gymset = () => {
                     className="flex flex-col justify-center items-center border border-gray-400 p-3 rounded-lg"
                   >
                       <option value="">선택해주세요.</option>
-                      {[ 30, 90, 180, 200, 365].map(count => (
+                      {[ 30, 90, 180, 365].map(count => (
                           <option key={count} value={count}>{count}일</option>
                        ))}
                   </Select>
@@ -516,7 +516,7 @@ const Gymset = () => {
                     className="flex flex-col justify-center items-center border border-gray-400 p-3 rounded-lg"
                   >
                     <option value="">선택해주세요.</option>
-                      {[ 30, 90, 180, 200, 365].map(count => (
+                      {[ 30, 90, 180, 365].map(count => (
                           <option key={count} value={count}>{count}일</option>
                        ))}
                   </Select>
