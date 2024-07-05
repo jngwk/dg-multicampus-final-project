@@ -254,7 +254,7 @@ const Review = ({ gymId }) => {
           </div>
           <div>등록 리뷰 수: {reviews?.length}</div>
         </div>
-        {reviews?.filter((r) => r.userId === userData.userId).length === 0 && (
+        {reviews?.filter((r) => r.userId === userData?.userId).length === 0 && (
           <button
             className="absolute top-12 right-0 flex items-center mr-5"
             onClick={toggleModal}
