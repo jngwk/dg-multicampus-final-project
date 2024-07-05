@@ -316,7 +316,7 @@ public class GymController {
     public Map<String, String> modify(@PathVariable(name = "gymId") Integer gymId,
             @RequestBody GymRequestDTO gymRequestDTO) {
         GymDTO gymDTO = new GymDTO();
-        
+
         gymDTO.setAddress(gymRequestDTO.getAddress());
         // gymDTO.setApproval(gymRequestDTO.getApproval());
         gymDTO.setCrNumber(gymRequestDTO.getCrNumber());
@@ -331,15 +331,15 @@ public class GymController {
         gymDTO.setUserName(gymRequestDTO.getUserName());
         log.info("Modify: " + gymDTO);
         gymService.modify(gymDTO);
-        productService.deleteProductByGymId(gymId);
-        if (gymRequestDTO.getProductList() != null&& !gymRequestDTO.getProductList().isEmpty()) {
+        // productService.deleteProductByGymId(gymId);
+        if (gymRequestDTO.getProductList() != null && !gymRequestDTO.getProductList().isEmpty()) {
             for (ProductDTO product : gymRequestDTO.getProductList()) {
                 product.setGymId(gymId); // 각 상품에 gymId 설정
                 log.info("Preparing to add product: {}", product);
             }
             Map<String, String> result = productService.insertList(gymRequestDTO.getProductList());
             log.info("Product insertion result: {}", result);
-        }else {
+        } else {
             log.info("No new products to add");
         }
         return Map.of("RESULT", "SUCCESS");
@@ -371,11 +371,13 @@ public class GymController {
         gymImageService.insertList(dtoList);
         return Map.of("RESULT", "SUCCESS");
     }
-    //이미지 리스트
+
+    // 이미지 리스트
     @GetMapping("/imageList/{gymId}")
     public List<GymImageDTO> getImagesByGymId(@PathVariable Integer gymId) {
         return gymImageService.getByGymId(gymId);
     }
+
     // 헬스장 이미지 삭제
     @DeleteMapping("/deleteImage/{gymImage}")
     public Map<String, String> removeImage(@PathVariable(name = "gymImage") String gymImage) {
@@ -427,5 +429,11 @@ public class GymController {
     @GetMapping("/trainersWithInfo/{gymId}")
     public List<Trainer> getTrainersWithInfo(@PathVariable(name = "gymId") Integer gymId) {
         return trainerService.getTrainerListWithInfo(gymId);
+    }
+
+    @DeleteMapping("/deleteProduct/{productId}")
+    public Map<String, String> deleteProduct(@PathVariable(name = "productId") Integer productId) {
+        productService.deleteProductByProductId(productId);
+        return Map.of("RESULT", "SUCCESS");
     }
 }
