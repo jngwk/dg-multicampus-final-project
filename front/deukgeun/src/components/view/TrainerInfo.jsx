@@ -90,11 +90,18 @@ const TrainerInfo = ({ trainers }) => {
         {trainers?.length > 0 ? (
           <>
             <div className="w-1/2 flex justify-center">
-              <img
-                className="w-2/4 h-3/4 rounded-lg object-cover shadow-lg "
-                src={selectedImage}
-                alt="Profile"
-              />
+              {selectedImage ? (
+                <img
+                  className="w-2/4 h-3/4 rounded-lg object-cover shadow-lg "
+                  src={selectedImage}
+                  alt="Profile"
+                />
+              ) : (
+                <div className="flex flex-col gap-10 justify-center items-center w-[400px] h-[500px] border border-grayish-red rounded-md">
+                  <span className="text-4xl">😔</span>
+                  <span className="text-xl">등록된 사진이 없습니다</span>
+                </div>
+              )}
             </div>
             <div className=" w-2/3 h-[400px] flex flex-col items-start justify-center">
               <ul

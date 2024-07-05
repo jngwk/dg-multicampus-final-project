@@ -100,7 +100,7 @@ public class SecurityConfig {
                                 "/api/user/resetPassword")
                         .anonymous() // 비회원만 가능
                         .requestMatchers("/api/user/userInfo", "/ws/**",
-                                "/api/membership/findMembership")
+                                "/api/membership/findMembership", "/api/membership/checkExp")
                         .hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM", "ROLE_TRAINER", "ROLE_ADMIN") // 모든 회원 타입
                         .requestMatchers("/api/personalTraining/get/**",
                                 "/api/personalTraining/post", "/api/membership/register",

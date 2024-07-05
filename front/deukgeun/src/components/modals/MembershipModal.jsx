@@ -43,8 +43,8 @@ const MembershipModal = ({ membership, toggleModal }) => {
                 <div
                   className="translate-y-0.5 cursor-pointer"
                   onClick={() =>
-                    customNavigate("/centerView", {
-                      state: { gym: membership.gym },
+                    customNavigate("/gymSearch", {
+                      state: { searchWord: membership.gym.user.userName },
                     })
                   }
                 >

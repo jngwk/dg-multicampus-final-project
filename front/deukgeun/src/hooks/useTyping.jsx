@@ -6,7 +6,7 @@ function useTyping(content) {
   const [isEnd, setIsEnd] = useState(false);
 
   useEffect(() => {
-    if (!content || !text) return;
+    if (!content) return;
     const typeEvent = setInterval(() => {
       setCharacterCount((prev) => prev + 1);
       setText((prev) => prev + content[characterCount]);

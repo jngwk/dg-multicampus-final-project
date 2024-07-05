@@ -21,11 +21,12 @@ const ReviewContent = ({
   onReviewAdded,
   onReviewDeleted,
   onReviewUpdated,
+  userData,
 }) => {
   const [reviews, setReviews] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentReview, setCurrentReview] = useState(null);
-  const { userData } = useAuth();
+  // const { userData } = useAuth();
   const [colorMapping, setColorMapping] = useState({});
 
   useEffect(() => {
@@ -201,12 +202,14 @@ const Review = ({ gymId }) => {
   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
+  const { userData } = useAuth();
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
         const data = await getReviews(gymId);
         setReviews(data);
+        console.log("@@@ reviews", data);
       } catch (error) {
         console.error("Error fetching reviews:", error);
       }
@@ -251,17 +254,19 @@ const Review = ({ gymId }) => {
           </div>
           <div>등록 리뷰 수: {reviews?.length}</div>
         </div>
-        <button
-          className="absolute top-12 right-0 flex items-center mr-5"
-          onClick={toggleModal}
-        >
-          <div className="hover:font-bold">리뷰작성</div>
-          <MdOutlineRateReview
-            className="mx-1 mb-1"
-            size="25"
-            color="#9F8D8D"
-          />
-        </button>
+        {reviews?.filter((r) => r.userId === userData.userId).length === 0 && (
+          <button
+            className="absolute top-12 right-0 flex items-center mr-5"
+            onClick={toggleModal}
+          >
+            <div className="hover:font-bold">리뷰작성</div>
+            <MdOutlineRateReview
+              className="mx-1 mb-1"
+              size="25"
+              color="#9F8D8D"
+            />
+          </button>
+        )}
         {isModalVisible && (
           <ReviewModal
             toggleModal={toggleModal}
@@ -270,13 +275,14 @@ const Review = ({ gymId }) => {
           />
         )}
       </div>
-      <div className="w-full p-5 mb-10 flex justify-center bg-grayish-red bg-opacity-20 border-y border-grayish-red">
+      <div className="w-full min-h-[700px] p-5 mb-10 flex justify-center bg-grayish-red bg-opacity-20 border-y border-grayish-red">
         <div className="w-full flex justify-center flex-wrap overflow-y-auto scrollbar-hide">
           <ReviewContent
             gymId={gymId}
             onReviewAdded={handleReviewAdded}
             onReviewDeleted={handleReviewDeleted}
             onReviewUpdated={handleReviewUpdated}
+            userData={userData}
           />
         </div>
       </div>

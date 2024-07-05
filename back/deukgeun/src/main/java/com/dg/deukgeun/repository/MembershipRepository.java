@@ -17,4 +17,8 @@ public interface MembershipRepository extends JpaRepository<Membership, Integer>
     List<Membership> findAllByGym_GymId(Integer gymId);
 
     List<Membership> findByExpDate(String expirationDate);
+
+    void deleteByExpDate(String expirationDate);
+
+    Optional<Membership> findByUser_UserId(Integer userId);
 }
