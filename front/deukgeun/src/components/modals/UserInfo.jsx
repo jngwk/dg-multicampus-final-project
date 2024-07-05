@@ -22,6 +22,7 @@ import { findMembership } from "../../api/membershipApi";
 import { GymInfoByUserId } from "../../api/gymApi";
 import MembershipPtSelectModal from "./MembershipPtSelectModal";
 import MembershipModal from "./MembershipModal";
+import { getTrainerById } from "../../api/trainerApi";
 
 const MyInfo = ({ toggleModal, userData, setUserData }) => {
   const initFullAddress = {
@@ -186,8 +187,18 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
     try {
       const gymData = await GymInfoByUserId(userData.userId);
       setGymInfo(gymData);
-      // 체육관 정보를 사용하여 새 페이지로 이동합니다
-      customNavigate(`/GymSet/${gymData.gymId}`); // 라우팅 설정에 따라 URL 구조를 조정해야 합니다
+      // 체육관 정보를 사용하여 새 페이지로 이동합니다 trainerUpdateForm
+      customNavigate(`/gymSet/${gymData.gymId}`); // 라우팅 설정에 따라 URL 구조를 조정해야 합니다
+    } catch (error) {
+      console.error("체육관 정보를 불러오는 중 오류 발생:", error);
+    }
+  };
+
+  const handleTrainerDetails = async () => {
+    try {
+      const trainerData = await getTrainerById(userData.userId);
+      console.log("trainer data", trainerData);
+      customNavigate(`/trainerUpdateForm`, { state: { trainer: trainerData } });
     } catch (error) {
       console.error("체육관 정보를 불러오는 중 오류 발생:", error);
     }
@@ -200,13 +211,23 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
           <div className="text-2xl font-extrabold pb-5">
             <p>내 정보</p>
           </div>
-          <div
-            className="text-sm pb-5 cursor-pointer hover:underline hover:underline-offset-4"
-            onClick={handleGymDetails}
-          >
-            {(userData.role === "ROLE_GYM" ||
-              userData.role === "ROLE_TRAINER") && <p>상세정보</p>}
-          </div>
+
+          {userData.role === "ROLE_GYM" && (
+            <div
+              className="text-sm pb-5 cursor-pointer hover:underline hover:underline-offset-4"
+              onClick={handleGymDetails}
+            >
+              <p>상세정보</p>
+            </div>
+          )}
+          {userData.role === "ROLE_TRAINER" && (
+            <div
+              className="text-sm pb-5 cursor-pointer hover:underline hover:underline-offset-4"
+              onClick={handleTrainerDetails}
+            >
+              <p>상세정보</p>
+            </div>
+          )}
         </div>
         <div className="userEdit-img flex justify-center items-center">
           <label className="profileImg-label relative" htmlFor="profileImg">

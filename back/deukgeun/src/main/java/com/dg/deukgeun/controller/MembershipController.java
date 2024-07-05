@@ -47,7 +47,8 @@ public class MembershipController {
 
     @GetMapping("/findMembership")
     public ResponseEntity<?> findMembership() {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
         Integer userId = userDetails.getUserId();
 
         Optional<Membership> membership = membershipService.findMembership(userId);
@@ -57,5 +58,13 @@ public class MembershipController {
         } else {
             return ResponseEntity.ok(null);
         }
+    }
+
+    @GetMapping("/checkExp")
+    public ResponseEntity<String> checkExp() {
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        Integer userId = userDetails.getUserId();
+        return membershipService.checkExp(userId);
     }
 }

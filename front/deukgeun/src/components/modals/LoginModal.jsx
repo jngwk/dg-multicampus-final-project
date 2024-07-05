@@ -9,6 +9,9 @@ import { login } from "../../api/loginApi";
 import { useAuth } from "../../context/AuthContext";
 import Fallback from "../shared/Fallback";
 import FindPassword from "./FindPasswordModal";
+import Cookies from "js-cookie";
+import { checkExp } from "../../api/membershipApi";
+import AlertModal from "./AlertModal";
 
 const initErrors = { email: "", password: "", login: "" };
 
