@@ -9,5 +9,7 @@ services:
     container_name: deukgeun-front-container
     ports:
       - "30115:80"
+    volumes:
+      - /c/Users/deukgeun2/deploy/git/dg-multicampus-final-project/front/deukgeun/public/images:/usr/share/nginx/html/images
     # depends_on:
     #   - springboot

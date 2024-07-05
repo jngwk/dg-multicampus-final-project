@@ -85,3 +85,6 @@ mail:
 iamport:
   key: 7383144861344372
   secret: JbLmUseDFSoqpSadCWEGVwXv8BGwiduXEZ4CQwp3b8FuxjA66clAEv28uAN8wE3dRkIKZl8rJM7bNh7z
+
+upload:
+  path: C:\\Users\\deukgeun2\\deploy\\git\\dg-multicampus-final-project\\front\\deukgeun\\public\\images

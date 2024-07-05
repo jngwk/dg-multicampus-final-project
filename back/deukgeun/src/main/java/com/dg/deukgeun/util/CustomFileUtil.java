@@ -15,6 +15,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Value;
+
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,10 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @RequiredArgsConstructor
 public class CustomFileUtil {
-    private final String uploadPath = System.getenv("UPLOAD_PATH");
+    // private final String uploadPath = System.getenv("UPLOAD_PATH");
+    // private final String uploadPath = "C:\\Users\\deukgeun2\\deploy\\git\\dg-multicampus-final-project\\front\\deukgeun\\public\\images";
+    @Value("${upload.path}")
+    private String uploadPath;
     @PostConstruct
     public void init(){
         File tempFolder = new File(uploadPath);
