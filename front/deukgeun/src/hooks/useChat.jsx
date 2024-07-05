@@ -63,8 +63,8 @@ const useChat = () => {
   // 소켓 연결
   const connect = (token) => {
     // const socket = new SockJS("http://localhost:8282/ws");
-    const socket = new SockJS("http://223.130.157.92:30000/ws");
-    
+    // const socket = new SockJS("http://223.130.157.92:30000/ws");
+    const socket = new SockJS("http://192.168.45.139:30000/ws");
     const client = new Client({
       webSocketFactory: () => socket,
       connectHeaders: {
