@@ -10,6 +10,7 @@ import useCustomNavigate from "../hooks/useCustomNavigate";
 import { insertImage, deleteImage, GymInfo, updateGym } from "../api/gymApi";
 import { useParams } from "react-router-dom";
 import Select from "../components/shared/Select";
+import { deleteProduct } from '../api/gymApi';
 
 // 회원 정보
 const initGymData = {
@@ -33,6 +34,8 @@ const Gymset = () => {
 
   const { gymId } = useParams();
   const [GymData, setGymData] = useState(initGymData);
+  const [newHealthProducts, setNewHealthProducts] = useState([]);
+  const [newPTProducts, setNewPTProducts] = useState([]);
   const [healthProducts, setHealthProducts] = useState([]);
   const [newHealthProduct, setNewHealthProduct] = useState({ productName: "", days: "", price: "" });
   const [ptProducts, setPTProducts] = useState([]);
@@ -51,15 +54,18 @@ const Gymset = () => {
 
   const fetchGymData = async (gymId) => {
     try {
+      const response = await GymInfo(gymId);
       const gymData = await GymInfo(gymId);
       console.log("Fetched gym data:", gymData);
-
+      const productData = response.data||response;
+      const healthProducts = (response.productList || []).filter(product => product.ptCountTotal === null);
+      const ptProducts = (gymData.productList || []).filter(product => product.ptCountTotal !== null);
       setGymData({
         ...gymData,
         imgList: gymData.uploadFileName || [], // Ensure imgList is an array
       });
-      setHealthProducts(gymData.healthProducts || []);
-      setPTProducts(gymData.ptProducts || []);
+      setHealthProducts(healthProducts || []);
+      setPTProducts(ptProducts || []);
     } catch (error) {
       console.error("Error fetching gym data:", error);
     }
@@ -74,23 +80,28 @@ const Gymset = () => {
     validateInput(name, value);
   };
 
+
   const handleNewHealthProductChange = (e) => {
     const { name, value } = e.target;
-
-    // 숫자가 아닌 경우에 대한 유효성 검사
+  
     const newErrors = {};
     if (name === "days" && !/^\d+$/.test(value)) {
       newErrors.days = "숫자만 입력하세요.";
     }
-
-    setNewHealthProduct({
+  
+    const updatedHealthProduct = {
       ...newHealthProduct,
       [name]: value,
-    });
-
-    setHealthErrors(newErrors); // 오류 상태 업데이트
+    };
+  
+    // Automatically set the product name based on days
+    if (updatedHealthProduct.days) {
+      updatedHealthProduct.productName = `헬스 ${updatedHealthProduct.days}일권`;
+    }
+  
+    setNewHealthProduct(updatedHealthProduct);
+    setHealthErrors(newErrors);
   };
-
   const handleAddHealthProduct = () => {
     const newErrors = {};
     if (!newHealthProduct.productName) {
@@ -108,27 +119,35 @@ const Gymset = () => {
       return;
     }
 
-    setHealthProducts([...healthProducts, newHealthProduct]);
+    const newProduct = { ...newHealthProduct, status: true, isNew: true };
+
+    setHealthProducts([...healthProducts, newProduct]);
+    setNewHealthProducts([...newHealthProducts, newProduct]);
     setNewHealthProduct({ productName: "", days: "", price: "" });
     setHealthErrors({});
   };
 
   const handleNewPTProductChange = (e) => {
-    const { name, value } = e.target;
-    const newErrors = {};
-    if (name === "days" && !/^\d+$/.test(value)) {
-      newErrors.days = "숫자만 입력하세요.";
-    } else if (name === "ptCountTotal" && !/^\d+$/.test(value)) {
-        newErrors.ptCountTotal = "숫자만 입력하세요.";
-    }
+  const { name, value } = e.target;
 
-    setNewPTProduct({
-      ...newPTProduct,
-      [name]: value,
-    });
-    setPTErrors(newErrors); // PT 오류 상태 업데이트
+  const newErrors = {};
+ if (name === "ptCountTotal" && !/^\d+$/.test(value)) {
+    newErrors.ptCountTotal = "숫자만 입력하세요.";
+  }
+
+  const updatedPTProduct = {
+    ...newPTProduct,
+    [name]: value,
   };
 
+  // Dynamic product name generation for PT products
+  if (updatedPTProduct.ptCountTotal) {
+    updatedPTProduct.productName = `PT ${updatedPTProduct.ptCountTotal}회권`;
+  }
+
+  setNewPTProduct(updatedPTProduct);
+  setPTErrors(newErrors);
+};
   const handleAddPTProduct = () => {
     const newErrors = {};
     if (!newPTProduct.productName) {
@@ -148,7 +167,10 @@ const Gymset = () => {
       setPTErrors(newErrors);
       return;
     }
-    setPTProducts([...ptProducts, newPTProduct]);
+
+    const newProduct = { ...newPTProduct, status: true, isNew: true };
+    setPTProducts([...ptProducts, newProduct]);
+    setNewPTProducts([...newPTProducts, newProduct]);
     setNewPTProduct({ productName: "", ptCountTotal: "", days: "", price: "" });
     setPTErrors({});
   };
@@ -185,11 +207,11 @@ const Gymset = () => {
         operatingHours: GymData.operatingHours,
         introduce: GymData.introduce,
         productList: [
-          ...healthProducts.map(product => ({
+          ...newHealthProducts.map(product => ({
             ...product,
             productType: "HEALTH"
           })),
-          ...ptProducts.map(product => ({
+          ...newPTProducts.map(product => ({
             ...product,
             productType: "PT"
           }))
@@ -200,6 +222,9 @@ const Gymset = () => {
       const gymRes = await updateGym(gymId, gymData);
       console.log("gymRes", gymRes);
       if (gymRes.RESULT === "SUCCESS") {
+        setNewHealthProducts([]);
+        setNewPTProducts([]);
+
         if (images.length > 0) {
           const formData = new FormData();
           images.forEach((image, index) => {
@@ -238,14 +263,48 @@ const Gymset = () => {
       alert("Failed to delete image");
     }
   };
-  const handleDeleteHealthProduct = (index) => {
-    const updatedHealthProducts = healthProducts.filter((_, i) => i !== index);
-    setHealthProducts(updatedHealthProducts);
+  const handleDeleteHealthProduct = async (index) => {
+    const productToDelete = healthProducts[index];
+    if (productToDelete.productId) {
+      try {
+        const result = await deleteProduct(productToDelete.productId);
+        if (result.RESULT === "SUCCESS") {
+          console.log("Health product deleted successfully");
+          const updatedHealthProducts = healthProducts.filter((_, i) => i !== index);
+          setHealthProducts(updatedHealthProducts);
+        } else {
+          console.error("Failed to delete health product");
+        }
+      } catch (error) {
+        console.error("Error deleting health product:", error);
+      }
+    } else {
+      // 새로 추가된 상품이라면 그냥 state에서 제거
+      const updatedHealthProducts = healthProducts.filter((_, i) => i !== index);
+      setHealthProducts(updatedHealthProducts);
+    }
   };
 
-  const handleDeletePTProduct = (index) => {
-    const updatedPTProducts = ptProducts.filter((_, i) => i !== index);
-    setPTProducts(updatedPTProducts);
+  const handleDeletePTProduct = async (index) => {
+    const productToDelete = ptProducts[index];
+    if (productToDelete.productId) {
+      try {
+        const result = await deleteProduct(productToDelete.productId);
+        if (result.RESULT === "SUCCESS") {
+          console.log("PT product deleted successfully");
+          const updatedPTProducts = ptProducts.filter((_, i) => i !== index);
+          setPTProducts(updatedPTProducts);
+        } else {
+          console.error("Failed to delete PT product");
+        }
+      } catch (error) {
+        console.error("Error deleting PT product:", error);
+      }
+    } else {
+      // 새로 추가된 상품이라면 그냥 state에서 제거
+      const updatedPTProducts = ptProducts.filter((_, i) => i !== index);
+      setPTProducts(updatedPTProducts);
+    }
   };
 
   const handleTrainerRegisterClick = () => {
@@ -396,7 +455,7 @@ const Gymset = () => {
                   />
                 </div>
                 <div className="flex flex-col space-y-3 h-[250px] scrollbar overflow-y-auto overflow-x-hidden">
-                  {healthProducts.map((product, index) => (
+                {healthProducts.filter(product => product.status !== false).map((product, index) => (
                     <div
                       key={index}
                       className="flex flex-row space-x-3 justify-center items-center"
@@ -478,7 +537,7 @@ const Gymset = () => {
                   />
                 </div>
                 <div className="flex flex-col space-y-3 h-[250px] scrollbar overflow-y-auto overflow-x-hidden">
-                  {ptProducts.map((product, index) => (
+                {ptProducts.filter(product => product.status !== false).map((product, index) => (
                     <div
                       key={index}
                       className="flex flex-row space-x-3 justify-center items-center"
