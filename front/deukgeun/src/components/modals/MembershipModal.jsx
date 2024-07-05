@@ -77,10 +77,10 @@ const MembershipModal = ({ membership, toggleModal }) => {
                 </div>
               ) : pt ? (
                 <>
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold">결제 횟수</span>
+                  {/* <div className="flex justify-between items-center">
+                    <span className="font-semibold">결제된 PT 횟수</span>
                     <span>{pt.ptCountTotal}</span>
-                  </div>
+                  </div> */}
                   <div className="flex justify-between items-center">
                     <span className="font-semibold">PT 잔여 횟수</span>
                     <span>{pt.ptCountRemain}</span>
