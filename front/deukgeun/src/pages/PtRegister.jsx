@@ -668,7 +668,7 @@ const PtRegister = () => {
                         <div className="ml-3">
                           <button
                             onClick={handleSubmit}
-                            className="flex items-center text-lg text-grayish-red hover:border-b  hover:font-semibold mx-auto animate-bounce"
+                            className="flex items-center text-lg text-grayish-red hover:border-b  hover:font-semibold"
                           >
                             <div className="mb-4 text-3xl">💳</div> 결제하기
                           </button>
