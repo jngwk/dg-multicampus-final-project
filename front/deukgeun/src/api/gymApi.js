@@ -128,3 +128,14 @@ export const deleteImage = async (gymImage) => {
     throw new Error("Failed to delete image");
   }
 };
+
+export const deleteProduct = async (productId) => {
+  try {
+    const response = await axios.delete(`${prefix}/deleteProduct/${productId}`);
+    console.log("deleteProduct", response);
+    return response.data;
+  } catch (error) {
+    console.error("Error in deleteProduct", error);
+    throw error;
+  }
+};
