@@ -315,6 +315,7 @@ public class GymController {
     public Map<String, String> modify(@PathVariable(name = "gymId") Integer gymId,
             @RequestBody GymRequestDTO gymRequestDTO) {
         GymDTO gymDTO = new GymDTO();
+        
         gymDTO.setAddress(gymRequestDTO.getAddress());
         // gymDTO.setApproval(gymRequestDTO.getApproval());
         gymDTO.setCrNumber(gymRequestDTO.getCrNumber());
@@ -330,7 +331,16 @@ public class GymController {
         log.info("Modify: " + gymDTO);
         gymService.modify(gymDTO);
         productService.deleteProductByGymId(gymId);
-        productService.insertList(gymRequestDTO.getProductList());
+        if (gymRequestDTO.getProductList() != null&& !gymRequestDTO.getProductList().isEmpty()) {
+            for (ProductDTO product : gymRequestDTO.getProductList()) {
+                product.setGymId(gymId); // 각 상품에 gymId 설정
+                log.info("Preparing to add product: {}", product);
+            }
+            Map<String, String> result = productService.insertList(gymRequestDTO.getProductList());
+            log.info("Product insertion result: {}", result);
+        }else {
+            log.info("No new products to add");
+        }
         return Map.of("RESULT", "SUCCESS");
     }
 

@@ -3,9 +3,11 @@ package com.dg.deukgeun.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -124,7 +126,7 @@ public class TrainerService {
         return ResponseDTO.setSuccess("트레이너 생성에 성공했습니다.");
     }
 
-    @PreAuthorize("hasRole('ROLE_TRAINER')")
+    @PreAuthorize("hasRole('ROLE_GYM')")
     public void updateTrainer(Integer trainerId, TrainerDTO trainerDTO, Integer userId) {
         Optional<Trainer> optionalTrainer = trainerRepository.findById(trainerId);
         if (optionalTrainer.isPresent()) {
@@ -134,10 +136,9 @@ public class TrainerService {
                 trainer.setTrainerCareer(trainerDTO.getTrainerCareer());
                 trainer.setTrainerAbout(trainerDTO.getTrainerAbout());
                 trainer.setTrainerImage(trainerDTO.getTrainerImage());
+                trainer.getUser().setUserName(trainerDTO.getUserName());
+                trainer.getUser().setEmail(trainerDTO.getEmail());
 
-                if (trainerDTO.getUserName() != null) {
-                    trainer.getUser().setUserName(trainerDTO.getUserName());
-                }
                 if (trainerDTO.getAddress() != null) {
                     trainer.getUser().setAddress(trainerDTO.getAddress());
                 }
@@ -159,5 +160,68 @@ public class TrainerService {
     public Trainer get(Integer userId) {
         return trainerRepository.findByUser_UserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Trainer not found"));
+    }
+
+    public List<TrainerDTO> getTrainerList(Integer userId) {
+        Gym gym = gymRepository.findByUser_UserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Gym not found for the user"));
+        List<Trainer> trainers = trainerRepository.findAllByGym_GymId(gym.getGymId());
+        
+        List<TrainerDTO> trainerDTOs = trainers.stream().map(trainer -> {
+            TrainerDTO dto = new TrainerDTO();
+            dto.setTrainerId(trainer.getTrainerId());
+            dto.setGymId(trainer.getGym().getGymId());
+            dto.setTrainerCareer(trainer.getTrainerCareer());
+            dto.setTrainerImage(trainer.getTrainerImage());
+            dto.setUserName(trainer.getUser().getUserName());
+            dto.setEmail(trainer.getUser().getEmail());
+            return dto;
+        }).collect(Collectors.toList());
+
+        // Print each trainer's information to the console
+        trainerDTOs.forEach(dto -> System.out.println(dto));
+
+        return trainerDTOs;
+    }
+
+    @PreAuthorize("hasRole('ROLE_GYM')")
+    public void updateTrainerUserDetails(Integer trainerId, String userName, String email) {
+        Optional<Trainer> optionalTrainer = trainerRepository.findById(trainerId);
+        if (optionalTrainer.isPresent()) {
+            Trainer trainer = optionalTrainer.get();
+            User user = trainer.getUser();
+
+            if (userName != null) {
+                user.setUserName(userName);
+            }
+            if (email != null) {
+                user.setEmail(email);
+            }
+
+            userRepository.save(user);
+            trainerRepository.save(trainer);
+
+            logger.info("Updated Trainer User Details: {}", trainer);
+        } else {
+            logger.warn("Trainer not found for ID: {}", trainerId);
+        }
+    }
+
+    @PreAuthorize("hasRole('ROLE_GYM')")
+    public void deleteTrainer(Integer trainerId, Integer userId) {
+        Optional<Trainer> optionalTrainer = trainerRepository.findById(trainerId);
+        if (optionalTrainer.isPresent()) {
+            Trainer trainer = optionalTrainer.get();
+            if (trainer.getGym().getUser().getUserId().equals(userId)) {
+                trainerRepository.deleteById(trainerId);
+                log.info("Trainer deleted successfully for ID: {}", trainerId);
+            } else {
+                log.warn("User is not authorized to delete this trainer.");
+                throw new AccessDeniedException("Unauthorized to delete this trainer.");
+            }
+        } else {
+            log.warn("Trainer not found for ID: {}", trainerId);
+            throw new IllegalArgumentException("Trainer not found.");
+        }
     }
 }

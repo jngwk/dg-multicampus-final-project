@@ -183,7 +183,18 @@ const Gymset = () => {
         SNSLink: GymData.SNSLink,
         operatingHours: GymData.operatingHours,
         introduce: GymData.introduce,
+        productList: [
+          ...healthProducts.map(product => ({
+            ...product,
+            productType: "HEALTH"
+          })),
+          ...ptProducts.map(product => ({
+            ...product,
+            productType: "PT"
+          }))
+        ]
       };
+      console.log("gymData: ", gymData);
       const gymId = gymData.gymId;
       const gymRes = await updateGym(gymId, gymData);
       console.log("gymRes", gymRes);
@@ -244,11 +255,11 @@ const Gymset = () => {
     <>
       <div className="space-y-8 relative flex items-center justify-center my-10">
         <div className="flex flex-col space-y-6">
-          <p className="font-extrabold text-2xl pb-4 flex flex-row items-center">
+          <p className="font-extrabold text-2xl pb-4 flex flex-row items-center space-x-2">
             <box-icon name="cog" size="40px" color="#9f8d8d"></box-icon>
-            헬스장 상세 정보
+           <p> 헬스장 상세 정보 </p>
           </p>
-          <div className="py-10 px-7 mx-6 rounded-lg flex flex-col space-y-4 w-[1000px] h-fit border border-peach-fuzz">
+          <div className="py-10 px-7 mx-6 rounded-lg flex flex-col space-y-4 w-[1000px] h-fit border-y-8 border-dotted border-peach-fuzz border-opacity-50">
             {/* 업체명 */}
             <div className="flex flex-row space-x-44">
               <p className="mt-3">업체명</p>
@@ -332,6 +343,7 @@ const Gymset = () => {
                 width="320px"
                 height="150px"
                 name="operatingHours"
+                className={`whitespace-pre`}
                 value={GymData.operatingHours}
                 required={true}
                 onChange={handleGymDataChange}
@@ -494,6 +506,7 @@ const Gymset = () => {
                 width="400px"
                 height="250px"
                 name="introduce"
+                className={`whitespace-pre-line`}
                 value={GymData.introduce}
                 required={true}
                 onChange={handleGymDataChange}

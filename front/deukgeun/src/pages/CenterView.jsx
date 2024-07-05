@@ -80,7 +80,7 @@ const CenterView = () => {
       if (PT) {
         setIsPTAlreadyRegistered(true);
       } else {
-        customNavigate("/Ptregister", { state: { gym: gymData } });
+        customNavigate("/PtRegister", { state: { gym: gymData } });
       }
     } catch (error) {
       console.error("Error checking PT:", error);
@@ -95,8 +95,7 @@ const CenterView = () => {
     <>
       <div className="flex flex-col space-y-5 mt-10">
         <div className="flex flex-row ml-40 items-center font-semibold text-2xl mb-3">
-          <CgDetailsMore size="38" className="mr-3" />
-          상세정보
+          <div className="mr-2 text-3xl">💡</div> 상세정보
         </div>
         {/* 헬스장 정보 */}
         <div className="flex flex-col space-y-36">
