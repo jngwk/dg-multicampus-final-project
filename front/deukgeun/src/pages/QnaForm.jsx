@@ -77,7 +77,7 @@ const QnaForm = () => {
 
   return (
     <>
-      <div className="w-full min-h-[86dvh] flex justify-center items-center">
+      <div className="w-full min-h-[80dvh] flex justify-center items-center">
         <div className="mx-auto xl:grid xl:grid-cols-2 xl:w-[1000px] flex-col flex justify-center items-center">
           <div className="w-[400px] p-11">
             <header className="text-5xl mb-11 font-bold">문의하기</header>

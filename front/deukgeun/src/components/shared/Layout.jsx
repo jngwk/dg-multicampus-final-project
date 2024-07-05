@@ -7,9 +7,10 @@ const Layout = ({ children }) => {
   const { toggleLoginModal, isLoginModalVisible } = useLoginModalContext();
 
   return (
-    <div>
+    <div className="snap-y snap-proximity overflow-y-auto justify-center min-h-[100dvh] h-screen w-full">
       <Header />
-      <div className="justify-center min-h-[86dvh] w-full">{children}</div>
+      {children}
+
       {isLoginModalVisible && <LoginModal toggleModal={toggleLoginModal} />}
     </div>
   );
