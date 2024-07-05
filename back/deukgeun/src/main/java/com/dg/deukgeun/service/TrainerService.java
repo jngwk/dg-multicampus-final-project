@@ -218,6 +218,7 @@ public class TrainerService {
             Trainer trainer = optionalTrainer.get();
             if (trainer.getGym().getUser().getUserId().equals(userId)) {
                 trainerRepository.deleteById(trainerId);
+                userRepository.deleteById(trainer.getUser().getUserId());
                 log.info("Trainer deleted successfully for ID: {}", trainerId);
             } else {
                 log.warn("User is not authorized to delete this trainer.");

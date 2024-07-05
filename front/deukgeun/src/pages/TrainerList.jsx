@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import SignUpTrainerModal from "../components/modals/SignUpTrainerPage"; // Adjust the path as necessary
+import SignUpTrainerModal from "../components/modals/SignUpTrainerPage";
 import Input from "../components/shared/Input";
 import AlertModal from "../components/modals/AlertModal";
+import DeleteConfirmModal from "../components/modals/DeleteConfirmModal";
 import { getTrainerInfo, updateTrainerUserDetails, deleteTrainer } from "../api/trainerApi";
-import { useAuth } from "../context/AuthContext"; // Corrected path
+import { useAuth } from "../context/AuthContext";
 
 const TrainerList = () => {
-  const { userData } = useAuth(); // Use the custom hook to get the authenticated user's information
+  const { userData } = useAuth();
   const userId = userData?.userId;
   const [trainers, setTrainers] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -15,6 +16,8 @@ const TrainerList = () => {
   const [error, setError] = useState(null);
   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [trainerToDelete, setTrainerToDelete] = useState(null);
 
   useEffect(() => {
     if (userId) {
@@ -27,7 +30,7 @@ const TrainerList = () => {
       setIsLoading(true);
       const response = await getTrainerInfo(userId);
       if (response && response.data) {
-        setTrainers(response.data); // Assuming response.data is an array of trainers
+        setTrainers(response.data);
       } else {
         setTrainers([]);
       }
@@ -52,7 +55,8 @@ const TrainerList = () => {
       setIsAlertModalVisible(true);
     } catch (error) {
       console.error("Error updating trainer user details:", error.message);
-      alert("트레이너 정보 수정에 실패했습니다.");
+      setAlertMessage("트레이너 정보 수정에 실패했습니다.");
+      setIsAlertModalVisible(true);
     }
   };
 
@@ -63,17 +67,32 @@ const TrainerList = () => {
     setTrainers(updatedTrainers);
   };
 
-  const handleDeleteTrainer = async (index) => {
-    try {
-      const trainerId = trainers[index].trainerId;
-      await deleteTrainer(trainerId);
-      fetchTrainerInfo(userId);
-      setAlertMessage("트레이너가 성공적으로 삭제되었습니다!");
-      setIsAlertModalVisible(true);
-    } catch (error) {
-      console.error("Error deleting trainer:", error.message);
-      alert("트레이너 삭제에 실패했습니다.");
+  const handleDeleteClick = (index) => {
+    setTrainerToDelete(index);
+    setIsDeleteModalVisible(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (trainerToDelete !== null) {
+      try {
+        const trainerId = trainers[trainerToDelete].trainerId;
+        await deleteTrainer(trainerId);
+        fetchTrainerInfo(userId);
+        setAlertMessage("트레이너가 성공적으로 삭제되었습니다!");
+        setIsAlertModalVisible(true);
+      } catch (error) {
+        console.error("Error deleting trainer:", error.message);
+        setAlertMessage("트레이너 삭제에 실패했습니다.");
+        setIsAlertModalVisible(true);
+      }
     }
+    setIsDeleteModalVisible(false);
+    setTrainerToDelete(null);
+  };
+
+  const handleDeleteCancel = () => {
+    setIsDeleteModalVisible(false);
+    setTrainerToDelete(null);
   };
 
   const handleTrainerAdded = () => {
@@ -101,7 +120,6 @@ const TrainerList = () => {
         </p>
       </div>
       <div className="space-y-4">
-        {/* list 헤더 */}
         <div className="flex justify-between items-center w-[800px] h-10 bg-peach-fuzz bg-opacity-20 rounded-lg px-10 ">
           <div className="flex flex-row items-center w-2/3">
             <p className="text-light-black font-semibold w-1/3">이름</p>
@@ -113,7 +131,6 @@ const TrainerList = () => {
           </div>
         </div>
 
-        {/* list 내용 */}
         {Array.isArray(trainers) && trainers.length > 0 ? (
           trainers.map((trainer, index) => (
             <div
@@ -157,7 +174,7 @@ const TrainerList = () => {
                     ✏️
                   </button>
                 )}
-                <button onClick={() => handleDeleteTrainer(index)} className="w-1/2">
+                <button onClick={() => handleDeleteClick(index)} className="w-1/2">
                   ❌
                 </button>
               </div>
@@ -167,7 +184,6 @@ const TrainerList = () => {
           ""
         )}
 
-        {/* 트레이너 추가 */}
         <button
           onClick={toggleModal}
           className="font-semibold text-light-black relative float-end w-24 h-10 bg-light-gray bg-opacity-20 rounded-lg hover:bg-peach-fuzz hover:bg-opacity-10"
@@ -188,6 +204,13 @@ const TrainerList = () => {
           headerEmoji={"✔️"}
           line1={alertMessage}
           button1={{ label: "확인", onClick: handleAlertConfirm }}
+        />
+      )}
+
+      {isDeleteModalVisible && (
+        <DeleteConfirmModal
+          onDelete={handleDeleteConfirm}
+          onCancel={handleDeleteCancel}
         />
       )}
     </div>
