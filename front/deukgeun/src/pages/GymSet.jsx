@@ -68,10 +68,10 @@ const Gymset = () => {
       console.log("Fetched gym data:", gymData);
       const productData = response.data || response;
       const healthProducts = (response.productList || []).filter(
-        (product) => product.ptCountTotal === null
+        (product) => product.ptCountTotal === 0
       );
       const ptProducts = (gymData.productList || []).filter(
-        (product) => product.ptCountTotal !== null
+        (product) => product.ptCountTotal !== 0
       );
       setGymData({
         ...gymData,
@@ -97,9 +97,6 @@ const Gymset = () => {
     const { name, value } = e.target;
 
     const newErrors = {};
-    if (name === "days" && !/^\d+$/.test(value)) {
-      newErrors.days = "숫자만 입력하세요.";
-    }
 
     const updatedHealthProduct = {
       ...newHealthProduct,
@@ -108,7 +105,8 @@ const Gymset = () => {
 
     // Automatically set the product name based on days
     if (updatedHealthProduct.days) {
-      updatedHealthProduct.productName = `헬스 ${updatedHealthProduct.days}일권`;
+      const daysToMonth = Math.floor(updatedHealthProduct.days / 30);
+      updatedHealthProduct.productName = `헬스 ${daysToMonth}개월권`;
     }
 
     setNewHealthProduct(updatedHealthProduct);
@@ -120,7 +118,7 @@ const Gymset = () => {
       newErrors.productName = "상품이름을 입력하세요.";
     }
     if (!newHealthProduct.days) {
-      newErrors.days = "상품 기간을 입력하세요.";
+      newErrors.days = "상품 기간을 선택하세요.";
     }
     if (!newHealthProduct.price) {
       newErrors.price = "상품 가격을 입력하세요.";
@@ -143,9 +141,6 @@ const Gymset = () => {
     const { name, value } = e.target;
 
     const newErrors = {};
-    if (name === "ptCountTotal" && !/^\d+$/.test(value)) {
-      newErrors.ptCountTotal = "숫자만 입력하세요.";
-    }
 
     const updatedPTProduct = {
       ...newPTProduct,
@@ -435,19 +430,10 @@ const Gymset = () => {
             {/* 헬스권*/}
             <div className="flex flex-row space-x-36">
               <p className="mt-3 w-20 pre-line">
-                헬스권 <br></br>상품 설정
+                회원권 <br></br>상품 설정
               </p>
               <div className="flex flex-row space-x-5">
-                <div className="flex flex-col justify-center items-center border border-gray-400 p-3 rounded-lg">
-                  <Input
-                    label="상품이름"
-                    width="290px"
-                    name="productName"
-                    value={newHealthProduct.productName}
-                    error={healthErrors.productName}
-                    required={true}
-                    onChange={handleNewHealthProductChange}
-                  />
+                <div className="flex flex-col justify-center h-[326px] items-center border border-gray-400 p-3 rounded-lg">
                   <Select
                     label="상품 기간"
                     name="days"
@@ -461,10 +447,21 @@ const Gymset = () => {
                     <option value="">선택해주세요.</option>
                     {[30, 90, 180, 200, 365].map((count) => (
                       <option key={count} value={count}>
-                        {count}일
+                        {Math.floor(count / 30)}개월
                       </option>
                     ))}
                   </Select>
+                  <Input
+                    label="상품이름"
+                    width="290px"
+                    name="productName"
+                    readOnly={true}
+                    value={newHealthProduct.productName}
+                    error={healthErrors.productName}
+                    required={true}
+                    onChange={handleNewHealthProductChange}
+                  />
+
                   <Input
                     label="상품 가격 (원 제외)"
                     width="290px"
@@ -482,7 +479,7 @@ const Gymset = () => {
                   />
                 </div>
                 {/* 헬스권 상품 목록 */}
-                <div className="flex flex-col space-y-3 h-[250px] scrollbar overflow-y-auto overflow-x-hidden">
+                <div className="flex flex-col space-y-3 h-[326px] scrollbar overflow-y-auto overflow-x-hidden">
                   {healthProducts
                     .filter((product) => product.status !== false)
                     .map((product, index) => (
@@ -516,16 +513,7 @@ const Gymset = () => {
                 PT권 <br></br>상품 설정
               </p>
               <div className="flex flex-row space-x-5">
-                <div className="flex flex-col justify-center items-center border border-gray-400 p-3 rounded-lg">
-                  <Input
-                    label="상품이름"
-                    width="290px"
-                    name="productName"
-                    value={newPTProduct.productName}
-                    error={ptErrors.productName}
-                    required={true}
-                    onChange={handleNewPTProductChange}
-                  />
+                <div className="flex flex-col justify-center items-center h-[326px] border border-gray-400 p-3 rounded-lg">
                   <Select
                     label="PT횟수"
                     name="ptCountTotal"
@@ -543,6 +531,17 @@ const Gymset = () => {
                       </option>
                     ))}
                   </Select>
+                  <Input
+                    label="상품이름"
+                    width="290px"
+                    name="productName"
+                    value={newPTProduct.productName}
+                    error={ptErrors.productName}
+                    required={true}
+                    readOnly={true}
+                    onChange={handleNewPTProductChange}
+                  />
+
                   <Select
                     label="상품 기간"
                     name="days"
@@ -577,7 +576,7 @@ const Gymset = () => {
                   />
                 </div>
                 {/* PT 상품 목록 */}
-                <div className="flex flex-col space-y-3 h-[250px] scrollbar overflow-y-auto overflow-x-hidden">
+                <div className="flex flex-col space-y-3 h-[326px] scrollbar overflow-y-auto overflow-x-hidden">
                   {ptProducts
                     .filter((product) => product.status !== false)
                     .map((product, index) => (
