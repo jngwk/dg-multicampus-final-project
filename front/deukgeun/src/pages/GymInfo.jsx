@@ -33,7 +33,7 @@ const GymInfo = () => {
   }
 
   return (
-    <div className="flex flex-col space-y-5 mt-10">
+    <div className="flex flex-col items-center justify-center space-y-5 mt-10">
       {/* 헬스장 정보 */}
       <div className="flex flex-col space-y-5">
         <div className="text-3xl font-semibold">{gymData.gymName}</div>

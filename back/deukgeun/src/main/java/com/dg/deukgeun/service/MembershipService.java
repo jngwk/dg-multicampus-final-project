@@ -2,9 +2,11 @@ package com.dg.deukgeun.service;
 
 import java.util.Collections;
 import java.util.List;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -146,5 +148,30 @@ public class MembershipService {
             return membershipRepository.findByUser(user);
         }
         return Optional.empty(); // Return empty optional if user not found
+    }
+
+    public void deleteExpiredMemberships() {
+        LocalDate today = LocalDate.now();
+        String expirationDate = today.toString();
+        // TODO 삭제 말고 state를 바꿔주는 쪽으로 고민
+        membershipRepository.deleteByExpDate(expirationDate);
+    }
+
+    public ResponseEntity<String> checkExp(Integer userId) {
+        LocalDate today = LocalDate.now();
+        String expired = today.toString();
+        String expiring = today.plusDays(7).toString();
+        Optional<Membership> membership = membershipRepository.findByUser_UserId(userId);
+        if (membership.isPresent()) {
+            if (membership.get().getExpDate().equals(expired)) {
+                return ResponseEntity.ok().body("expired");
+            } else if (membership.get().getExpDate().equals(expiring)) {
+                return ResponseEntity.ok().body("expiring");
+            } else {
+                return ResponseEntity.ok().body("not expiring");
+            }
+        } else {
+            return ResponseEntity.badRequest().body("no membership");
+        }
     }
 }

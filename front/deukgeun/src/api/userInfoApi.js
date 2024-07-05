@@ -38,6 +38,26 @@ export const getImage = async () => {
   }
 };
 
+export const getImageById = async (id) => {
+  try {
+    const res = await axios.get(`${prefix}/getImage/${id}`);
+    return res.data.data;
+  } catch (error) {
+    console.error("Error fetching user images:", error);
+    throw error;
+  }
+};
+
+export const deleteImage = async () => {
+  try {
+    const res = await axios.delete(`${prefix}/deleteImage`);
+    return res.data.data;
+  } catch (error) {
+    console.error("Error fetching user images:", error);
+    throw error;
+  }
+};
+
 export const updateImage = async (formData) => {
   try {
     const res = await axios.put(`${prefix}/updateImage`, formData, {
@@ -55,6 +75,20 @@ export const updateImage = async (formData) => {
 export const updateUserInfo = async (userData) => {
   try {
     const res = await axios.put(`${prefix}/update`, userData);
+    console.log("API", res);
+    return res.data;
+  } catch (error) {
+    console.error("Error updating user info:", error);
+    throw error;
+  }
+};
+
+export const resetPasswordWithEmail = async (email, password) => {
+  try {
+    const res = await axios.post(`${prefix}/resetPassword`, {
+      email: email,
+      password: password,
+    });
     console.log("API", res);
     return res.data;
   } catch (error) {

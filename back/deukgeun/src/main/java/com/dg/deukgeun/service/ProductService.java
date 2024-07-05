@@ -16,7 +16,9 @@ import com.dg.deukgeun.repository.GymRepository;
 import com.dg.deukgeun.repository.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -36,6 +38,7 @@ public class ProductService {
             dto.setProductId(result.get(i).getProductId());
             dto.setProductName(result.get(i).getProductName());
             dto.setPtCountTotal(result.get(i).getPtCountTotal());
+            dto.setStatus(result.get(i).isStatus());
             dtoList.add(dto);
         }
         return dtoList;
@@ -48,20 +51,55 @@ public class ProductService {
         return dto;
     }
 
+    @Transactional
     public Map<String,String> insertList (List<ProductDTO> dtoList){
         List<Product> productList = new ArrayList<>();
-        for(int i=0;i<dtoList.size();i++){
-            Product product = modelMapper.map(dtoList.get(i),Product.class);
-            Optional<Gym> result = gymRepository.findById(dtoList.get(i).getGymId());
-            Gym gym = result.orElseThrow();
+        for (ProductDTO dto : dtoList) {
+            Product product = new Product(); // ModelMapper 대신 수동으로 매핑
+                product.setDays(dto.getDays());
+                product.setPrice(dto.getPrice());
+                product.setProductName(dto.getProductName());
+                product.setPtCountTotal(dto.getPtCountTotal());
+                product.setStatus(true);
+            // Gym 조회
+            Optional<Gym> result = gymRepository.findById(dto.getGymId());
+            Gym gym = result.orElseThrow(() -> new RuntimeException("해당 gymId에 해당하는 헬스장이 존재하지 않습니다."));
+            
+            // Product에 Gym 설정
             product.setGym(gym);
+            
             productList.add(product);
         }
         productRepository.saveAll(productList);
         return Map.of("RESULT","SUCCESS");
     }
 
-    public void deleteByGymId(Integer gymId){
-        productRepository.deleteBygymGymId(gymId);
+    // public void deleteByGymId(Integer gymId){
+    //     productRepository.deleteBygymGymId(gymId);
+    // }
+
+    @Transactional
+    public void deleteProductByGymId(Integer gymId){
+        try {
+            List<Product> products = productRepository.findAllBygymGymId(gymId);
+            log.info("Found {} products for gymId: {}", products.size(), gymId);
+            
+            for (Product product : products) {
+                product.setStatus(false);
+                log.info("Setting status to false for product: {}", product.getProductId());
+            }
+            
+            List<Product> savedProducts = productRepository.saveAll(products);
+            log.info("Saved {} products", savedProducts.size());
+        } catch (Exception e) {
+            log.error("Error while deleting products for gymId: " + gymId, e);
+            throw new RuntimeException("Failed to delete products", e);
+        }
+    }
+    public void deleteProductByProductId(Integer productId){
+        Optional<Product> result = productRepository.findById(productId);
+        Product product = result.orElseThrow();
+        product.setStatus(false);
+        productRepository.save(product);
     }
 }

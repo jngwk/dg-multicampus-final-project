@@ -8,6 +8,10 @@ import useCustomNavigate from "../../hooks/useCustomNavigate";
 import { login } from "../../api/loginApi";
 import { useAuth } from "../../context/AuthContext";
 import Fallback from "../shared/Fallback";
+import FindPassword from "./FindPasswordModal";
+import Cookies from "js-cookie";
+import { checkExp } from "../../api/membershipApi";
+import AlertModal from "./AlertModal";
 
 const initErrors = { email: "", password: "", login: "" };
 
@@ -17,6 +21,7 @@ const LoginModal = ({ toggleModal }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState(initErrors);
+  const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false);
   const { fetchUserData, loading } = useAuth();
 
   const handleEmailChange = (e) => {
@@ -99,50 +104,57 @@ const LoginModal = ({ toggleModal }) => {
   };
 
   const handleFindPasswordClick = () => {
-    toggleModal();
-    customNavigate("/find-password");
+    setIsPasswordModalVisible(true);
+    // toggleModal();
   };
 
   return (
-    <ModalLayout toggleModal={toggleModal}>
-      <img src={logo} alt="logo" width={120} className="mb-14" />
-      <div className="flex flex-col gap-1 justify-center">
-        <Input
-          label="이메일"
-          value={email}
-          onChange={handleEmailChange}
-          onKeyPress={handleKeyPress}
-          error={errors.email}
-        />
-        <Input
-          label="비밀번호"
-          type="password"
-          value={password}
-          onChange={handlePasswordChange}
-          onKeyPress={handleKeyPress}
-          error={errors.password}
-        />
-        {errors.login && (
-          <div className="text-red-500 text-xs">{errors.login}</div>
-        )}
+    <>
+      {!isPasswordModalVisible && (
+        <ModalLayout toggleModal={toggleModal}>
+          <img src={logo} alt="logo" width={120} className="mb-14" />
+          <div className="flex flex-col gap-1 justify-center">
+            <Input
+              label="이메일"
+              value={email}
+              onChange={handleEmailChange}
+              onKeyPress={handleKeyPress}
+              error={errors.email}
+            />
+            <Input
+              label="비밀번호"
+              type="password"
+              value={password}
+              onChange={handlePasswordChange}
+              onKeyPress={handleKeyPress}
+              error={errors.password}
+            />
+            {errors.login && (
+              <div className="text-red-500 text-xs">{errors.login}</div>
+            )}
 
-        {/* find-password 모달띄우기 */}
-        <button
-          onClick={handleFindPasswordClick}
-          className="text-right text-sm text-gray-500 hover:underline hover:underline-offset-4 hover:cursor-pointer hover:text-gray-600"
-        >
-          비밀번호를 잊으셨나요?
-        </button>
+            {/* find-password 모달띄우기 */}
+            <button
+              onClick={handleFindPasswordClick}
+              className="text-right text-sm text-gray-500 hover:underline hover:underline-offset-4 hover:cursor-pointer hover:text-gray-600"
+            >
+              비밀번호를 잊으셨나요?
+            </button>
 
-        <br />
-        <Button onClick={handleLogin} color="peach-fuzz" label="로그인" />
-        <Button
-          onClick={handleSignUpClick}
-          color="bright-orange"
-          label="회원가입"
-        />
-      </div>
-    </ModalLayout>
+            <br />
+            <Button onClick={handleLogin} color="peach-fuzz" label="로그인" />
+            <Button
+              onClick={handleSignUpClick}
+              color="bright-orange"
+              label="회원가입"
+            />
+          </div>
+        </ModalLayout>
+      )}
+      {isPasswordModalVisible && (
+        <FindPassword toggleModal={() => setIsPasswordModalVisible(false)} />
+      )}
+    </>
   );
 };
 

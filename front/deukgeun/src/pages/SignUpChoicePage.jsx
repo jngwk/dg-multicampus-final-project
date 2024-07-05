@@ -9,7 +9,7 @@ const SignUpChoicePage = () => {
   return (
     // translate-y-1/2
     <>
-      <div className="w-full min-h-[90dvh] flex justify-center items-center">
+      <div className="w-full min-h-[86dvh] flex justify-center items-center">
         <div className="w-full flex justify-center items-center">
           <div className="w-96 h-auto flex flex-col justify-center items-center">
             <div className="mb-5 text-xl font-medium">

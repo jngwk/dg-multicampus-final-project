@@ -200,7 +200,7 @@ public class UserService {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER')")
+    @PreAuthorize("hasRole('ROLE_GENERAL') || hasRole('ROLE_GYM') || hasRole('ROLE_TRAINER') || hasRole('ROLE_ADMIN')")
     public ResponseDTO<UserWithTrainerDTO> getUserInfo(Integer userId) {
         try {
             Optional<User> userOptional = userRepository.findByUserId(userId);
@@ -301,6 +301,20 @@ public class UserService {
 
     public Boolean emailDuplicateCheck(String email) {
         return userRepository.findByEmail(email).isPresent();
+    }
+
+    public ResponseEntity<String> resetPasswordWithEmail(String email, String password) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        // Hash the password
+        if (!password.equals("")) {
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            String hashedPassword = passwordEncoder.encode(password);
+            user.setPassword(hashedPassword);
+        }
+
+        // Save the updated user entity
+        userRepository.save(user);
+        return ResponseEntity.ok("Password update successful");
     }
 
     // public ResponseDTO<?> requestPasswordReset(String email) {

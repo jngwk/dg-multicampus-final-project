@@ -23,13 +23,16 @@ import org.springframework.web.multipart.MultipartFile;
 import com.dg.deukgeun.api.CRNumberCheckApi;
 import com.dg.deukgeun.dto.PageRequestDTO;
 import com.dg.deukgeun.dto.PageResponseDTO;
+import com.dg.deukgeun.dto.ProductDTO;
 import com.dg.deukgeun.dto.gym.GymDTO;
 import com.dg.deukgeun.dto.gym.GymImageDTO;
 import com.dg.deukgeun.dto.gym.GymRequestDTO;
 import com.dg.deukgeun.dto.gym.GymResponseDTO;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
+import com.dg.deukgeun.dto.gym.TrainerDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.entity.Gym;
+import com.dg.deukgeun.entity.Trainer;
 import com.dg.deukgeun.security.CustomUserDetails;
 import com.dg.deukgeun.service.GymImageService;
 import com.dg.deukgeun.service.GymService;
@@ -314,6 +317,7 @@ public class GymController {
     public Map<String, String> modify(@PathVariable(name = "gymId") Integer gymId,
             @RequestBody GymRequestDTO gymRequestDTO) {
         GymDTO gymDTO = new GymDTO();
+
         gymDTO.setAddress(gymRequestDTO.getAddress());
         // gymDTO.setApproval(gymRequestDTO.getApproval());
         gymDTO.setCrNumber(gymRequestDTO.getCrNumber());
@@ -328,8 +332,17 @@ public class GymController {
         gymDTO.setUserName(gymRequestDTO.getUserName());
         log.info("Modify: " + gymDTO);
         gymService.modify(gymDTO);
-        // productService.deleteByGymId(gymId);
-        // productService.insertList(gymRequestDTO.getProductList());
+        // productService.deleteProductByGymId(gymId);
+        if (gymRequestDTO.getProductList() != null && !gymRequestDTO.getProductList().isEmpty()) {
+            for (ProductDTO product : gymRequestDTO.getProductList()) {
+                product.setGymId(gymId); // 각 상품에 gymId 설정
+                log.info("Preparing to add product: {}", product);
+            }
+            Map<String, String> result = productService.insertList(gymRequestDTO.getProductList());
+            log.info("Product insertion result: {}", result);
+        } else {
+            log.info("No new products to add");
+        }
         return Map.of("RESULT", "SUCCESS");
     }
 
@@ -358,6 +371,12 @@ public class GymController {
         }
         gymImageService.insertList(dtoList);
         return Map.of("RESULT", "SUCCESS");
+    }
+
+    // 이미지 리스트
+    @GetMapping("/imageList/{gymId}")
+    public List<GymImageDTO> getImagesByGymId(@PathVariable Integer gymId) {
+        return gymImageService.getByGymId(gymId);
     }
 
     // 헬스장 이미지 삭제
@@ -396,5 +415,26 @@ public class GymController {
             default:
                 return gymService.searchGyms(searchWord);
         }
+    }
+
+    @GetMapping("/products/{gymId}")
+    public List<ProductDTO> getProductList(@PathVariable(name = "gymId") Integer gymId) {
+        return productService.getList(gymId);
+    }
+
+    @GetMapping("/trainers/{gymId}")
+    public List<TrainerDTO> getTrainerList(@PathVariable(name = "gymId") Integer gymId) {
+        return trainerService.getList(gymId);
+    }
+
+    @GetMapping("/trainersWithInfo/{gymId}")
+    public List<Trainer> getTrainersWithInfo(@PathVariable(name = "gymId") Integer gymId) {
+        return trainerService.getTrainerListWithInfo(gymId);
+    }
+
+    @DeleteMapping("/deleteProduct/{productId}")
+    public Map<String, String> deleteProduct(@PathVariable(name = "productId") Integer productId) {
+        productService.deleteProductByProductId(productId);
+        return Map.of("RESULT", "SUCCESS");
     }
 }

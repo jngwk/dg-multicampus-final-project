@@ -41,13 +41,20 @@ const MemberRegister = () => {
   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedPeriod, setSelectedPeriod] = useState(
+  const [hasNoProduct, setHasNoProduct] = useState(false);
+  const [selectedProductName, setSelectedProductName] = useState(
     gym.productList && gym.productList.length > 0
-      ? gym.productList[0].productName
+      ? location.state?.product
+        ? location.state.product.productName
+        : gym.productList[0].productName
       : ""
   ); //선택상품
   const [selectedProductPrice, setSelectedProductPrice] = useState(
-    gym.productList && gym.productList.length > 0 ? gym.productList[0].price : 0
+    gym.productList && gym.productList.length > 0
+      ? location.state?.product
+        ? location.state.product.price
+        : gym.productList[0].price
+      : 0
   );
   const { validateInput } = useValidation();
 
@@ -60,7 +67,9 @@ const MemberRegister = () => {
   const [userWorkoutDuration, setUserWorkoutDuration] = useState(1);
   const [productId, setProductId] = useState(
     gym.productList && gym.productList.length > 0
-      ? gym.productList[0].productId
+      ? location.state?.product
+        ? location.state.product.productId
+        : gym.productList[0].productId
       : ""
   );
   const customNavigate = useCustomNavigate();
@@ -70,6 +79,26 @@ const MemberRegister = () => {
   const { requestPayment, verifyPayment, loading, error } = useIamport();
 
   const { fetchUserData } = useAuth();
+
+  useEffect(() => {
+    if (!gym.productList || gym.productList.length === 0) {
+      setHasNoProduct(true);
+    } else {
+      filterProducts();
+    }
+  }, []);
+
+  const filterProducts = () => {
+    const filteredProductList =
+      gym.productList?.filter((product) => product.ptCountTotal === 0) || [];
+    const updatedGym = { ...gym, productList: filteredProductList };
+    setGym(updatedGym);
+    if (filteredProductList.length > 0) {
+      setSelectedProductName(filteredProductList[0].productName);
+      setSelectedProductPrice(filteredProductList[0].price);
+      setProductId(filteredProductList[0].productId);
+    }
+  };
 
   const handleUserDataChange = (e) => {
     const { name, value } = e.target;
@@ -127,7 +156,7 @@ const MemberRegister = () => {
     const selectedProduct = gym.productList.find(
       (product) => product.productName === value
     );
-    setSelectedPeriod(value);
+    setSelectedProductName(value);
     setSelectedProductPrice(selectedProduct.price);
     setProductId(selectedProduct.productId);
     setDateRange(selectedProduct);
@@ -144,11 +173,11 @@ const MemberRegister = () => {
   useEffect(() => {
     if (gym.productList && gym.productList.length > 0) {
       const initialProduct = gym.productList.find(
-        (product) => product.productName === selectedPeriod
+        (product) => product.productName === selectedProductName
       );
       setDateRange(initialProduct);
     }
-  }, [regDate, selectedPeriod, gym.productList]);
+  }, [regDate, selectedProductName, gym.productList]);
 
   const handleRegDateChange = (date) => {
     const today = new Date();
@@ -158,7 +187,7 @@ const MemberRegister = () => {
     } else {
       setRegDate(date);
       const selectedProduct = gym.productList.find(
-        (product) => product.productName === selectedPeriod
+        (product) => product.productName === selectedProductName
       );
       setDateRange(selectedProduct);
     }
@@ -171,10 +200,11 @@ const MemberRegister = () => {
     e.preventDefault();
 
     const paymentData = {
-      amount: 100,
+      amount: selectedProductPrice,
       buyer_email: userData.email,
       buyer_name: userData.userName,
       merchantUid: `mid_${new Date().getTime()}`,
+      name: selectedProductName,
     };
 
     try {
@@ -195,6 +225,7 @@ const MemberRegister = () => {
     try {
       if (!location.state) {
         console.log("no gym");
+        console.log("no gym");
         return;
       }
 
@@ -206,7 +237,7 @@ const MemberRegister = () => {
         userAge,
         regDate: formatDate(regDate),
         expDate: formatDate(expDate),
-        selectedPeriod,
+        selectedProductName,
         gymId: gym.gymId,
         userMemberReason,
         userWorkoutDuration,
@@ -235,15 +266,21 @@ const MemberRegister = () => {
   return (
     <>
       <div className="flex flex-row justify-center items-center mt-10 relative ">
-      <div className={` ${isExpanded
-            ? "text-6xl absolute left-1/4 top-0"
-            : "text-6xl absolute left-1/3 top-0"
-            } `}>🏋🏻</div>
         <div
-          className={`m-10 ${isExpanded
-            ? "w-[1000px] justify-center space-x-10 px-20 relative "
-            : "w-[500px] justify-center"
-            } h-[550px] flex items-center border-y-8 border-dotted border-peach-fuzz`}
+          className={` ${
+            isExpanded
+              ? "text-6xl absolute left-1/4 top-0"
+              : "text-6xl absolute left-1/3 top-0"
+          } `}
+        >
+          🏋🏻
+        </div>
+        <div
+          className={`m-10 ${
+            isExpanded
+              ? "w-[1000px] justify-center space-x-10 px-20 relative "
+              : "w-[500px] justify-center"
+          } h-[550px] flex items-center border-y-8 border-dotted border-peach-fuzz`}
         >
           <div className="flex flex-col items-center space-y-6">
             <p className="font-semibold text-xl">회원권 등록</p>
@@ -358,24 +395,27 @@ const MemberRegister = () => {
                   onClick={toggleDropdown}
                   className="w-[120px] h-11 flex justify-between items-center border border-gray-400 rounded-lg p-2 "
                 >
-                  {selectedPeriod}
+                  {selectedProductName}
                   <BsChevronDown />
                 </button>
                 {isDropdownOpen && (
                   <ul className="absolute w-full border border-gray-400 rounded-lg list-none z-10 bg-white">
-                    {gym.productList.map((product) => (
-                      <li
-                        key={product.productId}
-                        className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
-                        onClick={() =>
-                          onClickPeriod({
-                            target: { value: product.productName },
-                          })
-                        }
-                      >
-                        {product.productName}
-                      </li>
-                    ))}
+                    {gym.productList
+                      .filter((product) => product.status !== false)
+                      .sort((a, b) => a.days - b.days)
+                      .map((product) => (
+                        <li
+                          key={product.productId}
+                          className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
+                          onClick={() =>
+                            onClickPeriod({
+                              target: { value: product.productName },
+                            })
+                          }
+                        >
+                          {product.productName}
+                        </li>
+                      ))}
                   </ul>
                 )}
               </div>
@@ -421,10 +461,11 @@ const MemberRegister = () => {
                     onFocus={handleMemberReasonFocus}
                     onBlur={handleMemberReasonBlur}
                     type="button"
-                    className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userMemberReasonFocus
-                      ? "border-peach-fuzz"
-                      : "border-gray-400"
-                      } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                    className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
+                      userMemberReasonFocus
+                        ? "border-peach-fuzz"
+                        : "border-gray-400"
+                    } focus:border-2 focus:outline-none text-sm peer my-2 `}
                     value={userMemberReason}
                     onChange={handleChangeMemberReason}
                   >
@@ -455,10 +496,11 @@ const MemberRegister = () => {
                     onFocus={handleWorkoutDurationFocus}
                     onBlur={handleWorkoutDurationBlur}
                     type="button"
-                    className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userWorkoutDurationFocus
-                      ? "border-peach-fuzz"
-                      : "border-gray-400"
-                      } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                    className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
+                      userWorkoutDurationFocus
+                        ? "border-peach-fuzz"
+                        : "border-gray-400"
+                    } focus:border-2 focus:outline-none text-sm peer my-2 `}
                     value={userWorkoutDuration}
                     onChange={handleChangeWorkoutDuration}
                   >
@@ -480,10 +522,10 @@ const MemberRegister = () => {
                 {/* @@@@@@@@@상품 가격 표시 */}
                 <div>{selectedProductPrice}원</div>
                 <div className="ml-3">
-
                   <button
-                    onClick={handleModify}
-                    className="flex items-center text-lg text-grayish-red hover:border-b  hover:font-semibold mx-auto animate-bounce" >
+                    onClick={handleSubmit}
+                    className="flex items-center text-lg text-grayish-red hover:border-b  hover:font-semibold mx-auto animate-bounce"
+                  >
                     <div className="mb-4 text-3xl">💳</div> 결제하기
                   </button>
                 </div>
@@ -497,6 +539,15 @@ const MemberRegister = () => {
           </button>
         )}
       </div>
+      {isExpanded && (
+        <button
+          className="flex items-center mb-10 text-lg text-grayish-red hover:border-b hover:border-gray-400 hover:font-semibold mx-auto animate-bounce"
+          onClick={handleSubmit}
+        >
+          <box-icon name="wallet-alt" color="#9F8D8D" size="sm"></box-icon>
+          결제하기
+        </button>
+      )}
       {isAddressModalVisible && (
         <AddressModal
           userData={userData}
@@ -511,6 +562,20 @@ const MemberRegister = () => {
           button2={{
             label: "확인",
             onClick: handleConfirmClick,
+          }}
+        />
+      )}
+      {hasNoProduct && (
+        <AlertModal
+          headerEmoji={"⚠️"}
+          line1={"등록 할 수 있는 상품이 없습니다."}
+          button2={{
+            label: "확인",
+            onClick: () =>
+              customNavigate("/centerView", {
+                state: { gym: gym },
+                replace: true,
+              }),
           }}
         />
       )}
