@@ -52,7 +52,7 @@ const Gymset = () => {
   const fetchGymData = async (gymId) => {
     try {
       const gymData = await GymInfo(gymId);
-      console.log("Fetched gym data:", gymData);
+      // console.log("Fetched gym data:", gymData);
 
       setGymData({
         ...gymData,

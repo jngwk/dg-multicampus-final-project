@@ -80,6 +80,17 @@ export const getTrainerList = async (gymId) => {
   }
 };
 
+export const getTrainersWithInfo = async (gymId) => {
+  try {
+    const res = await axios.get(`${prefix}/trainersWithInfo/${gymId}`);
+    console.log("trainers", res);
+    return res.data;
+  } catch (error) {
+    console.error("Error in GymInfo", error);
+    throw error;
+  }
+};
+
 export const updateGym = async (gymId, gymData) => {
   try {
     const res = await axios.put(`${prefix}/put/${gymId}`, gymData);

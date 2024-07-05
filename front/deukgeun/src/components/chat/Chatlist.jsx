@@ -12,7 +12,7 @@ const Chatlist = ({ user, latestMessage, room }) => {
   useEffect(() => {
     // if (state === latestMessage) return;
     setState(latestMessage);
-  });
+  }, [latestMessage, room]);
   return (
     <div className="flex justify-between items-center h-[4.5rem] border-0 shadow-lg rounded-xl py-2 px-3 border-light-gray bg-white">
       <div className=" w-10 h-10 flex justify-center items-center">

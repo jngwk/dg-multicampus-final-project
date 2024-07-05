@@ -23,6 +23,10 @@ import { useModal } from "../hooks/useModal";
 import EventModal from "../components/modals/EventModal";
 import Fallback from "../components/shared/Fallback";
 import ChatModal from "../components/modals/ChatModal";
+import Loader from "../components/shared/Loader";
+import BasicCard from "../components/shared/BasicCard";
+import { format } from "date-fns";
+const { kakao } = window;
 
 const CenterView = () => {
   const location = useLocation();
@@ -33,21 +37,23 @@ const CenterView = () => {
   const { toggleLoginModal } = useLoginModalContext();
   const [gymDataLoading, setGymDataLoading] = useState(false);
   const [isChatModalVisible, setIsChatModalVisible] = useState(false);
+  const [gymLocation, setGymLocation] = useState();
+  const [mapLoading, setMapLoading] = useState(true);
   const customNavigate = useCustomNavigate();
   const gymId = location.state?.gym?.gymId || "";
 
   // 헬스장 소개글 불러와야함
-  const introduce = "Gymdata에 introduce불러오기";
+  const introduce = gymData.introduce;
   const { text: introduceText, isEnd: isintroduceEnd } = useTyping(introduce);
 
   useEffect(() => {
     if (gymData) {
-      console.log("gymData from location in center view", gymData);
+      // console.log("gymData from location in center view", gymData);
       return;
     }
     const fetchGymData = async () => {
       try {
-        setGymDataLoading(true);
+        // setGymDataLoading(true);
         console.log("@@@@@@@@@@@@@@@@@@@fetch gym data in center view");
         const data = await GymInfo(gymId);
         setGymData(data);
@@ -60,6 +66,38 @@ const CenterView = () => {
 
     fetchGymData();
   }, [gymId]);
+
+  useEffect(() => {
+    const convertAddressToLatLng = (address) => {
+      // console.log("address", address);
+      return new Promise((resolve, reject) => {
+        const geocoder = new kakao.maps.services.Geocoder();
+        geocoder.addressSearch(address, function (result, status) {
+          // console.log("result in convert address", result, status);
+          if (status === kakao.maps.services.Status.OK) {
+            // console.log("okay");
+            resolve({ lat: result[0].y, lng: result[0].x });
+          } else {
+            reject(new Error("Failed to convert address to lat/lng"));
+          }
+        });
+      });
+    };
+    const getGymLocation = async (address) => {
+      try {
+        setMapLoading(true);
+        const latlng = await convertAddressToLatLng(address);
+        setGymLocation({ lat: latlng.lat, lng: latlng.lng });
+        console.log(latlng);
+      } catch (error) {
+        console.error("error converting address to latlng", error);
+      } finally {
+        setMapLoading(false);
+      }
+    };
+    getGymLocation(gymData.address);
+    console.log("gymData product list", gymData.productList);
+  }, []);
 
   const handleMembershipInfo = async () => {
     try {
@@ -86,6 +124,17 @@ const CenterView = () => {
       console.error("Error checking PT:", error);
     }
   };
+  const addDays = (date, days) => {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  };
+
+  const formatDate = (date) => {
+    return format(date, "yyyy-MM-dd"); // Adjust the format as needed
+  };
+
+  const Today = new Date();
 
   if (gymDataLoading) {
     return <Fallback />;
@@ -93,85 +142,91 @@ const CenterView = () => {
 
   return (
     <>
-      <div className="flex flex-col space-y-5 mt-10">
-        <div className="flex flex-row ml-40 items-center font-semibold text-2xl mb-3">
-          <div className="mr-2 text-3xl">💡</div> 상세정보
-        </div>
+      <div className="flex flex-col space-y-5">
+        {/* <div className="flex flex-row ml-40 items-center font-semibold text-2xl mb-3">
+          <CgDetailsMore size="38" className="mr-3" />
+          상세정보
+        </div> */}
         {/* 헬스장 정보 */}
         <div className="flex flex-col space-y-36">
-          <div className="w-full h-[500px] flex bg-grayish-red bg-opacity-20">
-            <div className="box-border w-[50%] flex justify-center items-center">
-              <Map
-                className="rounded-lg"
-                id="map"
-                center={{
-                  lat: 33.450701,
-                  lng: 126.570667,
-                }}
-                style={{
-                  width: "80%",
-                  height: "400px",
-                }}
-                level={3}
-              >
-                <MapMarker
-                  position={{
-                    lat: 33.450701,
-                    lng: 126.570667,
-                  }}
-                />
-              </Map>
-            </div>
-            <div className="relative flex flex-col space-y-7 box-border justify-center w-[50%]">
-              <p className="text-3xl font-semibold">{gymData.user.userName}</p>
-              <div className="flex flex-row">
-                <FaLocationDot size="32" className="mr-3" color="#fe8742" />
-                <div className="flex flex-col">
-                  <p className="font-semibold text-xl"> 주소 </p>
-                  <div>
-                    {gymData.address} {gymData.detailAddress}
+          <div className="w-full h-[500px] flex justify-center items-center bg-grayish-red bg-opacity-20">
+            <div className="flex w-3/4">
+              <div className="box-border w-[50%] flex justify-center items-center">
+                {!mapLoading ? (
+                  gymLocation ? (
+                    <Map
+                      className="rounded-lg"
+                      id="map"
+                      center={gymLocation}
+                      style={{
+                        width: "80%",
+                        height: "400px",
+                      }}
+                      level={3}
+                    >
+                      <MapMarker position={gymLocation} />
+                    </Map>
+                  ) : (
+                    ""
+                  )
+                ) : (
+                  <Loader />
+                )}
+              </div>
+              {/* text 정보 */}
+              <div className="relative flex flex-col space-y-7 box-border justify-center w-[450px] pl-14">
+                <p className="text-3xl font-semibold">
+                  {gymData.user.userName}
+                </p>
+                <div className="flex flex-row">
+                  <FaLocationDot size="32" className="mr-3" color="#fe8742" />
+                  <div className="flex flex-col">
+                    <p className="font-semibold text-xl"> 주소 </p>
+                    <div>
+                      {gymData.address} {gymData.detailAddress}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="flex flex-row">
-                <LuTimer size="32" className="mr-3" color="#fe8742" />
-                <div className="flex flex-col">
-                  <p className="font-semibold text-xl"> 운영시간 </p>
-                  <div>{gymData.operatingHours}</div>
+                <div className="flex flex-row">
+                  <LuTimer size="32" className="mr-3" color="#fe8742" />
+                  <div className="flex flex-col">
+                    <p className="font-semibold text-xl"> 운영시간 </p>
+                    <div>{gymData.operatingHours}</div>
+                  </div>
                 </div>
-              </div>
-              <div className="flex flex-row">
-                <PiPhoneListDuotone
-                  size="32"
-                  className="mr-3"
-                  color="#fe8742"
-                />
-                <div className="flex flex-col">
-                  <p className="font-semibold text-xl"> 전화번호 </p>
-                  <div>{gymData.phoneNumber}</div>
+                <div className="flex flex-row">
+                  <PiPhoneListDuotone
+                    size="32"
+                    className="mr-3"
+                    color="#fe8742"
+                  />
+                  <div className="flex flex-col">
+                    <p className="font-semibold text-xl"> 전화번호 </p>
+                    <div>{gymData.phoneNumber}</div>
+                  </div>
                 </div>
-              </div>
-              <div className="absolute right-44 bottom-8 flex flex-row space-x-3">
-                <div>
-                  <Button
-                    width="100px"
-                    label="문의하기"
-                    height="40px"
-                    className="hover:font-semibold"
-                    onClick={() =>
-                      sessionStorage.getItem("isLoggedIn")
-                        ? setIsChatModalVisible(true)
-                        : toggleLoginModal()
-                    }
-                  ></Button>
-                </div>
-                <div>
-                  <Button
-                    width="100px"
-                    label="🎉 Event"
-                    height="40px"
-                    className="hover:font-semibold"
-                  ></Button>
+                <div className="flex flex-row justify-end space-x-3 ">
+                  <div>
+                    <Button
+                      width="100px"
+                      label="문의하기"
+                      height="40px"
+                      className="hover:font-semibold"
+                      onClick={() =>
+                        sessionStorage.getItem("isLoggedIn")
+                          ? setIsChatModalVisible(true)
+                          : toggleLoginModal()
+                      }
+                    ></Button>
+                  </div>
+                  <div>
+                    <Button
+                      width="100px"
+                      label="🎉 Event"
+                      height="40px"
+                      className="hover:font-semibold"
+                    ></Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -195,20 +250,80 @@ const CenterView = () => {
           <CenterImg gymId={gymId} />
 
           {/* 헬스장 가격표 */}
-          <div className="w-full h-full p-5 flex flex-col items-center rounded-3xl bg-grayish-red bg-opacity-20 rounded-b-none">
-            <div className="my-10">
-              <div className="flex flex-col items-center text-center mb-2 font-semibold text-xl">
-                가격표
-                <div className="mt-2 w-16 border-b-2 border-grayish-red border-opacity-20"></div>
+          <div className="w-full-h-full flex justify-center items-center">
+            <div className="w-[60%] h-full p-20 flex flex-col items-center rounded-3xl bg-grayish-red bg-opacity-20">
+              <div className="mb-10">
+                <div className="flex flex-col items-center text-center mb-2 font-semibold text-xl">
+                  가격표
+                  <div className="mt-2 w-16 border-b-2 border-grayish-red border-opacity-20"></div>
+                </div>
               </div>
-            </div>
-            <div className="max-w-[1000px] max-h-full bg-grayish-red bg-opacity-20">
-              <img src={priceImg} alt="Price" />
+              <div className="">
+                <div className="flex justify-between items-start w-[700px]">
+                  <div className="w-[275px] flex flex-col gap-6">
+                    {gymData.productList
+                      .filter(
+                        (product) =>
+                          product.ptCountTotal > 0 && product.status !== false
+                      )
+                      .sort((a, b) => a.ptCountTotal - b.ptCountTotal)
+                      .map((product, key) => {
+                        const endDate = addDays(Today, product.days);
+                        return (
+                          <BasicCard
+                            key={key}
+                            type={"PT"}
+                            header={product.productName}
+                            shortDesc={`${product.price}원`}
+                            desc={`만료일: ${formatDate(endDate)}`}
+                            button={{
+                              label: "등록하기",
+                              onClick: () => {
+                                !sessionStorage.getItem("isLoggedIn")
+                                  ? toggleLoginModal()
+                                  : customNavigate("/PtRegister", {
+                                      state: { product: product, gym: gymData },
+                                    });
+                              },
+                            }}
+                          />
+                        );
+                      })}
+                  </div>
+                  <div className="w-[275px] flex flex-col gap-6">
+                    {gymData.productList
+                      .filter((product) => product.ptCountTotal === 0)
+                      .sort((a, b) => a.days - b.days)
+                      .map((product, key) => {
+                        const endDate = addDays(Today, product.days);
+                        return (
+                          <BasicCard
+                            key={key}
+                            type={"회원권"}
+                            header={product.productName}
+                            shortDesc={`${product.price}원`}
+                            desc={`만료일: ${formatDate(endDate)}`}
+                            button={{
+                              label: "등록하기",
+                              onClick: () => {
+                                !sessionStorage.getItem("isLoggedIn")
+                                  ? toggleLoginModal()
+                                  : customNavigate("/memberregister", {
+                                      state: { product: product, gym: gymData },
+                                    });
+                              },
+                            }}
+                          />
+                        );
+                      })}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* 트레이너 소개 */}
-          <TrainerInfo />
+          <TrainerInfo trainers={gymData.trainerList} />
           {/* 헬스장 리뷰 */}
           <Review gymId={gymId} />
         </div>
@@ -249,7 +364,7 @@ const CenterView = () => {
       {isMembershipAlreadyRegistered && (
         <AlertModal
           headerEmoji={"⚠️"}
-          line1={"이미 헬스권이 등록된 회원입니다."}
+          line1={"이미 회원권이 등록된 회원입니다."}
           button2={{
             label: "확인",
             onClick: () => setIsMembershipAlreadyRegistered(false),

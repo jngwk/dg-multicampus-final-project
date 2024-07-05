@@ -1,22 +1,25 @@
 package com.dg.deukgeun.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.dg.deukgeun.dto.review.ReviewImageDTO;
 import com.dg.deukgeun.entity.ReviewImage;
 import com.dg.deukgeun.repository.ReviewImageRepository;
 import com.dg.deukgeun.util.CustomFileUtil;
 
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Log4j2
 public class ReviewImageService {
 
     private final ModelMapper modelMapper;
@@ -42,35 +45,39 @@ public class ReviewImageService {
     }
 
  public void deleteImages(Integer reviewId) {
-        // Retrieve images by reviewId
         List<ReviewImage> reviewImages = reviewImageRepository.findByReviewId(reviewId);
 
-        // Extract image filenames from entities
         List<String> imageFileNames = reviewImages.stream()
                 .map(ReviewImage::getReviewImage)
                 .collect(Collectors.toList());
 
-        // Delete files from file system
         fileUtil.deleteFiles(imageFileNames);
 
-        // Delete database records
         reviewImageRepository.deleteByReviewId(reviewId);
     }
 
-    public void updateImages(Integer reviewId, List<MultipartFile> updatedImages) {
-        // Delete existing images for the review
-        deleteImages(reviewId);
-
-        // Save updated images to file system and database
-        List<String> savedImageNames = fileUtil.saveFile(updatedImages);
-        List<ReviewImageDTO> updatedImageDTOs = savedImageNames.stream()
-                .map(fileName -> ReviewImageDTO.builder().reviewId(reviewId).reviewImage(fileName).build())
-                .collect(Collectors.toList());
-
-        List<ReviewImage> reviewImageList = updatedImageDTOs.stream()
-                .map(dto -> modelMapper.map(dto, ReviewImage.class))
-                .collect(Collectors.toList());
-
-        reviewImageRepository.saveAll(reviewImageList);
+    // 다수 이미지 업데이트
+    public void updateImages(Integer reviewId, List<MultipartFile> newFiles, List<String> imageNames) {
+        try {
+            // Delete old images if imageNames is provided
+            if (imageNames != null && !imageNames.isEmpty()) {
+                System.out.println(imageNames);
+                fileUtil.deleteFiles(imageNames);
+                reviewImageRepository.deleteAllById(imageNames);
+            }
+    
+            // Save new images if newFiles is provided
+            if (newFiles != null && !newFiles.isEmpty()) {
+                List<String> savedFileNames = fileUtil.saveFile(newFiles);
+                List<ReviewImage> reviewImages = savedFileNames.stream()
+                        .map(fileName -> new ReviewImage(fileName, reviewId))
+                        .collect(Collectors.toList());
+                reviewImageRepository.saveAll(reviewImages);
+            }
+            
+        } catch (Exception e) {
+            log.error("Error updating review images for review ID: {}", reviewId, e);
+            throw new RuntimeException("Failed to update review images for review ID: " + reviewId);
+        }
     }
 }

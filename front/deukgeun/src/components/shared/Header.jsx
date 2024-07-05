@@ -38,7 +38,7 @@ export default function Header() {
     setUserImage();
     if (
       sessionStorage.getItem("isLoggedIn") &&
-      userData?.userImage?.userImage
+      !userData?.userImage?.userImage
     ) {
       fetchUserImage();
     }

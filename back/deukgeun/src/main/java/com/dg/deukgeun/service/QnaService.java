@@ -99,4 +99,23 @@ public class QnaService {
                 .totalCount(totalCount)
                 .build();
     }
+
+    public PageResponseDTO<QnaDTO> listByUserId(Integer userId, PageRequestDTO pageRequestDTO) {
+        Pageable pageable = PageRequest.of(
+                pageRequestDTO.getPage() - 1, // Page number starts from 0
+                pageRequestDTO.getSize(),
+                Sort.by("qnaId").descending());
+
+        Page<Qna> result = qnaRepository.findAllByUser_UserId(userId, pageable);
+        List<QnaDTO> dtoList = result.getContent().stream()
+                .map(qna -> modelMapper.map(qna, QnaDTO.class))
+                .collect(Collectors.toList());
+
+        long totalCount = result.getTotalElements();
+        return PageResponseDTO.<QnaDTO>withAll()
+                .dtoList(dtoList)
+                .pageRequestDTO(pageRequestDTO)
+                .totalCount(totalCount)
+                .build();
+    }
 }
