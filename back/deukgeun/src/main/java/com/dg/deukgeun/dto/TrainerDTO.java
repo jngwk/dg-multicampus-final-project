@@ -25,4 +25,5 @@ public class TrainerDTO {
 
     //user 테이블에서 가져올 정보
     private String userName;
+    private String email;
 }

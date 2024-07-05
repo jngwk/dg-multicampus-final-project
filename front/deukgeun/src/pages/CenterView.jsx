@@ -48,7 +48,7 @@ const CenterView = () => {
 
   useEffect(() => {
     if (gymData) {
-      console.log("gymData from location in center view", gymData);
+      // console.log("gymData from location in center view", gymData);
       return;
     }
     const fetchGymData = async () => {

@@ -23,8 +23,8 @@ const CenterImg = ({gymId}) => {
                     const fullImageUrls = data.uploadFileName.map(fileName => `${process.env.PUBLIC_URL}/images/${fileName}`);
                     setImageUrls(fullImageUrls);
                     setLoading(false);
-                    console.log('Fetched fullImageUrLs:', fullImageUrls); // 이미지 URL 확인
-                    console.log(`imageUrls: `, imageUrls);
+                    // console.log('Fetched fullImageUrLs:', fullImageUrls); // 이미지 URL 확인
+                    // console.log(`imageUrls: `, imageUrls);
                 } else {
                     console.error('Invalid API response:', data);
                 }
