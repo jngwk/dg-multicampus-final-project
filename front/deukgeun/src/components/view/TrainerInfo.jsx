@@ -60,15 +60,17 @@ const TrainerInfo = ({ trainers }) => {
   //   ];
 
   const [openIndex, setOpenIndex] = useState(-1);
-  const [selectedImage, setSelectedImage] = useState(trainers[0].trainerImage);
+  const [selectedImage, setSelectedImage] = useState(
+    trainers[0]?.trainerImage || ""
+  );
 
   const toggleOpen = (index) => {
     if (openIndex === index) {
       setOpenIndex(-1);
-      setSelectedImage(trainers[0].trainerImage); // 첫번째 트레이너 사진으로 되돌리기
+      setSelectedImage(trainers[0]?.trainerImage || ""); // 첫번째 트레이너 사진으로 되돌리기
     } else {
       setOpenIndex(index);
-      setSelectedImage(trainers[index].trainerImage); // 선택된 트레이너 이미지로 변경
+      setSelectedImage(trainers[index]?.trainerImage || ""); // 선택된 트레이너 이미지로 변경
     }
   };
 
@@ -83,47 +85,57 @@ const TrainerInfo = ({ trainers }) => {
       </div>
 
       {/* 트레이너 정보 내용 */}
-      <div className="w-full h-full flex items-center">
-        <div className="w-1/2 flex justify-center">
-          <img
-            className="w-2/4 h-3/4 rounded-lg object-cover shadow-lg "
-            src={selectedImage}
-            alt="Profile"
-          />
-        </div>
-        <div className=" w-2/3 h-[400px] flex flex-col items-start justify-center">
-          <ul
-            className={`w-3/4 overflow-hidden overflow-y-auto scrollbar-hide border-t-light-black border-t-2 border-opacity-40 `}
-          >
-            {trainers.map((trainer, index) => (
-              <li
-                key={index}
-                className="list-none border-light-black border-b-2 border-opacity-40"
+
+      <div className="w-full h-full flex justify-center items-center">
+        {trainers?.length > 0 ? (
+          <>
+            <div className="w-1/2 flex justify-center">
+              <img
+                className="w-2/4 h-3/4 rounded-lg object-cover shadow-lg "
+                src={selectedImage}
+                alt="Profile"
+              />
+            </div>
+            <div className=" w-2/3 h-[400px] flex flex-col items-start justify-center">
+              <ul
+                className={`w-3/4 overflow-hidden overflow-y-auto scrollbar-hide border-t-light-black border-t-2 border-opacity-40 `}
               >
-                <div className="flex justify-between items-center py-5 px-4">
-                  <p className="font-semibold text-lg">
-                    {trainer.user.userName}
-                  </p>
-                  <button onClick={() => toggleOpen(index)}>
-                    {openIndex === index ? <FaMinus /> : <FaPlus />}
-                  </button>
-                </div>
-                {openIndex === index && (
-                  <div className="expandable flex items-center p-4 mb-4 h-[300px] overflow-hidden overflow-y-auto scrollbar-hide">
-                    <ul className="list-disc pl-5 space-y-2">
-                      {/* {trainer.trainerCareer.map((item, i) => (
+                {trainers.map((trainer, index) => (
+                  <li
+                    key={index}
+                    className="list-none border-light-black border-b-2 border-opacity-40"
+                  >
+                    <div className="flex justify-between items-center py-5 px-4">
+                      <p className="font-semibold text-lg">
+                        {trainer.user.userName}
+                      </p>
+                      <button onClick={() => toggleOpen(index)}>
+                        {openIndex === index ? <FaMinus /> : <FaPlus />}
+                      </button>
+                    </div>
+                    {openIndex === index && (
+                      <div className="expandable flex items-center p-4 mb-4 h-[300px] overflow-hidden overflow-y-auto scrollbar-hide">
+                        <ul className="list-disc pl-5 space-y-2">
+                          {/* {trainer.trainerCareer.map((item, i) => (
                         <li key={i} className="text-sm leading-relaxed">
                           {item}
                         </li>
                       ))} */}
-                      {trainer.trainerCareer}
-                    </ul>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
+                          {trainer.trainerCareer}
+                        </ul>
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-col gap-10 justify-center items-center h-[618px] w-[1000px] border border-grayish-red rounded-md">
+            <span className="text-4xl">😔</span>
+            <span className="text-xl">등록된 트레이너가 없습니다</span>
+          </div>
+        )}
       </div>
     </div>
   );

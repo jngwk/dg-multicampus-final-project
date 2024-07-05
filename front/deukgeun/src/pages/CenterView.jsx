@@ -233,18 +233,22 @@ const CenterView = () => {
           </div>
 
           {/* 헬스장 설명 */}
-          <div className="flex justify-center items-center w-full h-full">
-            <div className="max-w-[1000px]">
-              <div className="text-base sm:text-lg">
-                {introduceText}
-                <span
-                  className={`${isintroduceEnd ? "hidden" : "animate-typing"}`}
-                >
-                  |
-                </span>
+          {introduce && (
+            <div className="flex justify-center items-center w-full h-full">
+              <div className="max-w-[1000px]">
+                <div className="text-base sm:text-lg">
+                  {introduceText}
+                  <span
+                    className={`${
+                      isintroduceEnd ? "hidden" : "animate-typing"
+                    }`}
+                  >
+                    |
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* 헬스장 사진 */}
           <CenterImg gymId={gymId} />
@@ -260,63 +264,79 @@ const CenterView = () => {
               </div>
               <div className="">
                 <div className="flex justify-between items-start w-[700px]">
-                  <div className="w-[275px] flex flex-col gap-6">
-                    {gymData.productList
-                      .filter(
-                        (product) =>
-                          product.ptCountTotal > 0 && product.status !== false
-                      )
-                      .sort((a, b) => a.ptCountTotal - b.ptCountTotal)
-                      .map((product, key) => {
-                        const endDate = addDays(Today, product.days);
-                        return (
-                          <BasicCard
-                            key={key}
-                            type={"PT"}
-                            header={product.productName}
-                            shortDesc={`${product.price}원`}
-                            desc={`만료일: ${formatDate(endDate)}`}
-                            button={{
-                              label: "등록하기",
-                              onClick: () => {
-                                !sessionStorage.getItem("isLoggedIn")
-                                  ? toggleLoginModal()
-                                  : customNavigate("/PtRegister", {
-                                      state: { product: product, gym: gymData },
-                                    });
-                              },
-                            }}
-                          />
-                        );
-                      })}
-                  </div>
-                  <div className="w-[275px] flex flex-col gap-6">
-                    {gymData.productList
-                      .filter((product) => product.ptCountTotal === 0)
-                      .sort((a, b) => a.days - b.days)
-                      .map((product, key) => {
-                        const endDate = addDays(Today, product.days);
-                        return (
-                          <BasicCard
-                            key={key}
-                            type={"회원권"}
-                            header={product.productName}
-                            shortDesc={`${product.price}원`}
-                            desc={`만료일: ${formatDate(endDate)}`}
-                            button={{
-                              label: "등록하기",
-                              onClick: () => {
-                                !sessionStorage.getItem("isLoggedIn")
-                                  ? toggleLoginModal()
-                                  : customNavigate("/memberregister", {
-                                      state: { product: product, gym: gymData },
-                                    });
-                              },
-                            }}
-                          />
-                        );
-                      })}
-                  </div>
+                  {gymData.productList?.length > 0 ? (
+                    <>
+                      <div className="w-[275px] flex flex-col gap-6">
+                        {gymData.productList
+                          .filter(
+                            (product) =>
+                              product.ptCountTotal > 0 &&
+                              product.status !== false
+                          )
+                          .sort((a, b) => a.ptCountTotal - b.ptCountTotal)
+                          .map((product, key) => {
+                            const endDate = addDays(Today, product.days);
+                            return (
+                              <BasicCard
+                                key={key}
+                                type={"PT"}
+                                header={product.productName}
+                                shortDesc={`${product.price}원`}
+                                desc={`만료일: ${formatDate(endDate)}`}
+                                button={{
+                                  label: "등록하기",
+                                  onClick: () => {
+                                    !sessionStorage.getItem("isLoggedIn")
+                                      ? toggleLoginModal()
+                                      : customNavigate("/PtRegister", {
+                                          state: {
+                                            product: product,
+                                            gym: gymData,
+                                          },
+                                        });
+                                  },
+                                }}
+                              />
+                            );
+                          })}
+                      </div>
+                      <div className="w-[275px] flex flex-col gap-6">
+                        {gymData.productList
+                          .filter((product) => product.ptCountTotal === 0)
+                          .sort((a, b) => a.days - b.days)
+                          .map((product, key) => {
+                            const endDate = addDays(Today, product.days);
+                            return (
+                              <BasicCard
+                                key={key}
+                                type={"회원권"}
+                                header={product.productName}
+                                shortDesc={`${product.price}원`}
+                                desc={`만료일: ${formatDate(endDate)}`}
+                                button={{
+                                  label: "등록하기",
+                                  onClick: () => {
+                                    !sessionStorage.getItem("isLoggedIn")
+                                      ? toggleLoginModal()
+                                      : customNavigate("/memberregister", {
+                                          state: {
+                                            product: product,
+                                            gym: gymData,
+                                          },
+                                        });
+                                  },
+                                }}
+                              />
+                            );
+                          })}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex flex-col gap-10 justify-center items-center h-[618px] w-[1000px] border border-grayish-red rounded-md">
+                      <span className="text-4xl">😔</span>
+                      <span className="text-xl">등록된 상품이 없습니다</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
