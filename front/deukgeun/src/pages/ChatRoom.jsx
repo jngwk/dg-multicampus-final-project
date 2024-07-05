@@ -84,7 +84,7 @@ export default function ChatRoom() {
 
   const handleNewChatClick = async (receiverId) => {
     const newChatRoom = await findOrCreateChatRoom(receiverId);
-    console.log("newChatRoom @@@@@@@@", newChatRoom);
+    // console.log("newChatRoom @@@@@@@@", newChatRoom);
     handleChatListClick(newChatRoom);
   };
   // console.log("from chat Room", isAvailableUsersModalVisible);
@@ -94,7 +94,7 @@ export default function ChatRoom() {
   }
 
   return (
-    <div className="w-full min-h-[90dvh] flex justify-center items-center">
+    <div className="w-full min-h-[86dvh] flex justify-center items-center">
       <div className="w-full max-w-[1400px] py-5">
         <div className="md:flex items-center pb-2">
           <IoChatbubbles color="#ffbe98" size="56" />
@@ -121,10 +121,10 @@ export default function ChatRoom() {
                     >
                       {room.users.length === 2 && (
                         <Chatlist
-                          userName={
+                          user={
                             room.users[0].userId === userData.userId
-                              ? room.users[1].userName
-                              : room.users[0].userName
+                              ? room.users[1]
+                              : room.users[0]
                           }
                           latestMessage={room.latestMessage}
                           room={room}

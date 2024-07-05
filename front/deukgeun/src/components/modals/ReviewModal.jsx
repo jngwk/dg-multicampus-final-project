@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import ModalLayout from "./ModalLayout";
 import TextArea from "../shared/TextArea";
-import { IoMdPhotos } from "react-icons/io";
 import Button from "../shared/Button";
 import { addReview, uploadReviewImages } from "../../api/reviewApi";
 import Fallback from "../shared/Fallback";
+import { IoMdPhotos } from "react-icons/io";
+import { FaTimes } from "react-icons/fa";
 
-const ReviewModal = ({ toggleModal, gymId }) => {
+const ReviewModal = ({ toggleModal, gymId, onReviewAdded }) => {
     const { userData, loading } = useAuth();
     const [formValues, setFormValues] = useState({
         gymId: parseInt(gymId, 10),
@@ -17,8 +18,8 @@ const ReviewModal = ({ toggleModal, gymId }) => {
         userName: "",
         email: "",
     });
-
     const [images, setImages] = useState([]);
+    const [previewImages, setPreviewImages] = useState([]);
 
     useEffect(() => {
         if (userData) {
@@ -49,21 +50,27 @@ const ReviewModal = ({ toggleModal, gymId }) => {
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
-        setImages(files);
+        const filePreviews = files.map(file => URL.createObjectURL(file));
 
+        setImages((prevImages) => [...prevImages, ...files]);
+        setPreviewImages((prevPreviews) => [...prevPreviews, ...filePreviews]);
+    };
+
+    const handleImageRemove = (index) => {
+        setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+        setPreviewImages((prevPreviews) => prevPreviews.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // Step 1: Submit review data
             const reviewData = {
                 gymId: formValues.gymId,
                 comment: formValues.comment,
                 rating: formValues.rating,
-                userId: userData.userId,
-                userName: userData.userName,
-                email: userData.email,
+                userId: formValues.userId,
+                userName: formValues.userName,
+                email: formValues.email,
                 regDate: new Date().toISOString().split('T')[0],
             };
 
@@ -72,17 +79,17 @@ const ReviewModal = ({ toggleModal, gymId }) => {
             if (reviewRes.RESULT === "SUCCESS") {
                 const reviewId = reviewRes.reviewId;
 
-                // Step 2: Upload images if there are any
                 if (images.length > 0) {
                     const formData = new FormData();
-                    images.forEach((image, index) => {
-                        formData.append('files', image);  // Use 'files' as the key
+                    images.forEach((image) => {
+                        formData.append('files', image);
                     });
 
                     await uploadReviewImages(reviewId, formData);
                 }
 
                 toggleModal();
+                onReviewAdded(reviewData);
             }
         } catch (error) {
             console.error("Failed to add review", error);
@@ -99,12 +106,10 @@ const ReviewModal = ({ toggleModal, gymId }) => {
                 <div className="flex flex-col h-96">
                     <div className="flex flex-col gap-1 justify-center items-center">
                         <div className="mb-2 font-semibold text-xl">
-                            리뷰작성
-                            <div className="mt-2 w-20 border-b-2 border-grayish-red border-opacity-20"></div>
+                            리뷰 작성
+                            <div className="mt-2 w-22 border-b-2 border-grayish-red border-opacity-20"></div>
                         </div>
-
-                        <div>
-                            <div className="flex justify-center gap-2">
+                        <div className="flex justify-center gap-2">
                             <div className="mx-5 flex flex-row-reverse justify-end text-2xl">
                                 {[...Array(5)].map((_, index) => {
                                     const ratingValue = index + 1;
@@ -129,49 +134,7 @@ const ReviewModal = ({ toggleModal, gymId }) => {
                                     );
                                 })}
                             </div>
-                            {/* <div class="mx-5 flex flex-row-reverse justify-end text-2xl">
-                                        <label for="score"></label>
-                                        <input type="radio" class="peer hidden" id="value5" value="5" name="score"
-                                        checked={formValues.rating === 5}
-                                            onChange={handleRatingChange} />
-                                        <label for="value5"
-                                        class="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-300">★</label>
-                                        <input type="radio" class="peer hidden" id="value4" value="4" name="score" 
-                                        checked={formValues.rating === 4}
-                                        onChange={handleRatingChange}/>
-                                        <label for="value4"
-                                        class="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-300">★</label>
-                                        <input type="radio" class="peer hidden" id="value3" value="3" name="score"
-                                        checked={formValues.rating === 3}
-                                        onChange={handleRatingChange} />
-                                        <label for="value3"
-                                        class="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-300">★</label>
-                                        <input type="radio" class="peer hidden" id="value2" value="2" name="score" 
-                                        checked={formValues.rating === 2}
-                                        onChange={handleRatingChange}/>
-                                        <label for="value2"
-                                        class="cursor-pointer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-300">★</label>
-                                        <input type="radio" class="peer hidden" id="value1" value="1" name="score"
-                                        checked={formValues.rating === 1}
-                                        onChange={handleRatingChange} />
-                                        <label for="value1"
-                                        class="cursor-pointer peer text-gray-400 peer-hover:text-yellow-400 peer-checked:text-yellow-300">★</label>
-                            </div> */}
-                            {/* {[1, 2, 3, 4, 5].map((value) => (
-                                    <label key={value}>
-                                        <input
-                                            type="radio"
-                                            name="rating"
-                                            value={value}
-                                            checked={formValues.rating === value}
-                                            onChange={handleRatingChange}
-                                        />
-                                        {value} ★
-                                    </label>
-                                ))} */}
-                            </div>
                         </div>
-
                         <label htmlFor="commentInput">
                             <TextArea
                                 label="후기를 작성해주세요."
@@ -183,20 +146,32 @@ const ReviewModal = ({ toggleModal, gymId }) => {
                             />
                         </label>
                     </div>
-
                     <div>
-                        <label className=" w-[400px] h-[40px] pl-2 flex text-sm items-center cursor-pointer">
+                        <label className="w-[400px] h-[40px] pl-2 flex text-sm items-center cursor-pointer">
                             <IoMdPhotos className="w-7 h-7 px-1" />
-                            이미지넣기
+                            이미지 넣기
                             <input
                                 type="file"
                                 className="hidden"
                                 onChange={handleImageChange}
-                                multiple  // 여러 개의 파일 선택 가능하도록
+                                multiple
                             />
-                           
                         </label>
                         <Button label="작성" width="100px" className="float-right" type="submit" />
+                    </div>
+                    <div className="mt-2 flex flex-wrap">
+                        {previewImages.map((src, index) => (
+                            <div key={index} className="relative">
+                                <img src={src} alt={`Preview ${index}`} className="w-24 h-24 object-cover m-1" />
+                                <button
+                                    type="button"
+                                    className="absolute top-0 right-0 bg-black text-white rounded-full w-6 h-6 flex items-center justify-center"
+                                    onClick={() => handleImageRemove(index)}
+                                >
+                                    <FaTimes />
+                                </button>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </form>

@@ -4,6 +4,7 @@ package com.dg.deukgeun.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import com.dg.deukgeun.dto.gym.GymImageDTO;
 import com.dg.deukgeun.entity.GymImage;
+import com.dg.deukgeun.entity.ReviewImage;
 import com.dg.deukgeun.repository.GymImageRepository;
+import com.dg.deukgeun.util.CustomFileUtil;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,7 @@ public class GymImageService {
     private final ModelMapper modelMapper;
     @Autowired
     private GymImageRepository gymImageRepository;
+    private final CustomFileUtil fileUtil; //  CustomFileUtil 추가
 
     //헬스장 이미지 입력
     public void insertList(List<GymImageDTO> dtoList){
@@ -45,6 +49,8 @@ public class GymImageService {
         return dtoList;
     }
     public void remove(String gymImage){
+        // Delete files from file system
+        fileUtil.deleteFile(gymImage);
         gymImageRepository.deleteById(gymImage);
     }
 }

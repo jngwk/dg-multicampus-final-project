@@ -8,4 +8,5 @@ import com.dg.deukgeun.entity.ReviewImage;
 
 public interface ReviewImageRepository extends JpaRepository<ReviewImage,String>{
     public List<ReviewImage> findByReviewId(Integer reviewId);
-}
+    void deleteByReviewId(Integer reviewId);
+} 

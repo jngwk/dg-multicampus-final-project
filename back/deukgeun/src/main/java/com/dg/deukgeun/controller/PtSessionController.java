@@ -81,6 +81,9 @@ public class PtSessionController {
         // 받아온 PT session을 저장
         Integer ptSessionId = ptSessionService.insert(workoutSessionDTO.getPtSession());
 
+        // 등록시 횟수 차감
+        personalTrainingService.update(workoutSessionDTO.getPtSession().getPt().getPtId());
+
         // PT session에 있는 userId를 workoutSessionDTO id 로 저장
         workoutSessionDTO.setUserId(workoutSessionDTO.getPtSession().getPt().getUser().getUserId());
 

@@ -74,7 +74,7 @@ export default function Input({
         {label}
       </label>
       <p
-        className={`${
+        className={`mb-2  ${
           error || message ? " translate-y-0" : " -translate-y-2"
         } absolute transition duration-200 px-2 text-xs ${
           error ? "text-red-500 mt-1" : "text-green-500"

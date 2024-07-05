@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 import Input from "../components/shared/Input";
-import { getGymList, searchGyms, GymInfo } from "../api/gymApi";
+import {
+  getGymList,
+  searchGyms,
+  GymInfo,
+  getProductList,
+  getTrainerList,
+  getTrainersWithInfo,
+} from "../api/gymApi";
 import { Scrollbar } from "react-scrollbars-custom";
 import useCustomNavigate from "../hooks/useCustomNavigate";
 import ChatModal from "./modals/ChatModal";
@@ -10,6 +17,7 @@ import { useLoginModalContext } from "../context/LoginModalContext";
 import { useAuth } from "../context/AuthContext";
 import Fallback from "./shared/Fallback";
 import MemberRegisterModal from "./modals/MemberRegisterModal";
+import MembershipPtSelectModal from "./modals/MembershipPtSelectModal";
 const { kakao } = window;
 
 const GymSearchMap = () => {
@@ -40,6 +48,7 @@ const GymSearchMap = () => {
   const [selectedGym, setSelectedGym] = useState([]);
   const [useCurrentLoc, setUseCurrentLoc] = useState(false);
   const [isChatModalVisible, setIsChatModalVisible] = useState(false);
+  const [isSelectModalVisible, setIsSelectModalVisible] = useState(false);
   const [mapLoading, setMapLoading] = useState(true);
   const { toggleLoginModal } = useLoginModalContext();
   const customNavigate = useCustomNavigate();
@@ -47,7 +56,7 @@ const GymSearchMap = () => {
   useEffect(() => {
     // console.log(userLocation);
     // 현재 위치 지도 표시
-    if (mapLoading) return;
+    if (mapLoading || !kakao) return;
     console.log(location.state);
     if (
       location.state &&
@@ -56,6 +65,7 @@ const GymSearchMap = () => {
       handleSearch();
       return;
     }
+    setFilter("general");
     if (navigator.geolocation) {
       setUseCurrentLoc(true);
       navigator.geolocation.getCurrentPosition(
@@ -123,10 +133,13 @@ const GymSearchMap = () => {
   };
 
   const convertAddressToLatLng = (address) => {
+    // console.log("address", address);
     return new Promise((resolve, reject) => {
       const geocoder = new kakao.maps.services.Geocoder();
       geocoder.addressSearch(address, function (result, status) {
+        // console.log("result in convert address", result, status);
         if (status === kakao.maps.services.Status.OK) {
+          // console.log("okay");
           resolve({ lat: result[0].y, lng: result[0].x });
         } else {
           reject(new Error("Failed to convert address to lat/lng"));
@@ -215,9 +228,11 @@ const GymSearchMap = () => {
       setGyms(res);
       const promises = res.map(async (gym) => {
         try {
-          const latlng = await convertAddressToLatLng(
-            gym.address + " " + gym.detailAddress
-          );
+          if (!gym.address) {
+            console.error("no gym address");
+            return;
+          }
+          const latlng = await convertAddressToLatLng(gym.address);
           return {
             // content
             content: (
@@ -241,7 +256,7 @@ const GymSearchMap = () => {
         // console.log("@@@@ results", results);
         setState((prev) => ({
           ...prev,
-          center: { lat: results[0].latlng.lat, lng: results[0].latlng.lng },
+          center: { lat: results[0]?.latlng?.lat, lng: results[0]?.latlng?.lng },
           isLoading: false,
         }));
       }
@@ -295,10 +310,34 @@ const GymSearchMap = () => {
     }
   };
 
+  const handleCenterView = async (gym) => {
+    try {
+      const products = await getProductList(gym.gymId); // Fetch complete gym data
+      const trainers = await getTrainersWithInfo(gym.gymId);
+      const gymWithProducts = {
+        ...gym,
+        productList: products,
+        trainerList: trainers,
+      };
+      setSelectedGym(gymWithProducts);
+      // setIsSelectModalVisible(true);
+      customNavigate("/centerView", { state: { gym: gymWithProducts } });
+    } catch (error) {
+      console.error("Error fetching gym data:", error);
+    }
+  };
   const handleRegister = async (gym) => {
     try {
-      const data = await GymInfo(gym.gymId); // Fetch complete gym data
-      customNavigate("/memberregister", { state: { gym: data } });
+      const products = await getProductList(gym.gymId); // Fetch complete gym data
+      const trainers = await getTrainersWithInfo(gym.gymId);
+      const gymWithProducts = {
+        ...gym,
+        productList: products,
+        trainerList: trainers,
+      };
+      setSelectedGym(gymWithProducts);
+      setIsSelectModalVisible(true);
+      // customNavigate("/memberregister", { state: { gym: gymWithProducts } });
     } catch (error) {
       console.error("Error fetching gym data:", error);
     }
@@ -314,8 +353,6 @@ const GymSearchMap = () => {
   //   setIsAlertModalVisible(false);
   //   setIsChatModalVisible(false);
   // };
-
-  const handleRegistertButton = () => {};
 
   return (
     <div className="relative w-full h-full">
@@ -400,41 +437,43 @@ const GymSearchMap = () => {
                     onClick={() => handleListClick(gym)}
                   >
                     <span className="text-blue-600">{gym.user.userName}</span>
-                    <span className="text-sm">
-                      {gym.operatingHours || "24시간 운영"}
-                    </span>
+                    <span className="text-sm">{gym.operatingHours || ""}</span>
+                    {/* <span className="text-sm">{gym.operatingHours || ""}</span> */}
                     <span className="text-ellipsis overflow-hidden text-sm">
                       {gym.address}
                     </span>
                     <div className="flex justify-evenly mt-3">
                       <button
                         className="border border-gray-500 py-2 px-4 text-xs rounded-md bg-grayish-red/30 hover:border-grayish-red hover:bg-grayish-red hover:text-white transition-all"
-                        onClick={() =>
-                          customNavigate("/centerView", { state: { gym: gym } })
-                        }
+                        onClick={() => handleCenterView(gym)}
                       >
                         상세보기
                       </button>
-                      <button
-                        className="border border-gray-500 py-2 px-4 text-xs rounded-md bg-grayish-red/30 hover:border-grayish-red hover:bg-grayish-red hover:text-white transition-all"
-                        onClick={() =>
-                          sessionStorage.getItem("isLoggedIn")
-                            ? handleContactButton(gym)
-                            : toggleLoginModal()
-                        }
-                      >
-                        문의하기
-                      </button>
-                      <button
-                        className="border border-gray-500 py-2 px-4 text-xs text-gray-800 rounded-md bg-bright-orange/50 hover:border-bright-orange/80 hover:bg-bright-orange/80 hover:text-white transition-all"
-                        onClick={() =>
-                          sessionStorage.getItem("isLoggedIn")
-                            ? handleRegister(gym)
-                            : toggleLoginModal()
-                        }
-                      >
-                        등록하기
-                      </button>
+                      {(!sessionStorage.getItem("isLoggedIn") ||
+                        userData?.role === "ROLE_GENERAL") && (
+                        <>
+                          <button
+                            className="border border-gray-500 py-2 px-4 text-xs rounded-md bg-grayish-red/30 hover:border-grayish-red hover:bg-grayish-red hover:text-white transition-all"
+                            onClick={() =>
+                              sessionStorage.getItem("isLoggedIn")
+                                ? handleContactButton(gym)
+                                : toggleLoginModal()
+                            }
+                          >
+                            문의하기
+                          </button>
+                          <button
+                            className="border border-gray-500 py-2 px-4 text-xs text-gray-800 rounded-md bg-bright-orange/50 hover:border-bright-orange/80 hover:bg-bright-orange/80 hover:text-white transition-all"
+                            onClick={() =>
+                              sessionStorage.getItem("isLoggedIn")
+                                ? handleRegister(gym)
+                                : toggleLoginModal()
+                            }
+                          >
+                            등록하기
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))
@@ -452,6 +491,12 @@ const GymSearchMap = () => {
       </div>
       {isChatModalVisible && sessionStorage.getItem("isLoggedIn") && (
         <ChatModal toggleModal={toggleChatModal} selectedGym={selectedGym} />
+      )}
+      {isSelectModalVisible && sessionStorage.getItem("isLoggedIn") && (
+        <MembershipPtSelectModal
+          toggleModal={() => setIsSelectModalVisible(false)}
+          selectedGym={selectedGym}
+        />
       )}
       {/* <MemberRegisterModal /> */}
     </div>

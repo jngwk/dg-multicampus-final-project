@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import Clock from "react-live-clock";
 import { FaAngleLeft, FaRegCalendarPlus } from "react-icons/fa";
+import Bprofile from "../../assets/blank_profile.png";
+
 import { LuSend } from "react-icons/lu";
 import {
   TbLayoutSidebarLeftCollapseFilled,
@@ -13,6 +15,12 @@ import profileImg from "../../assets/profileImg.jpg";
 import useWindowSize from "../../hooks/useWindowResize";
 import Loader from "../shared/Loader";
 import { format, isSameDay, parseISO } from "date-fns";
+import { getImage, getImageById } from "../../api/userInfoApi";
+import useProfileImage from "../../hooks/useProfileImage";
+import { getTrainerById } from "../../api/trainerApi";
+import CalendarModal from "../modals/CalendarModal";
+import { findMembership } from "../../api/membershipApi";
+import { findPT } from "../../api/ptApi";
 
 const Chatting = ({
   setIsChatVisible,
@@ -31,6 +39,10 @@ const Chatting = ({
   const [isOpen, setIsOpen] = useState(false); //userInfo Open/Close
   const windowSize = useWindowSize();
   // const [recipient, setRecipient ] = useState(chatRoom ? chatRoom.user.userId ?)
+  const { userImage, fetchUserImage } = useProfileImage();
+  const [gymName, setGymName] = useState();
+  const [isCalendarModalVisible, setIsCalendarModalVisible] = useState(false);
+  const [isMatch, setIsMatch] = useState(false);
   const roles = {
     ROLE_GENERAL: "회원",
     ROLE_GYM: "헬스장",
@@ -60,7 +72,50 @@ const Chatting = ({
   //마지막 메시지로 이동
   useEffect(() => {
     messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    console.log("chat receiver", chatReceiver);
   }, [messages]);
+
+  useEffect(() => {
+    setIsMatch(false);
+    const getTrainer = async () => {
+      try {
+        const trainer = await getTrainerById(chatReceiver.userId);
+        console.log("trainer in chat", trainer);
+        if (trainer) {
+          setGymName(trainer.gym.user.userName);
+        }
+      } catch (error) {
+        console.log("error fetching trainer");
+      }
+    };
+    const checkIsMatch = async () => {
+      try {
+        if (userData.role === "ROLE_GENERAL") {
+          const pt = await findPT();
+          console.log("@@@@@@@@@@@@@@@@@@@@@@@일반", pt);
+          if (pt.trainer.user.userId === chatReceiver.userId) {
+            setIsMatch(true);
+          }
+        } else {
+          const pt = await findPT(chatReceiver.userId);
+          console.log("@@@@@@@@@@@@@@@@@@@@@@@트레이너", pt);
+          if (pt.trainer.user.userId === userData.userId) setIsMatch(true);
+        }
+      } catch (error) {
+        console.log("error while checking match", error);
+      }
+    };
+    if (chatReceiver.role === "ROLE_TRAINER") {
+      getTrainer();
+    }
+    if (
+      (chatReceiver.role === "ROLE_GENERAL" &&
+        userData.role === "ROLE_TRAINER") ||
+      (chatReceiver.role === "ROLE_TRAINER" && userData.role === "ROLE_GENERAL")
+    ) {
+      checkIsMatch();
+    }
+  }, [chatReceiver]);
 
   return (
     <>
@@ -75,7 +130,6 @@ const Chatting = ({
               <FaAngleLeft className="m-3" size="22" />
             </button>
             <div className="flex items-center gap-2">
-              {/* TODO 헬스장 이름 추가 */}
               <span className="inline-block font-semibold">
                 {chatReceiver.userName}
               </span>
@@ -113,9 +167,11 @@ const Chatting = ({
           <div className="w-full h-14 flex items-center">
             <div className="w-full h-11 border-y-2 border-grayish-red">
               <div className="flex space-x-3 m-2">
-                <button>
-                  <FaRegCalendarPlus size="24" color="#4E4C4F" />
-                </button>
+                {isMatch && (
+                  <button onClick={() => setIsCalendarModalVisible(true)}>
+                    <FaRegCalendarPlus size="24" color="#4E4C4F" />
+                  </button>
+                )}
                 <input
                   className="w-full outline-none"
                   type="text"
@@ -130,7 +186,17 @@ const Chatting = ({
             </div>
           </div>
         </div>
-
+        {isCalendarModalVisible && (
+          <CalendarModal
+            toggleModal={() => setIsCalendarModalVisible(false)}
+            receiverId={
+              userData.role === "ROLE_GENERAL" &&
+              chatReceiver.role === "ROLE_TRAINER"
+                ? chatReceiver.userId
+                : null
+            }
+          />
+        )}
         {isOpen && (
           <div
             className={`flex flex-col justify-center items-center ${
@@ -138,24 +204,36 @@ const Chatting = ({
             } mx-1 border-2 rounded-lg border-grayish-red transition-all duration-300`}
           >
             <div className="p-3 flex flex-col items-center ">
-              <img
-                className="w-24 h-24 rounded-full object-cover"
-                src={profileImg}
-                alt="profile"
-              />
+              {chatReceiver.userImage ? (
+                <img
+                  className="w-24 h-24 rounded-full object-cover"
+                  src={`images/${chatReceiver.userImage.userImage}`}
+                  alt="profile"
+                />
+              ) : (
+                <box-icon
+                  name="user-circle"
+                  type="solid"
+                  size="lg"
+                  color="#9f8d8d"
+                  style={{ width: "112px", height: "112px" }}
+                ></box-icon>
+              )}
               <div className="text-sm font-semibold p-3">
                 {chatReceiver.userName}
               </div>
             </div>
 
             <div className="p-3 text-sm">
-              <div className="flex items-center whitespace-pre-line m-2 p-2">
-                <GiGymBag className="mr-10" size="28" />
-                <div className="flex-col">
-                  <p className="text-sm">헬스장</p>
-                  <p className="text-xs">바디채널 OO점</p>
+              {chatReceiver.role === "ROLE_TRAINER" && (
+                <div className="flex items-center whitespace-pre-line m-2 p-2">
+                  <GiGymBag className="mr-10" size="28" />
+                  <div className="flex-col">
+                    <p className="text-sm">헬스장</p>
+                    <p className="text-xs">{gymName}</p>
+                  </div>
                 </div>
-              </div>
+              )}
               <div className="flex items-center whitespace-pre-line m-2 p-2">
                 <MdAttachEmail className="mr-10" size="28" />
                 <div className="flex-col">
@@ -163,13 +241,15 @@ const Chatting = ({
                   <p className="text-xs">{chatReceiver.email}</p>
                 </div>
               </div>
-              <div className="flex items-center whitespace-pre-line m-2 p-2">
-                <FaMapLocationDot className="mr-10" size="28" />
-                <div className="flex-col">
-                  <p className="text-sm">주소</p>
-                  <p className="text-xs">{chatReceiver.address}</p>
+              {chatReceiver.address && (
+                <div className="flex items-center whitespace-pre-line m-2 p-2">
+                  <FaMapLocationDot className="mr-10" size="28" />
+                  <div className="flex-col">
+                    <p className="text-sm">주소</p>
+                    <p className="text-xs">{chatReceiver.address}</p>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         )}

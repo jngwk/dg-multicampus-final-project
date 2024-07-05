@@ -7,6 +7,8 @@ import TextArea from "../components/shared/TextArea";
 import Button from "../components/shared/Button";
 import Fallback from "../components/shared/Fallback";
 import CustomParticles from "../components/shared/CustomParticles";
+import AlertModal from "../components/modals/AlertModal";
+import useCustomNavigate from "../hooks/useCustomNavigate";
 
 const initState = {
   userName: "",
@@ -19,6 +21,8 @@ const QnaForm = () => {
   const { userData, loading } = useAuth();
   const { errors, validateForm } = useQnaValidation();
   const [formValues, setFormValues] = useState(initState);
+  const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
+  const customNavigate = useCustomNavigate();
 
   useEffect(() => {
     if (userData) {
@@ -57,10 +61,10 @@ const QnaForm = () => {
       const res = await registerInquery(formData);
       console.log("Response:", res);
 
+      setIsAlertModalVisible(true);
+
       // Optionally reset form after successful submission
       setFormValues(initState);
-
-
     } catch (error) {
       console.error("Error registering form data", error);
       // Handle error, e.g., show an error message to the user
@@ -73,7 +77,7 @@ const QnaForm = () => {
 
   return (
     <>
-      <div className="w-full min-h-[90dvh] flex justify-center items-center">
+      <div className="w-full min-h-[86dvh] flex justify-center items-center">
         <div className="mx-auto xl:grid xl:grid-cols-2 xl:w-[1000px] flex-col flex justify-center items-center">
           <div className="w-[400px] p-11">
             <header className="text-5xl mb-11 font-bold">문의하기</header>
@@ -137,6 +141,13 @@ const QnaForm = () => {
           </div>
         </div>
       </div>
+      {isAlertModalVisible && (
+        <AlertModal
+          headerEmoji={"✔️"}
+          line1={"문의하기가 완료됐습니다!"}
+          button1={{ label: "완료", onClick: () => customNavigate("/") }}
+        />
+      )}
     </>
   );
 };
