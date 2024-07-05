@@ -7,6 +7,7 @@ import {
   GymInfo,
   getProductList,
   getTrainerList,
+  getTrainersWithInfo,
 } from "../api/gymApi";
 import { Scrollbar } from "react-scrollbars-custom";
 import useCustomNavigate from "../hooks/useCustomNavigate";
@@ -310,7 +311,7 @@ const GymSearchMap = () => {
   const handleCenterView = async (gym) => {
     try {
       const products = await getProductList(gym.gymId); // Fetch complete gym data
-      const trainers = await getTrainerList(gym.gymId);
+      const trainers = await getTrainersWithInfo(gym.gymId);
       const gymWithProducts = {
         ...gym,
         productList: products,
@@ -326,7 +327,7 @@ const GymSearchMap = () => {
   const handleRegister = async (gym) => {
     try {
       const products = await getProductList(gym.gymId); // Fetch complete gym data
-      const trainers = await getTrainerList(gym.gymId);
+      const trainers = await getTrainersWithInfo(gym.gymId);
       const gymWithProducts = {
         ...gym,
         productList: products,
@@ -350,8 +351,6 @@ const GymSearchMap = () => {
   //   setIsAlertModalVisible(false);
   //   setIsChatModalVisible(false);
   // };
-
-  const handleRegistertButton = () => {};
 
   return (
     <div className="relative w-full h-full">

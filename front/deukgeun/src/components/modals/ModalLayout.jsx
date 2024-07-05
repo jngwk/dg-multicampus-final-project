@@ -14,7 +14,7 @@ const ModalLayout = ({ children, toggleModal, className }) => {
       onClick={toggleModal}
     >
       <div
-        className={`min-h-80 h-fit w-[560px] bg-white rounded-3xl flex flex-col justify-center items-center md:py-20 md:px-20 py-16 px-6 ${className}`}
+        className={`min-h-80 h-fit min-w-[560px] bg-white rounded-3xl flex flex-col justify-center items-center md:py-20 md:px-20 py-16 px-6 ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         {children}

@@ -92,7 +92,8 @@ public class SecurityConfig {
                                 "/api/user/uploadImage",
                                 "/api/user/updateImage",
                                 "/api/gym/search/**", "/api/gym/get/**", "/api/gym/getList",
-                                "/api/gym/getListWithPaging", "/api/reviews/reviewList/**", "/api/trainer/get/**")
+                                "/api/gym/getListWithPaging", "/api/reviews/reviewList/**", "/api/trainer/get/**",
+                                "/api/gym/trainersWithInfo/**")
                         .permitAll() // 이 API는 인증 없이 접근 가능하도록 설정합니다.
                         .requestMatchers("/api/user/signUp/gym", "/api/user/signUp/general",
                                 "/api/gym/crNumberCheck", "/api/gym/crNumberCheck/**",
