@@ -15,6 +15,15 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import ChartDemo from "../ChartDemo";
+import { getGymResList, getGymResListByLocation } from "../../api/gymApi";
+import { useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import healthImage1 from "../../assets/healthImage1.jpg"
+
+import healthImage2 from "../../assets/healthImage2.jpg";
+import healthImage3 from "../../assets/healthImage3.jpg";
+import healthImage4 from "../../assets/healthImage4.jpg";
+import healthImage5 from "../../assets/healthImage5.jpg";
 // import calendarDemo from "../../assets/calendar-demo.webp";
 
 const getInitialEvents = () => {
@@ -71,15 +80,7 @@ const getInitialEvents = () => {
     },
   ];
 };
-import { getGymResList, getGymResListByLocation } from "../../api/gymApi";
-import { useLocation } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import healthImage1 from "../../assets/healthImage1.jpg"
 
-import healthImage2 from "../../assets/healthImage2.jpg";
-import healthImage3 from "../../assets/healthImage3.jpg";
-import healthImage4 from "../../assets/healthImage4.jpg";
-import healthImage5 from "../../assets/healthImage5.jpg";
 
 const { kakao } = window;
 //  TODO snap scroll 안됨

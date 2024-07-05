@@ -197,19 +197,35 @@ const PtRegister = () => {
   const toggleTrainerDropdown = () => {
     setIsTrainerDropdownOpen((prev) => !prev);
   };
-
+  
   const onClickPeriod = (e) => {
     const { value } = e.target;
     const selectedProduct = gym.productList.find(
       (product) => product.productName === value
     );
-    console.log(selectedProduct);
-    setSelectedProductName(value);
-    setSelectedProductPrice(selectedProduct.price);
-    setProductId(selectedProduct.productId);
-    setDateRange(selectedProduct);
-    setIsDropdownOpen(); // 드롭다운 닫기
+    console.log("Selected product:", selectedProduct);
+    if (selectedProduct) {
+      setSelectedProductName(value);
+      setSelectedProductPrice(selectedProduct.price);
+      setProductId(selectedProduct.productId);
+      setDateRange(selectedProduct);
+      console.log("Updated price in onClickPeriod:", selectedProduct.price);
+    } else {
+      console.log("Product not found:", value);
+    }
+    setIsDropdownOpen(false);
   };
+  useEffect(() => {
+    if (selectedProductName && gym.productList) {
+      const selectedProduct = gym.productList.find(
+        (product) => product.productName === selectedProductName
+      );
+      if (selectedProduct) {
+        setSelectedProductPrice(selectedProduct.price);
+        console.log("Updated price:", selectedProduct.price);
+      }
+    }
+  }, [selectedProductName, gym.productList]);
 
   const onClickTrainer = (e) => {
     const { value } = e.target;
@@ -237,6 +253,7 @@ const PtRegister = () => {
       setDateRange(initialProduct);
     }
   }, [regDate, selectedProductName, gym.productList]);
+  
 
   const handleRegDateChange = (date) => {
     const today = new Date();
