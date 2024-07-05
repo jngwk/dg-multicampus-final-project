@@ -1,11 +1,11 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
 
-export const API_SERVER_HOST = "http://localhost:8282";
-const userPrefix = `${API_SERVER_HOST}/api/user`;
-const gymPrefix = `${API_SERVER_HOST}/api/gym`;
-// const userPrefix = `/api/user`; //user proxy 사용
-// const gymPrefix = `/api/gym`; //gym proxy 사용
+// export const API_SERVER_HOST = "http://localhost:8282";
+// const userPrefix = `${API_SERVER_HOST}/api/user`;
+// const gymPrefix = `${API_SERVER_HOST}/api/gym`;
+const userPrefix = `/api/user`; //user proxy 사용
+const gymPrefix = `/api/gym`; //gym proxy 사용
 
 export const signUpGeneral = async (userData) => {
   try {
