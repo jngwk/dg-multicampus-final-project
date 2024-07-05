@@ -1,8 +1,8 @@
 import axios from "axios";
 
-export const API_SERVER_HOST = "http://localhost:8282";
-const prefix = `${API_SERVER_HOST}/api/trainer`;
-// const prefix = `/api/trainer`; // user proxy 사용
+// export const API_SERVER_HOST = "http://localhost:8282";
+// const prefix = `${API_SERVER_HOST}/api/trainer`;
+const prefix = `/api/trainer`; // user proxy 사용
 
 export const getTrainerById = async (userId) => {
   try {
@@ -24,7 +24,10 @@ export const getTrainerInfo = async (userId) => {
 
 export const updateTrainerUserDetails = async (trainerId, userName, email) => {
   try {
-    const response = await axios.put(`${prefix}/updateUserDetails/${trainerId}`, { userName, email });
+    const response = await axios.put(
+      `${prefix}/updateUserDetails/${trainerId}`,
+      { userName, email }
+    );
     return response.data;
   } catch (error) {
     throw new Error("Update failed");
