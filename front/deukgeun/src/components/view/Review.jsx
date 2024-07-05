@@ -21,11 +21,12 @@ const ReviewContent = ({
   onReviewAdded,
   onReviewDeleted,
   onReviewUpdated,
+  userData,
 }) => {
   const [reviews, setReviews] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentReview, setCurrentReview] = useState(null);
-  const { userData } = useAuth();
+  // const { userData } = useAuth();
   const [colorMapping, setColorMapping] = useState({});
 
   useEffect(() => {
@@ -104,73 +105,85 @@ const ReviewContent = ({
 
   return (
     <div className="flex flex-wrap justify-center">
-      {reviews.map((item) => {
-        const colorClass = colorMapping[item.id] || getColorClassById(item.id);
-        return (
-          <div
-            key={item.id}
-            className={classNames(
-              "sticky-note",
-              colorClass,
-              "w-64 h-64 p-6 m-4 shadow-lg transform rotate-2 transition duration-300 ease-in-out hover:rotate-0 hover:scale-105 relative"
-            )}
-          >
-            <BsPinAngle className="absolute -top-3 -left-3 text-gray-700 text-2xl" />
-            <div className="flex items-center mb-3">
-              <div>
-                {userData &&
-                userData.userId === item.userId &&
-                userData.userImage?.userImage ? (
-                  <img
-                    src={`/images/${userData.userImage.userImage}`}
-                    alt="Profile"
-                    className="w-8 h-8 rounded-full"
-                  />
-                ) : (
-                  <box-icon
-                    name="user-circle"
-                    type="solid"
-                    size="md"
-                    color="#9f8d8d"
-                  ></box-icon>
-                )}
+      {reviews && reviews.length > 0 ? (
+        reviews.map((item) => {
+          const colorClass =
+            colorMapping[item.id] || getColorClassById(item.id);
+          return (
+            <div
+              key={item.id}
+              className={classNames(
+                "sticky-note",
+                colorClass,
+                "w-64 h-64 p-6 m-4 shadow-lg transform rotate-2 transition duration-300 ease-in-out hover:rotate-0 hover:scale-105 relative"
+              )}
+            >
+              <BsPinAngle className="absolute -top-3 -left-3 text-gray-700 text-2xl" />
+              <div className="flex items-center mb-3">
+                <div>
+                  {userData &&
+                  userData.userId === item.userId &&
+                  userData.userImage?.userImage ? (
+                    <img
+                      src={`/images/${userData.userImage.userImage}`}
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full"
+                    />
+                  ) : (
+                    <box-icon
+                      name="user-circle"
+                      type="solid"
+                      size="md"
+                      color="#9f8d8d"
+                    ></box-icon>
+                  )}
+                </div>
+                <div className="font-bold ml-3 mr-7 text-sm">
+                  {item.userName}
+                </div>
+                <div className="mb-2">{renderStars(item.rating)}</div>
               </div>
-              <div className="font-bold ml-3 mr-7 text-sm">{item.userName}</div>
-              <div className="mb-2">{renderStars(item.rating)}</div>
-            </div>
 
-            <p className="text-sm mb-2 h-20 overflow-y-auto">{item.comment}</p>
-            {item.images && item.images.length > 0 && (
-              <div className="flex space-x-2 mt-2">
-                {item.images.map((image, idx) => (
-                  <img
-                    key={idx}
-                    src={`/images/${image}`}
-                    alt={`Review Image ${idx}`}
-                    className="w-24 h-22 object-cover rounded-lg border-gray-200 border-2"
-                  />
-                ))}
-              </div>
-            )}
-            {userData && userData.userId === item.userId && (
-              <div className="flex space-x-2 mt-2 absolute bottom-2 right-2">
-                <button
-                  onClick={() => handleEdit(item)}
-                  className="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600"
-                >
-                  수정
-                </button>
-                <button
-                  onClick={() => handleDelete(item.id, item.images)}
-                  className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600"
-                >
-                  삭제
-                </button>
-              </div>
-            )}
-          </div>
-        );
-      })}
+              <p className="text-sm mb-2 h-20 overflow-y-auto">
+                {item.comment}
+              </p>
+              {item.images && item.images.length > 0 && (
+                <div className="flex space-x-2 mt-2">
+                  {item.images.map((image, idx) => (
+                    <img
+                      key={idx}
+                      src={`/images/${image}`}
+                      alt={`Review Image ${idx}`}
+                      className="w-24 h-22 object-cover rounded-lg border-gray-200 border-2"
+                    />
+                  ))}
+                </div>
+              )}
+              {userData && userData.userId === item.userId && (
+                <div className="flex space-x-2 mt-2 absolute bottom-2 right-2">
+                  <button
+                    onClick={() => handleEdit(item)}
+                    className="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600"
+                  >
+                    수정
+                  </button>
+                  <button
+                    onClick={() => handleDelete(item.id, item.images)}
+                    className="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600"
+                  >
+                    삭제
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })
+      ) : (
+        <div className="flex flex-col gap-10 justify-center items-center h-[618px] w-[1000px]">
+          <span className="text-4xl">😔</span>
+          <span className="text-xl">등록된 리뷰가 없습니다</span>
+        </div>
+      )}
       {isModalOpen && currentReview && (
         <ReviewEditModal
           toggleModal={handleModalClose}
@@ -189,12 +202,14 @@ const Review = ({ gymId }) => {
   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
+  const { userData } = useAuth();
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
         const data = await getReviews(gymId);
         setReviews(data);
+        console.log("@@@ reviews", data);
       } catch (error) {
         console.error("Error fetching reviews:", error);
       }
@@ -237,19 +252,21 @@ const Review = ({ gymId }) => {
             리뷰
             <div className="mt-2 w-16 border-b-2 border-grayish-red border-opacity-20"></div>
           </div>
-          <div>등록 리뷰 수: {reviews.length}</div>
+          <div>등록 리뷰 수: {reviews?.length}</div>
         </div>
-        <button
-          className="absolute top-12 right-0 flex items-center mr-5"
-          onClick={toggleModal}
-        >
-          <div className="hover:font-bold">리뷰작성</div>
-          <MdOutlineRateReview
-            className="mx-1 mb-1"
-            size="25"
-            color="#9F8D8D"
-          />
-        </button>
+        {reviews?.filter((r) => r.userId === userData?.userId).length === 0 && (
+          <button
+            className="absolute top-12 right-0 flex items-center mr-5"
+            onClick={toggleModal}
+          >
+            <div className="hover:font-bold">리뷰작성</div>
+            <MdOutlineRateReview
+              className="mx-1 mb-1"
+              size="25"
+              color="#9F8D8D"
+            />
+          </button>
+        )}
         {isModalVisible && (
           <ReviewModal
             toggleModal={toggleModal}
@@ -258,13 +275,14 @@ const Review = ({ gymId }) => {
           />
         )}
       </div>
-      <div className="w-full p-5 mb-10 flex justify-center bg-grayish-red bg-opacity-20 border-y border-grayish-red">
+      <div className="w-full min-h-[700px] p-5 mb-10 flex justify-center bg-grayish-red bg-opacity-20 border-y border-grayish-red">
         <div className="w-full flex justify-center flex-wrap overflow-y-auto scrollbar-hide">
           <ReviewContent
             gymId={gymId}
             onReviewAdded={handleReviewAdded}
             onReviewDeleted={handleReviewDeleted}
             onReviewUpdated={handleReviewUpdated}
+            userData={userData}
           />
         </div>
       </div>

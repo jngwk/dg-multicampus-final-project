@@ -24,7 +24,10 @@ export const getTrainerInfo = async (userId) => {
 
 export const updateTrainerUserDetails = async (trainerId, userName, email) => {
   try {
-    const response = await axios.put(`${prefix}/updateUserDetails/${trainerId}`, { userName, email });
+    const response = await axios.put(
+      `${prefix}/updateUserDetails/${trainerId}`,
+      { userName, email }
+    );
     return response.data;
   } catch (error) {
     throw new Error("Update failed");
