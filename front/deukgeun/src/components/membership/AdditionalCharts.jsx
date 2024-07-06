@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { Pie } from "react-chartjs-2";
+import chartCenterImage from "../../assets/chartCenterImage.png";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -9,6 +10,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 ChartJS.register(
   ArcElement,
@@ -16,7 +18,8 @@ ChartJS.register(
   LinearScale,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  ChartDataLabels
 );
 
 const colors = {
@@ -71,6 +74,18 @@ const baseOptions = {
         weight: 'bold',
       },
     },
+    datalabels: {
+      formatter: (value, context) => {
+        const total = context.chart.data.datasets[0].data.reduce((acc, data) => acc + data, 0);
+        const percentage = ((value / total) * 100).toFixed(1);
+        return `${percentage}%`;
+      },
+      color: '#fff',
+      font: {
+        weight: 'bold',
+        size: 14,
+      },
+    },
   },
 };
 
@@ -81,7 +96,7 @@ const AdditionalCharts = ({ stats }) => {
         if (!acc.memberReasonByGender[userGender]) {
           acc.memberReasonByGender[userGender] = {};
         }
-        acc.memberReasonByGender[userGender][userMemberReason] = 
+        acc.memberReasonByGender[userGender][userMemberReason] =
           (acc.memberReasonByGender[userGender][userMemberReason] || 0) + 1;
 
         acc.genderRatio[userGender === "남성" ? "male" : "female"]++;
@@ -94,11 +109,21 @@ const AdditionalCharts = ({ stats }) => {
 
   const createMemberReasonData = (gender) => {
     const genderKey = gender.toLowerCase() === '남성' ? 'male' : 'female';
+    const data = memberReasonByGender[gender] || {};
+    const total = Object.values(data).reduce((sum, value) => sum + value, 0);
+
+    const sortedData = Object.entries(data)
+      .sort((a, b) => b[1] - a[1])
+      .reduce((obj, [key, value]) => {
+        obj[key] = value;
+        return obj;
+      }, {});
+
     return {
-      labels: Object.keys(memberReasonByGender[gender] || {}),
+      labels: Object.keys(sortedData),
       datasets: [
         {
-          data: Object.values(memberReasonByGender[gender] || {}),
+          data: Object.values(sortedData),
           backgroundColor: colors[genderKey].backgroundColor,
           borderColor: colors[genderKey].borderColor,
           borderWidth: 1,
@@ -107,57 +132,105 @@ const AdditionalCharts = ({ stats }) => {
     };
   };
 
-  const renderPieChart = (data, title) => (
-    <div className="bg-white p-6 rounded-lg shadow-lg h-[50dvh] flex justify-center items-center">
-      <Pie
-        data={data}
-        options={{
-          ...baseOptions,
-          plugins: {
-            ...baseOptions.plugins,
-            title: { ...baseOptions.plugins.title, text: title },
-          },
-        }}
-      />
-    </div>
-  );
-
   const totalMembers = genderRatio.male + genderRatio.female;
   const getPercentage = (value) => ((value / totalMembers) * 100).toFixed(1);
 
-  const GenderRatioChart = () => {
-    const malePercentage = getPercentage(genderRatio.male);
-    const femalePercentage = getPercentage(genderRatio.female);
-
-    return (
-      <div className="bg-white p-6 rounded-lg shadow-lg h-[50dvh] flex justify-center items-center">
-        <h2 className="text-lg font-semibold mb-4 text-center">남녀 회원 비율</h2>
-        <div className="relative">
-          <svg width="100%" height="100%" viewBox="0 0 200 100">
-            {/* 여성 아이콘 */}
-            <svg x="10" y="25" width="50" height="50" viewBox="0 0 24 24" fill="#FF69B4">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-            </svg>
-            <rect x="60" y="45" width={femalePercentage} height="10" fill="#FF69B4" />
-            <text x="60" y="40" fontSize="12" fill="#333">{femalePercentage}%</text>
-            
-            {/* 남성 아이콘 */}
-            <svg x="140" y="25" width="50" height="50" viewBox="0 0 24 24" fill="#4169E1">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-            </svg>
-            <rect x={140 - malePercentage} y="45" width={malePercentage} height="10" fill="#4169E1" />
-            <text x={140 - malePercentage} y="40" fontSize="12" fill="#333">{malePercentage}%</text>
-          </svg>
-        </div>
-      </div>
-    );
+  const calculateStats = (gender) => {
+    const genderStats = stats.filter(s => s.userGender === gender);
+    return {
+      avgAge: (genderStats.reduce((sum, s) => sum + s.userAge, 0) / genderStats.length).toFixed(1),
+      avgWorkoutDuration: (Math.round((genderStats.reduce((sum, s) => sum + s.userWorkoutDuration, 0) / genderStats.length) * 10) / 10),
+      topReason: Object.entries(genderStats.reduce((acc, s) => {
+        acc[s.userMemberReason] = (acc[s.userMemberReason] || 0) + 1;
+        return acc;
+      }, {})).sort((a, b) => b[1] - a[1])[0][0]
+    };
   };
+
+  const maleStats = calculateStats('남성');
+  const femaleStats = calculateStats('여성');
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {renderPieChart(createMemberReasonData("여성"), "여성 등록 사유")}
-      <GenderRatioChart />
-      {renderPieChart(createMemberReasonData("남성"), "남성 등록 사유")}
+      <div className="bg-white p-6 rounded-lg shadow-lg h-[50dvh] flex justify-center items-center">
+        <Pie
+          data={createMemberReasonData("남성")}
+          options={{
+            ...baseOptions,
+            plugins: {
+              ...baseOptions.plugins,
+              title: { ...baseOptions.plugins.title, text: "남성 등록 사유" },
+              tooltip: {
+                callbacks: {
+                  label: (context) => {
+                    const label = context.label || '';
+                    const value = context.raw || 0;
+                    const total = context.dataset.data.reduce((acc, data) => acc + data, 0);
+                    const percentage = ((value / total) * 100).toFixed(1);
+                    return `${label}: ${percentage}% (${value})`;
+                  }
+                }
+              }
+            },
+          }}
+        />
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold mb-6 text-center">남녀 표준모델</h2>
+        <div className="flex justify-between items-center">
+          <div className="text-center text-blue-600 w-1/4">
+            <h3 className="font-bold text-xl mb-2">남성</h3>
+          </div>
+          <div className="w-1/2 relative">
+            <img src={chartCenterImage} alt="Couple" className="w-full" />
+          </div>
+          <div className="text-center text-red-500 w-1/4">
+            <h3 className="font-bold text-xl mb-2">여성</h3>
+          </div>
+        </div>
+        <div className="mt-6">
+          <div className="flex justify-between items-center my-2">
+            <span className="w-1/4 text-right pr-4">{maleStats.avgAge}세</span>
+            <span className="w-1/2 text-center font-bold">평균 나이</span>
+            <span className="w-1/4 text-left pl-4">{femaleStats.avgAge}세</span>
+          </div>
+          <div className="flex justify-between items-center my-2">
+            <span className="w-1/4 text-right pr-4">{maleStats.avgWorkoutDuration}년</span>
+            <span className="w-1/2 text-center font-bold">평균 운동 경력</span>
+            <span className="w-1/4 text-left pl-4">{femaleStats.avgWorkoutDuration}년</span>
+          </div>
+          <div className="flex justify-between items-center my-2">
+            <span className="w-1/4 text-right pr-4">{maleStats.topReason}</span>
+            <span className="w-1/2 text-center font-bold">주요 등록 이유</span>
+            <span className="w-1/4 text-left pl-4">{femaleStats.topReason}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-lg h-[50dvh] flex justify-center items-center">
+        <Pie
+          data={createMemberReasonData("여성")}
+          options={{
+            ...baseOptions,
+            plugins: {
+              ...baseOptions.plugins,
+              title: { ...baseOptions.plugins.title, text: "여성 등록 사유" },
+              tooltip: {
+                callbacks: {
+                  label: (context) => {
+                    const label = context.label || '';
+                    const value = context.raw || 0;
+                    const total = context.dataset.data.reduce((acc, data) => acc + data, 0);
+                    const percentage = ((value / total) * 100).toFixed(1);
+                    return `${label}: ${percentage}% (${value})`;
+                  }
+                }
+              }
+            },
+          }}
+        />
+      </div>
     </div>
   );
 };

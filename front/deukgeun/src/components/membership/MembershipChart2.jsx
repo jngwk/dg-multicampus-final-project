@@ -1,10 +1,11 @@
 import React from 'react';
 import { Chart as ChartJS, TimeScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import zoomPlugin from 'chartjs-plugin-zoom';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Scatter } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
 
-ChartJS.register(TimeScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, zoomPlugin);
+ChartJS.register(TimeScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, zoomPlugin, ChartDataLabels);
 
 const MembershipChart2 = ({ ptSessions, ptStart, ptEnd }) => {
   const filteredSessions = ptSessions.filter(session => {
@@ -18,29 +19,49 @@ const MembershipChart2 = ({ ptSessions, ptStart, ptEnd }) => {
     return acc;
   }, {});
 
-  const scatterData = filteredSessions.map(session => ({
-    x: new Date(session.workoutDate),
-    y: session.startTime,
-    r: sessionCounts[session.workoutDate] * 3, // 세션 수에 비례한 크기
-  }));
+  // Calculate density
+  const density = {};
+  filteredSessions.forEach(session => {
+    const key = `${session.workoutDate}-${session.startTime}`;
+    density[key] = (density[key] || 0) + 1;
+  });
 
-  const lineData = Object.entries(sessionCounts).map(([date, count]) => ({
-    x: new Date(date),
-    y: count,
-  }));
+  const scatterData = filteredSessions.map(session => {
+    const sessionDate = new Date(session.workoutDate);
+    sessionDate.setHours(0, 0, 0, 0); // Set time to 00:00:00
+    const key = `${session.workoutDate}-${session.startTime}`;
+    const opacity = Math.min(1, density[key] / 10); // Adjust opacity based on density
+    return {
+      x: sessionDate,
+      y: session.startTime,
+      r: sessionCounts[session.workoutDate] * 3, // 세션 수에 비례한 크기
+      backgroundColor: `rgba(75, 192, 192, ${opacity})`, // Adjust background color opacity
+    };
+  });
+
+  const lineData = Object.entries(sessionCounts).map(([date, count]) => {
+    const sessionDate = new Date(date);
+    sessionDate.setHours(0, 0, 0, 0); // Set time to 00:00:00
+    return {
+      x: sessionDate,
+      y: count,
+    };
+  });
 
   const data = {
     datasets: [
       {
         type: 'scatter',
-        label: 'PT 시간',
+        label: 'PT 선호 시간',
         data: scatterData,
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
         borderColor: 'rgba(75, 192, 192, 1)',
         borderWidth: 1,
         pointRadius: (context) => context.raw.r,
         pointHoverRadius: (context) => context.raw.r + 2,
         yAxisID: 'y',
+        datalabels: {
+          display: false, // Disable datalabels for the scatter dataset
+        },
       },
       {
         type: 'line',
@@ -52,6 +73,9 @@ const MembershipChart2 = ({ ptSessions, ptStart, ptEnd }) => {
         fill: true,
         yAxisID: 'y1',
         tension: 0.1,
+        datalabels: {
+          display: false, // Disable datalabels for the scatter dataset
+        },
       },
     ],
   };
@@ -90,7 +114,7 @@ const MembershipChart2 = ({ ptSessions, ptStart, ptEnd }) => {
         callbacks: {
           label: (context) => {
             if (context.datasetIndex === 0) {
-              return `날짜: ${context.raw.x.toLocaleDateString()}, 시간: ${context.raw.y}, 세션 수: ${context.raw.r / 3}`;
+              return `날짜: ${context.raw.x.toLocaleDateString()}, 시간: ${context.raw.y},하루 PT 회원 수: ${context.raw.r / 3}`;
             } else {
               return `날짜: ${context.raw.x.toLocaleDateString()}, PT 수: ${context.raw.y}`;
             }
@@ -136,7 +160,7 @@ const MembershipChart2 = ({ ptSessions, ptStart, ptEnd }) => {
         },
         title: {
           display: true,
-          text: 'PT 시간',
+          text: 'PT 선호 시간',
         },
         position: 'left',
         ticks: {

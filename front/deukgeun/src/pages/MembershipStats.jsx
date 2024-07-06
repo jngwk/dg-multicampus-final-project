@@ -8,6 +8,7 @@ import Button from "../components/shared/Button";
 import { GymInfo } from "../api/gymApi";
 import { getMembershipStats } from "../api/membershipApi";
 import { getPtSession } from "../api/ptApi";
+import Fallback from "../components/shared/Fallback"
 
 const MembershipStats = () => {
   const [filterToggle, setFilterToggle] = useState(false);
@@ -179,21 +180,19 @@ const MembershipStats = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        Loading...
-      </div>
+      <Fallback/>
     );
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-gray-100">
+    <div className="flex flex-col bg-[#f7f5f2]">
       {/* Header */}
-      <div className="bg-white p-4 shadow">
+      <div className="bg-[#f7f5f2] p-4 shadow">
         <h1 className="text-2xl font-bold">{gymName}</h1>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1">
         <div className="p-6">
           {/* Filters */}
           <div className="bg-white p-4 mb-6 rounded-lg shadow">
