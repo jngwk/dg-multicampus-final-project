@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.dg.deukgeun.entity.Membership;
+import com.dg.deukgeun.entity.Qna;
 import com.dg.deukgeun.repository.MembershipRepository;
 
 @Service
@@ -21,6 +23,9 @@ public class EmailService {
 
     @Autowired
     private MembershipRepository membershipRepository;
+
+    @Value("${admin.email}")
+    private String adminEmail;
 
     public void sendVerificationEmail(String toEmail, String verificationCode) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -89,6 +94,40 @@ public class EmailService {
 
         mailSender.send(message);
 
+    }
+
+    public void sendQnaRegisterNotification(Qna qna) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(qna.getEmail());
+        message.setSubject("[득근] 문의 등록 완료 알림");
+        message.setText(
+                "득근을 이용해 주셔서 감사합니다.\n\n문의 등록이 완료 됐음을 알려드립니다.\n\n영업일 기준 48시간 이내에 이메일로 답변 알림을 보내드립니다.\n\n\n=================\n\n제목:\n"
+                        + qna.getTitle() + "\n\n등록된 문의:\n"
+                        + qna.getContent());
+        mailSender.send(message);
+        sendQnaRegistraionNotificationToAdmin(qna);
+    }
+
+    private void sendQnaRegistraionNotificationToAdmin(Qna qna) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(adminEmail);
+        message.setSubject("[득근] 문의 등록 알림");
+        message.setText(
+                "문의가 등록 됐음을 알려드립니다.\n\n영업일 기준 48시간 이내에 답변 부탁드립니다.\n\n\n=================\n\n제목:\n"
+                        + qna.getTitle() + "\n\n등록된 문의:\n"
+                        + qna.getContent());
+        mailSender.send(message);
+    }
+
+    public void sendQnaReplyNotification(Qna qna) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(qna.getEmail());
+        message.setSubject("[득근] 문의 답변 완료 알림");
+        message.setText(
+                "득근을 이용해 주셔서 감사합니다.\n\n문의 등록이 완료 됐음을 알려드립니다.\n\n영업일 기준 48시간 이내에 이메일로 답변 알림을 보내드립니다.\n\n\n=================\n\n제목:\n"
+                        + qna.getTitle() + "등록된 문의:\n"
+                        + qna.getContent() + "\n\n답변:\n" + qna.getReply());
+        mailSender.send(message);
     }
 
 }

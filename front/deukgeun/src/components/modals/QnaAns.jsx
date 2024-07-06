@@ -1,10 +1,9 @@
-
 import React, { useState } from "react";
 import ModalLayout from "./ModalLayout";
 import TextArea from "../shared/TextArea";
 import Button from "../shared/Button";
 
-const QnaAns = ({ toggleModal, handleReply}) => {
+const QnaAns = ({ toggleModal, handleReply, inquiry }) => {
   const [reply, setReply] = useState("");
 
   const handleAnswerChange = (e) => {
@@ -12,9 +11,9 @@ const QnaAns = ({ toggleModal, handleReply}) => {
   };
 
   const handleSubmit = async () => {
-    await handleReply(reply);
+    console.log("in qna answer", inquiry);
+    await handleReply(reply, inquiry);
     toggleModal();
-
   };
 
   return (
