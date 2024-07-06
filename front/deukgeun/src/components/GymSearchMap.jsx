@@ -443,15 +443,15 @@ const GymSearchMap = () => {
                       {gym.address}
                     </span>
                     <div className="flex justify-evenly mt-3">
-                      <button
-                        className="border border-gray-500 py-2 px-4 text-xs rounded-md bg-grayish-red/30 hover:border-grayish-red hover:bg-grayish-red hover:text-white transition-all"
-                        onClick={() => handleCenterView(gym)}
-                      >
-                        상세보기
-                      </button>
-                      {(!sessionStorage.getItem("isLoggedIn") ||
-                        userData?.role === "ROLE_GENERAL") && (
+                      {!sessionStorage.getItem("isLoggedIn") ||
+                      userData?.role === "ROLE_GENERAL" ? (
                         <>
+                          <button
+                            className="border border-gray-500 py-2 px-4 text-xs rounded-md bg-grayish-red/30 hover:border-grayish-red hover:bg-grayish-red hover:text-white transition-all"
+                            onClick={() => handleCenterView(gym)}
+                          >
+                            상세보기
+                          </button>
                           <button
                             className="border border-gray-500 py-2 px-4 text-xs rounded-md bg-grayish-red/30 hover:border-grayish-red hover:bg-grayish-red hover:text-white transition-all"
                             onClick={() =>
@@ -473,6 +473,13 @@ const GymSearchMap = () => {
                             등록하기
                           </button>
                         </>
+                      ) : (
+                        <button
+                          className="border border-gray-500 py-2 px-4 text-xs text-gray-800 rounded-md bg-bright-orange/50 hover:border-bright-orange/80 hover:bg-bright-orange/80 hover:text-white transition-all"
+                          onClick={() => handleCenterView(gym)}
+                        >
+                          상세보기
+                        </button>
                       )}
                     </div>
                   </div>
