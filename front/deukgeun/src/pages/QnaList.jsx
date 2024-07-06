@@ -275,7 +275,7 @@ const QnaList = () => {
                       <div className="flex flex-row items-center">
                         <div className="mr-2 text-light-black">관리자</div>
                       </div>
-                      <div className=" w-full overflow-y-scroll scrollbar text-[13px] px-4">
+                      <div className=" w-full overflow-y-scroll scrollbar text-[13px] p-3">
                         {inquiry.reply}
                       </div>
                     </div>
