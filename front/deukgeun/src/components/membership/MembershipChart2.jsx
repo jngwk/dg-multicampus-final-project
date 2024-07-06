@@ -1,9 +1,10 @@
 import React from 'react';
 import { Chart as ChartJS, TimeScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import zoomPlugin from 'chartjs-plugin-zoom';
 import { Scatter } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
 
-ChartJS.register(TimeScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(TimeScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, zoomPlugin);
 
 const MembershipChart2 = ({ ptSessions, ptStart, ptEnd }) => {
   const filteredSessions = ptSessions.filter(session => {
@@ -32,7 +33,7 @@ const MembershipChart2 = ({ ptSessions, ptStart, ptEnd }) => {
     datasets: [
       {
         type: 'scatter',
-        label: 'PT 세션',
+        label: 'PT 시간',
         data: scatterData,
         backgroundColor: 'rgba(75, 192, 192, 0.6)',
         borderColor: 'rgba(75, 192, 192, 1)',
@@ -59,6 +60,21 @@ const MembershipChart2 = ({ ptSessions, ptStart, ptEnd }) => {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
+      zoom: {
+        zoom: {
+          wheel: {
+            enabled: true,
+          },
+          pinch: {
+            enabled: true
+          },
+          mode: 'xy',
+        },
+        pan: {
+          enabled: true,
+          mode: 'xy',
+        },
+      },
       legend: {
         position: 'top',
       },
@@ -155,10 +171,8 @@ const MembershipChart2 = ({ ptSessions, ptStart, ptEnd }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg">
-      <div style={{ height: '400px' }}>
+    <div className="bg-white p-6 rounded-lg shadow-lg chart-container relative h-[50dvh]">
         <Scatter data={data} options={options} />
-      </div>
     </div>
   );
 };
