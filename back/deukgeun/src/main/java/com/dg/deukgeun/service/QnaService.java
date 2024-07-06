@@ -33,6 +33,7 @@ public class QnaService {
     private final QnaRepository qnaRepository;
     private final ModelMapper modelMapper;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     public Integer register(QnaDTO qnaDTO) {
         log.info("Registering QnaDTO...");
@@ -72,8 +73,15 @@ public class QnaService {
     public void modify(QnaDTO qnaDTO) {
         Optional<Qna> result = qnaRepository.findById(qnaDTO.getQnaId());
         Qna qna = result.orElseThrow();
-        qna.setTitle(qnaDTO.getTitle());
-        qna.setContent(qnaDTO.getContent());
+
+        if (qnaDTO.getReply() != null) {
+            qna.setReply(qnaDTO.getReply());
+            qna.setReplyDate(qnaDTO.getReplyDate());
+        } else {
+            qna.setTitle(qnaDTO.getTitle());
+            qna.setContent(qnaDTO.getContent());
+        }
+
         qnaRepository.save(qna);
     }
 
@@ -118,4 +126,19 @@ public class QnaService {
                 .totalCount(totalCount)
                 .build();
     }
+
+    // public void sendQnaRegisterEmail(Integer qnaId) {
+    // Qna qna = qnaRepository.findById(qnaId).get();
+    // // 등록 이메일 전송
+    // emailService.sendQnaRegisterNotification(qna);
+
+    // }
+
+    // public void sendQnaReplyEmail(Integer qnaId) {
+    // Qna qna = qnaRepository.findById(qnaId).get();
+    // if (qna.getReply() != null) {
+    // // 답변 이메일 전송
+    // emailService.sendQnaReplyNotification(qna);
+    // }
+    // }
 }

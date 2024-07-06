@@ -36,5 +36,6 @@ public class Qna {
     private String content;
 
     private String reply;
+    private LocalDate replyDate;
     private LocalDate regDate; // Change LocalDateTime to LocalDate
 }

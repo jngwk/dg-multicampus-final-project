@@ -10,6 +10,8 @@ import { FaAngleDoubleRight } from "react-icons/fa";
 import { BsChevronDown } from "react-icons/bs";
 import { GiArchiveRegister } from "react-icons/gi";
 
+
+import bgimg from "../assets/reg.png";
 import TextArea from "../components/shared/TextArea";
 import { useAuth } from "../context/AuthContext";
 import { registerMembership } from "../api/membershipApi";
@@ -266,6 +268,13 @@ const MemberRegister = () => {
   return (
     <>
       <div className="flex flex-row justify-center items-center mt-10 relative ">
+        {/* <div
+          className={` ${
+            isExpanded
+              ? "text-6xl absolute left-1/4 top-0"
+              : "text-6xl absolute left-1/3 top-0"
+          } `}
+        > */}
         <div
           className={` ${
             isExpanded
@@ -524,7 +533,7 @@ const MemberRegister = () => {
                 <div className="ml-3">
                   <button
                     onClick={handleSubmit}
-                    className="flex items-center text-lg text-grayish-red hover:border-b  hover:font-semibold mx-auto animate-bounce"
+                    className="flex items-center text-lg text-grayish-red hover:border-b  hover:font-semibold "
                   >
                     <div className="mb-4 text-3xl">💳</div> 결제하기
                   </button>
@@ -539,15 +548,6 @@ const MemberRegister = () => {
           </button>
         )}
       </div>
-      {isExpanded && (
-        <button
-          className="flex items-center mb-10 text-lg text-grayish-red hover:border-b hover:border-gray-400 hover:font-semibold mx-auto animate-bounce"
-          onClick={handleSubmit}
-        >
-          <box-icon name="wallet-alt" color="#9F8D8D" size="sm"></box-icon>
-          결제하기
-        </button>
-      )}
       {isAddressModalVisible && (
         <AddressModal
           userData={userData}
