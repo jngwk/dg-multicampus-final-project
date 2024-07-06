@@ -82,13 +82,13 @@ const MemberRegister = () => {
 
   const { fetchUserData } = useAuth();
 
-  useEffect(() => {
-    if (!gym.productList || gym.productList.length === 0) {
-      setHasNoProduct(true);
-    } else {
-      filterProducts();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!gym.productList || gym.productList.length === 0) {
+  //     setHasNoProduct(true);
+  //   } else {
+  //     filterProducts();
+  //   }
+  // }, []);
 
   const filterProducts = () => {
     const filteredProductList =
@@ -267,15 +267,20 @@ const MemberRegister = () => {
 
   return (
     <>
-      <div className="flex flex-row justify-center items-center mt-10 relative ">
-        {/* <div
+      <div className="flex flex-col items-center min-h-screen justify-center p-20">
+
+        <div className="flex flex-col items-center w-fit py-10 bg-white rounded-[55px] px-5">
+          <p className="font-semibold text-xl px-8 py-2 bg-yellow-500 bg-opacity-15 rounded-full">회원권 등록</p>
+          <div className="border-y-4 border-grayish-red mt-4">
+            <div className="flex flex-row justify-center items-center mt-3 relative ">
+              {/* <div
           className={` ${
             isExpanded
               ? "text-6xl absolute left-1/4 top-0"
               : "text-6xl absolute left-1/3 top-0"
           } `}
         > */}
-        <div
+              {/* <div
           className={` ${
             isExpanded
               ? "text-6xl absolute left-1/4 top-0"
@@ -283,270 +288,325 @@ const MemberRegister = () => {
           } `}
         >
           🏋🏻
-        </div>
-        <div
-          className={`m-10 ${
-            isExpanded
-              ? "w-[1000px] justify-center space-x-10 px-20 relative "
-              : "w-[500px] justify-center"
-          } h-[550px] flex items-center border-y-8 border-dotted border-peach-fuzz`}
-        >
-          <div className="flex flex-col items-center space-y-6">
-            <p className="font-semibold text-xl">회원권 등록</p>
-            {/* 이름 */}
-            <Input
-              label="이름"
-              width="320px"
-              name="userName"
-              value={userData.userName}
-              readOnly={true}
-            />
+        </div> */}
 
-            <div className="flex w-full relative justify-between ">
-              {/* 성별 */}
-              <label
+              <div
+                className={`m-10 ${isExpanded
+                  ? "w-[1700px] justify-center space-x-10 px-20 relative "
+                  : "w-[500px] justify-center"
+                  } h-[550px] flex items-center`}
+              >
+                <div className="flex flex-col items-start space-y-6">
+                  {/* 이름 */}
+                  <div className="flex flex-row items-center space-x-6 ">
+                    <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red">
+                      이름
+                    </div>
+                    <Input
+                      width="275px"
+                      name="userName"
+                      value={userData.userName}
+                      readOnly={true}
+                    />
+                  </div>
+
+
+                  <div className="flex w-full relative justify-between ">
+                    {/* 성별 */}
+                    {/* <label
                 className={`absolute -top-2 px-2 text-xs pointer-events-none text-gray-400`}
               >
                 성별
-              </label>
-              <div className="relative">
-                <select
-                  onFocus={handleGenderFocus}
-                  onBlur={handleGenderBlur}
-                  type="button"
-                  className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${
-                    genderFocus ? "border-peach-fuzz" : "border-gray-400"
-                  } focus:border-2 focus:outline-none text-sm peer my-2 `}
-                  value={userGender}
-                  onChange={handleChangeGender}
-                >
-                  <option value="남자">남자</option>
-                  <option value="여자">여자</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  {!genderFocus ? (
-                    <FaChevronDown className="text-gray-400" />
-                  ) : (
-                    <FaChevronUp className="text-gray-400" />
-                  )}
-                </div>
-              </div>
-              {/* 나이 */}
-              <label
+              </label> */}
+                    <div className="flex flex-row items-center space-x-5 ">
+                      <div className="text-lg pr-3 border-r-2 border-grayish-red">
+                        성별
+                      </div>
+
+                      <div className="relative">
+                        <select
+                          onFocus={handleGenderFocus}
+                          onBlur={handleGenderBlur}
+                          type="button"
+                          className={`h-11 py-3 px-4 w-[100px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${genderFocus ? "border-peach-fuzz" : "border-gray-400"
+                            } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                          value={userGender}
+                          onChange={handleChangeGender}
+                        >
+                          <option value="남자">남자</option>
+                          <option value="여자">여자</option>
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          {!genderFocus ? (
+                            <FaChevronDown className="text-gray-400" />
+                          ) : (
+                            <FaChevronUp className="text-gray-400" />
+                          )}
+                        </div>
+                      </div>
+
+                    </div>
+
+
+                    {/* 나이 */}
+                    {/* <label
                 className={`absolute right-28 -top-2 px-2 text-xs pointer-events-none text-gray-400`}
               >
                 나이
-              </label>
-              <div className="relative">
-                <select
-                  onFocus={handleAgeFocus}
-                  onBlur={handleAgeBlur}
-                  type="button"
-                  className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm  ${
-                    ageFocus ? "border-peach-fuzz" : "border-gray-400"
-                  } focus:border-2 focus:outline-none text-sm peer my-2 `}
-                  value={userAge}
-                  onChange={handleChangeAge}
-                >
-                  {ageOptions}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  {!ageFocus ? (
-                    <FaChevronDown className="text-gray-400" />
-                  ) : (
-                    <FaChevronUp className="text-gray-400" />
-                  )}
+              </label> */}
+                    <div className="flex flex-row items-center space-x-5 ">
+                      <div className="text-lg pr-3 border-r-2 border-grayish-red">
+                        나이
+                      </div>
+                      <div className="relative">
+                        <select
+                          onFocus={handleAgeFocus}
+                          onBlur={handleAgeBlur}
+                          type="button"
+                          className={`h-11 py-3 px-4 w-[100px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm  ${ageFocus ? "border-peach-fuzz" : "border-gray-400"
+                            } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                          value={userAge}
+                          onChange={handleChangeAge}
+                        >
+                          {ageOptions}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          {!ageFocus ? (
+                            <FaChevronDown className="text-gray-400" />
+                          ) : (
+                            <FaChevronUp className="text-gray-400" />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 이메일 */}
+
+
+                  <div className="flex flex-row items-center space-x-6 ">
+                    <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red">
+                      이메일
+                    </div>
+                    <Input
+                      width="260px"
+                      name="email"
+                      value={userData.email}
+                      readOnly={true}
+                    />
+                  </div>
+
+                  {/* 주소 */}
+
+                  <div className="flex flex-row items-center space-x-6 ">
+                    <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red">
+                      주소
+                    </div>
+                    <Input
+                      width="275px"
+                      name="address"
+                      value={userData.address}
+                      onChange={handleUserDataChange}
+                      readOnly={true}
+                      feature="검색"
+                      featureOnClick={() => setIsAddressModalVisible(true)}
+                      featureEnableOnLoad={true}
+                    />
+                  </div>
+
+                  <div className="flex flex-row items-center space-x-6 ">
+                    <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red">
+                      상세주소
+                    </div>
+                    <Input
+                      width="243px"
+                      name="detailAddress"
+                      value={userData.detailAddress}
+                      onChange={handleUserDataChange}
+                    />
+                  </div>
                 </div>
-              </div>
-            </div>
+                {isExpanded && (
 
-            {/* 이메일 */}
-            <Input
-              label="이메일"
-              width="320px"
-              name="email"
-              value={userData.email}
-              readOnly={true}
-            />
-
-            {/* 주소 */}
-            <Input
-              label="주소"
-              width="320px"
-              name="address"
-              value={userData.address}
-              onChange={handleUserDataChange}
-              readOnly={true}
-              feature="검색"
-              featureOnClick={() => setIsAddressModalVisible(true)}
-              featureEnableOnLoad={true}
-              required={true}
-            />
-            <Input
-              label="세부주소"
-              width="320px"
-              name="detailAddress"
-              value={userData.detailAddress}
-              onChange={handleUserDataChange}
-              required={true}
-            />
-          </div>
-          {isExpanded && (
-            <div className="flex flex-col items-start space-y-7">
-              {/* 헬스권  */}
-              <div className="dropdown relative">
-                <label
+                  <div className=" flex flex-col items-start space-y-7">
+                    {/* 헬스권  */}
+                    <div className="dropdown relative">
+                      <div className="flex flex-row items-center space-x-6 ">
+                        <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red">
+                          상품이름
+                        </div>
+                        {/* <label
                   className={`absolute right-30 -top-4 px-2 text-xs pointer-events-none text-gray-400`}
                 >
                   상품이름
-                </label>
-                <button
-                  onClick={toggleDropdown}
-                  className="w-[120px] h-11 flex justify-between items-center border border-gray-400 rounded-lg p-2 "
-                >
-                  {selectedProductName}
-                  <BsChevronDown />
-                </button>
-                {isDropdownOpen && (
-                  <ul className="absolute w-full border border-gray-400 rounded-lg list-none z-10 bg-white">
-                    {gym.productList
-                      .filter((product) => product.status !== false)
-                      .sort((a, b) => a.days - b.days)
-                      .map((product) => (
-                        <li
-                          key={product.productId}
-                          className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
-                          onClick={() =>
-                            onClickPeriod({
-                              target: { value: product.productName },
-                            })
-                          }
+                </label> */}
+                        <button
+                          onClick={toggleDropdown}
+                          className="w-[267px] h-11 flex justify-between items-center border border-gray-400 rounded-lg p-2 "
                         >
-                          {product.productName}
-                        </li>
-                      ))}
-                  </ul>
-                )}
-              </div>
-              <div className="flex flex-row space-x-3 relative items-center justify-between">
-                {/* 등록일 만료일 */}
-                <div className="relative">
-                  <label
+                          {selectedProductName}
+                          <BsChevronDown />
+                        </button>
+                        {isDropdownOpen && (
+                          <ul className="absolute w-full border border-gray-400 rounded-lg list-none z-10 bg-white">
+                            {gym.productList
+                              .filter((product) => product.status !== false)
+                              .sort((a, b) => a.days - b.days)
+                              .map((product) => (
+                                <li
+                                  key={product.productId}
+                                  className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
+                                  onClick={() =>
+                                    onClickPeriod({
+                                      target: { value: product.productName },
+                                    })
+                                  }
+                                >
+                                  {product.productName}
+                                </li>
+                              ))}
+                          </ul>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex flex-row relative items-center justify-between">
+                      {/* 등록일 만료일 */}
+                      <div className="flex flex-row items-center space-x-2 ">
+                        <div className="flex items-center ">
+                          <div className="text-lg pr-3 mr-8 border-r-2 border-grayish-red">
+                            기간
+                          </div>
+
+                          {/* <label
                     className={`absolute w-16 right-27 -top-4 px-2 text-xs pointer-events-none text-gray-400`}
                   >
                     등록일
-                  </label>
-                  <CustomDatePicker
-                    label="등록일"
-                    selectedDate={regDate}
-                    handleDateChange={handleRegDateChange}
-                  />
-                </div>
-                <span>-</span>
-                <div className="relative">
-                  <label
+                  </label> */}
+                          <CustomDatePicker
+                            label="등록일"
+                            selectedDate={regDate}
+                            handleDateChange={handleRegDateChange}
+                          />
+                        </div>
+                        <span>-</span>
+                        <div className="">
+                          {/* <label
                     className={`absolute w-16 right-27 -top-4 px-2 text-xs pointer-events-none text-gray-400`}
                   >
                     만료일
-                  </label>
-                  <CustomDatePicker
-                    label="만료일"
-                    selectedDate={expDate}
-                    handleDateChange={handleExpDateChange}
-                  />
-                </div>
-              </div>
+                  </label> */}
+                          <CustomDatePicker
+                            label="만료일"
+                            selectedDate={expDate}
+                            handleDateChange={handleExpDateChange}
+                          />
+                        </div>
+                      </div>
+                    </div>
 
-              {/* 신청사유 */}
+                    {/* 신청사유 */}
 
-              <div className="flex flex-row space-x-4">
-                <div className="relative">
-                  <label
+                    <div className="flex flex-row space-x-4">
+                      <div className="relative">
+                        <div className="flex flex-row items-center space-x-6 ">
+                          <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red">
+                            신청사유
+                          </div>
+                          {/* <label
                     className={`absolute -top-2  px-2 text-xs pointer-events-none text-gray-400`}
                   >
                     신청사유
-                  </label>
-                  <select
-                    onFocus={handleMemberReasonFocus}
-                    onBlur={handleMemberReasonBlur}
-                    type="button"
-                    className={`h-11 py-3 px-4 w-[150px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
-                      userMemberReasonFocus
-                        ? "border-peach-fuzz"
-                        : "border-gray-400"
-                    } focus:border-2 focus:outline-none text-sm peer my-2 `}
-                    value={userMemberReason}
-                    onChange={handleChangeMemberReason}
-                  >
-                    <option value="PT">PT</option>
-                    <option value="다이어트">다이어트</option>
-                    <option value="건강">건강</option>
-                    <option value="바디프로필">바디프로필</option>
-                    <option value="체형관리">체형관리</option>
-                  </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    {!userMemberReasonFocus ? (
-                      <FaChevronDown className="text-gray-400" />
-                    ) : (
-                      <FaChevronUp className="text-gray-400" />
-                    )}
-                  </div>
-                </div>
+                  </label> */}
+                          <select
+                            onFocus={handleMemberReasonFocus}
+                            onBlur={handleMemberReasonBlur}
+                            type="button"
+                            className={`h-11 py-3 px-4 w-[267px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userMemberReasonFocus
+                              ? "border-peach-fuzz"
+                              : "border-gray-400"
+                              } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                            value={userMemberReason}
+                            onChange={handleChangeMemberReason}
+                          >
+                            <option value="PT">PT</option>
+                            <option value="다이어트">다이어트</option>
+                            <option value="건강">건강</option>
+                            <option value="바디프로필">바디프로필</option>
+                            <option value="체형관리">체형관리</option>
+                          </select>
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            {!userMemberReasonFocus ? (
+                              <FaChevronDown className="text-gray-400" />
+                            ) : (
+                              <FaChevronUp className="text-gray-400" />
+                            )}
+                          </div>
+                        </div>
+                      </div>
 
-                <div className="relative">
-                  {/* 운동경력(선택) */}
-                  <label
+                    </div>
+                    <div className="relative">
+                      <div className="flex flex-row items-center space-x-6 ">
+                        <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red">
+                          운동경력(선택)
+                        </div>
+                        {/* 운동경력(선택) */}
+                        {/* <label
                     className={`absolute right-30 -top-2 px-2 text-xs pointer-events-none text-gray-400`}
                   >
                     운동경력(선택)
-                  </label>
+                  </label> */}
 
-                  <select
-                    onFocus={handleWorkoutDurationFocus}
-                    onBlur={handleWorkoutDurationBlur}
-                    type="button"
-                    className={`h-11 py-3 px-4 w-[150px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
-                      userWorkoutDurationFocus
-                        ? "border-peach-fuzz"
-                        : "border-gray-400"
-                    } focus:border-2 focus:outline-none text-sm peer my-2 `}
-                    value={userWorkoutDuration}
-                    onChange={handleChangeWorkoutDuration}
-                  >
-                    {WorkoutDurationOptions}
-                  </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    {!userWorkoutDurationFocus ? (
-                      <FaChevronDown className="text-gray-400" />
-                    ) : (
-                      <FaChevronUp className="text-gray-400" />
-                    )}
+                        <select
+                          onFocus={handleWorkoutDurationFocus}
+                          onBlur={handleWorkoutDurationBlur}
+                          type="button"
+                          className={`h-11 py-3 px-4 w-[225px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userWorkoutDurationFocus
+                            ? "border-peach-fuzz"
+                            : "border-gray-400"
+                            } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                          value={userWorkoutDuration}
+                          onChange={handleChangeWorkoutDuration}
+                        >
+                          {WorkoutDurationOptions}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          {!userWorkoutDurationFocus ? (
+                            <FaChevronDown className="text-gray-400" />
+                          ) : (
+                            <FaChevronUp className="text-gray-400" />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+
+                    <div className="flex flex-row items-center absolute right-10 bottom-10">
+                      {/* @@@@@@@@@상품 가격 표시 */}
+                      {/* @@@@@@@@@상품 가격 표시 */}
+                      {/* @@@@@@@@@상품 가격 표시 */}
+                      {/* @@@@@@@@@상품 가격 표시 */}
+                      <div>{selectedProductPrice}원</div>
+                      <div className="ml-3">
+                        <button
+                          onClick={handleSubmit}
+                          className="flex items-center text-lg text-grayish-red hover:border-b  hover:font-semibold "
+                        >
+                          <div className="mb-4 text-3xl">💳</div> 결제하기
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
-              <div className="flex flex-row items-center absolute right-10 bottom-10">
-                {/* @@@@@@@@@상품 가격 표시 */}
-                {/* @@@@@@@@@상품 가격 표시 */}
-                {/* @@@@@@@@@상품 가격 표시 */}
-                {/* @@@@@@@@@상품 가격 표시 */}
-                <div>{selectedProductPrice}원</div>
-                <div className="ml-3">
-                  <button
-                    onClick={handleSubmit}
-                    className="flex items-center text-lg text-grayish-red hover:border-b  hover:font-semibold "
-                  >
-                    <div className="mb-4 text-3xl">💳</div> 결제하기
-                  </button>
-                </div>
-              </div>
+              {!isExpanded && (
+                <button onClick={toggleExpand}>
+                  <FaAngleDoubleRight className=" mx-auto animate-[propel_3s_infinite]" />
+                </button>
+              )}
             </div>
-          )}
+          </div>
         </div>
-        {!isExpanded && (
-          <button onClick={toggleExpand}>
-            <FaAngleDoubleRight className=" mx-auto animate-[propel_3s_infinite]" />
-          </button>
-        )}
       </div>
       {isAddressModalVisible && (
         <AddressModal
@@ -565,7 +625,7 @@ const MemberRegister = () => {
           }}
         />
       )}
-      {hasNoProduct && (
+      {/* {hasNoProduct && (
         <AlertModal
           headerEmoji={"⚠️"}
           line1={"등록 할 수 있는 상품이 없습니다."}
@@ -578,7 +638,7 @@ const MemberRegister = () => {
               }),
           }}
         />
-      )}
+      )} */}
     </>
   );
 };
