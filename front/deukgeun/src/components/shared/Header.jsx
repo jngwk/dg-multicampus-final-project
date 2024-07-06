@@ -71,7 +71,7 @@ export default function Header() {
 
   return (
     <div className="relative h-[14dvh] flex justify-center items-center">
-      <div className="flex justify-between items-center w-5/6 px-5 border-b-2 border-black">
+      <div className="flex justify-between items-center w-5/6 px-5 ">
         <img
           onClick={() => navigate("/")}
           className="w-24 hover:cursor-pointer"

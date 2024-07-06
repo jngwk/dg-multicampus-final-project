@@ -78,7 +78,7 @@ const TrainerInfo = ({ trainers }) => {
     <div>
       {/* 트레이너 소개 헤더 */}
       <div className="mb-10">
-        <div className="flex flex-col items-center text-center mb-2 font-semibold text-xl">
+        <div className="flex flex-col items-center  text-center mb-2 font-semibold text-2xl">
           트레이너 소개
           <div className="mt-2 w-16 border-b-2 border-grayish-red border-opacity-20"></div>
         </div>
