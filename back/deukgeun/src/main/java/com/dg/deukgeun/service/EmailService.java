@@ -124,8 +124,8 @@ public class EmailService {
         message.setTo(qna.getEmail());
         message.setSubject("[득근] 문의 답변 완료 알림");
         message.setText(
-                "득근을 이용해 주셔서 감사합니다.\n\n문의 등록이 완료 됐음을 알려드립니다.\n\n영업일 기준 48시간 이내에 이메일로 답변 알림을 보내드립니다.\n\n\n=================\n\n제목:\n"
-                        + qna.getTitle() + "등록된 문의:\n"
+                "득근을 이용해 주셔서 감사합니다.\n\n문의 답변 관련 알려드립니다.\n\n=================\n\n제목:\n"
+                        + qna.getTitle() + "\n\n등록된 문의:\n"
                         + qna.getContent() + "\n\n답변:\n" + qna.getReply());
         mailSender.send(message);
     }
