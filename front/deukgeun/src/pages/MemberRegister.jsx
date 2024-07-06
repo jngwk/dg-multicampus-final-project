@@ -268,6 +268,13 @@ const MemberRegister = () => {
   return (
     <>
       <div className="flex flex-row justify-center items-center mt-10 relative ">
+        {/* <div
+          className={` ${
+            isExpanded
+              ? "text-6xl absolute left-1/4 top-0"
+              : "text-6xl absolute left-1/3 top-0"
+          } `}
+        > */}
         <div
           className={` ${
             isExpanded

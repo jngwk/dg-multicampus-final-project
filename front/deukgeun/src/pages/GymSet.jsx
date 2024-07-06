@@ -603,7 +603,7 @@ const Gymset = () => {
                 width="400px"
                 height="250px"
                 name="introduce"
-                className={`whitespace-pre-line`}
+                className="whitespace-pre-line"
                 value={GymData.introduce}
                 required={true}
                 onChange={handleGymDataChange}

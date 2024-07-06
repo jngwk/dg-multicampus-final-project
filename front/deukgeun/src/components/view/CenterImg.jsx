@@ -83,37 +83,36 @@ const CenterImg = ({ gymId }) => {
   }
 
   return (
-    <div className="w-full h-[800px] p-5 flex flex-col items-center">
-      <div className="my-10">
-        <div className="flex flex-col items-center text-center mb-2 font-semibold text-xl">
+    <div className="w-full min-h-screen p-5 flex flex-col items-center justify-center">
+      <div className="mb-5">
+        <div className="flex flex-col items-center text-center mb-2 font-semibold text-2xl">
           사진
           <div className="mt-2 w-16 border-b-2 border-grayish-red border-opacity-20"></div>
         </div>
       </div>
       {imageUrls && imageUrls.length > 0 ? (
-        <div className="max-w-[1000px] h-[618px] w-[1000px] relative">
+        <div className="max-w-full max-h-full h-[680px] w-1/2 relative">
           <div
             style={{ backgroundImage: `url(${imageUrls[currentIndex]})` }}
             className="w-full h-full rounded-2xl bg-center bg-cover duration-500"
           ></div>
           {/*왼쪽 화살표*/}
-          <div className="group-hover:block absolute top-[50%] -translate-x-0 translate-y-[-50%] left-5 text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer">
-            <BsChevronCompactLeft onClick={prevSlide} size={30} />
+          <div className="group-hover:block absolute top-[50%] -translate-x-24 translate-y-[-50%] left-5 text-2xl rounded-full p-2  text-light-black cursor-pointer">
+            <BsChevronCompactLeft onClick={prevSlide} size={42} />
           </div>
           {/*오른쪽 화살표*/}
-          <div className="group-hover:block absolute top-[50%] -translate-x-0 translate-y-[-50%] right-5 text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer">
-            <BsChevronCompactRight onClick={nextSlide} size={30} />
+          <div className="group-hover:block absolute top-[50%] translate-x-24 translate-y-[-50%] right-5 text-2xl rounded-full p-2 text-light-black cursor-pointer">
+            <BsChevronCompactRight onClick={nextSlide} size={42} />
           </div>
 
-          <div className="flex top-4 justify-center py-2">
+          <div className="flex top-4 justify-center">
             {imageUrls.map((imageUrl, index) => (
               <div
-                src={imageUrl}
                 key={index}
                 onClick={() => goToSlide(index)}
-                className="text-2xl cursor-pointer"
+                className={`text-2xl cursor-pointer mt-5 ${currentIndex === index ? 'text-rose-500' : 'text-gray-400 hover:text-rose-300'}`}
               >
-                <RxDotFilled />
+                <RxDotFilled size={33} className="transition duration-300 ease-in-out" />
               </div>
             ))}
           </div>
