@@ -2,6 +2,7 @@ import { RouterProvider } from "react-router-dom";
 import root from "./router/root";
 import { AuthProvider } from "./context/AuthContext";
 import { startTransition } from "react";
+import "boxicons/css/boxicons.min.css";
 
 function App() {
   return (
