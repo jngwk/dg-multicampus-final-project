@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dg.deukgeun.dto.gym.TrainerDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
+import com.dg.deukgeun.entity.Trainer;
 import com.dg.deukgeun.security.CustomUserDetails;
 import com.dg.deukgeun.service.TrainerService;
 
@@ -92,7 +93,8 @@ public class TrainerController {
         try {
             log.info("Update request received for trainer ID: {}", trainerId);
 
-            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                    .getPrincipal();
             Integer userId = userDetails.getUserId();
 
             trainerService.updateTrainerUserDetails(trainerId, trainerDTO.getUserName(), trainerDTO.getEmail());
@@ -108,7 +110,8 @@ public class TrainerController {
         try {
             log.info("Delete request received for trainer ID: {}", trainerId);
 
-            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
+                    .getPrincipal();
             Integer userId = userDetails.getUserId();
 
             trainerService.deleteTrainer(trainerId, userId);
@@ -117,5 +120,10 @@ public class TrainerController {
             log.error("Failed to delete trainer for ID: {}", trainerId, e);
             return ResponseDTO.setFailed("Failed to delete trainer.");
         }
+    }
+
+    @GetMapping("/get/{userId}")
+    public Trainer getTrainer(@PathVariable(name = "userId") Integer userId) {
+        return trainerService.get(userId);
     }
 }

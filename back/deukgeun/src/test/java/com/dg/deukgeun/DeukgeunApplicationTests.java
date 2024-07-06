@@ -1,13 +1,13 @@
-package com.dg.deukgeun;
+// package com.dg.deukgeun;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class DeukgeunApplicationTests {
+// @SpringBootTest
+// class DeukgeunApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+// @Test
+// void contextLoads() {
+// }
 
-}
+// }

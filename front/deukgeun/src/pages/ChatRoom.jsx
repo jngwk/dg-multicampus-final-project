@@ -94,84 +94,86 @@ export default function ChatRoom() {
   }
 
   return (
-    <div className="w-full min-h-[86dvh] flex justify-center items-center">
-      <div className="w-full max-w-[1400px] py-5">
-        <div className="md:flex items-center pb-2">
-          <IoChatbubbles color="#ffbe98" size="56" />
-          <span className="font-semibold text-2xl mx-3 "> 대화방 </span>
-          <button onClick={toggleAvailableUsersModal}>
-            <IoAddCircle color="#E6E6E6" size="28" />
-          </button>
-        </div>
-
-        <div className="ChatContainer h-[70dvh] flex justify-center px-2">
-          {/* columns주고 여러개  - ChatList*/}
-          <div
-            className={`${getChatListDisplay()} w-4/5 md:w-1/5 min-w-[260px] mx-8 border-none rounded-lg bg-peach-fuzz bg-opacity-20`}
-          >
-            <div className="flex-col space-y-4 overflow-y-auto overflow-x-hidden w-full h-full px-4 py-2 scrollbar-hide ">
-              {/* hover:scrollbar-default */}
-              {chatRooms &&
-                (chatRooms.length > 0 ? (
-                  chatRooms.map((room, index) => (
-                    <div
-                      key={index}
-                      className="w-full cursor-pointer"
-                      onClick={() => handleChatListClick(room)}
-                    >
-                      {room.users.length === 2 && (
-                        <Chatlist
-                          user={
-                            room.users[0].userId === userData.userId
-                              ? room.users[1]
-                              : room.users[0]
-                          }
-                          latestMessage={room.latestMessage}
-                          room={room}
-                        />
-                      )}
-                    </div>
-                  ))
-                ) : chatRooms.length === 0 ? (
-                  <div className="h-full flex flex-col justify-center items-center px-4 text-center gap-6">
-                    <span className="text-3xl pt-6">😢</span>
-                    대화가 가능한
-                    <br />
-                    상대가 없습니다.
-                  </div>
-                ) : (
-                  <Loader />
-                ))}
-            </div>
+    <div className="w-full min-h-[86dvh] flex justify-center">
+      <div className="w-[60vw] h-full mx-auto justify-center items-center flex xl:bg-white xl:rounded-lg xl:shadow-md py-5">
+        <div className="w-full max-w-[1400px] py-5 ">
+          <div className="md:flex items-center pb-2 pl-10">
+            <IoChatbubbles color="#ffbe98" size="56" />
+            <span className="font-semibold text-2xl mx-3 "> 대화방 </span>
+            <button onClick={toggleAvailableUsersModal}>
+              <IoAddCircle color="#E6E6E6" size="28" />
+            </button>
           </div>
-          {isMainVisible && !isChatVisible && (
-            <ChatMain toggleModal={toggleAvailableUsersModal} />
-          )}
-          {isChatVisible && !isMainVisible && (
-            <Chatting
-              setIsChatListVisible={setIsChatListVisible}
-              setIsChatVisible={setIsChatVisible}
-              setIsMainVisible={setIsMainVisible}
-              messages={messages}
-              chatRoom={chatRoom}
-              chatMessage={chatMessage}
-              setChatMessage={setChatMessage}
-              messagesLoading={messagesLoading}
-              sendMessage={sendMessage}
+
+          <div className="ChatContainer h-[70dvh] flex justify-center px-2">
+            {/* columns주고 여러개  - ChatList*/}
+            <div
+              className={`${getChatListDisplay()} w-4/5 md:w-1/5 min-w-[260px] mx-8 border-none rounded-lg bg-peach-fuzz bg-opacity-20`}
+            >
+              <div className="flex-col space-y-4 overflow-y-auto overflow-x-hidden w-full h-full px-4 py-2 scrollbar-hide ">
+                {/* hover:scrollbar-default */}
+                {chatRooms &&
+                  (chatRooms.length > 0 ? (
+                    chatRooms.map((room, index) => (
+                      <div
+                        key={index}
+                        className="w-full cursor-pointer"
+                        onClick={() => handleChatListClick(room)}
+                      >
+                        {room.users.length === 2 && (
+                          <Chatlist
+                            user={
+                              room.users[0].userId === userData.userId
+                                ? room.users[1]
+                                : room.users[0]
+                            }
+                            latestMessage={room.latestMessage}
+                            room={room}
+                          />
+                        )}
+                      </div>
+                    ))
+                  ) : chatRooms.length === 0 ? (
+                    <div className="h-full flex flex-col justify-center items-center px-4 text-center gap-6">
+                      <span className="text-3xl pt-6">😢</span>
+                      대화가 가능한
+                      <br />
+                      상대가 없습니다.
+                    </div>
+                  ) : (
+                    <Loader />
+                  ))}
+              </div>
+            </div>
+            {isMainVisible && !isChatVisible && (
+              <ChatMain toggleModal={toggleAvailableUsersModal} />
+            )}
+            {isChatVisible && !isMainVisible && (
+              <Chatting
+                setIsChatListVisible={setIsChatListVisible}
+                setIsChatVisible={setIsChatVisible}
+                setIsMainVisible={setIsMainVisible}
+                messages={messages}
+                chatRoom={chatRoom}
+                chatMessage={chatMessage}
+                setChatMessage={setChatMessage}
+                messagesLoading={messagesLoading}
+                sendMessage={sendMessage}
+                userData={userData}
+                chatReceiver={chatReceiver}
+              />
+            )}
+          </div>
+          {isAvailableUsersModalVisible && (
+            <AvailableUsersModal
+              availableUsersLoading={availableUsersLoading}
+              availableUsers={availableUsers}
               userData={userData}
-              chatReceiver={chatReceiver}
+              toggleModal={toggleAvailableUsersModal}
+              handleButtonClick={handleNewChatClick}
             />
           )}
         </div>
-        {isAvailableUsersModalVisible && (
-          <AvailableUsersModal
-            availableUsersLoading={availableUsersLoading}
-            availableUsers={availableUsers}
-            userData={userData}
-            toggleModal={toggleAvailableUsersModal}
-            handleButtonClick={handleNewChatClick}
-          />
-        )}
       </div>
     </div>
   );

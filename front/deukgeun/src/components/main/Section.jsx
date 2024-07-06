@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "../shared/Button";
 import underline from "../../assets/curved-underline.png";
 import orangeUnderline from "../../assets/curved-underline-orange.png";
@@ -7,12 +7,86 @@ import { useLoginModalContext } from "../../context/LoginModalContext";
 import Slider from "@ant-design/react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import calendarDemo from "../../assets/calendar-demo.webp";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import { format } from "date-fns";
+import { ko } from "date-fns/locale";
+import ChartDemo from "../ChartDemo";
+// import calendarDemo from "../../assets/calendar-demo.webp";
+
+const getInitialEvents = () => {
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  return [
+    {
+      title: "하체",
+      start: new Date(currentYear, currentMonth, 3),
+      id: "1",
+      color: "#43a047",
+    },
+    {
+      title: "가슴",
+      start: new Date(currentYear, currentMonth, 5),
+      id: "2",
+    },
+    {
+      title: "등",
+      start: new Date(currentYear, currentMonth, 7),
+      id: "3",
+    },
+    {
+      title: "어깨",
+      start: new Date(currentYear, currentMonth, 10),
+      id: "4",
+    },
+    {
+      title: "하체",
+      start: new Date(currentYear, currentMonth, 15),
+      id: "5",
+      color: "#43a047",
+    },
+    {
+      title: "상체",
+      start: new Date(currentYear, currentMonth, 17),
+      id: "6",
+    },
+    {
+      title: "이두/삼두",
+      start: new Date(currentYear, currentMonth, 20),
+      id: "7",
+    },
+    {
+      title: "하체",
+      start: new Date(currentYear, currentMonth, 25),
+      id: "8",
+      color: "#43a047",
+    },
+    {
+      title: "가슴",
+      start: new Date(currentYear, currentMonth, 29),
+      id: "9",
+    },
+  ];
+};
 
 //  TODO snap scroll 안됨
 const Section = ({}) => {
   const customNavigate = useCustomNavigate();
   const { toggleLoginModal } = useLoginModalContext();
+  const [events, setEvents] = useState(getInitialEvents());
+
+  const handleEventDrop = (info) => {
+    const updatedEvents = events.map((event) =>
+      event.id === info.event.id ? { ...event, start: info.event.start } : event
+    );
+    setEvents(updatedEvents);
+  };
+
+  const customTitleFormat = ({ date }) => {
+    return format(date.marker, "yyyy년 M월", { locale: ko });
+  };
 
   return (
     <>
@@ -93,12 +167,12 @@ const Section = ({}) => {
 
       {/* section 1 */}
       <div
-        className={`snap-start h-[100dvh] w-full flex flex-row-reverse  justify-center items-center gap-4 text-xl`}
+        className={`snap-start h-[100dvh] w-full flex flex-row-reverse  justify-evenly items-center gap-4 text-xl`}
       >
         {/* left */}
-        <div className="flex flex-col gap-14 w-max relative">
+        <div className="flex flex-col  gap-14 w-max relative">
           <span className="font-bold text-3xl">인바디 결과, 믿으시나요?</span>
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col  gap-6">
             <span>인바디 결과에 연연해 하지마세요!</span>
             <div className="relative">
               <span>인바디는 수분에 민감한 기계로, 결과가 부정확합니다.</span>
@@ -148,13 +222,37 @@ const Section = ({}) => {
           </div>
         </div>
         {/* right */}
-        <div className="w-1/3 relative">이미지</div>
+        <div className="xl:w-1/2 lg:w-[60vw] h-2/3 relative bg-white py-5 px-10 rounded-md shadow-md">
+          <FullCalendar
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+            initialView={"dayGridMonth"}
+            titleFormat={(date) => customTitleFormat(date)}
+            headerToolbar={{
+              start: "",
+              center: "",
+              end: "",
+            }}
+            footerToolbar={{
+              start: "",
+              center: "",
+              end: "",
+            }}
+            eventDisplay={"block"}
+            editable={true}
+            weekends={true}
+            events={events}
+            selectable={true}
+            eventDrop={handleEventDrop}
+            eventTimeFormat={{ hour: "2-digit", minute: "2-digit" }}
+            height={"100%"}
+          />
+        </div>
       </div>
       {/* end of section 1 */}
 
       {/* section 3 */}
       <div
-        className={`snap-start h-[100dvh] w-full flex justify-center items-center gap-4 bg-light-black text-white text-xl`}
+        className={`snap-start h-[100dvh] w-full flex justify-evenly items-center bg-light-black text-white text-xl`}
       >
         {/* right */}
         <div className="flex flex-col gap-14 w-max relative">
@@ -203,13 +301,15 @@ const Section = ({}) => {
           </div>
         </div>
         {/* left */}
-        <div className="w-1/3 relative rounded-xl overflow-hidden"></div>
+        <div className="w-1/2 h-2/3 relative rounded-xl overflow-hidden bg-white p-10 shadow-md">
+          <ChartDemo />
+        </div>
       </div>
       {/* end of section 3 */}
 
       {/* section 4 */}
       <div
-        className={`snap-start h-[100dvh] w-full flex flex-col gap-60 justify-center items-center text-xl`}
+        className={`snap-start h-[100dvh] w-full flex flex-col justify-evenly items-center text-xl`}
       >
         <div className="flex justify-center items-center gap-4 relative">
           <span className="text-5xl">💪</span>
@@ -280,7 +380,7 @@ const Section = ({}) => {
           <div className="border bg-gray-300 rounded-full w-[600px] h-[400px]"></div>
           <div className="border bg-gray-300 rounded-full w-[510px] h-[340px]"></div>
         </div> */}
-        <div className="relative flex gap-6 justify-center items-center">
+        <div className="relative flex gap-4 justify-center items-center">
           <div>
             <span className="font-bold text-3xl">사장님도 '득근'하세요!</span>
             <div className="absolute left-[136px]">

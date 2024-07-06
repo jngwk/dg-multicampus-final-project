@@ -52,7 +52,7 @@ const UserSearchModal = ({
           <Input
             name={"searchWord"}
             value={searchWord}
-            placeholder="헬스장을 검색해주세요..."
+            placeholder="회원을 검색해주세요..."
             onChange={(e) => setSearchWord(e.target.value)}
             width="100%"
             feature={
@@ -117,7 +117,7 @@ const UserSearchModal = ({
                       <div
                         className="cursor-pointer flex justify-between items-center hover:bg-peach-fuzz/50 px-2 py-2 rounded-md transition-all ease-in-out"
                         key={index}
-                        onClick={() => handleButtonClick(user.userId)}
+                        onClick={() => handleButtonClick(user)}
                       >
                         <b>{user.userName}</b>
 
