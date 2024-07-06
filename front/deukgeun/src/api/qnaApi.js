@@ -27,8 +27,9 @@ export const ListInquery = async () => {
 
 export const updateInquiry = async (editedInquiry) => {
   try {
+    console.log("@@@editedInquiry", editedInquiry);
     const res = await axios.put(
-      `${prefix}/update/${editedInquiry.id}`,
+      `${prefix}/update/${editedInquiry.qnaId}`,
       editedInquiry
     );
     return res.data; // Assuming your API returns updated inquiry data
@@ -48,3 +49,22 @@ export const deleteInquiryApi = async (inquiryId) => {
   }
 };
 
+export const sendRegiNotiEmail = async (inquiry) => {
+  try {
+    const res = await axios.post(`${prefix}/sendRegiEmail`, inquiry);
+    return res.data; // Assuming your API returns confirmation of deletion
+  } catch (error) {
+    console.error("Error sending regsitration email:", error);
+    throw error;
+  }
+};
+
+export const sendReplyNotiEmail = async (inquiry) => {
+  try {
+    const res = await axios.post(`${prefix}/sendReplyEmail`, inquiry);
+    return res.data; // Assuming your API returns confirmation of deletion
+  } catch (error) {
+    console.error("Error sending reply email:", error);
+    throw error;
+  }
+};

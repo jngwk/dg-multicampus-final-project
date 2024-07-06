@@ -222,7 +222,7 @@ const Section = ({}) => {
           </div>
         </div>
         {/* right */}
-        <div className="w-1/2 h-2/3 relative bg-white">
+        <div className="xl:w-1/2 lg:w-[60vw] h-2/3 relative bg-white py-5 px-10 rounded-md shadow-md">
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             initialView={"dayGridMonth"}
@@ -301,7 +301,7 @@ const Section = ({}) => {
           </div>
         </div>
         {/* left */}
-        <div className="w-1/2 h-2/3 relative rounded-xl overflow-hidden bg-white p-10">
+        <div className="w-1/2 h-2/3 relative rounded-xl overflow-hidden bg-white p-10 shadow-md">
           <ChartDemo />
         </div>
       </div>
@@ -309,7 +309,7 @@ const Section = ({}) => {
 
       {/* section 4 */}
       <div
-        className={`snap-start h-[100dvh] w-full flex flex-col gap-60 justify-center items-center text-xl`}
+        className={`snap-start h-[100dvh] w-full flex flex-col justify-evenly items-center text-xl`}
       >
         <div className="flex justify-center items-center gap-4 relative">
           <span className="text-5xl">💪</span>
@@ -380,7 +380,7 @@ const Section = ({}) => {
           <div className="border bg-gray-300 rounded-full w-[600px] h-[400px]"></div>
           <div className="border bg-gray-300 rounded-full w-[510px] h-[340px]"></div>
         </div> */}
-        <div className="relative flex gap-6 justify-center items-center">
+        <div className="relative flex gap-4 justify-center items-center">
           <div>
             <span className="font-bold text-3xl">사장님도 '득근'하세요!</span>
             <div className="absolute left-[136px]">

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { registerInquery } from "../api/qnaApi";
+import { registerInquery, sendRegiNotiEmail } from "../api/qnaApi";
 import { useAuth } from "../context/AuthContext";
 import useQnaValidation from "../hooks/useQnaValidation";
 import Input from "../components/shared/Input";
@@ -9,6 +9,7 @@ import Fallback from "../components/shared/Fallback";
 import CustomParticles from "../components/shared/CustomParticles";
 import AlertModal from "../components/modals/AlertModal";
 import useCustomNavigate from "../hooks/useCustomNavigate";
+import Loader from "../components/shared/Loader";
 
 const initState = {
   userName: "",
@@ -22,6 +23,7 @@ const QnaForm = () => {
   const { errors, validateForm } = useQnaValidation();
   const [formValues, setFormValues] = useState(initState);
   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
+  const [sendingEmail, setIsSendingEmail] = useState(false);
   const customNavigate = useCustomNavigate();
 
   useEffect(() => {
@@ -51,6 +53,7 @@ const QnaForm = () => {
     }
 
     try {
+      // setIsSendingEmail(true);
       const formData = {
         ...formValues,
         userId: userData ? userData.userId : null,
@@ -60,14 +63,16 @@ const QnaForm = () => {
       console.log("Form data:", formData);
       const res = await registerInquery(formData);
       console.log("Response:", res);
-
       setIsAlertModalVisible(true);
-
+      const emailRes = await sendRegiNotiEmail(formData);
+      console.log("regi email sent", emailRes);
       // Optionally reset form after successful submission
       setFormValues(initState);
     } catch (error) {
       console.error("Error registering form data", error);
       // Handle error, e.g., show an error message to the user
+    } finally {
+      // setIsSendingEmail(false);
     }
   };
 
@@ -94,8 +99,15 @@ const QnaForm = () => {
             </div>
           </div>
           {/* form */}
-          <div className="w-[472px] h-fit mx-auto border-2 border-peach-fuzz rounded-md p-9 bg-white z-10 shadow-lg">
+
+          <div className="relative w-[472px] h-fit mx-auto border-2 border-peach-fuzz rounded-md p-9 bg-white z-10 shadow-lg">
+            {sendingEmail && (
+              <div className="absolute inset-0 bg-white bg-opacity-75 flex justify-center items-center z-20">
+                <Loader />
+              </div>
+            )}
             <span className="block text-5xl mb-4">🙋‍♀️</span>
+
             {!sessionStorage.getItem("isLoggedIn") && (
               <div className="flex justify-between w-[400px]">
                 <Input

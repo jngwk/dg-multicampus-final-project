@@ -350,7 +350,7 @@ const Calendar = ({ editable = true, trainerId = null }) => {
           eventDrop={handleEventDrop}
           eventTimeFormat={{ hour: "2-digit", minute: "2-digit" }}
           dayMaxEventRows={3}
-          height={"80dvh"}
+          height={"70dvh"}
         />
       </div>
       {editable && (
