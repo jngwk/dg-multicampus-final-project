@@ -95,9 +95,9 @@ export default function ChatRoom() {
 
   return (
     <div className="w-full min-h-[86dvh] flex justify-center">
-      <div className="w-[60vw] h-full mx-auto justify-center items-center flex bg-white rounded-lg shadow-md py-5">
+      <div className="w-[60vw] h-full mx-auto justify-center items-center flex xl:bg-white xl:rounded-lg xl:shadow-md py-5">
         <div className="w-full max-w-[1400px] py-5 ">
-          <div className="md:flex items-center pb-2">
+          <div className="md:flex items-center pb-2 pl-10">
             <IoChatbubbles color="#ffbe98" size="56" />
             <span className="font-semibold text-2xl mx-3 "> 대화방 </span>
             <button onClick={toggleAvailableUsersModal}>
