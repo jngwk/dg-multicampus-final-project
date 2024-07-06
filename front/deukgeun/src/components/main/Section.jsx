@@ -222,7 +222,7 @@ const Section = ({}) => {
           </div>
         </div>
         {/* right */}
-        <div className="w-1/2 h-2/3 relative bg-white">
+        <div className="xl:w-1/2 lg:w-[60vw] h-2/3 relative bg-white py-5 px-10 rounded-md shadow-md">
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             initialView={"dayGridMonth"}
@@ -301,7 +301,7 @@ const Section = ({}) => {
           </div>
         </div>
         {/* left */}
-        <div className="w-1/2 h-2/3 relative rounded-xl overflow-hidden bg-white p-10">
+        <div className="w-1/2 h-2/3 relative rounded-xl overflow-hidden bg-white p-10 shadow-md">
           <ChartDemo />
         </div>
       </div>
