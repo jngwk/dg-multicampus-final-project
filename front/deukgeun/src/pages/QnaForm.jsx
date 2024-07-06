@@ -77,10 +77,10 @@ const QnaForm = () => {
 
   return (
     <>
-      <div className="w-full min-h-[86dvh] flex justify-center items-center">
+      <div className="w-full min-h-[80dvh] flex justify-center items-center">
         <div className="mx-auto xl:grid xl:grid-cols-2 xl:w-[1000px] flex-col flex justify-center items-center">
           <div className="w-[400px] p-11">
-            <header className="text-5xl mb-11 font-bold">문의하기</header>
+            <header className="text-5xl mb-11 font-bold ">문의하기</header>
             <div className="flex flex-col gap-6">
               <p className="w-80">득근을 방문에 주셔서 감사합니다.</p>
               <p className="w-80">
@@ -94,7 +94,7 @@ const QnaForm = () => {
             </div>
           </div>
           {/* form */}
-          <div className="w-[472px] h-fit mx-auto border-2 border-peach-fuzz rounded-md p-9 bg-white z-10">
+          <div className="w-[472px] h-fit mx-auto border-2 border-peach-fuzz rounded-md p-9 bg-white z-10 shadow-lg">
             <span className="block text-5xl mb-4">🙋‍♀️</span>
             {!sessionStorage.getItem("isLoggedIn") && (
               <div className="flex justify-between w-[400px]">

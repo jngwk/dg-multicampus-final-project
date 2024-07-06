@@ -17,7 +17,7 @@ export const registerInquery = async (formValues) => {
 export const ListInquery = async () => {
   try {
     const res = await axios.get(`${prefix}/list`);
-    console.log("queryList", res);
+    console.log("queryList", res.data);
     return res.data;
   } catch (error) {
     console.error("Error fetching inquiries:", error);
@@ -48,16 +48,3 @@ export const deleteInquiryApi = async (inquiryId) => {
   }
 };
 
-export const sendVerificationEmail = async (email, answer) => {
-  try {
-    const response = await axios.post(`${prefix}/sendResponseEmail`, {
-      userEmail: email,
-      answer: answer,
-    });
-    console.log("Email sent successfully:", response);
-    return response.data;
-  } catch (error) {
-    console.error("Error sending email:", error);
-    throw error;
-  }
-};

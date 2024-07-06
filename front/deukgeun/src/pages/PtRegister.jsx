@@ -41,7 +41,7 @@ const PtRegister = () => {
 
   const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isTraineDropdownOpen, setIsTrainerDropdownOpen] = useState(false);
   const [hasNoProduct, setHasNoProduct] = useState(false);
@@ -598,8 +598,9 @@ const PtRegister = () => {
                       required={true}
                     />
                   </div>
-                  <div className="flex">
-                    {/* PT시간 */}
+                  {/* PT시간 */}
+                  {/* <div className="flex">
+                    
                     <div className="relative">
                       <label
                         className={`absolute w-10 right-26 -top-4 px-2 text-xs pointer-events-none text-gray-400`}
@@ -626,7 +627,7 @@ const PtRegister = () => {
                         )}
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                   {isExpanded && (
                     <>
                       <div className="flex">
@@ -668,7 +669,7 @@ const PtRegister = () => {
                         <div className="ml-3">
                           <button
                             onClick={handleSubmit}
-                            className="flex items-center text-lg text-grayish-red hover:border-b  hover:font-semibold mx-auto animate-bounce"
+                            className="flex items-center text-lg text-grayish-red hover:border-b  hover:font-semibold"
                           >
                             <div className="mb-4 text-3xl">💳</div> 결제하기
                           </button>
