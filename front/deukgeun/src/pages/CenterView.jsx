@@ -29,9 +29,7 @@ import BasicCard from "../components/shared/BasicCard";
 import bgimg from "../assets/reg.png";
 import { format } from "date-fns";
 
-
 const { kakao } = window;
-
 
 const CenterView = () => {
   const location = useLocation();
@@ -47,55 +45,53 @@ const CenterView = () => {
   const customNavigate = useCustomNavigate();
   const gymId = location.state?.gym?.gymId || "";
 
-
   const infoRef = useRef(null);
   const introduceRef = useRef(null);
   const imgRef = useRef(null);
   const priceRef = useRef(null);
   const trainerRef = useRef(null);
   const reviewRef = useRef(null);
+  const menuRef = useRef(null);
 
   const [page, setPage] = useState(1);
   const lastPageRef = useRef(0);
 
-  useEffect(() => {
-    lastPageRef.current = 7;
-  
-    const infoRefTop = infoRef.current.offsetTop;
-  
-    const handleWheel = (e) => {
-      e.preventDefault();
-  
-      if (e.deltaY > 0) {
-        if (page === lastPageRef.current) return;
+  // useEffect(() => {
+  //   lastPageRef.current = 7;
 
-        const nextPage = page + 1;
-        const posTop = (nextPage - 1) * window.innerHeight + infoRefTop;
-        setPage(nextPage);
-        document.documentElement.scrollTo({ top: posTop, behavior: 'smooth' });
-      } else if (e.deltaY < 0) {
-        if (page === 1) return;
+  //   const infoRefTop = infoRef.current.offsetTop;
 
-        const prevPage = page - 1;
-        const posTop = (prevPage - 1) * window.innerHeight + infoRefTop;
-        setPage(prevPage);
-        document.documentElement.scrollTo({ top: posTop, behavior: 'smooth' });
-      }
-    };
-  
-    window.addEventListener('wheel', handleWheel, { passive: false });
-  
-    return () => {
-      window.removeEventListener('wheel', handleWheel);
-    };
-  }, [page, infoRef]);
-  
+  //   const handleWheel = (e) => {
+  //     e.preventDefault();
 
-  useEffect(() => {
-    const posTop = (page - 1) * window.innerHeight + infoRef.current.offsetTop;
-    document.documentElement.scrollTo({ top: posTop, behavior: 'smooth' });
-  }, [page, infoRef]);
+  //     if (e.deltaY > 0) {
+  //       if (page === lastPageRef.current) return;
 
+  //       const nextPage = page + 1;
+  //       const posTop = (nextPage - 1) * window.innerHeight + infoRefTop;
+  //       setPage(nextPage);
+  //       document.documentElement.scrollTo({ top: posTop, behavior: "smooth" });
+  //     } else if (e.deltaY < 0) {
+  //       if (page === 1) return;
+
+  //       const prevPage = page - 1;
+  //       const posTop = (prevPage - 1) * window.innerHeight + infoRefTop;
+  //       setPage(prevPage);
+  //       document.documentElement.scrollTo({ top: posTop, behavior: "smooth" });
+  //     }
+  //   };
+
+  //   window.addEventListener("wheel", handleWheel, { passive: false });
+
+  //   return () => {
+  //     window.removeEventListener("wheel", handleWheel);
+  //   };
+  // }, [page, infoRef]);
+
+  // useEffect(() => {
+  //   const posTop = (page - 1) * window.innerHeight + infoRef.current.offsetTop;
+  //   document.documentElement.scrollTo({ top: posTop, behavior: "smooth" });
+  // }, [page, infoRef]);
 
   // 헬스장 소개글 불러와야함
   const introduce = gymData.introduce;
@@ -199,26 +195,29 @@ const CenterView = () => {
     ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-
   const handleScrollToTop = () => {
-    document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
+    // document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
+    console.log("clicked");
+    // document.body.scrollIntoView({ behavior: "smooth" });
+    // window.scrollTo(0, 0);
+    menuRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
   };
-  
-
 
   return (
     <>
-      <div className="flex flex-col space-y-5">
-
+      <div className="relative flex flex-col space-y-5">
         {/* <div className="flex flex-row ml-40 items-center font-semibold text-2xl mb-3">
           <CgDetailsMore size="38" className="mr-3" />
           상세정보
         </div> */}
         {/* 헬스장 정보 */}
         <div className="flex flex-col min-h-screen">
-          <div className="flex flex-row space-x-40 justify-center item-center mb-6 ">
+          <div
+            ref={menuRef}
+            className="flex flex-row space-x-40 justify-center item-center mb-6 "
+          >
             <button
-              className="text-2xl font-bold pb-2 hover:border-grayish-red hover:border-b hover:text-peach-fuzz text-grayish-red "
+              className="text-2xl font-bold hover:border-grayish-red hover:border-b hover:text-peach-fuzz text-grayish-red "
               onClick={() => handleScrollToSection(infoRef)}
             >
               정보
@@ -254,7 +253,10 @@ const CenterView = () => {
               리뷰
             </button>
           </div>
-          <div ref={infoRef} className="w-full min-h-screen flex flex-col justify-center items-center bg-grayish-red bg-opacity-15 p-20">
+          <div
+            ref={infoRef}
+            className="w-full min-h-screen flex flex-col justify-center items-center bg-grayish-red bg-opacity-15 p-20"
+          >
             <div className="flex w-full py-10 bg-white rounded-[55px] ">
               <div className="box-border w-[50%] flex justify-center items-center">
                 {!mapLoading ? (
@@ -279,13 +281,23 @@ const CenterView = () => {
                 )}
               </div>
               {/* text 정보 */}
-              <div className=" relative flex flex-col space-y-7 box-border justify-center items w-1/2 p-14">
-                <p className="text-6xl font-semibold mb-10 w-fit rounded-2xl underline-offset-8 p-4"
-                style={{ textDecoration: 'underline', textDecorationStyle: 'wavy', textDecorationColor: 'rgba(254, 135, 66, 0.4)' }}>
+              <div className="flex flex-col space-y-7 box-border justify-center items w-1/2 p-14">
+                <p
+                  className="text-6xl font-semibold mb-10 w-fit rounded-2xl underline-offset-8 p-4"
+                  style={{
+                    textDecoration: "underline",
+                    textDecorationStyle: "wavy",
+                    textDecorationColor: "rgba(254, 135, 66, 0.4)",
+                  }}
+                >
                   {gymData.user.userName}
                 </p>
                 <div className="flex flex-row">
-                  <FaLocationDot size="32" className="mr-3 opacity-90" color="#fe8742" />
+                  <FaLocationDot
+                    size="32"
+                    className="mr-3 opacity-90"
+                    color="#fe8742"
+                  />
                   <div className="flex flex-col">
                     <p className="font-semibold text-2xl "> 주소 </p>
                     <div>
@@ -342,27 +354,32 @@ const CenterView = () => {
           {introduce && (
             <div
               ref={introduceRef}
-              className="relative flex justify-center items-center w-full min-h-screen"
+              className="snap-start relative flex justify-center items-center w-full min-h-screen"
             >
               <div
                 className="absolute inset-0"
                 style={{
                   backgroundImage: `url(${bgimg})`,
-                  backgroundSize: 'cover',
+                  backgroundSize: "cover",
                   opacity: 0.45,
                   zIndex: -9,
                 }}
               ></div>
               <div className="max-w-full">
-                <div className="text-4xl sm:text-4xl font-semibold text-zinc-800 drop-shadow-lg tracking-wide" style={{ lineHeight: '1.5' }}>
-                  {introduceText.split('\n').map((line, index) => (
+                <div
+                  className="text-4xl sm:text-4xl font-semibold text-zinc-800 drop-shadow-lg tracking-wide"
+                  style={{ lineHeight: "1.5" }}
+                >
+                  {introduceText.split("\n").map((line, index) => (
                     <React.Fragment key={index}>
                       {line}
                       <br />
                     </React.Fragment>
                   ))}
                   <span
-                    className={`${isintroduceEnd ? "hidden" : "animate-typing"}`}
+                    className={`${
+                      isintroduceEnd ? "hidden" : "animate-typing"
+                    }`}
                   >
                     |
                   </span>
@@ -371,19 +388,18 @@ const CenterView = () => {
             </div>
           )}
 
-
           {/* 헬스장 사진 */}
           <div
             ref={imgRef}
-            className="w-full min-h-screen flex justify-center items-center"
+            className="snap-start w-full min-h-screen flex justify-center items-center"
           >
-
             <CenterImg gymId={gymId} />
           </div>
           {/* 헬스장 가격표 */}
           <div
             ref={priceRef}
-            className="w-full min-h-screen flex justify-center items-center bg-grayish-red bg-opacity-20">
+            className="snap-start w-full min-h-screen flex justify-center items-center bg-grayish-red bg-opacity-20"
+          >
             <div className="w-[60%] h-full p-20 flex flex-col items-center">
               <div className="mb-10">
                 <div className="flex flex-col items-center text-center mb-2 font-semibold text-2xl">
@@ -418,18 +434,18 @@ const CenterView = () => {
                                     !sessionStorage.getItem("isLoggedIn")
                                       ? toggleLoginModal()
                                       : customNavigate("/PtRegister", {
-                                        state: {
-                                          product: product,
-                                          gym: gymData,
-                                        },
-                                      });
+                                          state: {
+                                            product: product,
+                                            gym: gymData,
+                                          },
+                                        });
                                   },
                                 }}
                               />
                             );
                           })}
                       </div>
-                      
+
                       <div className="w-fit grid gap-x-8 gap-y-4 grid-cols-2">
                         {gymData.productList
                           .filter((product) => product.ptCountTotal === 0)
@@ -449,11 +465,11 @@ const CenterView = () => {
                                     !sessionStorage.getItem("isLoggedIn")
                                       ? toggleLoginModal()
                                       : customNavigate("/memberregister", {
-                                        state: {
-                                          product: product,
-                                          gym: gymData,
-                                        },
-                                      });
+                                          state: {
+                                            product: product,
+                                            gym: gymData,
+                                          },
+                                        });
                                   },
                                 }}
                               />
@@ -475,7 +491,7 @@ const CenterView = () => {
           {/* 트레이너 소개 */}
           <div
             ref={trainerRef}
-            className="w-full min-h-screen flex justify-center items-center "
+            className="snap-start w-full min-h-screen flex justify-center items-center "
           >
             <TrainerInfo trainers={gymData.trainerList} />
           </div>
@@ -493,9 +509,10 @@ const CenterView = () => {
       <div className="flex flex-col space-y-3">
         {/* top버튼 */}
         <button
-        onClick={() => handleScrollToTop()} 
-        className="flex flex-col justify-center items-center fixed bottom-52 right-16 w-20 h-20 rounded-full text-[12px] font-semibold text-black ">
-        <HiChevronUp size={35}/>
+          onClick={() => handleScrollToTop()}
+          className="flex flex-col justify-center items-center fixed bottom-52 right-16 w-20 h-20 rounded-full text-[12px] font-semibold text-black "
+        >
+          <HiChevronUp size={35} />
           <p>Top</p>
         </button>
         <button
