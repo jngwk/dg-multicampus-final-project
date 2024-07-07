@@ -28,13 +28,14 @@ const ReviewContent = ({
   const [currentReview, setCurrentReview] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [colorMapping, setColorMapping] = useState({});
+  const [loadingReviews, setLoadingReviews] = useState(false);
 
   const [scrollLeft, setScrollLeft] = useState(0);
-
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
+        setLoadingReviews(true);
         const data = await getReviews(gymId);
         setReviews(data);
         const initialMapping = data.reduce((acc, review) => {
@@ -44,6 +45,8 @@ const ReviewContent = ({
         setColorMapping(initialMapping);
       } catch (error) {
         console.error("Error fetching reviews:", error);
+      } finally {
+        setLoadingReviews(false);
       }
     };
     fetchReviews();
@@ -113,17 +116,16 @@ const ReviewContent = ({
       .reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return colors[hash % colors.length];
   };
-  
+
   const handleWheel = (e) => {
     const container = e.currentTarget;
     const delta = e.deltaY || e.detail || e.wheelDelta;
-  
+
     const scrollSpeed = 0.5;
     container.scrollLeft += delta * scrollSpeed;
-  
+
     e.preventDefault();
   };
-  
 
   return (
     <div className="flex flex-wrap justify-center">
@@ -171,19 +173,19 @@ const ReviewContent = ({
               </p>
               {item.images && item.images.length > 0 && (
                 <div
-                className="flex space-x-2 mt-2 w-full overflow-x-auto scrollbar-hide"
-                onWheel={handleWheel}
-              >
-                {item.images.map((image, idx) => (
-                  <img
-                    key={idx}
-                    src={`/images/${image}`}
-                    alt={`Review Image ${idx}`}
-                    className="w-auto h-24 object-cover rounded-lg border-gray-200 border-2 cursor-pointer"
-                    onClick={() => handleImageClick(image)}
-                  />
-                ))}
-              </div>
+                  className="flex space-x-2 mt-2 w-full overflow-x-auto scrollbar-hide"
+                  onWheel={handleWheel}
+                >
+                  {item.images.map((image, idx) => (
+                    <img
+                      key={idx}
+                      src={`/images/${image}`}
+                      alt={`Review Image ${idx}`}
+                      className="w-auto h-24 object-cover rounded-lg border-gray-200 border-2 cursor-pointer"
+                      onClick={() => handleImageClick(image)}
+                    />
+                  ))}
+                </div>
               )}
               {userData && userData.userId === item.userId && (
                 <div className="flex space-x-2 mt-2 absolute bottom-2 right-2">

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 import { CgDetailsMore } from "react-icons/cg";
 import { HiChevronUp } from "react-icons/hi";
-import { FaLocationDot } from "react-icons/fa6";
+import { FaLocationDot, FaRegStar } from "react-icons/fa6";
 import { PiPhoneListDuotone } from "react-icons/pi";
 import { LuTimer } from "react-icons/lu";
 import { BsPersonVcard } from "react-icons/bs";
@@ -28,6 +28,8 @@ import Loader from "../components/shared/Loader";
 import BasicCard from "../components/shared/BasicCard";
 import bgimg from "../assets/reg.png";
 import { format } from "date-fns";
+import { getAverageRatingByGymId } from "../api/reviewApi";
+import { RiMapPinLine } from "react-icons/ri";
 
 const { kakao } = window;
 
@@ -55,6 +57,10 @@ const CenterView = () => {
 
   const [page, setPage] = useState(1);
   const lastPageRef = useRef(0);
+
+  const [avgRating, setAvgRating] = useState(null);
+  const [noReviews, setNoReviews] = useState(false);
+  const [reviewCount, setReviewCount] = useState(0);
 
   // useEffect(() => {
   //   lastPageRef.current = 7;
@@ -98,10 +104,6 @@ const CenterView = () => {
   const { text: introduceText, isEnd: isintroduceEnd } = useTyping(introduce);
 
   useEffect(() => {
-    if (gymData) {
-      // console.log("gymData from location in center view", gymData);
-      return;
-    }
     const fetchGymData = async () => {
       try {
         // setGymDataLoading(true);
@@ -114,8 +116,21 @@ const CenterView = () => {
         setGymDataLoading(false);
       }
     };
-
-    fetchGymData();
+    const getAvgRating = async () => {
+      try {
+        const data = await getAverageRatingByGymId(gymId);
+        console.log("Avg rating", data);
+        setReviewCount(data.count);
+        setAvgRating(data.avg);
+      } catch (error) {}
+    };
+    if (!gymData) {
+      fetchGymData();
+    }
+    if (!avgRating) {
+      // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+      getAvgRating();
+    }
   }, [gymId]);
 
   useEffect(() => {
@@ -292,8 +307,33 @@ const CenterView = () => {
                 >
                   {gymData.user.userName}
                 </p>
+
+                <div className="flex flex-row items-center">
+                  <FaRegStar
+                    size="32"
+                    className="mr-3 opacity-90"
+                    color="#fe8742"
+                  />
+                  <div className="flex items-end gap-3">
+                    <p className="font-semibold text-2xl "> 평점 </p>
+                    {reviewCount === 0 ? (
+                      <span className="text-sm text-gray-500">
+                        등록된 리뷰가 없습니다...
+                      </span>
+                    ) : (
+                      <>
+                        <div className="pl-5">
+                          <span className="text-bright-orange text-2xl">
+                            {avgRating} / 5
+                          </span>
+                        </div>
+                        <span className="text-sm">(리뷰: {reviewCount})</span>
+                      </>
+                    )}
+                  </div>
+                </div>
                 <div className="flex flex-row">
-                  <FaLocationDot
+                  <RiMapPinLine
                     size="32"
                     className="mr-3 opacity-90"
                     color="#fe8742"

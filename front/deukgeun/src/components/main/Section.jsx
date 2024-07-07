@@ -350,7 +350,7 @@ const Section = ({}) => {
             <div className="relative">
               <span>
                 본인의 근성장을 확실하게 하기 위해 ‘득근’의 <b>운동일지</b>를
-                활용해 보세요!
+                활용해 보세요.
               </span>
               <div className="absolute  left-16">
                 <img
@@ -367,6 +367,19 @@ const Section = ({}) => {
                 />
               </div>
             </div>
+            <div className="relative">
+              <span>
+                매일 진행한 PT 내용과 본인이 기록한 운동을 <b>한눈에 확인</b>{" "}
+                하세요!
+              </span>
+              <div className="absolute left-[410px]">
+                <img
+                  className="h-3 w-[108px]"
+                  src={orangeUnderline}
+                  alt="underline"
+                />
+              </div>
+            </div>
           </div>
           <div className="relative w-fit">
             <Button
@@ -377,7 +390,9 @@ const Section = ({}) => {
               height="76px"
               onClick={() =>
                 sessionStorage.getItem("isLoggedIn")
-                  ? customNavigate("/calendar")
+                  ? (userData?.role === "ROLE_GENERAL" ||
+                      userData?.role === "ROLE_TRAINER") &&
+                    customNavigate("/calendar")
                   : toggleLoginModal()
               }
             />
@@ -434,9 +449,12 @@ const Section = ({}) => {
               </div>
             </div>
             <div className="relative">
-              <span>회원권 및 데이터를 관리하고</span>
-              <div className="absolute  left-[180px]">
+              <span>회원권 만료를 자동으로 관리하고 데이터를 활용해</span>
+              <div className="absolute  left-[130px]">
                 <img className="h-3 w-20" src={underline} alt="underline" />
+              </div>
+              <div className="absolute  left-[306px]">
+                <img className="h-3 w-16" src={underline} alt="underline" />
               </div>
             </div>
             <div className="relative">

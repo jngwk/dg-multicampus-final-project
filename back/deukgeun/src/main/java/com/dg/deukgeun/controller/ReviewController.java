@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -148,6 +149,11 @@ public class ReviewController {
             log.error("Error fetching reviews for gym ID: " + gymId, e);
             throw e;
         }
+    }
+
+    @GetMapping("/avgRating/{gymId}")
+    public Map<String, Number> getAverageRatingByGymId(@PathVariable(name = "gymId") Integer gymId) {
+        return reviewService.getAverageRatingByGymId(gymId);
     }
 
     @DeleteMapping("/delete/{reviewId}")
