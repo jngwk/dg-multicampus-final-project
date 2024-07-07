@@ -113,7 +113,7 @@ const ReviewModal = ({ toggleModal, gymId, onReviewAdded }) => {
     return (
         <ModalLayout toggleModal={toggleModal}>
             <form onSubmit={handleSubmit}>
-                <div className="flex flex-col h-96">
+                <div className="flex flex-col h-fit">
                     <div className="flex flex-col gap-1 justify-center items-center">
                         <div className="mb-2 font-semibold text-xl">
                             리뷰 작성
@@ -157,8 +157,20 @@ const ReviewModal = ({ toggleModal, gymId, onReviewAdded }) => {
                         </label>
                     </div>
                     <div>
-                    <div className="mt-2 flex w-96 overflow-x-auto scrollbar-hide"
-                    onWheel={handleWheel}>
+                        <label className="w-[400px] h-[40px] pl-2 flex text-sm items-center cursor-pointer">
+                            <IoMdPhotos className="w-7 h-7 px-1" color="#9f8d8d" />
+                            {/* <p className="text-lg px-1" >📷</p> */}
+                            <p className="px-1 pt-1" >이미지 넣기</p>
+                            <input
+                                type="file"
+                                className="hidden"
+                                onChange={handleImageChange}
+                                multiple
+                            />
+                        </label>
+                        {/* <div className="mt-2 flex w-96 overflow-x-auto scrollbar-hide"
+                    onWheel={handleWheel}> */}
+                    <div className="mt-2 grid grid-cols-4 ">
                         {previewImages.map((src, index) => (
                             <div key={index} className="relative flex-shrink-0 mr-2 mb-2">
                                 <img src={src} alt={`Preview ${index}`} className="w-24 h-24 object-cover rounded-lg border-gray-200 border-2 cursor-pointer" />
@@ -173,16 +185,6 @@ const ReviewModal = ({ toggleModal, gymId, onReviewAdded }) => {
                             </div>
                         ))}
                     </div>
-                        <label className="w-[400px] h-[40px] pl-2 flex text-sm items-center cursor-pointer">
-                            <IoMdPhotos className="w-7 h-7 px-1" />
-                            이미지 넣기
-                            <input
-                                type="file"
-                                className="hidden"
-                                onChange={handleImageChange}
-                                multiple
-                            />
-                        </label>
                         <Button label="작성" width="100px" className="float-right" type="submit" />
                     </div>
                     

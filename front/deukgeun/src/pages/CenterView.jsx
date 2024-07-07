@@ -305,7 +305,7 @@ const CenterView = () => {
                     textDecorationColor: "rgba(254, 135, 66, 0.4)",
                   }}
                 >
-                  {gymData.user.userName}
+                  {gymData.user?.userName}
                 </p>
 
                 <div className="flex flex-row items-center">

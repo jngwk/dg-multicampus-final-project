@@ -348,7 +348,7 @@ const Gymset = () => {
               <box-icon name="cog" size="40px" color="#9f8d8d"></box-icon>
               <p> 헬스장 상세 정보 </p>
             </p>
-            <div className="py-5 flex flex-col items-start justify-center border-y-4 border-[#f7f5f2] space-y-6">
+            <div className="py-5 px-10 flex flex-col items-start justify-center border-y-4 border-yellow-500 border-opacity-15 space-y-6">
               <div className="flex justify-between space-x-20 ">
                 <div className="flex flex-col space-y-6">
                   {/* 업체명 */}
