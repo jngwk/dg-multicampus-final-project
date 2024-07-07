@@ -637,7 +637,7 @@ const Gymset = () => {
             {/* Submit Button */}
             <div className="flex justify-center mt-8">
               <button
-                className="px-4 py-2 text-white bg-indigo-500 rounded hover:bg-green-700"
+                className="px-4 py-2 text-white bg-indigo-400 hover:bg-indigo-600 rounded "
                 onClick={handleSubmit}
               >
                 정보 수정
