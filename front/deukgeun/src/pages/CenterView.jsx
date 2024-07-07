@@ -542,7 +542,7 @@ const CenterView = () => {
             ref={reviewRef}
             className="w-full min-h-screen flex justify-center items-center bg-grayish-red bg-opacity-15"
           >
-            <Review gymId={gymId} isMember={isMember} />
+            <Review gymId={gymId} />
           </div>
         </div>
       </div>

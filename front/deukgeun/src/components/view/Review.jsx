@@ -30,7 +30,6 @@ const ReviewContent = ({
   const [selectedImage, setSelectedImage] = useState(null);
   const [colorMapping, setColorMapping] = useState({});
   const [loadingReviews, setLoadingReviews] = useState(false);
-  const [isMember, setIsMember] = useState(false);
 
   const [scrollLeft, setScrollLeft] = useState(0);
 
@@ -51,23 +50,7 @@ const ReviewContent = ({
         setLoadingReviews(false);
       }
     };
-
-    const getMembership = async () => {
-      try {
-        const membership = await findMembership();
-        if (membership.gymId === gymId) setIsMember(true);
-      } catch (error) {
-        console.error("get membership error in review", error);
-      }
-    };
-
     fetchReviews();
-    if (
-      sessionStorage.getItem("isLoggedIn") &&
-      userData?.role === "ROLE_GENERAL"
-    ) {
-      getMembership();
-    }
   }, [gymId, onReviewAdded, onReviewDeleted]);
 
   const handleEdit = (review) => {
@@ -264,11 +247,12 @@ const ReviewContent = ({
   );
 };
 
-const Review = ({ gymId, isMember }) => {
+const Review = ({ gymId }) => {
   const { isModalVisible, toggleModal } = useModal();
   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isMember, setIsMember] = useState(false);
   const { userData } = useAuth();
 
   useEffect(() => {
@@ -281,6 +265,23 @@ const Review = ({ gymId, isMember }) => {
         console.error("Error fetching reviews:", error);
       }
     };
+    const getMembership = async () => {
+      try {
+        const membership = await findMembership();
+        if (membership.gym.gymId === gymId) setIsMember(true);
+        console.log(membership, membership.gymId === gymId);
+      } catch (error) {
+        console.error("get membership error in review", error);
+      }
+    };
+
+    if (
+      sessionStorage.getItem("isLoggedIn") &&
+      userData?.role === "ROLE_GENERAL"
+    ) {
+      console.log("in get membership @@@@@@@@@");
+      getMembership();
+    }
     fetchReviews();
   }, [gymId, refreshKey]);
 
