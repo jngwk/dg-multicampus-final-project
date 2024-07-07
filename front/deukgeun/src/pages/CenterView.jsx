@@ -53,7 +53,7 @@ const CenterView = () => {
   const priceRef = useRef(null);
   const trainerRef = useRef(null);
   const reviewRef = useRef(null);
-  const menuRef = useRef(null);
+  const topRef = useRef(null);
 
   const [page, setPage] = useState(1);
   const lastPageRef = useRef(0);
@@ -215,7 +215,7 @@ const CenterView = () => {
     console.log("clicked");
     // document.body.scrollIntoView({ behavior: "smooth" });
     // window.scrollTo(0, 0);
-    menuRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    topRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
   };
 
   return (
@@ -227,10 +227,8 @@ const CenterView = () => {
         </div> */}
         {/* 헬스장 정보 */}
         <div className="flex flex-col min-h-screen">
-          <div
-            ref={menuRef}
-            className="sticky top-0 flex flex-row space-x-40 justify-center item-center bg-floral-white h-20 z-30"
-          >
+          <div ref={topRef}></div>
+          <div className="sticky top-0 flex flex-row space-x-40 justify-center item-center bg-floral-white h-20 z-30">
             <button
               className="text-2xl font-bold hover:text-peach-fuzz text-grayish-red "
               onClick={() => handleScrollToSection(infoRef)}
@@ -488,7 +486,11 @@ const CenterView = () => {
 
                       <div className="w-fit grid gap-x-8 gap-y-4 grid-cols-2">
                         {gymData.productList
-                          .filter((product) => product.ptCountTotal === 0)
+                          .filter(
+                            (product) =>
+                              product.ptCountTotal === 0 ||
+                              !product.ptCountTotal
+                          )
                           .sort((a, b) => a.days - b.days)
                           .map((product, key) => {
                             const endDate = addDays(Today, product.days);
