@@ -177,7 +177,7 @@ const AdditionalCharts = ({ stats }) => {
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold mb-6 text-center">남녀 표준모델</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">남녀 평균 통계</h2>
         <div className="flex justify-between items-center">
           <div className="text-center text-blue-600 w-1/4">
             <h3 className="font-bold text-xl mb-2">남성</h3>

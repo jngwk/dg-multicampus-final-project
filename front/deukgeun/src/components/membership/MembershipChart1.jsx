@@ -21,6 +21,7 @@ const MembershipChart1 = ({ stats, filterType, start, end }) => {
   }, {});
 
   const sortedMonths = Object.keys(monthlyData).sort();
+  const maxDataValue = Math.max(...Object.values(monthlyData));
 
   const getColor = () => {
     switch(filterType) {
@@ -77,10 +78,22 @@ const MembershipChart1 = ({ stats, filterType, start, end }) => {
         },
         padding: 10,
       },
+      datalabels: {
+        display: true,
+        align: 'end',
+        anchor: 'end',
+        formatter: (value) => value,
+        font: {
+          size: 12,
+        },
+        color: 'black',
+        offset: 8, // Adjust this value to move the labels up/down
+      },
     },
     scales: {
       y: {
         beginAtZero: true,
+        suggestedMax: maxDataValue + 5,
         ticks: {
           precision: 0,
           font: {
@@ -120,43 +133,43 @@ const MembershipChart1 = ({ stats, filterType, start, end }) => {
   };
 
   const Modal = ({ isOpen, onClose, children }) => {
-  if (!isOpen) return null;
+    if (!isOpen) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+          {children}
+          <button
+            className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
+            onClick={onClose}
+          >
+            닫기
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-        {children}
-        <button
-          className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
-          onClick={onClose}
-        >
-          닫기
-        </button>
-      </div>
+    <div className="bg-white p-6 rounded-lg shadow-lg chart-container relative h-[50dvh] flex justify-center items-center">
+      <Line data={data} options={options} />
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <h3 className="text-lg font-semibold mb-2">선택한 월 상세 정보</h3>
+        <ul className="max-h-60 overflow-y-auto">
+          {selectedMonthData && selectedMonthData.map((stat, index) => (
+            <li key={index} className="text-sm py-1">
+              {new Date(stat.regDate).toLocaleDateString('ko-KR', { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit', 
+                weekday: 'short' 
+              })}: {stat.userGender}
+            </li>
+          ))}
+        </ul>
+      </Modal>
     </div>
   );
-};
-
-return (
-  <div className="bg-white p-6 rounded-lg shadow-lg chart-container relative h-[50dvh] flex justify-center items-center">
-    <Line data={data} options={options} />
-    <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-      <h3 className="text-lg font-semibold mb-2">선택한 월 상세 정보</h3>
-      <ul className="max-h-60 overflow-y-auto">
-        {selectedMonthData && selectedMonthData.map((stat, index) => (
-          <li key={index} className="text-sm py-1">
-            {new Date(stat.regDate).toLocaleDateString('ko-KR', { 
-              year: 'numeric', 
-              month: '2-digit', 
-              day: '2-digit', 
-              weekday: 'short' 
-            })}: {stat.userGender}
-          </li>
-        ))}
-      </ul>
-    </Modal>
-  </div>
-);
 };
 
 export default MembershipChart1;
