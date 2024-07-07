@@ -23,8 +23,10 @@ const ReviewContent = ({
   onReviewDeleted,
   onReviewUpdated,
   userData,
+  reviews,
+  setReviews,
 }) => {
-  const [reviews, setReviews] = useState([]);
+  // const [reviews, setReviews] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentReview, setCurrentReview] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -33,25 +35,25 @@ const ReviewContent = ({
 
   const [scrollLeft, setScrollLeft] = useState(0);
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        setLoadingReviews(true);
-        const data = await getReviews(gymId);
-        setReviews(data);
-        const initialMapping = data.reduce((acc, review) => {
-          acc[review.id] = getColorClassById(review.id);
-          return acc;
-        }, {});
-        setColorMapping(initialMapping);
-      } catch (error) {
-        console.error("Error fetching reviews:", error);
-      } finally {
-        setLoadingReviews(false);
-      }
-    };
-    fetchReviews();
-  }, [gymId, onReviewAdded, onReviewDeleted]);
+  // useEffect(() => {
+  //   const fetchReviews = async () => {
+  //     try {
+  //       setLoadingReviews(true);
+  //       const data = await getReviews(gymId);
+  //       setReviews(data);
+  //       const initialMapping = data.reduce((acc, review) => {
+  //         acc[review.id] = getColorClassById(review.id);
+  //         return acc;
+  //       }, {});
+  //       setColorMapping(initialMapping);
+  //     } catch (error) {
+  //       console.error("Error fetching reviews:", error);
+  //     } finally {
+  //       setLoadingReviews(false);
+  //     }
+  //   };
+  //   fetchReviews();
+  // }, [gymId, onReviewAdded, onReviewDeleted]);
 
   const handleEdit = (review) => {
     setCurrentReview(review);
@@ -150,9 +152,15 @@ const ReviewContent = ({
                   userData.userId === item.userId &&
                   userData.userImage?.userImage ? (
                     <img
-                      src={`/images/${userData.userImage.userImage}`}
+                      src={`/images/${userData?.userImage?.userImage}`}
                       alt="Profile"
                       className="w-8 h-8 rounded-full"
+                    />
+                  ) : item?.userImage && item?.userImage?.userImage ? (
+                    <img
+                      src={`/images/${item?.userImage?.userImage}`}
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full object-cover"
                     />
                   ) : (
                     <box-icon
@@ -352,6 +360,8 @@ const Review = ({ gymId }) => {
             onReviewDeleted={handleReviewDeleted}
             onReviewUpdated={handleReviewUpdated}
             userData={userData}
+            reviews={reviews}
+            setReviews={setReviews}
           />
         </div>
       </div>

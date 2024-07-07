@@ -1,11 +1,13 @@
 package com.dg.deukgeun.dto.review;
 
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
+
+import com.dg.deukgeun.entity.User;
+import com.dg.deukgeun.entity.UserImage;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +31,7 @@ public class ReviewResponseDTO {
     private String comment;
     private String userName;
     private String email;
+    private UserImage userImage;
     private List<String> images;
     private LocalDateTime createdAt;
     @Builder.Default
