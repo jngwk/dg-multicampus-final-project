@@ -54,8 +54,7 @@ public interface GymRepository extends JpaRepository<Gym, Integer> {
         Optional<Gym> findByCrNumber(String crNumber);
 
         @Query("SELECT g FROM Gym g JOIN g.user u WHERE "
-                        + "g.address LIKE CONCAT('%', :location, '%')")
+       + "g.address LIKE CONCAT('%', :location, '%')")
         List<Gym> searchGymsByLocation(@Param("location") String location);
-
 
 }

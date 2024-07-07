@@ -115,7 +115,7 @@ const Section = ({}) => {
     const fetchGyms = async () => {
       try {
         const gymData = await getGymResList();
-        console.log(gymData);
+        console.log("파트너 헬스장 리스트: ", gymData);
         setGyms(gymData);
       } catch (error) {
         console.error("Error fetching gym list:", error);
@@ -125,106 +125,41 @@ const Section = ({}) => {
     fetchGyms();
   }, []);
   
-  // //위치가 가까운 헬스장을 받기위한 useEffect
-  // useEffect(() => {
-  //   const fetchLocGyms = async () => {
-  //     if (navigator.geolocation) {
-  //       setUseCurrentLoc(true);
-  //       navigator.geolocation.getCurrentPosition(
-  //         (position) => {
-  //           // 현재 위치 주소를 저장
-  //           // console.log("position", position);
-  //           function searchDetailAddrFromCoords(coords, callback) {
-  //             // 좌표로 법정동 상세 주소 정보를 요청
-  //             const geocoder = new kakao.maps.services.Geocoder();
-  //             geocoder.coord2Address(coords.longitude, coords.latitude, callback);
-  //           }
-  //           searchDetailAddrFromCoords(position.coords, (result, status) => {
-  //             if (status === kakao.maps.services.Status.OK) {
-  //               console.log(result);
-  //               const addr =
-  //                 result[0].address.region_1depth_name +
-  //                 " " +
-  //                 result[0].address.region_2depth_name;
-  //               // console.log("addr", addr);
-  //               setUserLocation(addr);
-  //             }
-  //           });
-    
-  //           // 지도 중앙을 현재 위치로 지정
-  //           setState((prev) => ({
-  //             ...prev,
-  //             center: {
-  //               lat: position.coords.latitude,
-  //               lng: position.coords.longitude,
-  //             },
-  //             isLoading: false,
-  //           }));
-  //         },
-  //         (err) => {
-  //           setState((prev) => ({
-  //             ...prev,
-  //             errMsg: err.message,
-  //             isLoading: false,
-  //           }));
-  //         }
-  //       );
-  //     } else {
-  //       setState((prev) => ({
-  //         ...prev,
-  //         errMsg: "geolocation을 사용할수 없어요..",
-  //         isLoading: false,
-  //       }));
-  //     }
-  //     try {
-  //       const gymData = await getGymResListByLocation();
-  //       console.log(gymData);
-  //       setLocGyms(gymData);
-  //     } catch (error) {
-  //       console.error("Error fetching gym list:", error);
-  //     }
-  //   };
 
-  //   fetchLocGyms();
-  // }, []);
-  // const convertAddressToLatLng = (address) => {
-  //   // console.log("address", address);
-  //   return new Promise((resolve, reject) => {
-  //     const geocoder = new kakao.maps.services.Geocoder();
-  //     geocoder.addressSearch(address, function (result, status) {
-  //       // console.log("result in convert address", result, status);
-  //       if (status === kakao.maps.services.Status.OK) {
-  //         // console.log("okay");
-  //         resolve({ lat: result[0].y, lng: result[0].x });
-  //       } else {
-  //         reject(new Error("Failed to convert address to lat/lng"));
-  //       }
-  //     });
-  //   });
-  // };
+  useEffect(() => {
+    const fetchLocGyms = async () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            
+            // 좌표를 주소로 변환
+            const geocoder = new kakao.maps.services.Geocoder();
+            geocoder.coord2Address(longitude, latitude, async (result, status) => {
+              if (status === kakao.maps.services.Status.OK) {
+                const addr = result[0].address.region_1depth_name + " " + result[0].address.region_2depth_name;
+                setUserLocation(addr);
+                
+                // 변환된 주소로 근처 헬스장 정보 가져오기
+                try {
+                  const gymData = await getGymResListByLocation(addr);
+                  setLocGyms(gymData);
+                  console.log("주변 헬스장 리스트:", gymData);
+                } catch (error) {
+                  console.error("Error fetching nearby gyms:", error);
+                }
+              }
+            });
+          },
+          (err) => {
+            console.error("Error getting current position:", err);
+          }
+        );
+      }
+    };
 
-  // const moveToCurrentLoc = async () => {
-  //   // if geocoder is available move the user to the current location
-  //   // if not, convert 'userLocation' to lat lang and move to that position
-  //   if (navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition(
-  //       (position) => {
-  //         const { latitude, longitude } = position.coords;
-  //         map.panTo(new kakao.maps.LatLng(latitude, longitude));
-  //       },
-  //       (err) => {
-  //         console.error("Error getting current position:", err);
-  //       }
-  //     );
-  //   } else {
-  //     try {
-  //       const latlng = await convertAddressToLatLng(userLocation);
-  //       map.panTo(new kakao.maps.LatLng(latlng.lat, latlng.lng));
-  //     } catch (error) {
-  //       console.error("Error converting address to lat/lng:", error);
-  //     }
-  //   }
-  // };
+    fetchLocGyms();
+  }, []);
 
   const [events, setEvents] = useState(getInitialEvents());
 
@@ -293,7 +228,7 @@ const Section = ({}) => {
             // prevArrow={<CustomPrevArrow />}
             // nextArrow={<CustomNextArrow />}
           >
-            {/* {locGyms.map((locGym, index) => (
+            {locGyms.map((locGym, index) => (
               <div key={locGym.gymId || index}>
                 <img
                   src={locGym.uploadFileName && locGym.uploadFileName.length > 0 
@@ -303,8 +238,8 @@ const Section = ({}) => {
                   className="border bg-gray-300 h-[400px] object-cover"
                 />
               </div>
-            ))} */}
-            <div>
+            ))}
+            {/* <div>
             <img
             className="rounded-lg object-cover shadow-lg w-[495] h-[400]"
             src={healthImage1}
@@ -333,7 +268,7 @@ const Section = ({}) => {
             className="rounded-lg object-cover shadow-lg w-[495] h-[400]"
             src={healthImage5}
           />
-            </div>
+            </div> */}
             
           </Slider>
         </div>
