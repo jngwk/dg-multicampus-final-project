@@ -24,8 +24,10 @@ import com.dg.deukgeun.dto.review.ReviewResponseDTO;
 import com.dg.deukgeun.entity.Review;
 import com.dg.deukgeun.entity.ReviewImage;
 import com.dg.deukgeun.entity.User;
+import com.dg.deukgeun.entity.UserImage;
 import com.dg.deukgeun.repository.ReviewImageRepository;
 import com.dg.deukgeun.repository.ReviewRepository;
+import com.dg.deukgeun.repository.UserImageRepository;
 import com.dg.deukgeun.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -44,6 +46,9 @@ public class ReviewService {
     private ModelMapper modelMapper;
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserImageRepository userImageRepository;
 
     @PreAuthorize("hasRole('ROLE_GENERAL')")
     public Integer registerReview(ReviewDTO reviewDTO) {
@@ -95,6 +100,7 @@ public class ReviewService {
         List<Review> reviews = reviewRepository.findByGymId(gymId);
         return reviews.stream().map(review -> {
             List<ReviewImage> reviewImages = reviewImageRepository.findByReviewId(review.getId());
+            List<UserImage> userImage = userImageRepository.findByUserId(review.getUserId());
             List<String> imageNames = reviewImages.stream()
                     .map(ReviewImage::getReviewImage)
                     .collect(Collectors.toList());
@@ -108,6 +114,7 @@ public class ReviewService {
                     .userName(review.getUserName())
                     .email(review.getEmail())
                     .images(imageNames)
+                    .userImage(userImage.get(0))
                     .createdAt(review.getCreatedAt())
                     .build();
         }).collect(Collectors.toList());

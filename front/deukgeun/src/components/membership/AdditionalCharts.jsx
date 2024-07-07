@@ -133,10 +133,12 @@ const AdditionalCharts = ({ stats }) => {
   };
 
   const totalMembers = genderRatio.male + genderRatio.female;
-  const getPercentage = (value) => ((value / totalMembers) * 100).toFixed(1);
+  const malePercentage = ((genderRatio.male / totalMembers) * 100).toFixed(1);
+  const femalePercentage = (100 - malePercentage).toFixed(1);
 
   const calculateStats = (gender) => {
     const genderStats = stats.filter(s => s.userGender === gender);
+    if (genderStats.length === 0) return { avgAge: 0, avgWorkoutDuration: 0, topReason: "N/A" };
     return {
       avgAge: (genderStats.reduce((sum, s) => sum + s.userAge, 0) / genderStats.length).toFixed(1),
       avgWorkoutDuration: (Math.round((genderStats.reduce((sum, s) => sum + s.userWorkoutDuration, 0) / genderStats.length) * 10) / 10),
@@ -152,7 +154,7 @@ const AdditionalCharts = ({ stats }) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div className="bg-white p-6 rounded-lg shadow-lg h-[50dvh] flex justify-center items-center">
+      <div className="bg-white p-6 rounded-lg shadow-lg h-[50dvh] flex justify-center items-center min-h-[600px]">
         <Pie
           data={createMemberReasonData("남성")}
           options={{
@@ -176,7 +178,7 @@ const AdditionalCharts = ({ stats }) => {
         />
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-lg">
+      <div className="bg-white p-6 rounded-lg shadow-lg h-[50dvh] min-h-[600px]" >
         <h2 className="text-2xl font-bold mb-6 text-center">남녀 평균 통계</h2>
         <div className="flex justify-between items-center">
           <div className="text-center text-blue-600 w-1/4">
@@ -189,7 +191,12 @@ const AdditionalCharts = ({ stats }) => {
             <h3 className="font-bold text-xl mb-2">여성</h3>
           </div>
         </div>
-        <div className="mt-6">
+        <div>
+          <div className="flex justify-between items-center my-2">
+            <span className="w-1/4 text-right pr-4">{malePercentage}%</span>
+            <span className="w-1/2 text-center font-bold">남녀 성비</span>
+            <span className="w-1/4 text-left pl-4">{femalePercentage}%</span>
+          </div>
           <div className="flex justify-between items-center my-2">
             <span className="w-1/4 text-right pr-4">{maleStats.avgAge}세</span>
             <span className="w-1/2 text-center font-bold">평균 나이</span>
@@ -208,7 +215,7 @@ const AdditionalCharts = ({ stats }) => {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-lg h-[50dvh] flex justify-center items-center">
+      <div className="bg-white p-6 rounded-lg shadow-lg h-[50dvh] flex justify-center items-center min-h-[600px]">
         <Pie
           data={createMemberReasonData("여성")}
           options={{

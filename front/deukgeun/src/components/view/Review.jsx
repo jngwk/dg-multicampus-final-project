@@ -14,6 +14,7 @@ import ReviewEditModal from "../modals/ReviewEditModal";
 import ReviewModal from "../modals/ReviewModal";
 import AlertModal from "../modals/AlertModal";
 import { useModal } from "../../hooks/useModal";
+import { findMembership } from "../../api/membershipApi";
 
 const ReviewContent = ({
   gymId,
@@ -22,8 +23,10 @@ const ReviewContent = ({
   onReviewDeleted,
   onReviewUpdated,
   userData,
+  reviews,
+  setReviews,
 }) => {
-  const [reviews, setReviews] = useState([]);
+  // const [reviews, setReviews] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentReview, setCurrentReview] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -32,25 +35,25 @@ const ReviewContent = ({
 
   const [scrollLeft, setScrollLeft] = useState(0);
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        setLoadingReviews(true);
-        const data = await getReviews(gymId);
-        setReviews(data);
-        const initialMapping = data.reduce((acc, review) => {
-          acc[review.id] = getColorClassById(review.id);
-          return acc;
-        }, {});
-        setColorMapping(initialMapping);
-      } catch (error) {
-        console.error("Error fetching reviews:", error);
-      } finally {
-        setLoadingReviews(false);
-      }
-    };
-    fetchReviews();
-  }, [gymId, onReviewAdded, onReviewDeleted]);
+  // useEffect(() => {
+  //   const fetchReviews = async () => {
+  //     try {
+  //       setLoadingReviews(true);
+  //       const data = await getReviews(gymId);
+  //       setReviews(data);
+  //       const initialMapping = data.reduce((acc, review) => {
+  //         acc[review.id] = getColorClassById(review.id);
+  //         return acc;
+  //       }, {});
+  //       setColorMapping(initialMapping);
+  //     } catch (error) {
+  //       console.error("Error fetching reviews:", error);
+  //     } finally {
+  //       setLoadingReviews(false);
+  //     }
+  //   };
+  //   fetchReviews();
+  // }, [gymId, onReviewAdded, onReviewDeleted]);
 
   const handleEdit = (review) => {
     setCurrentReview(review);
@@ -149,9 +152,15 @@ const ReviewContent = ({
                   userData.userId === item.userId &&
                   userData.userImage?.userImage ? (
                     <img
-                      src={`/images/${userData.userImage.userImage}`}
+                      src={`/images/${userData?.userImage?.userImage}`}
                       alt="Profile"
                       className="w-8 h-8 rounded-full"
+                    />
+                  ) : item?.userImage && item?.userImage?.userImage ? (
+                    <img
+                      src={`/images/${item?.userImage?.userImage}`}
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full object-cover"
                     />
                   ) : (
                     <box-icon
@@ -251,6 +260,7 @@ const Review = ({ gymId }) => {
   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isMember, setIsMember] = useState(false);
   const { userData } = useAuth();
 
   useEffect(() => {
@@ -263,6 +273,23 @@ const Review = ({ gymId }) => {
         console.error("Error fetching reviews:", error);
       }
     };
+    const getMembership = async () => {
+      try {
+        const membership = await findMembership();
+        if (membership.gym.gymId === gymId) setIsMember(true);
+        console.log(membership, membership.gymId === gymId);
+      } catch (error) {
+        console.error("get membership error in review", error);
+      }
+    };
+
+    if (
+      sessionStorage.getItem("isLoggedIn") &&
+      userData?.role === "ROLE_GENERAL"
+    ) {
+      console.log("in get membership @@@@@@@@@");
+      getMembership();
+    }
     fetchReviews();
   }, [gymId, refreshKey]);
 
@@ -303,18 +330,20 @@ const Review = ({ gymId }) => {
           </div>
           <div className="">등록 리뷰 수: {reviews?.length}</div>
         </div>
-        {reviews?.filter((r) => r.userId === userData?.userId).length === 0 && (
-          <button
-            className="absolute top-12 -right-2 flex items-center mr-5"
-            onClick={toggleModal}
-          >
-            <MdOutlineRateReview
-              className="mx-1 mb-1"
-              size="25"
-              color="#9F8D8D"
-            />
-          </button>
-        )}
+        {isMember &&
+          reviews?.filter((r) => r.userId === userData?.userId).length ===
+            0 && (
+            <button
+              className="absolute top-12 -right-2 flex items-center mr-5"
+              onClick={toggleModal}
+            >
+              <MdOutlineRateReview
+                className="mx-1 mb-1"
+                size="25"
+                color="#9F8D8D"
+              />
+            </button>
+          )}
         {isModalVisible && (
           <ReviewModal
             toggleModal={toggleModal}
@@ -331,6 +360,8 @@ const Review = ({ gymId }) => {
             onReviewDeleted={handleReviewDeleted}
             onReviewUpdated={handleReviewUpdated}
             userData={userData}
+            reviews={reviews}
+            setReviews={setReviews}
           />
         </div>
       </div>

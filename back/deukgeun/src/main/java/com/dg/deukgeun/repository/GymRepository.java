@@ -37,15 +37,15 @@ public interface GymRepository extends JpaRepository<Gym, Integer> {
         List<Gym> searchGymsByLocation(@Param("searchWord") String searchWord, @Param("location") String location);
 
         @Query("SELECT g FROM Gym g JOIN g.user u JOIN g.products p "
-                        + "WHERE p.productName LIKE '%1개월%' "
-                        + "AND p.productName NOT LIKE '%PT%' "
+                        + "WHERE p.days = 30"
+                        + "AND (p.ptCountTotal IS NULL OR p.ptCountTotal = 0) "
                         + "AND ("
                         + "REPLACE(LOWER(u.userName), ' ', '') LIKE LOWER(CONCAT('%', :searchWord, '%')) "
                         + "OR REPLACE(LOWER(g.gymName), ' ', '') LIKE LOWER(CONCAT('%', :searchWord, '%')) "
                         + "OR REPLACE(LOWER(g.address), ' ', '') LIKE LOWER(CONCAT('%', :searchWord, '%'))"
                         + ") "
                         + "GROUP BY g "
-                        + "HAVING AVG(p.price) IS NOT NULL AND AVG(p.price) <= ALL (SELECT AVG(p2.price) FROM Product p2 WHERE p2.productName LIKE '%1개월%' AND p2.productName NOT LIKE '%PT%') "
+                        + "HAVING AVG(p.price) IS NOT NULL AND AVG(p.price) <= ALL (SELECT AVG(p2.price) FROM Product p2 WHERE p2.days = 30 AND (p2.ptCountTotal IS NULL OR p2.ptCountTotal = 0)) "
                         + "ORDER BY AVG(p.price) ASC")
         Page<Gym> searchGymsByPrice(@Param("searchWord") String searchWord, Pageable pageable);
 
@@ -54,7 +54,7 @@ public interface GymRepository extends JpaRepository<Gym, Integer> {
         Optional<Gym> findByCrNumber(String crNumber);
 
         @Query("SELECT g FROM Gym g JOIN g.user u WHERE "
-       + "g.address LIKE CONCAT('%', :location, '%')")
+                        + "g.address LIKE CONCAT('%', :location, '%')")
         List<Gym> searchGymsByLocation(@Param("location") String location);
 
 }

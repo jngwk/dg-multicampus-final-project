@@ -98,7 +98,8 @@ public class SecurityConfig {
                                 "/api/user/updateImage",
                                 "/api/gym/search/**", "/api/gym/get/**", "/api/gym/getList",
                                 "/api/gym/getListWithPaging", "/api/reviews/reviewList/**", "/api/trainer/get/**",
-                                "/api/gym/trainersWithInfo/**",  "/api/gym/getGymList","/api/gym/LocationImage/**")
+                                "/api/gym/trainersWithInfo/**", "/api/gym/getGymList", "/api/gym/LocationImage/**",
+                                "/api/reviews/avgRating/**")
                         .permitAll() // 이 API는 인증 없이 접근 가능하도록 설정합니다.
                         .requestMatchers("/api/user/signUp/gym", "/api/user/signUp/general",
                                 "/api/gym/crNumberCheck", "/api/gym/crNumberCheck/**",
@@ -112,7 +113,7 @@ public class SecurityConfig {
                                 "/api/membership/findPT")
                         .hasAnyAuthority("ROLE_GENERAL") // 일반 회원만 가능
                         .requestMatchers("/api/membership/stats", "/api/membership/stats/**",
-                                "/api/user/signUp/trainer", "/api/trainer/update/**", "/api/gym/put/**",
+                                "/api/user/signUp/trainer", "/api/gym/put/**",
                                 "/api/trainer/delete/**",
                                 "/api/gym/getGymByUserId", "/api/gym/insertImage/**", "/api/gym/getGymByUserId",
                                 "/api/gym/deleteProduct/**")
@@ -127,11 +128,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/reviews/reviewList/**", "/api/ptSession/**", "/api/gym/products/**",
                                 "/api/gym/trainers/**")
                         .permitAll()
-                        .requestMatchers("/api/trainer/update/**", "/api/trainer/update", "/api/ptSession/**")
+                        .requestMatchers("/api/ptSession/**")
                         .hasAuthority("ROLE_TRAINER") // 트레이너만 가능
                         .requestMatchers("/api/workoutSession/**",
                                 "/api/workout/**")
                         .hasAnyAuthority("ROLE_TRAINER", "ROLE_GENERAL") // 트레이너 일반 회원만 가능
+                        .requestMatchers("/api/trainer/update/**", "/api/trainer/update")
+                        .hasAnyAuthority("ROLE_TRAINER", "ROLE_GYM") // 트레이너 헬스장 회원만 가능
                         .anyRequest().authenticated()) // 그 외 모든 요청은 인증이 필요합니다
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider, customUserDetailsService),
                         UsernamePasswordAuthenticationFilter.class); // JWT 토큰 필터를 추가합니다.

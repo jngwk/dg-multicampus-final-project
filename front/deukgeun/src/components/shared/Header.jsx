@@ -24,7 +24,7 @@ export default function Header() {
   const fetchUserImage = async () => {
     try {
       const images = await getImage();
-      if (images) {
+      if (images?.userImage) {
         setUserImage(images.userImage);
       }
     } catch (error) {
@@ -130,9 +130,9 @@ export default function Header() {
                 ref={badge}
                 onClick={toggleProfileDropdown}
               >
-                {userData.userImage?.userImage ? (
+                {userData.userImage && userData?.userImage?.userImage ? (
                   <img
-                    src={`/images/${userData.userImage.userImage}`}
+                    src={`/images/${userData?.userImage?.userImage}`}
                     alt="Profile"
                     className="w-8 h-8 rounded-full object-cover"
                   />
