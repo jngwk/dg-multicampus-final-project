@@ -74,13 +74,16 @@ const PtRegister = () => {
   const [expDate, setExpDate] = useState(new Date()); //만료일
   const [userMemberReason, setUserMemberReason] = useState("PT");
   const [userWorkoutDuration, setUserWorkoutDuration] = useState(1);
-  const [productId, setProductId] = useState(
-    gym.productList && gym.productList.length > 0
-      ? location.state?.product
-        ? location.state.product.productId
-        : gym.productList[0].productId
-      : ""
-  );
+  const [productId, setProductId] = useState("");
+
+  useEffect(() => {
+    if (gym.productList && gym.productList.length > 0) {
+      const initialProduct = location.state?.product || gym.productList[0];
+      setSelectedProductName(initialProduct.productName);
+      setSelectedProductPrice(initialProduct.price);
+      setProductId(initialProduct.productId);
+    }
+  }, [gym.productList]);
   const [trainerId, setTrainerId] = useState(
     gym.trainerList && gym.trainerList.length > 0
       ? gym.trainerList[0].trainerId
@@ -198,19 +201,32 @@ const PtRegister = () => {
     setIsTrainerDropdownOpen((prev) => !prev);
   };
 
-  const onClickPeriod = (e) => {
-    const { value } = e.target;
-    const selectedProduct = gym.productList.find(
-      (product) => product.productName === value
-    );
-    console.log(selectedProduct);
-    setSelectedProductName(value);
-    setSelectedProductPrice(selectedProduct.price);
-    setProductId(selectedProduct.productId);
-    setDateRange(selectedProduct);
-    setIsDropdownOpen(); // 드롭다운 닫기
+  const onClickPeriod = (product) => {
+    console.log("Selected product:", product);
+    if (product) {
+      setSelectedProductName(product.productName);
+      setSelectedProductPrice(product.price);
+      setProductId(product.productId);
+      setDateRange(product);
+      console.log("Updated product:", product);
+    } else {
+      console.log("Product not found");
+    }
+    setIsDropdownOpen(false);
   };
-
+  useEffect(() => {
+    if (productId && gym.productList) {
+      const selectedProduct = gym.productList.find(
+        (product) => product.productId === productId
+      );
+      if (selectedProduct) {
+        setSelectedProductName(selectedProduct.productName);
+        setSelectedProductPrice(selectedProduct.price);
+        setDateRange(selectedProduct);
+        console.log("Updated product in effect:", selectedProduct);
+      }
+    }
+  }, [productId, gym.productList]);
   const onClickTrainer = (e) => {
     const { value } = e.target;
     const selectedTrainer = gym.trainerList.find(
@@ -596,25 +612,23 @@ const PtRegister = () => {
                                 <BsChevronDown />
                               </button>
                               {isDropdownOpen && (
-                                <ul className="absolute w-full border border-gray-400 rounded-lg list-none z-10 bg-white">
-                                  {gym.productList
-                                    .filter((product) => product.status !== false)
-                                    .sort((a, b) => a.days - b.days)
-                                    .map((product) => (
-                                      <li
-                                        key={product.productId}
-                                        className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
-                                        onClick={() =>
-                                          onClickPeriod({
-                                            target: { value: product.productName },
-                                          })
-                                        }
-                                      >
-                                        {product.productName}
-                                      </li>
-                                    ))}
-                                </ul>
-                              )}
+                        <ul className="absolute w-full border border-gray-400 rounded-lg list-none z-10 bg-white">
+                          {gym.productList
+                            .filter((product) => product.status !== false)
+                            .sort((a, b) => a.days - b.days)
+                            .map((product) => (
+                              <li
+                                key={product.productId}
+                                className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
+                                onClick={() =>
+                                  onClickPeriod(product)
+                                }
+                              >
+                                {product.productName}
+                              </li>
+                            ))}
+                        </ul>
+                      )}
                             </div>
                           </div>
                         </div>

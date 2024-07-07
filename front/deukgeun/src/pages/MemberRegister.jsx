@@ -82,17 +82,17 @@ const MemberRegister = () => {
 
   const { fetchUserData } = useAuth();
 
-  // useEffect(() => {
-  //   if (!gym.productList || gym.productList.length === 0) {
-  //     setHasNoProduct(true);
-  //   } else {
-  //     filterProducts();
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (!gym.productList || gym.productList.length === 0) {
+      setHasNoProduct(true);
+    } else {
+      filterProducts();
+    }
+  }, []);
 
   const filterProducts = () => {
     const filteredProductList =
-      gym.productList?.filter((product) => product.ptCountTotal === 0) || [];
+      gym.productList?.filter((product) => product.ptCountTotal === null) || [];
     const updatedGym = { ...gym, productList: filteredProductList };
     setGym(updatedGym);
     if (filteredProductList.length > 0) {
