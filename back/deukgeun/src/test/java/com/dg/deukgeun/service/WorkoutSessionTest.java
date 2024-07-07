@@ -41,8 +41,8 @@
 
 //     private static Connection getConnection() throws SQLException {
 //         String url = "jdbc:mysql://localhost:3306/dgdb";
-//         String user = "scott";
-//         String password = "tiger";
+//         String user = "deukgeun";
+//         String password = "deukgeun";
 //         return DriverManager.getConnection(url, user, password);
 //     }
 
