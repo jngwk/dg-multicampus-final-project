@@ -24,7 +24,7 @@ export default function Header() {
   const fetchUserImage = async () => {
     try {
       const images = await getImage();
-      if (images) {
+      if (images?.userImage) {
         setUserImage(images.userImage);
       }
     } catch (error) {

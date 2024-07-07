@@ -212,7 +212,7 @@ public class UserController {
                 return ResponseEntity.ok()
                         .body(ResponseDTO.setSuccessData("User image retrieved successfully", userImage));
             } else {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.ok().body(null);
             }
         } catch (Exception e) {
             log.error("Failed to retrieve user image for user ID: {}", userId, e);
