@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Map, MapMarker } from "react-kakao-maps-sdk";
 import Button from "../shared/Button";
 import underline from "../../assets/curved-underline.png";
 import orangeUnderline from "../../assets/curved-underline-orange.png";
@@ -14,6 +15,15 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import ChartDemo from "../ChartDemo";
+import { getGymResList, getGymResListByLocation } from "../../api/gymApi";
+import { useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import healthImage1 from "../../assets/healthImage1.jpg";
+
+import healthImage2 from "../../assets/healthImage2.jpg";
+import healthImage3 from "../../assets/healthImage3.jpg";
+import healthImage4 from "../../assets/healthImage4.jpg";
+import healthImage5 from "../../assets/healthImage5.jpg";
 // import calendarDemo from "../../assets/calendar-demo.webp";
 
 const getInitialEvents = () => {
@@ -71,10 +81,91 @@ const getInitialEvents = () => {
   ];
 };
 
+const { kakao } = window;
 //  TODO snap scroll 안됨
 const Section = ({}) => {
+  const { userData } = useAuth();
   const customNavigate = useCustomNavigate();
   const { toggleLoginModal } = useLoginModalContext();
+  const [gyms, setGyms] = useState([]);
+  const [locGyms, setLocGyms] = useState([]);
+  const [state, setState] = useState({
+    center: {
+      lat: 37.5033532547808,
+      lng: 127.049875769645,
+    },
+    errMsg: null,
+    isLoading: true,
+  });
+  const location = useLocation();
+  const [filter, setFilter] = useState(
+    location.state ? location.state.filter : "general"
+  );
+  const [userLocation, setUserLocation] = useState(
+    sessionStorage.getItem("isLoggedIn") && userData
+      ? userData.address.split(" ")[0] + " " + userData.address.split(" ")[1]
+      : ""
+  );
+  const [map, setMap] = useState();
+  const [useCurrentLoc, setUseCurrentLoc] = useState(false);
+  const [coords, setCoords] = useState([]);
+
+  useEffect(() => {
+    const fetchGyms = async () => {
+      try {
+        const gymData = await getGymResList();
+        console.log("파트너 헬스장 리스트: ", gymData);
+        setGyms(gymData);
+      } catch (error) {
+        console.error("Error fetching gym list:", error);
+      }
+    };
+
+    fetchGyms();
+  }, []);
+
+  useEffect(() => {
+    const fetchLocGyms = async () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+
+            // 좌표를 주소로 변환
+            const geocoder = new kakao.maps.services.Geocoder();
+            geocoder.coord2Address(
+              longitude,
+              latitude,
+              async (result, status) => {
+                if (status === kakao.maps.services.Status.OK) {
+                  const addr =
+                    result[0].address.region_1depth_name +
+                    " " +
+                    result[0].address.region_2depth_name;
+                  setUserLocation(addr);
+
+                  // 변환된 주소로 근처 헬스장 정보 가져오기
+                  try {
+                    const gymData = await getGymResListByLocation(addr);
+                    setLocGyms(gymData);
+                    console.log("주변 헬스장 리스트:", gymData);
+                  } catch (error) {
+                    console.error("Error fetching nearby gyms:", error);
+                  }
+                }
+              }
+            );
+          },
+          (err) => {
+            console.error("Error getting current position:", err);
+          }
+        );
+      }
+    };
+
+    fetchLocGyms();
+  }, []);
+
   const [events, setEvents] = useState(getInitialEvents());
 
   const handleEventDrop = (info) => {
@@ -92,7 +183,7 @@ const Section = ({}) => {
     <>
       {/* section 2 */}
       <div
-        className={`snap-start h-[100dvh] w-full flex justify-center items-center gap-52 text-xl text-white bg-light-black`}
+        className={`snap-start h-[100dvh] w-full flex justify-evenly items-center text-xl text-white bg-light-black`}
       >
         {/* right */}
         <div className="flex flex-col gap-14 w-max relative">
@@ -130,7 +221,7 @@ const Section = ({}) => {
           </div>
         </div>
         {/* left */}
-        <div className="w-1/3 h-[400px] relative">
+        <div className="w-1/3 h-1/3 relative">
           <Slider
             dots={false}
             infinite={true}
@@ -142,24 +233,96 @@ const Section = ({}) => {
             // prevArrow={<CustomPrevArrow />}
             // nextArrow={<CustomNextArrow />}
           >
-            <div className="bg-black h-[400px]">
-              <h3>1</h3>
-            </div>
-            <div className="bg-black h-[400px]">
-              <h3>2</h3>
-            </div>
-            <div className="bg-black h-[400px]">
-              <h3>3</h3>
-            </div>
-            <div className="bg-black h-[400px]">
-              <h3>4</h3>
-            </div>
-            <div className="bg-black h-[400px]">
-              <h3>5</h3>
-            </div>
-            <div className="bg-black h-[400px]">
-              <h3>6</h3>
-            </div>
+            {/* 현재 위치 활성화 돼있으면 */}
+            {locGyms.length > 0
+              ? locGyms.map((locGym, index) => (
+                  <div
+                    key={locGym.gymId || index}
+                    className="relative w-[800px] h-[494px] group"
+                    onClick={() =>
+                      customNavigate("/gymSearch", {
+                        state: { searchWord: locGym.userName },
+                      })
+                    }
+                  >
+                    <div className="group-hover:opacity-100 opacity-0 absolute top-0 left-0 w-full h-full bg-black/80 flex flex-col gap-8 justify-center items-center z-20 cursor-pointer transition-all ease-in-out">
+                      <span>{locGym.userName}💪</span>
+                      {locGym.operatingHours && (
+                        <div className="flex items-center gap-2">
+                          <box-icon
+                            type="solid"
+                            color="#FFF"
+                            name="time-five"
+                          ></box-icon>
+                          <span>{locGym.operatingHours}</span>
+                        </div>
+                      )}
+
+                      <span>{locGym.address + " " + locGym.detailAddress}</span>
+                    </div>
+                    {locGym.uploadFileName &&
+                    locGym.uploadFileName.length > 0 ? (
+                      <img
+                        src={
+                          locGym.uploadFileName.length > 0
+                            ? `/images/${locGym.uploadFileName[0]}`
+                            : "/path/to/default-image.jpg"
+                        }
+                        alt={`${locGym.gymName || "Gym"} image`}
+                        className="w-full h-full object-cover rounded-md"
+                      />
+                    ) : (
+                      <div className="flex flex-col gap-10 justify-center items-center w-full h-full border border-grayish-red rounded-md bg-white text-black">
+                        <span className="text-4xl">😔</span>
+                        <span className="text-xl">등록된 사진이 없습니다</span>
+                      </div>
+                    )}
+                  </div>
+                ))
+              : // 현재 위치 활성화 안돼있으면
+                gyms.map((gym, index) => (
+                  <div
+                    key={gym.gymId || index}
+                    className="relative w-[800px] h-[494px] group"
+                    onClick={() =>
+                      customNavigate("/gymSearch", {
+                        state: { searchWord: gym.userName },
+                      })
+                    }
+                  >
+                    <div className="group-hover:opacity-100 opacity-0 absolute top-0 left-0 w-full h-full bg-black/80 flex flex-col gap-8 justify-center items-center z-20 cursor-pointer transition-all ease-in-out">
+                      <span>{gym.userName}💪</span>
+                      {gym.operatingHours && (
+                        <div className="flex items-center gap-2">
+                          <box-icon
+                            type="solid"
+                            color="#FFF"
+                            name="time-five"
+                          ></box-icon>
+                          <span>{gym.operatingHours}</span>
+                        </div>
+                      )}
+
+                      <span>{gym.address + " " + gym.detailAddress}</span>
+                    </div>
+                    {gym.uploadFileName && gym.uploadFileName.length > 0 ? (
+                      <img
+                        src={
+                          gym.uploadFileName.length > 0
+                            ? `/images/${gym.uploadFileName[0]}`
+                            : "/path/to/default-image.jpg"
+                        }
+                        alt={`${gym.gymName || "Gym"} image`}
+                        className="w-full h-full object-cover rounded-md"
+                      />
+                    ) : (
+                      <div className="flex flex-col gap-10 justify-center items-center w-full h-full border border-grayish-red rounded-md bg-white text-black">
+                        <span className="text-4xl">😔</span>
+                        <span className="text-xl">등록된 사진이 없습니다</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
           </Slider>
         </div>
       </div>
@@ -187,7 +350,7 @@ const Section = ({}) => {
             <div className="relative">
               <span>
                 본인의 근성장을 확실하게 하기 위해 ‘득근’의 <b>운동일지</b>를
-                활용해 보세요!
+                활용해 보세요.
               </span>
               <div className="absolute  left-16">
                 <img
@@ -204,6 +367,19 @@ const Section = ({}) => {
                 />
               </div>
             </div>
+            <div className="relative">
+              <span>
+                매일 진행한 PT 내용과 본인이 기록한 운동을 <b>한눈에 확인</b>{" "}
+                하세요!
+              </span>
+              <div className="absolute left-[410px]">
+                <img
+                  className="h-3 w-[108px]"
+                  src={orangeUnderline}
+                  alt="underline"
+                />
+              </div>
+            </div>
           </div>
           <div className="relative w-fit">
             <Button
@@ -214,7 +390,9 @@ const Section = ({}) => {
               height="76px"
               onClick={() =>
                 sessionStorage.getItem("isLoggedIn")
-                  ? customNavigate("/calendar")
+                  ? (userData?.role === "ROLE_GENERAL" ||
+                      userData?.role === "ROLE_TRAINER") &&
+                    customNavigate("/calendar")
                   : toggleLoginModal()
               }
             />
@@ -271,9 +449,12 @@ const Section = ({}) => {
               </div>
             </div>
             <div className="relative">
-              <span>회원권 및 데이터를 관리하고</span>
-              <div className="absolute  left-[180px]">
+              <span>회원권 만료를 자동으로 관리하고 데이터를 활용해</span>
+              <div className="absolute  left-[130px]">
                 <img className="h-3 w-20" src={underline} alt="underline" />
+              </div>
+              <div className="absolute  left-[306px]">
+                <img className="h-3 w-16" src={underline} alt="underline" />
               </div>
             </div>
             <div className="relative">
@@ -293,7 +474,7 @@ const Section = ({}) => {
               // TODO 헬스장 회원인지 확인
               onClick={() =>
                 sessionStorage.getItem("isLoggedIn")
-                  ? customNavigate("/stats")
+                  ? userData?.role === "ROLE_GYM" && customNavigate("/stats")
                   : toggleLoginModal()
               }
             />
@@ -328,51 +509,43 @@ const Section = ({}) => {
             slidesToShow={5}
             slidesToScroll={1}
             adaptiveHeight={true}
+            centerMode={true} // Added to center active slide
+            // centerPadding="60px"
+            // className="flex items-center"
             // prevArrow={<CustomPrevArrow />}
             // nextArrow={<CustomNextArrow />}
           >
-            <div>
-              <img
-                src=""
-                alt="image1"
-                className="border bg-gray-300 rounded-full h-[340px]"
-              />
-            </div>
-            <div>
-              <img
-                src=""
-                alt="image1"
-                className="border bg-gray-300 rounded-full h-[340px]"
-              />
-            </div>
-            <div>
-              <img
-                src=""
-                alt="image1"
-                className="border bg-gray-300 rounded-full h-[340px]"
-              />
-            </div>
-            <div>
-              <img
-                src=""
-                alt="image1"
-                className="border bg-gray-300 rounded-full h-[340px]"
-              />
-            </div>
-            <div>
-              <img
-                src=""
-                alt="image1"
-                className="border bg-gray-300 rounded-full h-[340px]"
-              />
-            </div>
-            <div>
-              <img
-                src=""
-                alt="image1"
-                className="border bg-gray-300 rounded-full h-[340px]"
-              />
-            </div>
+            {gyms.map(
+              (gym, index) =>
+                gym.uploadFileName &&
+                gym.uploadFileName.length > 0 && (
+                  <div
+                    key={gym.gymId || index}
+                    className="relative flex justify-center items-center h-[340px] w-[340px] group"
+                  >
+                    <div className="group-hover:opacity-100 opacity-0 absolute top-0 left-0 rounded-full h-[340px] w-[340px] bg-black/80 flex flex-col gap-8 justify-center items-center z-20 cursor-pointer transition-all ease-in-out  text-white">
+                      <span>{gym.userName}🔥</span>
+                      {/* {gym.operatingHours && (
+                        <div className="flex items-center gap-2">
+                          <box-icon
+                            type="solid"
+                            color="#FFF"
+                            name="time-five"
+                          ></box-icon>
+                          <span>{gym.operatingHours}</span>
+                        </div>
+                      )}
+
+                      <span>{gym.address + " " + gym.detailAddress}</span> */}
+                    </div>
+                    <img
+                      src={`/images/${gym.uploadFileName[0]}`}
+                      alt={`${gym.gymName || "Gym"} image`}
+                      className="border bg-gray-300 rounded-full h-[340px] w-[340px] object-cover"
+                    />
+                  </div>
+                )
+            )}
           </Slider>
         </div>
         {/* <div className="flex justify-between items-end gap-12 overflow-hidden">
@@ -396,7 +569,7 @@ const Section = ({}) => {
             // TODO 헬스장 회원인지 확인
             onClick={() =>
               sessionStorage.getItem("isLoggedIn")
-                ? customNavigate("/stats")
+                ? userData?.role === "ROLE_GYM" && customNavigate("/stats")
                 : customNavigate("/signUp/form", { state: { role: "gym" } })
             }
           />

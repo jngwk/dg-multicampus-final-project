@@ -378,7 +378,7 @@ const GymSearchMap = () => {
           <>
             {coords.map((value) => (
               <EventMarkerContainer
-                key={`EventMarkerContainer-${value.latlng.lat}-${value.latlng.lng}`}
+                key={`EventMarkerContainer-${value.latlng.lat}-${value.latlng.lng}-${value.gym.gymId}`}
                 position={value.latlng}
                 content={value.content}
                 gym={value.gym}
@@ -462,7 +462,7 @@ const GymSearchMap = () => {
                                 : toggleLoginModal()
                             }
                           >
-                            문의하기
+                            채팅문의
                           </button>
                           <button
                             className="border border-gray-500 py-2 px-4 text-xs text-gray-800 rounded-md bg-bright-orange/50 hover:border-bright-orange/80 hover:bg-bright-orange/80 hover:text-white transition-all"

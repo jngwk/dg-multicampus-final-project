@@ -140,3 +140,29 @@ export const deleteProduct = async (productId) => {
     throw error;
   }
 };
+
+export const getGymResList = async () => {
+  try {
+    const response = await axios.get(`${prefix}/getGymList`);
+    console.log("Gym list:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching gym list:", error);
+    throw error;
+  }
+};
+
+export const getGymResListByLocation = async (location) => {
+  try {
+    const response = await axios.get(`${prefix}/LocationImage`, {
+      params: {
+        location: location,
+      },
+    });
+    console.log("Gym Location list:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching gym list:", error);
+    throw error;
+  }
+};

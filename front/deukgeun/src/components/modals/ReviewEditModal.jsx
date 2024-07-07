@@ -8,6 +8,7 @@ import Fallback from "../shared/Fallback";
 import { IoMdPhotos } from "react-icons/io";
 import { FaTimes } from "react-icons/fa";
 
+
 const ReviewEditModal = ({ toggleModal, gymId, review, onUpdateReview, onReviewUpdated }) => {
     const { userData, loading } = useAuth();
     const [formValues, setFormValues] = useState({
@@ -25,6 +26,8 @@ const ReviewEditModal = ({ toggleModal, gymId, review, onUpdateReview, onReviewU
     );
     const [imagesToDelete, setImagesToDelete] = useState([]);
     const [isUpdated, setIsUpdated] = useState(false);
+
+
 
     const fetchUpdatedReview = useCallback(async () => {
         // TODO: 여기에 업데이트된 리뷰를 가져오는 API 호출을 추가합니다.
@@ -126,10 +129,21 @@ const ReviewEditModal = ({ toggleModal, gymId, review, onUpdateReview, onReviewU
         return <Fallback />;
     }
 
+    const handleWheel = (e) => {
+        const container = e.currentTarget;
+        const delta = e.deltaY || e.detail || e.wheelDelta;
+      
+        // Adjust scroll speed and direction as needed
+        const scrollSpeed = 0.5;
+        container.scrollLeft += delta * scrollSpeed;
+      
+        e.preventDefault();
+      };
+
     return (
         <ModalLayout toggleModal={toggleModal}>
-            <form onSubmit={handleSubmit}>
-                <div className="flex flex-col h-96">
+            <form onSubmit={handleSubmit} >
+                <div className="flex flex-col h-fit">
                     <div className="flex flex-col gap-1 justify-center items-center">
                         <div className="mb-2 font-semibold text-xl">
                             리뷰 수정
@@ -173,7 +187,17 @@ const ReviewEditModal = ({ toggleModal, gymId, review, onUpdateReview, onReviewU
                         </label>
                     </div>
                     <div>
-                        <div className="mt-2 flex flex-wrap">
+                        <label className="w-[400px] h-[40px] pl-2 flex text-sm items-center cursor-pointer">
+                            <IoMdPhotos className="w-7 h-7 px-1 "  color="#9f8d8d"  />
+                            이미지 추가
+                            <input
+                                type="file"
+                                className="hidden"
+                                onChange={handleImageChange}
+                                multiple
+                            />
+                        </label>
+                        <div className="mt-2 grid grid-cols-4 ">
                             {previewImages.map((image, index) => (
                                 <div key={index} className="relative">
                                     <img
@@ -191,16 +215,6 @@ const ReviewEditModal = ({ toggleModal, gymId, review, onUpdateReview, onReviewU
                                 </div>
                             ))}
                         </div>
-                        <label className="w-[400px] h-[40px] pl-2 flex text-sm items-center cursor-pointer">
-                            <IoMdPhotos className="w-7 h-7 px-1" />
-                            이미지 추가
-                            <input
-                                type="file"
-                                className="hidden"
-                                onChange={handleImageChange}
-                                multiple
-                            />
-                        </label>
                         <Button label="수정" width="100px" className="float-right mt-2" type="submit" />
                     </div>
                 </div>

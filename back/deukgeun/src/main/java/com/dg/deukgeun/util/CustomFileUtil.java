@@ -61,7 +61,24 @@ public class CustomFileUtil {
         return uploadNames;
     }
 
-    // 파일 데이터를 읽어서 Resource 타입으로 반환
+    // New method to handle single file
+    public String saveFile(MultipartFile file) throws RuntimeException {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("File is null or empty.");
+        }
+        String savedName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        Path savedPath = Paths.get(uploadPath, savedName);
+        try {
+            log.info("before copy");
+            Files.copy(file.getInputStream(), savedPath);
+            log.info("after copy");
+            return savedName;
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+     // 파일 데이터를 읽어서 Resource 타입으로 반환
     public ResponseEntity<Resource> getUserImage(String userId) {
         try {
             String fileName = getUserImageName(userId);

@@ -16,7 +16,7 @@ const ProfileDropdown = () => {
   };
 
   return (
-    <div className="relative border border-gray-200 w-52 h-fit rounded-lg p-3 bg-white shadow-md z-40 transition-all">
+    <div className="relative border border-gray-200 w-56 h-fit rounded-lg py-3 px-5 bg-white shadow-md z-40 transition-all">
       <div className="border-b-[0.5px] border-gray-400 p-2">
         {/* 사용자 이름 표시 */}
         {loading ? (

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 import { CgDetailsMore } from "react-icons/cg";
 import { HiChevronUp } from "react-icons/hi";
-import { FaLocationDot } from "react-icons/fa6";
+import { FaLocationDot, FaRegStar } from "react-icons/fa6";
 import { PiPhoneListDuotone } from "react-icons/pi";
 import { LuTimer } from "react-icons/lu";
 import { BsPersonVcard } from "react-icons/bs";
@@ -28,10 +28,10 @@ import Loader from "../components/shared/Loader";
 import BasicCard from "../components/shared/BasicCard";
 import bgimg from "../assets/reg.png";
 import { format } from "date-fns";
-
+import { getAverageRatingByGymId } from "../api/reviewApi";
+import { RiMapPinLine } from "react-icons/ri";
 
 const { kakao } = window;
-
 
 const CenterView = () => {
   const location = useLocation();
@@ -47,65 +47,63 @@ const CenterView = () => {
   const customNavigate = useCustomNavigate();
   const gymId = location.state?.gym?.gymId || "";
 
-
   const infoRef = useRef(null);
   const introduceRef = useRef(null);
   const imgRef = useRef(null);
   const priceRef = useRef(null);
   const trainerRef = useRef(null);
   const reviewRef = useRef(null);
+  const menuRef = useRef(null);
 
   const [page, setPage] = useState(1);
   const lastPageRef = useRef(0);
 
-  useEffect(() => {
-    lastPageRef.current = 7;
-  
-    const infoRefTop = infoRef.current.offsetTop;
-  
-    const handleWheel = (e) => {
-      e.preventDefault();
-  
-      if (e.deltaY > 0) {
-        if (page === lastPageRef.current) return;
+  const [avgRating, setAvgRating] = useState(null);
+  const [noReviews, setNoReviews] = useState(false);
+  const [reviewCount, setReviewCount] = useState(0);
 
-        const nextPage = page + 1;
-        const posTop = (nextPage - 1) * window.innerHeight + infoRefTop;
-        setPage(nextPage);
-        document.documentElement.scrollTo({ top: posTop, behavior: 'smooth' });
-      } else if (e.deltaY < 0) {
-        if (page === 1) return;
+  // useEffect(() => {
+  //   lastPageRef.current = 7;
 
-        const prevPage = page - 1;
-        const posTop = (prevPage - 1) * window.innerHeight + infoRefTop;
-        setPage(prevPage);
-        document.documentElement.scrollTo({ top: posTop, behavior: 'smooth' });
-      }
-    };
-  
-    window.addEventListener('wheel', handleWheel, { passive: false });
-  
-    return () => {
-      window.removeEventListener('wheel', handleWheel);
-    };
-  }, [page, infoRef]);
-  
+  //   const infoRefTop = infoRef.current.offsetTop;
 
-  useEffect(() => {
-    const posTop = (page - 1) * window.innerHeight + infoRef.current.offsetTop;
-    document.documentElement.scrollTo({ top: posTop, behavior: 'smooth' });
-  }, [page, infoRef]);
+  //   const handleWheel = (e) => {
+  //     e.preventDefault();
 
+  //     if (e.deltaY > 0) {
+  //       if (page === lastPageRef.current) return;
+
+  //       const nextPage = page + 1;
+  //       const posTop = (nextPage - 1) * window.innerHeight + infoRefTop;
+  //       setPage(nextPage);
+  //       document.documentElement.scrollTo({ top: posTop, behavior: "smooth" });
+  //     } else if (e.deltaY < 0) {
+  //       if (page === 1) return;
+
+  //       const prevPage = page - 1;
+  //       const posTop = (prevPage - 1) * window.innerHeight + infoRefTop;
+  //       setPage(prevPage);
+  //       document.documentElement.scrollTo({ top: posTop, behavior: "smooth" });
+  //     }
+  //   };
+
+  //   window.addEventListener("wheel", handleWheel, { passive: false });
+
+  //   return () => {
+  //     window.removeEventListener("wheel", handleWheel);
+  //   };
+  // }, [page, infoRef]);
+
+  // useEffect(() => {
+  //   const posTop = (page - 1) * window.innerHeight + infoRef.current.offsetTop;
+  //   document.documentElement.scrollTo({ top: posTop, behavior: "smooth" });
+  // }, [page, infoRef]);
 
   // 헬스장 소개글 불러와야함
   const introduce = gymData.introduce;
   const { text: introduceText, isEnd: isintroduceEnd } = useTyping(introduce);
 
   useEffect(() => {
-    if (gymData) {
-      // console.log("gymData from location in center view", gymData);
-      return;
-    }
     const fetchGymData = async () => {
       try {
         // setGymDataLoading(true);
@@ -118,8 +116,21 @@ const CenterView = () => {
         setGymDataLoading(false);
       }
     };
-
-    fetchGymData();
+    const getAvgRating = async () => {
+      try {
+        const data = await getAverageRatingByGymId(gymId);
+        console.log("Avg rating", data);
+        setReviewCount(data.count);
+        setAvgRating(data.avg);
+      } catch (error) {}
+    };
+    if (!gymData) {
+      fetchGymData();
+    }
+    if (!avgRating) {
+      // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+      getAvgRating();
+    }
   }, [gymId]);
 
   useEffect(() => {
@@ -199,62 +210,68 @@ const CenterView = () => {
     ref.current.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-
   const handleScrollToTop = () => {
-    document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
+    // document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
+    console.log("clicked");
+    // document.body.scrollIntoView({ behavior: "smooth" });
+    // window.scrollTo(0, 0);
+    menuRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
   };
-  
-
 
   return (
     <>
-      <div className="flex flex-col space-y-5">
-
+      <div className="relative flex flex-col space-y-5">
         {/* <div className="flex flex-row ml-40 items-center font-semibold text-2xl mb-3">
           <CgDetailsMore size="38" className="mr-3" />
           상세정보
         </div> */}
         {/* 헬스장 정보 */}
         <div className="flex flex-col min-h-screen">
-          <div className="flex flex-row space-x-40 justify-center item-center mb-6 ">
+          <div
+            ref={menuRef}
+            className="sticky top-0 flex flex-row space-x-40 justify-center item-center bg-floral-white h-20 z-30"
+          >
             <button
-              className="text-2xl font-bold pb-2 hover:border-grayish-red hover:border-b hover:text-peach-fuzz text-grayish-red "
+              className="text-2xl font-bold hover:text-peach-fuzz text-grayish-red "
               onClick={() => handleScrollToSection(infoRef)}
             >
               정보
             </button>
             <button
-              className="text-2xl font-bold hover:border-grayish-red hover:border-b hover:text-peach-fuzz text-grayish-red"
+              className="text-2xl font-bold hover:text-peach-fuzz text-grayish-red"
               onClick={() => handleScrollToSection(introduceRef)}
             >
               소개
             </button>
             <button
-              className="text-2xl font-bold hover:border-grayish-red hover:border-b hover:text-peach-fuzz text-grayish-red"
+              className="text-2xl font-bold hover:text-peach-fuzz text-grayish-red"
               onClick={() => handleScrollToSection(imgRef)}
             >
               시설
             </button>
             <button
-              className="text-2xl font-bold hover:border-grayish-red hover:border-b hover:text-peach-fuzz text-grayish-red"
+              className="text-2xl font-bold hover:text-peach-fuzz text-grayish-red"
               onClick={() => handleScrollToSection(priceRef)}
             >
               가격
             </button>
             <button
-              className="text-2xl font-bold hover:border-grayish-red hover:border-b hover:text-peach-fuzz text-grayish-red"
+              className="text-2xl font-bold hover:text-peach-fuzz text-grayish-red"
               onClick={() => handleScrollToSection(trainerRef)}
             >
               트레이너
             </button>
             <button
-              className="text-2xl font-bold hover:border-grayish-red hover:border-b hover:text-peach-fuzz text-grayish-red"
+              className="text-2xl font-bold hover:text-peach-fuzz text-grayish-red"
               onClick={() => handleScrollToSection(reviewRef)}
             >
               리뷰
             </button>
           </div>
-          <div ref={infoRef} className="w-full min-h-screen flex flex-col justify-center items-center bg-grayish-red bg-opacity-15 p-20">
+          <div
+            ref={infoRef}
+            className="w-full min-h-screen flex flex-col justify-center items-center bg-grayish-red bg-opacity-15 p-20"
+          >
             <div className="flex w-full py-10 bg-white rounded-[55px] ">
               <div className="box-border w-[50%] flex justify-center items-center">
                 {!mapLoading ? (
@@ -279,12 +296,48 @@ const CenterView = () => {
                 )}
               </div>
               {/* text 정보 */}
-              <div className=" relative flex flex-col space-y-7 box-border justify-center items w-1/2 p-14">
-                <p className="text-6xl font-semibold mb-10 w-fit rounded-2xl border-b-8 border-peach-fuzz border-opacity-40 p-4">
-                  {gymData.user.userName}
+              <div className="flex flex-col space-y-7 box-border justify-center items w-1/2 p-14">
+                <p
+                  className="text-6xl font-semibold mb-10 w-fit rounded-2xl underline-offset-8 p-4"
+                  style={{
+                    textDecoration: "underline",
+                    textDecorationStyle: "wavy",
+                    textDecorationColor: "rgba(254, 135, 66, 0.4)",
+                  }}
+                >
+                  {gymData.user?.userName}
                 </p>
+
+                <div className="flex flex-row items-center">
+                  <FaRegStar
+                    size="32"
+                    className="mr-3 opacity-90"
+                    color="#fe8742"
+                  />
+                  <div className="flex items-end gap-3">
+                    <p className="font-semibold text-2xl "> 평점 </p>
+                    {reviewCount === 0 ? (
+                      <span className="text-sm text-gray-500">
+                        등록된 리뷰가 없습니다...
+                      </span>
+                    ) : (
+                      <>
+                        <div className="pl-5">
+                          <span className="text-bright-orange text-2xl">
+                            {avgRating} / 5
+                          </span>
+                        </div>
+                        <span className="text-sm">(리뷰: {reviewCount})</span>
+                      </>
+                    )}
+                  </div>
+                </div>
                 <div className="flex flex-row">
-                  <FaLocationDot size="32" className="mr-3 opacity-90" color="#fe8742" />
+                  <RiMapPinLine
+                    size="32"
+                    className="mr-3 opacity-90"
+                    color="#fe8742"
+                  />
                   <div className="flex flex-col">
                     <p className="font-semibold text-2xl "> 주소 </p>
                     <div>
@@ -310,11 +363,11 @@ const CenterView = () => {
                     <div>{gymData.phoneNumber}</div>
                   </div>
                 </div>
-                <div className="flex flex-row justify-end space-x-3 ">
+                <div className="flex flex-row justify-start space-x-3 ">
                   <div>
                     <Button
                       width="170px"
-                      label="문의하기"
+                      label="채팅문의"
                       height="50px"
                       className="hover:font-semibold bg-opacity-60"
                       onClick={() =>
@@ -324,14 +377,14 @@ const CenterView = () => {
                       }
                     ></Button>
                   </div>
-                  <div>
+                  {/* <div>
                     <Button
                       width="170px"
                       label="🎉 Event"
                       height="50px"
                       className="hover:font-semibold bg-opacity-60 border-"
                     ></Button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
@@ -341,27 +394,32 @@ const CenterView = () => {
           {introduce && (
             <div
               ref={introduceRef}
-              className="relative flex justify-center items-center w-full min-h-screen"
+              className="snap-start relative flex justify-center items-center w-full min-h-screen"
             >
               <div
                 className="absolute inset-0"
                 style={{
                   backgroundImage: `url(${bgimg})`,
-                  backgroundSize: 'cover',
+                  backgroundSize: "cover",
                   opacity: 0.45,
                   zIndex: -9,
                 }}
               ></div>
               <div className="max-w-full">
-                <div className="text-4xl sm:text-4xl font-semibold text-zinc-800 drop-shadow-lg tracking-wide" style={{ lineHeight: '1.5' }}>
-                  {introduceText.split('\n').map((line, index) => (
+                <div
+                  className="text-4xl sm:text-4xl font-semibold text-zinc-800 drop-shadow-lg tracking-wide"
+                  style={{ lineHeight: "1.5" }}
+                >
+                  {introduceText.split("\n").map((line, index) => (
                     <React.Fragment key={index}>
                       {line}
                       <br />
                     </React.Fragment>
                   ))}
                   <span
-                    className={`${isintroduceEnd ? "hidden" : "animate-typing"}`}
+                    className={`${
+                      isintroduceEnd ? "hidden" : "animate-typing"
+                    }`}
                   >
                     |
                   </span>
@@ -370,19 +428,18 @@ const CenterView = () => {
             </div>
           )}
 
-
           {/* 헬스장 사진 */}
           <div
             ref={imgRef}
-            className="w-full min-h-screen flex justify-center items-center"
+            className="snap-start w-full min-h-screen flex justify-center items-center"
           >
-
             <CenterImg gymId={gymId} />
           </div>
           {/* 헬스장 가격표 */}
           <div
             ref={priceRef}
-            className="w-full min-h-screen flex justify-center items-center bg-grayish-red bg-opacity-20">
+            className="snap-start w-full min-h-screen flex justify-center items-center bg-grayish-red bg-opacity-20"
+          >
             <div className="w-[60%] h-full p-20 flex flex-col items-center">
               <div className="mb-10">
                 <div className="flex flex-col items-center text-center mb-2 font-semibold text-2xl">
@@ -417,18 +474,18 @@ const CenterView = () => {
                                     !sessionStorage.getItem("isLoggedIn")
                                       ? toggleLoginModal()
                                       : customNavigate("/PtRegister", {
-                                        state: {
-                                          product: product,
-                                          gym: gymData,
-                                        },
-                                      });
+                                          state: {
+                                            product: product,
+                                            gym: gymData,
+                                          },
+                                        });
                                   },
                                 }}
                               />
                             );
                           })}
                       </div>
-                      
+
                       <div className="w-fit grid gap-x-8 gap-y-4 grid-cols-2">
                         {gymData.productList
                           .filter((product) => product.ptCountTotal === 0)
@@ -448,11 +505,11 @@ const CenterView = () => {
                                     !sessionStorage.getItem("isLoggedIn")
                                       ? toggleLoginModal()
                                       : customNavigate("/memberregister", {
-                                        state: {
-                                          product: product,
-                                          gym: gymData,
-                                        },
-                                      });
+                                          state: {
+                                            product: product,
+                                            gym: gymData,
+                                          },
+                                        });
                                   },
                                 }}
                               />
@@ -474,7 +531,7 @@ const CenterView = () => {
           {/* 트레이너 소개 */}
           <div
             ref={trainerRef}
-            className="w-full min-h-screen flex justify-center items-center "
+            className="snap-start w-full min-h-screen flex justify-center items-center "
           >
             <TrainerInfo trainers={gymData.trainerList} />
           </div>
@@ -492,9 +549,10 @@ const CenterView = () => {
       <div className="flex flex-col space-y-3">
         {/* top버튼 */}
         <button
-        onClick={() => handleScrollToTop()} 
-        className="flex flex-col justify-center items-center fixed bottom-52 right-16 w-20 h-20 rounded-full text-[12px] font-semibold text-black ">
-        <HiChevronUp size={35}/>
+          onClick={() => handleScrollToTop()}
+          className="flex flex-col justify-center items-center fixed bottom-52 right-16 w-20 h-20 rounded-full text-[12px] font-semibold text-black "
+        >
+          <HiChevronUp size={35} />
           <p>Top</p>
         </button>
         <button

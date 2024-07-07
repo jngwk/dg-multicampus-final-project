@@ -26,12 +26,16 @@ const ReviewContent = ({
   const [reviews, setReviews] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentReview, setCurrentReview] = useState(null);
-  // const { userData } = useAuth();
+  const [selectedImage, setSelectedImage] = useState(null);
   const [colorMapping, setColorMapping] = useState({});
+  const [loadingReviews, setLoadingReviews] = useState(false);
+
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
+        setLoadingReviews(true);
         const data = await getReviews(gymId);
         setReviews(data);
         const initialMapping = data.reduce((acc, review) => {
@@ -41,6 +45,8 @@ const ReviewContent = ({
         setColorMapping(initialMapping);
       } catch (error) {
         console.error("Error fetching reviews:", error);
+      } finally {
+        setLoadingReviews(false);
       }
     };
     fetchReviews();
@@ -86,6 +92,14 @@ const ReviewContent = ({
     );
   };
 
+  const handleImageClick = (image) => {
+    setSelectedImage(image);
+  };
+
+  const handleImageModalClose = () => {
+    setSelectedImage(null);
+  };
+
   if (renderReviewCount) {
     return <div>등록 리뷰 수: {reviews.length}</div>;
   }
@@ -103,6 +117,16 @@ const ReviewContent = ({
     return colors[hash % colors.length];
   };
 
+  const handleWheel = (e) => {
+    const container = e.currentTarget;
+    const delta = e.deltaY || e.detail || e.wheelDelta;
+
+    const scrollSpeed = 0.5;
+    container.scrollLeft += delta * scrollSpeed;
+
+    e.preventDefault();
+  };
+
   return (
     <div className="flex flex-wrap justify-center">
       {reviews && reviews.length > 0 ? (
@@ -115,7 +139,7 @@ const ReviewContent = ({
               className={classNames(
                 "sticky-note",
                 colorClass,
-                "w-64 h-64 p-6 m-4 shadow-lg transform rotate-2 transition duration-300 ease-in-out hover:rotate-0 hover:scale-105 relative"
+                "w-80 h-80 p-6 m-4 shadow-lg transform rotate-2 transition duration-300 ease-in-out hover:rotate-0 hover:scale-105 relative"
               )}
             >
               <BsPinAngle className="absolute -top-3 -left-3 text-gray-700 text-2xl" />
@@ -144,17 +168,21 @@ const ReviewContent = ({
                 <div className="mb-2">{renderStars(item.rating)}</div>
               </div>
 
-              <p className="text-sm mb-2 h-20 overflow-y-auto">
+              <p className="text-sm mb-3 h-24 overflow-y-auto scrollbar-hide">
                 {item.comment}
               </p>
               {item.images && item.images.length > 0 && (
-                <div className="flex space-x-2 mt-2">
+                <div
+                  className="flex space-x-2 mt-2 w-full overflow-x-auto scrollbar-hide"
+                  onWheel={handleWheel}
+                >
                   {item.images.map((image, idx) => (
                     <img
                       key={idx}
                       src={`/images/${image}`}
                       alt={`Review Image ${idx}`}
-                      className="w-24 h-22 object-cover rounded-lg border-gray-200 border-2"
+                      className="w-auto h-24 object-cover rounded-lg  cursor-pointer"
+                      onClick={() => handleImageClick(image)}
                     />
                   ))}
                 </div>
@@ -192,6 +220,27 @@ const ReviewContent = ({
           onUpdateReview={handleUpdateReview}
           onReviewUpdated={onReviewUpdated}
         />
+      )}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+          onClick={handleImageModalClose}
+        >
+          <div className="relative">
+            <img
+              src={`/images/${selectedImage}`}
+              alt="Enlarged Review"
+              className="max-w-full max-h-full"
+              onClick={(e) => e.stopPropagation()} // Prevents modal close on image click
+            />
+            <button
+              onClick={handleImageModalClose}
+              className="absolute top-0 right-0 m-2 text-white text-xl"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -259,7 +308,6 @@ const Review = ({ gymId }) => {
             className="absolute top-12 -right-2 flex items-center mr-5"
             onClick={toggleModal}
           >
-            {/* <div className="hover:font-bold">리뷰작성</div> */}
             <MdOutlineRateReview
               className="mx-1 mb-1"
               size="25"
