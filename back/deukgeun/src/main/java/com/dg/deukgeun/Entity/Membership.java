@@ -32,7 +32,7 @@ public class Membership {
     private String userMemberReason;
     private String userGender;
     private Integer userAge;
-    private String userWorkoutDuration;
+    private Integer userWorkoutDuration;
     
     @ManyToOne 
     @JoinColumn(name = "product_id", nullable = false)
