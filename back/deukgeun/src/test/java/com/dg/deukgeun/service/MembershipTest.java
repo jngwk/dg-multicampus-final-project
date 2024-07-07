@@ -41,11 +41,11 @@ class Membership {
 
 public class MembershipTest {
 
-    private static final LocalDate START_DATE = LocalDate.of(2023, 3, 23);
+    private static final LocalDate START_DATE = LocalDate.of(2023, 4, 1);
     private static final LocalDate END_DATE = LocalDate.now();
-    private static final int NUM_ENTRIES = 100;
+    private static final int NUM_ENTRIES = 300;
     private static final Random RANDOM = new Random();
-    private static final int START_MEMBERSHIP_ID = 156; // Starting membership_id
+    private static final int START_MEMBERSHIP_ID = 1; // Starting membership_id
 
     @Test
     public void testInsertDummyData() throws SQLException {
@@ -60,28 +60,47 @@ public class MembershipTest {
             LocalDate regDate = weightedRandomDate(START_DATE, END_DATE);
             int productId = RANDOM.nextInt(3) + 1;
             LocalDate expDate = calculateExpDate(regDate, productId);
-            int userAge = RANDOM.nextInt(21) + 20;
-            int userWorkoutDuration = userAge - 20 + RANDOM.nextInt(11);
-            String userGender = RANDOM.nextBoolean() ? "남성" : "여성";
-            String userMemberReason = randomMemberReason();
+            int userAge = randomAge();
+            int userWorkoutDuration = RANDOM.nextInt(userAge - 20 + 1);
+            String userGender = randomGender();
+            String userMemberReason = randomMemberReason(userGender);
 
             int membershipId = START_MEMBERSHIP_ID + i;
 
             memberships.add(new Membership(
-                    membershipId,
-                    expDate,
-                    regDate,
-                    userAge,
-                    userGender,
-                    userMemberReason,
-                    userWorkoutDuration,
-                    1, // gymId is fixed to 1
-                    1, // userId is fixed to 1
-                    productId
+                membershipId,
+                expDate,
+                regDate,
+                userAge,
+                userGender,
+                userMemberReason,
+                userWorkoutDuration,
+                1, // gymId is fixed to 1
+                1, // userId is fixed to 1
+                productId
             ));
         }
 
         return memberships;
+    }
+
+    private static int randomAge() {
+        int randomNumber = RANDOM.nextInt(100);
+        if (randomNumber < 50) {
+            // 20대 (20-29세)
+            return RANDOM.nextInt(10) + 20;
+        } else if (randomNumber < 85) {
+            // 30대 (30-39세)
+            return RANDOM.nextInt(10) + 30;
+        } else {
+            // 40대 이상 (40-50세)
+            return RANDOM.nextInt(11) + 40;
+        }
+    }
+
+    private static String randomGender() {
+        // 약 70%의 확률로 남성, 30%의 확률로 여성을 반환
+        return RANDOM.nextDouble() < 0.7 ? "남성" : "여성";
     }
 
     private static LocalDate weightedRandomDate(LocalDate start, LocalDate end) {
@@ -90,13 +109,13 @@ public class MembershipTest {
 
         // Bias for spring and summer
         if (date.getMonthValue() >= 3 && date.getMonthValue() <= 8) {
-            if (RANDOM.nextDouble() < 0.7) {  // 70% chance to keep the date
+            if (RANDOM.nextDouble() < 0.7) { // 70% chance to keep the date
                 return date;
             } else {
                 return weightedRandomDate(start, end);
             }
         } else {
-            if (RANDOM.nextDouble() < 0.3) {  // 30% chance to keep the date
+            if (RANDOM.nextDouble() < 0.3) { // 30% chance to keep the date
                 return date;
             } else {
                 return weightedRandomDate(start, end);
@@ -117,9 +136,31 @@ public class MembershipTest {
         }
     }
 
-    private static String randomMemberReason() {
-        String[] reasons = {"다이어트", "건강", "PT", "체형관리", "바디프로필"};
-        return reasons[RANDOM.nextInt(reasons.length)];
+    private static String randomMemberReason(String gender) {
+        String[] reasons = {"건강 관리", "체형 관리", "다이어트", "스트레스 해소", "바디 프로필", "보디 빌딩"};
+        int randomNumber = RANDOM.nextInt(100);
+
+        if ("남성".equals(gender)) {
+            if (randomNumber < 44) {
+                return "보디 빌딩";
+            } else if (randomNumber < 70) {
+                return RANDOM.nextBoolean() ? "체형 관리" : "다이어트";
+            } else if (randomNumber < 90) {
+                return RANDOM.nextBoolean() ? "스트레스 해소" : "건강 관리";
+            } else {
+                return "바디 프로필";
+            }
+        } else { // 여성
+            if (randomNumber < 35) {
+                return "다이어트";
+            } else if (randomNumber < 55) {
+                return "체형 관리";
+            } else if (randomNumber < 80) {
+                return RANDOM.nextBoolean() ? "바디 프로필" : "건강 관리";
+            } else {
+                return RANDOM.nextBoolean() ? "보디 빌딩" : "스트레스 해소";
+            }
+        }
     }
 
     private static void insertDummyDataIntoDatabase(List<Membership> memberships) throws SQLException {

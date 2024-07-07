@@ -14,15 +14,15 @@ export default function BasicCard({
   button = { label: "", onClick: "" },
 }) {
   return (
-    <Card sx={{ width: 275, minWidth: 275 }} className="hover:bg-orange-100">
+    <Card sx={{ width: 400, minWidth: 400 }} className="relative hover:bg-orange-100 p-5 ">
       <CardContent>
-        <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+        <Typography sx={{ fontSize: 14 }} color="text.secondary"  gutterBottom>
           {type}
         </Typography>
         <Typography variant="h5" component="div">
           {header}
         </Typography>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
+        <Typography sx={{ mb: 1.5 }} color="text.secondary" className="absolute right-0 pr-7">
           {shortDesc}
         </Typography>
         <Typography variant="body2">{desc}</Typography>

@@ -254,7 +254,10 @@ const GymSearchMap = () => {
         // console.log("@@@@ results", results);
         setState((prev) => ({
           ...prev,
-          center: { lat: results[0]?.latlng?.lat, lng: results[0]?.latlng?.lng },
+          center: {
+            lat: results[0]?.latlng?.lat,
+            lng: results[0]?.latlng?.lng,
+          },
           isLoading: false,
         }));
       }
@@ -353,7 +356,7 @@ const GymSearchMap = () => {
   // };
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-[80dvh]">
       <Map
         id="map"
         className="relative z-10"
@@ -382,10 +385,9 @@ const GymSearchMap = () => {
           </>
         )}
       </Map>
-      <div className="absolute top-0 left-0 z-20  w-[400px] h-full flex justify-center items-center">
-        <div className="flex flex-col items-center h-[90%] w-5/6 bg-white/90 rounded-md py-2 border border-grayish-red shadow-xl">
+      <div className="absolute top-0 left-0 z-20  w-1/4 h-full flex justify-center items-center">
+        <div className="flex flex-col items-center justify-center h-[90%] min-w-[332px] w-[332px] bg-white/90 rounded-md py-2 border border-grayish-red shadow-xl">
           <div className="w-full flex flex-col items-center border-b-2 pb-2">
-            {/* TODO 필터 적용하기 */}
             <select
               name="filter"
               id="filter"
@@ -441,15 +443,15 @@ const GymSearchMap = () => {
                       {gym.address}
                     </span>
                     <div className="flex justify-evenly mt-3">
-                      <button
-                        className="border border-gray-500 py-2 px-4 text-xs rounded-md bg-grayish-red/30 hover:border-grayish-red hover:bg-grayish-red hover:text-white transition-all"
-                        onClick={() => handleCenterView(gym)}
-                      >
-                        상세보기
-                      </button>
-                      {(!sessionStorage.getItem("isLoggedIn") ||
-                        userData?.role === "ROLE_GENERAL") && (
+                      {!sessionStorage.getItem("isLoggedIn") ||
+                      userData?.role === "ROLE_GENERAL" ? (
                         <>
+                          <button
+                            className="border border-gray-500 py-2 px-4 text-xs rounded-md bg-grayish-red/30 hover:border-grayish-red hover:bg-grayish-red hover:text-white transition-all"
+                            onClick={() => handleCenterView(gym)}
+                          >
+                            상세보기
+                          </button>
                           <button
                             className="border border-gray-500 py-2 px-4 text-xs rounded-md bg-grayish-red/30 hover:border-grayish-red hover:bg-grayish-red hover:text-white transition-all"
                             onClick={() =>
@@ -471,6 +473,13 @@ const GymSearchMap = () => {
                             등록하기
                           </button>
                         </>
+                      ) : (
+                        <button
+                          className="border border-gray-500 py-2 px-4 text-xs text-gray-800 rounded-md bg-bright-orange/50 hover:border-bright-orange/80 hover:bg-bright-orange/80 hover:text-white transition-all"
+                          onClick={() => handleCenterView(gym)}
+                        >
+                          상세보기
+                        </button>
                       )}
                     </div>
                   </div>

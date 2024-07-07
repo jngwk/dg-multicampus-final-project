@@ -1,352 +1,487 @@
-import React, { useState, useEffect } from 'react';
-import { endOfMonth } from 'date-fns';
-import MembershipChart1 from '../components/membership/MembershipChart1';
-import MembershipChart2 from '../components/membership/MembershipChart2';
-import MembershipTable from '../components/membership/Membership';
-import Button from '../components/shared/Button'; // Button 컴포넌트 import 추가
-import { GymInfo } from '../api/gymApi';
-import { getMembershipStats } from '../api/membershipApi';
-import { getPtSession } from '../api/ptApi';
-
+import React, { useState, useEffect } from "react";
+import { endOfMonth, startOfMonth, getYear, getMonth, getDate } from "date-fns";
+import MembershipChart1 from "../components/membership/MembershipChart1";
+import MembershipChart2 from "../components/membership/MembershipChart2";
+import AdditionalCharts from "../components/membership/AdditionalCharts";
+import Button from "../components/shared/Button";
+import { GymInfo } from "../api/gymApi";
+import { getMembershipStats } from "../api/membershipApi";
+import { getPtSession } from "../api/ptApi";
+import Fallback from "../components/shared/Fallback";
 
 const MembershipStats = () => {
-  // 필터 사이드바
-  const [FilterToggle, setFilterToggle] = useState(false);
-
-  // 헬스장 등록 차트
+  const [filterToggle, setFilterToggle] = useState(false);
   const [stats, setStats] = useState([]);
-  const [filterType, setFilterType] = useState('전체');
-  const [start, setStart] = useState('');
-  const [end, setEnd] = useState('');
-  const [gymName, setGymName] = useState('');
-
-  // PT 선호도 차트
+  const [filterType, setFilterType] = useState("전체");
+  const [start, setStart] = useState("");
+  const [end, setEnd] = useState("");
+  const [gymName, setGymName] = useState("");
   const [ptSessions, setPtSessions] = useState([]);
-  const [minPtDate, setMinPtDate] = useState('');
-  const [maxPtDate, setMaxPtDate] = useState('');
-  const [selectedYear, setSelectedYear] = useState('전체');
-  const [selectedMonth, setSelectedMonth] = useState('전체');
-  const [selectedWeek, setSelectedWeek] = useState('전체'); // New state for week filter
-  const [ptStart, setPtStart] = useState('');
-  const [ptEnd, setPtEnd] = useState('');
+  const [minPtDate, setMinPtDate] = useState("");
+  const [maxPtDate, setMaxPtDate] = useState("");
+
+  const today = new Date();
+  const currentYear = getYear(today).toString();
+  const currentMonth = (getMonth(today) + 1).toString();
+  const currentWeek = Math.ceil(getDate(today) / 7).toString();
+
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [selectedWeek, setSelectedWeek] = useState(currentWeek);
+
+  const currentMonthStart = startOfMonth(today);
+  const currentMonthEnd = endOfMonth(today);
+  const [ptStart, setPtStart] = useState(currentMonthStart);
+  const [ptEnd, setPtEnd] = useState(currentMonthEnd);
+
+  const [loading, setLoading] = useState(true);
+  const [zoomWeek, setZoomWeek] = useState(null);
+  const [chartInstance, setChartInstance] = useState(null);
+  const [zoomEnabled, setZoomEnabled] = useState(false);
+  const [panEnabled, setPanEnabled] = useState(false);
 
   useEffect(() => {
-    // 회원 가입 통계 데이터를 가져오는 함수
-    const fetchStats = async () => {
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const data = await getMembershipStats();
-        setStats(data);
+        const [statsData, ptSessionsData, gymInfoData] = await Promise.all([
+          getMembershipStats(),
+          getPtSession(),
+          GymInfo(1),
+        ]);
 
-        // 데이터가 존재할 경우 최소 및 최대 날짜 설정
-        if (data.length > 0) {
-          const minDate = new Date(Math.min(...data.map(item => new Date(item.regDate))));
-          const maxDate = new Date(Math.max(...data.map(item => new Date(item.regDate))));
+        setStats(statsData);
+        setPtSessions(
+          ptSessionsData.sort(
+            (a, b) => new Date(a.workoutDate) - new Date(b.workoutDate)
+          )
+        );
+        setGymName(gymInfoData.gymName);
+
+        if (statsData.length > 0) {
+          const minDate = new Date(
+            Math.min(...statsData.map((item) => new Date(item.regDate)))
+          );
+          const maxDate = new Date(
+            Math.max(...statsData.map((item) => new Date(item.regDate)))
+          );
           setStart(formatDate(minDate));
           setEnd(formatDate(maxDate));
         }
 
-        // 헬스장 정보 가져오기
-        const gymInfo = await GymInfo(1);
-        setGymName(gymInfo.gymName);
-      } catch (error) {
-        console.error("Error fetching stats data:", error);
-      }
-    };
-
-    // PT 세션 데이터를 가져오는 함수
-    const fetchPtSessions = async () => {
-      try {
-        const sessions = await getPtSession();
-        sessions.sort((a, b) => new Date(a.workoutDate) - new Date(b.workoutDate));
-
-        if (sessions.length > 0) {
-          const earliestDate = new Date(sessions[0]?.workoutDate);
-          const latestDate = new Date(sessions[sessions.length - 1]?.workoutDate);
-          setPtSessions(sessions);
+        if (ptSessionsData.length > 0) {
+          const earliestDate = new Date(ptSessionsData[0]?.workoutDate);
+          const latestDate = new Date(
+            ptSessionsData[ptSessionsData.length - 1]?.workoutDate
+          );
           setMinPtDate(formatDate(earliestDate));
           setMaxPtDate(formatDate(latestDate));
-          setPtStart(formatDate(earliestDate));
-          setPtEnd(formatDate(latestDate));
         }
       } catch (error) {
-        console.error('Error fetching PT sessions:', error);
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchStats();
-    fetchPtSessions();
+    fetchData();
   }, []);
 
-  // 날짜를 'yyyy-MM-dd' 형식으로 변환하는 함수
+  const setChartRef = (ref) => {
+    if (ref) {
+      setChartInstance(ref);
+    }
+  };
+
   const formatDate = (date) => {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
-  // Function to get unique years from ptSessions
+  const handleResetFilters = () => {
+    setFilterType("전체");
+    setStart(
+      formatDate(
+        new Date(Math.min(...stats.map((item) => new Date(item.regDate))))
+      )
+    );
+    setEnd(
+      formatDate(
+        new Date(Math.max(...stats.map((item) => new Date(item.regDate))))
+      )
+    );
+    setSelectedYear(currentYear);
+    setSelectedMonth(currentMonth);
+    setSelectedWeek(currentWeek);
+    setPtStart(currentMonthStart);
+    setPtEnd(currentMonthEnd);
+    setZoomWeek(null);
+  };
+
   const getUniqueYears = () => {
-    const years = ptSessions.map(session => new Date(session.workoutDate).getFullYear());
-    return Array.from(new Set(years));
+    const years = ptSessions.map((session) =>
+      new Date(session.workoutDate).getFullYear()
+    );
+    return Array.from(new Set(years)).sort((a, b) => a - b);
   };
 
-  // Function to generate year options
-  const getYearOptions = () => {
-    const uniqueYears = getUniqueYears();
-    return uniqueYears.map(year => (
-      <option key={year} value={year}>
-        {year}년
-      </option>
-    ));
-  };
-
-  // Function to generate month options based on selected year
   const getMonthOptions = () => {
-    if (selectedYear === '전체') {
-      return (
-        <option value="전체">월 전체</option>
-      );
-    }
-
+    if (selectedYear === "전체") return [];
     const months = new Set();
-    ptSessions.forEach(session => {
+    ptSessions.forEach((session) => {
       const sessionYear = new Date(session.workoutDate).getFullYear();
       if (sessionYear.toString() === selectedYear) {
         const month = new Date(session.workoutDate).getMonth() + 1;
         months.add(month);
       }
     });
-
-    return Array.from(months).map(month => (
-      <option key={month} value={month}>
-        {month}월
-      </option>
-    ));
+    return Array.from(months).sort((a, b) => a - b);
   };
 
-  // Function to generate week options
   const getWeekOptions = () => {
-    if (selectedYear === '전체' || selectedMonth === '전체') {
-      return (
-        <option value="전체">주 전체</option>
-      );
-    }
-
+    if (selectedYear === "전체" || selectedMonth === "전체") return [];
     const firstDayOfMonth = new Date(`${selectedYear}-${selectedMonth}-01`);
-    const lastDayOfMonth = new Date(selectedYear, selectedMonth, 0);
-    const weeksInMonth = Math.ceil((lastDayOfMonth.getDate() - firstDayOfMonth.getDate() + 1 + firstDayOfMonth.getDay()) / 7);
-
-    return Array.from({ length: weeksInMonth }, (_, index) => {
-      const startDate = new Date(firstDayOfMonth);
-      startDate.setDate(startDate.getDate() + index * 7);
-      const endDate = new Date(startDate);
-      endDate.setDate(endDate.getDate() + 6);
-
-      const startMonth = String(startDate.getMonth() + 1).padStart(2, '0');
-      const startDay = String(startDate.getDate()).padStart(2, '0');
-      const endMonth = String(endDate.getMonth() + 1).padStart(2, '0');
-      const endDay = String(endDate.getDate()).padStart(2, '0');
-
-      return (
-        <option key={index} value={`${startMonth}-${startDay} ~ ${endMonth}-${endDay}`}>
-          {`${startMonth}-${startDay} ~ ${endMonth}-${endDay}`}
-        </option>
-      );
-    });
+    const lastDayOfMonth = endOfMonth(
+      new Date(selectedYear, selectedMonth - 1)
+    );
+    const weeksInMonth = Math.ceil(
+      (lastDayOfMonth.getDate() -
+        firstDayOfMonth.getDate() +
+        1 +
+        firstDayOfMonth.getDay()) /
+        7
+    );
+    return Array.from({ length: weeksInMonth }, (_, i) => i + 1);
   };
 
-  // Function to handle year change
-  const handleYearChange = (event) => {
-    const selectedYear = event.target.value;
-    setSelectedYear(selectedYear);
-    setSelectedMonth('전체');
-    setSelectedWeek('전체'); // Reset week filter when year changes
+  const handleYearChange = (e) => {
+    setSelectedYear(e.target.value);
+    setSelectedMonth("전체");
+    setSelectedWeek("전체");
+    updatePtDateRange(e.target.value, "전체", "전체");
   };
 
-  // Function to handle month change
-  const handleMonthChange = (event) => {
-    const selectedMonth = event.target.value;
-    setSelectedMonth(selectedMonth);
-    setSelectedWeek('전체'); // Reset week filter when month changes
+  const handleMonthChange = (e) => {
+    setSelectedMonth(e.target.value);
+    setSelectedWeek("전체");
+    updatePtDateRange(selectedYear, e.target.value, "전체");
   };
 
-  // Function to handle week change
-  const handleWeekChange = (event) => {
-    const selectedWeek = event.target.value;
-    setSelectedWeek(selectedWeek);
+  const handleWeekChange = (e) => {
+    setSelectedWeek(e.target.value);
+    updatePtDateRange(selectedYear, selectedMonth, e.target.value);
   };
 
-  // Function to get week number for a given date
-  const getWeekNumber = (date) => {
-    const onejan = new Date(date.getFullYear(), 0, 1);
-    const weekNumber = Math.ceil(((date - onejan) / 86400000 + onejan.getDay() + 1) / 7);
-    return weekNumber;
-  };
-
-
-  // Function to get PT session range based on selected year, month, and week
-  const filterPtSessionsByYearMonthAndWeek = () => {
-    if (selectedYear === '전체' && selectedMonth === '전체' && selectedWeek === '전체') {
+  const updatePtDateRange = (year, month, week) => {
+    if (year === "전체") {
       setPtStart(minPtDate);
       setPtEnd(maxPtDate);
-      return;
-    }
-
-    const filteredSessions = ptSessions.filter(session => {
-      const sessionYear = new Date(session.workoutDate).getFullYear().toString();
-      const sessionMonth = (new Date(session.workoutDate).getMonth() + 1).toString();
-      const sessionWeek = getWeekNumber(new Date(session.workoutDate)); // Using getWeekNumber function
-      return (selectedYear === '전체' || sessionYear === selectedYear) &&
-        (selectedMonth === '전체' || sessionMonth === selectedMonth) &&
-        (selectedWeek === '전체' || sessionWeek === parseInt(selectedWeek.replace('주차', ''), 10)); // Converting selectedWeek to number
-    });
-
-    if (filteredSessions.length > 0) {
-      const earliestDate = new Date(filteredSessions[0].workoutDate);
-      const latestDate = new Date(filteredSessions[filteredSessions.length - 1].workoutDate);
-      setPtStart(formatDate(earliestDate));
-      setPtEnd(formatDate(latestDate));
+      setZoomWeek(null);
     } else {
-      // If no sessions match the filter, set the start and end to empty
-      setPtStart('');
-      setPtEnd('');
+      let start = new Date(year, month === "전체" ? 0 : month - 1, 1);
+      let end =
+        month === "전체"
+          ? new Date(year, 11, 31)
+          : endOfMonth(new Date(year, month - 1));
+
+      if (week !== "전체") {
+        start.setDate((week - 1) * 7 + 1);
+        end = new Date(start);
+        end.setDate(start.getDate() + 6);
+      }
+
+      setPtStart(formatDate(start));
+      setPtEnd(formatDate(end));
+      setZoomWeek(
+        week !== "전체"
+          ? { start: formatDate(start), end: formatDate(end) }
+          : null
+      );
     }
   };
 
-  // useEffect to filter PT sessions when selectedYear, selectedMonth, or selectedWeek changes
-  useEffect(() => {
-    filterPtSessionsByYearMonthAndWeek();
-  }, [selectedYear, selectedMonth, selectedWeek]);
-
-  // Reset filters
-  const handleResetFilters = () => {
-    setFilterType('전체');
-    const minDate = new Date(Math.min(...stats.map(item => new Date(item.regDate))));
-    const maxDate = new Date(Math.max(...stats.map(item => new Date(item.regDate))));
-    setStart(formatDate(minDate));
-    setEnd(formatDate(maxDate));
-    setSelectedYear('전체');
-    setSelectedMonth('전체');
-    setSelectedWeek('전체'); // Reset week filter
-    setPtStart(minPtDate); // Reset PT session filters
-    setPtEnd(maxPtDate);
+  const toggleZoom = () => {
+    setZoomEnabled((prev) => !prev);
+    if (chartInstance) {
+      chartInstance.options.plugins.zoom.zoom.wheel.enabled = !zoomEnabled;
+      chartInstance.options.plugins.zoom.pan.enabled = panEnabled; // Ensure pan state is maintained
+      chartInstance.update("none"); // Use 'none' to prevent animation/reset
+    }
   };
+
+  const togglePan = () => {
+    setPanEnabled((prev) => !prev);
+    if (chartInstance) {
+      chartInstance.options.plugins.zoom.pan.enabled = !panEnabled;
+      chartInstance.options.plugins.zoom.zoom.wheel.enabled = zoomEnabled; // Ensure zoom state is maintained
+      chartInstance.update("none"); // Use 'none' to prevent animation/reset
+    }
+  };
+
+  const resetZoom = () => {
+    setZoomWeek(null);
+    setPtStart(currentMonthStart);
+    setPtEnd(currentMonthEnd);
+    setSelectedYear(currentYear);
+    setSelectedMonth(currentMonth);
+    setSelectedWeek(currentWeek);
+    if (chartInstance) {
+      chartInstance.resetZoom();
+    }
+  };
+
+  const handleZoomToNextWeek = () => {
+    let newStart, newEnd;
+
+    if (zoomWeek) {
+      newStart = new Date(zoomWeek.start);
+      newStart.setDate(newStart.getDate() + 7);
+    } else {
+      newStart = new Date(minPtDate);
+    }
+    newEnd = new Date(newStart);
+    newEnd.setDate(newStart.getDate() + 6);
+
+    if (newEnd > new Date(maxPtDate)) {
+      resetZoom();
+    } else {
+      setZoomWeek({ start: formatDate(newStart), end: formatDate(newEnd) });
+      setPtStart(formatDate(newStart));
+      setPtEnd(formatDate(newEnd));
+
+      // 년, 월, 주 선택 업데이트
+      const newYear = newStart.getFullYear().toString();
+      const newMonth = (newStart.getMonth() + 1).toString();
+      const newWeek = Math.ceil((newStart.getDate() + newStart.getDay()) / 7).toString();
+
+      setSelectedYear(newYear);
+      setSelectedMonth(newMonth);
+      setSelectedWeek(newWeek);
+    }
+  };
+
+  const getPreferredDay = () => {
+    const dayCounts = ptSessions.reduce((acc, session) => {
+      const dayOfWeek = new Date(session.workoutDate).getDay();
+      acc[dayOfWeek] = (acc[dayOfWeek] || 0) + 1;
+      return acc;
+    }, {});
+
+    const preferredDayIndex = Object.keys(dayCounts).reduce((a, b) =>
+      dayCounts[a] > dayCounts[b] ? a : b
+    );
+
+    const daysOfWeek = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+    return daysOfWeek[preferredDayIndex];
+  };
+
+  const getPreferredTime = () => {
+    const timeCounts = ptSessions.reduce((acc, session) => {
+      const time = session.startTime.split(":")[0];
+      acc[time] = (acc[time] || 0) + 1;
+      return acc;
+    }, {});
+
+    const preferredTime = Object.keys(timeCounts).reduce((a, b) =>
+      timeCounts[a] > timeCounts[b] ? a : b
+    );
+
+    return `${preferredTime}시`;
+  };
+
+  if (loading) {
+    return <Fallback />;
+  }
 
   return (
-    <>
-      <div className={`${FilterToggle? "space-x-3 " : " " } flex h-screen overflow-hidden`}>
-        <div className="bg-gray-200 w-3/7 max-h-full h-7/8 border-r scrollbar-hide rounded-r-lg overflow-y-auto my-2 ">
-          <div className={` ${FilterToggle? "hidden md:block " : "hidden" } `}>
-            {/* Filter Search Section */}
-            <div className="p-4">
-              <h2 className="text-base font-semibold mb-4">필터 검색</h2>
-              <label className="block mb-2">
-                <h2 className="text-base font-normal mb-4">헬스장 등록 차트</h2>
-                <p className="text-sm">필터 조건 :</p>
-                <select value={filterType} onChange={e => setFilterType(e.target.value)} className="px-3 py-2 border rounded-md mb-2">
-                  <option value="전체">전체</option>
-                  <option value="남성">남성</option>
-                  <option value="여성">여성</option>
-                </select>
-              </label>
-              <label className="block mb-2 text-sm">
-                시작 날짜 :
-                <input
-                  type="month"
-                  value={start.slice(0, 7)}
-                  onChange={e => setStart(e.target.value)}
-                  min={start.slice(0, 7)} // 최소 날짜 설정
-                  max={end.slice(0, 7)} // 최대 날짜 설정
-                  className="px-3 py-2 border rounded-md"
-                />
-              </label>
-              <label className="block mb-2 text-sm">
-                종료 날짜 :
-                <input
-                  type="month"
-                  value={end.slice(0, 7)}
-                  min={start.slice(0, 7)} // 최소 날짜 설정
-                  max={end.slice(0, 7)} // 최대 날짜 설정
-                  onChange={(e) => {
-                    const selectedMonth = e.target.value;
-                    const year = selectedMonth.slice(0, 4);
-                    const month = selectedMonth.slice(5, 7);
-                    const lastDayOfMonth = endOfMonth(new Date(year, month - 1)).toISOString().slice(0, 10);
-                    setEnd(lastDayOfMonth);
-                  }}
-                  className="px-3 py-2 border rounded-md"
-                />
-              </label>
-              <Button label="리셋" onClick={handleResetFilters} width='130px' />
-            </div>
+    <div className="flex flex-col bg-[#f7f5f2]">
+      <div className="bg-[#f7f5f2] p-4 shadow">
+        <h1 className="text-2xl font-bold">{gymName}</h1>
+      </div>
 
-            {/* PT 선호도 차트 Filter Section */}
-            <div className="p-4 mt-8">
-              <h2 className="text-base font-normal mb-4">PT 선호도 차트</h2>
-              <label className="block mb-2 text-sm">
-                연도 필터 :
-                <select value={selectedYear} onChange={handleYearChange} className="px-3 py-2 border rounded-md mb-2">
-                  <option value="전체">연도 전체</option>
-                  {getYearOptions()}
-                </select>
-              </label>
-              <label className="block mb-2 text-sm">
-                월 필터 :
-                <select value={selectedMonth} onChange={handleMonthChange} className="px-3 py-2 border rounded-md mb-2">
-                  <option value="전체">월 전체</option>
-                  {getMonthOptions()}
-                </select>
-              </label>
-              <label className="block mb-2 text-sm">
-                주 필터 :
-                <select value={selectedWeek} onChange={handleWeekChange} className="px-3 py-2 border rounded-md mb-2">
-                  {getWeekOptions()}
-                </select>
-              </label>
-              <Button label="리셋" onClick={handleResetFilters} width='130px' /> {/* PT 선호도 차트 섹션에 추가한 리셋 버튼 */}
+      <div className="flex-1">
+        <div className="p-6">
+          <div className="bg-white p-4 mb-6 rounded-lg shadow">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">필터</h3>
+              <button
+                onClick={() => setFilterToggle((prev) => !prev)}
+                className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors duration-200 focus:outline-none"
+                aria-label={filterToggle ? "필터 숨기기" : "필터 보이기"}
+              >
+                <span className="text-xl">{filterToggle ? "▼" : "▲"}</span>
+              </button>
             </div>
+            {filterToggle && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">헬스장 등록 차트</h3>
+                  <label className="block mb-2">
+                    <span className="text-gray-700">필터 조건:</span>
+                    <select
+                      value={filterType}
+                      onChange={(e) => setFilterType(e.target.value)}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    >
+                      <option value="전체">전체</option>
+                      <option value="남성">남성</option>
+                      <option value="여성">여성</option>
+                    </select>
+                  </label>
+                  <label className="block mb-2">
+                    <span className="text-gray-700">시작 날짜:</span>
+                    <input
+                      type="month"
+                      value={start.slice(0, 7)}
+                      onChange={(e) => setStart(e.target.value + "-01")}
+                      min={start.slice(0, 7)}
+                      max={end.slice(0, 7)}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    />
+                  </label>
+                  <label className="block mb-2">
+                    <span className="text-gray-700">종료 날짜:</span>
+                    <input
+                      type="month"
+                      value={end.slice(0, 7)}
+                      onChange={(e) => {
+                        const lastDay = endOfMonth(new Date(e.target.value));
+                        setEnd(formatDate(lastDay));
+                      }}
+                      min={start.slice(0, 7)}
+                      max={end.slice(0, 7)}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    />
+                  </label>
+                  <button
+                      onClick={handleResetFilters}
+                      className="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    >
+                      필터 리셋
+                    </button>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">PT 선호도 차트</h3>
+                  <label className="block mb-2">
+                    <span className="text-gray-700">연도:</span>
+                    <select
+                      value={selectedYear}
+                      onChange={handleYearChange}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    >
+                      <option value="전체">전체</option>
+                      {getUniqueYears().map((year) => (
+                        <option key={year} value={year}>
+                          {year}년
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="block mb-2">
+                    <span className="text-gray-700">월:</span>
+                    <select
+                      value={selectedMonth}
+                      onChange={handleMonthChange}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                      disabled={selectedYear === "전체"}
+                    >
+                      <option value="전체">전체</option>
+                      {getMonthOptions().map((month) => (
+                        <option key={month} value={month}>
+                          {month}월
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="block mb-2">
+                    <span className="text-gray-700">주:</span>
+                    <select
+                      value={selectedWeek}
+                      onChange={handleWeekChange}
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                      disabled={selectedYear === "전체" || selectedMonth === "전체"}
+                    >
+                      <option value="전체">전체</option>
+                      {getWeekOptions().map((week) => (
+                        <option key={week} value={week}>
+                          {week}주차
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <div className="flex justify-end mt-2 gap-2">
+                    <button
+                      onClick={toggleZoom}
+                      className={`px-3 py-1 rounded-full text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                        zoomEnabled
+                          ? "bg-blue-100 text-blue-800 hover:bg-blue-200 focus:ring-blue-500"
+                          : "bg-gray-100 text-gray-800 hover:bg-gray-200 focus:ring-gray-500"
+                      }`}
+                    >
+                      {zoomEnabled ? "확대 활성화" : "확대 비활성화"}
+                    </button>
+                    <button
+                      onClick={togglePan}
+                      className={`px-3 py-1 rounded-full text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                        panEnabled
+                          ? "bg-green-100 text-green-800 hover:bg-green-200 focus:ring-green-500"
+                          : "bg-gray-100 text-gray-800 hover:bg-gray-200 focus:ring-gray-500"
+                      }`}
+                    >
+                      {panEnabled ? "드래그 활성화" : "드래그 비활성화"}
+                    </button>
+                    <button
+                      onClick={resetZoom}
+                      className="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    >
+                      줌 초기화
+                    </button>
+                    <button
+                      onClick={handleZoomToNextWeek}
+                      className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 hover:bg-purple-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                    >
+                      다음 주
+                    </button>
+                  </div>
+                  <div className="text-sm text-gray-600 mt-2">
+                    <p>선호 요일: {getPreferredDay()}</p>
+                    <p>선호 시간대: {getPreferredTime()}</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-
-
-        {/* Main Content */}
-        <div className="flex flex-col flex-3 h-full overflow-y-auto scrollbar-hide">
-          {/* Page Header */}
-          <div className="bg-gray-100 p-4 border-b flex flex-row items-center py-2 m-2 rounded-lg ">
-            <button
-              onClick={() => setFilterToggle(!FilterToggle)}
-              className=' text-sm hover:animate-jelly mr-5 border border-gray-100 px-2 py-1 rounded-lg bg-white hover:bg-light-gray'>
-              <p>🏴 필터</p>
-            </button>
-            <div><h2 className="text-base font-normal">{gymName}</h2></div>
-          </div>
-
-          
-          {/* Membership Chart Section */}
-          <div className="flex flex-row items-center px-10 my-8">
-            <div className="flex items-center justify-center w-1/2">
-              <MembershipChart1 stats={stats} filterType={filterType} start={start} end={end} />
-            </div>
-            <div className="flex items-center justify-center w-1/2">
-              <MembershipChart2
-                ptSessions={ptSessions}
-                minPtDate={minPtDate}
-                maxPtDate={maxPtDate}
-                ptStart={ptStart}
-                ptEnd={ptEnd}
-              />
-            </div>
-          </div>
-
-          {/* Membership Table Section */}
-          <div className="px-4">
-            <MembershipTable stats={stats} filterType={filterType} start={start} end={end} />
-          </div>
+        {/* Charts */}
+        <div className="chart-container relative grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <MembershipChart1
+            stats={stats}
+            filterType={filterType}
+            start={start}
+            end={end}
+          />
+          <MembershipChart2
+            ptSessions={ptSessions}
+            ptStart={zoomWeek ? zoomWeek.start : ptStart}
+            ptEnd={zoomWeek ? zoomWeek.end : ptEnd}
+            onZoomToNextWeek={handleZoomToNextWeek}
+            isZoomEnabled={zoomEnabled}
+            isPanEnabled={panEnabled}
+            toggleZoom={toggleZoom}
+            togglePan={togglePan}
+            resetZoom={resetZoom}
+            setChartRef={setChartRef}
+          />
+        </div>
+        <div className="mb-6">
+          <AdditionalCharts stats={stats} />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

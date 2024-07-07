@@ -29,7 +29,7 @@ export const deleteReviewImages = async (reviewId, formData) => {
 };
 
 export const updateReviewImages = async (reviewId, formData) => {
-    const res = await axios.put(`${prefix}//updateImages/${reviewId}`, formData, {
+    const res = await axios.put(`${prefix}/updateImages/${reviewId}`, formData, {
         headers: {
             "Content-Type": "multipart/form-data",
         },

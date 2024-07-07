@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { signUpTrainer } from "../../api/signUpApi";
 import Input from "../shared/Input";
 import Button from "../shared/Button";
@@ -44,7 +44,7 @@ function SignUpTrainerModal({ toggleModal }) {
     setCode(e.target.value);
     if (e.target.value == "") {
       setIsCodeVerified(null);
-    } else if (code && !validateCode(e.target.value)) {
+    } else if (e.target.value && !validateCode(e.target.value)) {
       setIsCodeVerified(false);
     } else {
       setIsCodeVerified(true);
@@ -74,6 +74,12 @@ function SignUpTrainerModal({ toggleModal }) {
       alert("트레이너 등록에 실패했습니다.");
     }
   };
+
+  useEffect(() => {
+    if (isAlerModalVisible) {
+      window.location.reload();
+    }
+  }, [isAlerModalVisible]);
 
   return (
     <ModalLayout toggleModal={toggleModal}>

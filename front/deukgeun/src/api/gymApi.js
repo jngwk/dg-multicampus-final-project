@@ -1,8 +1,8 @@
 import axios from "axios";
 
-// export const API_SERVER_HOST = "http://localhost:8282";
-// const prefix = `${API_SERVER_HOST}/api/gym`;
-const prefix = `/api/gym`; // proxy 사용
+export const API_SERVER_HOST = "http://localhost:8282";
+const prefix = `${API_SERVER_HOST}/api/gym`;
+// const prefix = `/api/gym`; // proxy 사용
 
 export const getGymList = async () => {
   try {
@@ -126,5 +126,42 @@ export const deleteImage = async (gymImage) => {
     return response.data;
   } catch (error) {
     throw new Error("Failed to delete image");
+  }
+};
+
+export const deleteProduct = async (productId) => {
+  try {
+    const response = await axios.delete(`${prefix}/deleteProduct/${productId}`);
+    console.log("deleteProduct", response);
+    return response.data;
+  } catch (error) {
+    console.error("Error in deleteProduct", error);
+    throw error;
+  }
+};
+
+export const getGymResList = async () => {
+  try {
+    const response = await axios.get(`${prefix}/getGymList`);
+    console.log("Gym list:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching gym list:", error);
+    throw error;
+  }
+};
+
+export const getGymResListByLocation = async (location) => {
+  try {
+    const response = await axios.get(`${prefix}/LocationImage`, {
+      params: {
+        location: location,
+      },
+    });
+    console.log("Gym Location list:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching gym list:", error);
+    throw error;
   }
 };

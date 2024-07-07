@@ -123,6 +123,12 @@ public class GymController {
         return gymService.listWithPaging(pageRequestDTO);
     }
 
+    @GetMapping("/getGymList")
+    public List<GymResponseDTO> getGymList() {
+        List<GymResponseDTO> gymResponseList = gymService.listWithFirstImage();
+        return gymResponseList;
+    }
+    
     @GetMapping("/getList")
     public List<Gym> list() {
         List<Gym> list = gymService.list();
@@ -331,7 +337,7 @@ public class GymController {
         gymDTO.setUserName(gymRequestDTO.getUserName());
         log.info("Modify: " + gymDTO);
         gymService.modify(gymDTO);
-        productService.deleteProductByGymId(gymId);
+        // productService.deleteProductByGymId(gymId);
         if (gymRequestDTO.getProductList() != null&& !gymRequestDTO.getProductList().isEmpty()) {
             for (ProductDTO product : gymRequestDTO.getProductList()) {
                 product.setGymId(gymId); // 각 상품에 gymId 설정
@@ -414,6 +420,12 @@ public class GymController {
         }
     }
 
+    @GetMapping("/LocationImage")
+    public List<GymResponseDTO> GetGymImageByLocation(@RequestParam(name = "location", required = false) String location) {
+        return gymService.searchGymsImageByLocation(location);
+
+    }
+
     @GetMapping("/products/{gymId}")
     public List<ProductDTO> getProductList(@PathVariable(name = "gymId") Integer gymId) {
         return productService.getList(gymId);
@@ -422,6 +434,11 @@ public class GymController {
     @GetMapping("/trainers/{gymId}")
     public List<TrainerDTO> getTrainerList(@PathVariable(name = "gymId") Integer gymId) {
         return trainerService.getList(gymId);
+    }
+    @DeleteMapping("/deleteProduct/{productId}")
+    public Map<String, String> deleteProduct(@PathVariable(name = "productId") Integer productId) {
+        productService.deleteProductByProductId(productId);
+        return Map.of("RESULT", "SUCCESS");
     }
 
     @GetMapping("/trainersWithInfo/{gymId}")

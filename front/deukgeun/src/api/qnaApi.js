@@ -17,7 +17,7 @@ export const registerInquery = async (formValues) => {
 export const ListInquery = async () => {
   try {
     const res = await axios.get(`${prefix}/list`);
-    console.log("queryList", res);
+    console.log("queryList", res.data);
     return res.data;
   } catch (error) {
     console.error("Error fetching inquiries:", error);
@@ -27,8 +27,9 @@ export const ListInquery = async () => {
 
 export const updateInquiry = async (editedInquiry) => {
   try {
+    console.log("@@@editedInquiry", editedInquiry);
     const res = await axios.put(
-      `${prefix}/update/${editedInquiry.id}`,
+      `${prefix}/update/${editedInquiry.qnaId}`,
       editedInquiry
     );
     return res.data; // Assuming your API returns updated inquiry data
@@ -48,16 +49,22 @@ export const deleteInquiryApi = async (inquiryId) => {
   }
 };
 
-export const sendVerificationEmail = async (email, answer) => {
+export const sendRegiNotiEmail = async (inquiry) => {
   try {
-    const response = await axios.post(`${prefix}/sendResponseEmail`, {
-      userEmail: email,
-      answer: answer,
-    });
-    console.log("Email sent successfully:", response);
-    return response.data;
+    const res = await axios.post(`${prefix}/sendRegiEmail`, inquiry);
+    return res.data; // Assuming your API returns confirmation of deletion
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("Error sending regsitration email:", error);
+    throw error;
+  }
+};
+
+export const sendReplyNotiEmail = async (inquiry) => {
+  try {
+    const res = await axios.post(`${prefix}/sendReplyEmail`, inquiry);
+    return res.data; // Assuming your API returns confirmation of deletion
+  } catch (error) {
+    console.error("Error sending reply email:", error);
     throw error;
   }
 };

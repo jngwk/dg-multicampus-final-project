@@ -23,13 +23,11 @@ const CenterView = lazy(() => import("../pages/CenterView"));
 const ReviewForm = lazy(() => import("../test/ReviewForm"));
 const ReviewList = lazy(() => import("../test/ReviewList"));
 const MemberRegister = lazy(() => import("../pages/MemberRegister"));
-const TrainerUpdateForm = lazy(() => import("../test/TrainerUpdateForm"));
 const PtRegister = lazy(() => import("../pages/PtRegister"));
 const GymSet = lazy(() => import("../pages/GymSet"));
 const TrainerSet = lazy(() => import("../pages/TrainerSet"));
 const QnaList = lazy(() => import("../pages/QnaList"));
 const GymInfo = lazy(() => import("../pages/GymInfo"));
-const PtSessionRegister = lazy(() => import("../pages/PtSessionForm"));
 const TrainerList = lazy(() => import("../pages/TrainerList"));
 
 const root = createBrowserRouter([
@@ -105,7 +103,7 @@ const root = createBrowserRouter([
         element: <MemberList />,
       },
       {
-        path: "TrainerList",
+        path: "trainerList",
         element: <TrainerList />,
       },
       {
@@ -117,7 +115,7 @@ const root = createBrowserRouter([
         element: <CenterView />,
       },
       {
-        path: "ReviewForm",
+        path: "reviewForm",
         element: <ReviewForm />,
       },
       {
@@ -125,23 +123,19 @@ const root = createBrowserRouter([
         element: <MemberRegister />,
       },
       {
-        path: "TrainerUpdateForm",
-        element: <TrainerUpdateForm />,
-      },
-      {
-        path: "MemberRegister",
+        path: "memberRegister",
         element: <MemberRegister />,
       },
       {
-        path: "PtRegister",
+        path: "ptRegister",
         element: <PtRegister />,
       },
       {
-        path: "GymSet/:gymId",
+        path: "gymSet/:gymId",
         element: <GymSet />,
       },
       {
-        path: "trainerset",
+        path: "trainerUpdateForm",
         element: <TrainerSet />,
       },
       {
@@ -149,12 +143,8 @@ const root = createBrowserRouter([
         element: <QnaList />,
       },
       {
-        path: "GymInfo",
+        path: "gymInfo",
         element: <GymInfo />,
-      },
-      {
-        path: "PtSessionRegister",
-        element: <PtSessionRegister />,
       },
     ],
   },
