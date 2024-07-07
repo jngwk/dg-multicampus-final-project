@@ -100,7 +100,11 @@ public class ReviewService {
         List<Review> reviews = reviewRepository.findByGymId(gymId);
         return reviews.stream().map(review -> {
             List<ReviewImage> reviewImages = reviewImageRepository.findByReviewId(review.getId());
-            List<UserImage> userImage = userImageRepository.findByUserId(review.getUserId());
+            List<UserImage> userImageList = userImageRepository.findByUserId(review.getUserId());
+            UserImage userImage = null;
+            if (userImageList.size() > 0) {
+                userImage = userImageList.get(0);
+            }
             List<String> imageNames = reviewImages.stream()
                     .map(ReviewImage::getReviewImage)
                     .collect(Collectors.toList());
@@ -114,7 +118,7 @@ public class ReviewService {
                     .userName(review.getUserName())
                     .email(review.getEmail())
                     .images(imageNames)
-                    .userImage(userImage.get(0))
+                    .userImage(userImage)
                     .createdAt(review.getCreatedAt())
                     .build();
         }).collect(Collectors.toList());
