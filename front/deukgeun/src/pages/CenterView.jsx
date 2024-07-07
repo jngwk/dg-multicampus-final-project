@@ -323,11 +323,11 @@ const CenterView = () => {
                     <div>{gymData.phoneNumber}</div>
                   </div>
                 </div>
-                <div className="flex flex-row justify-end space-x-3 ">
+                <div className="flex flex-row justify-start space-x-3 ">
                   <div>
                     <Button
                       width="170px"
-                      label="문의하기"
+                      label="채팅문의"
                       height="50px"
                       className="hover:font-semibold bg-opacity-60"
                       onClick={() =>
@@ -337,14 +337,14 @@ const CenterView = () => {
                       }
                     ></Button>
                   </div>
-                  <div>
+                  {/* <div>
                     <Button
                       width="170px"
                       label="🎉 Event"
                       height="50px"
                       className="hover:font-semibold bg-opacity-60 border-"
                     ></Button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
