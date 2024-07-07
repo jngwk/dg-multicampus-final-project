@@ -1,10 +1,12 @@
 package com.dg.deukgeun.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +21,8 @@ import com.dg.deukgeun.dto.PageRequestDTO;
 import com.dg.deukgeun.dto.PageResponseDTO;
 import com.dg.deukgeun.dto.UserRole;
 import com.dg.deukgeun.dto.gym.GymDTO;
+import com.dg.deukgeun.dto.gym.GymImageDTO;
+import com.dg.deukgeun.dto.gym.GymResponseDTO;
 import com.dg.deukgeun.dto.gym.GymSignUpDTO;
 import com.dg.deukgeun.dto.user.ResponseDTO;
 import com.dg.deukgeun.entity.Gym;
@@ -47,6 +51,9 @@ public class GymService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private GymImageService gymImageService;
 
     public ResponseDTO<?> signUp(GymSignUpDTO dto) {
         String email = dto.getEmail();
@@ -207,4 +214,49 @@ public class GymService {
         return gymRepository.findByCrNumber(crNumber).isPresent();
 
     }
+
+    public List<GymResponseDTO> listWithFirstImage() {
+        List<Gym> gyms = gymRepository.findAll();
+        List<GymResponseDTO> gymResponseList = new ArrayList<>();
+
+        for (Gym gym : gyms) {
+            GymResponseDTO gymResponseDTO = new GymResponseDTO();
+            // gym 정보를 gymResponseDTO에 복사
+            BeanUtils.copyProperties(gym, gymResponseDTO);
+
+            // 첫 번째 이미지 가져오기
+            List<GymImageDTO> images = gymImageService.getByGymId(gym.getGymId());
+            if (!images.isEmpty()) {
+                List<String> imageNames = new ArrayList<>();
+                imageNames.add(images.get(0).getGymImage());
+                gymResponseDTO.setUploadFileName(imageNames);
+            }
+
+            gymResponseList.add(gymResponseDTO);
+        }
+
+        return gymResponseList;
+    }
+    public List<GymResponseDTO> searchGymsImageByLocation(String location) {
+        List<Gym> gyms = gymRepository.searchGymsByLocation(location);
+        List<GymResponseDTO> gymResponseList = new ArrayList<>();
+        for (Gym gym : gyms) {
+            GymResponseDTO gymResponseDTO = new GymResponseDTO();
+            // gym 정보를 gymResponseDTO에 복사
+            BeanUtils.copyProperties(gym, gymResponseDTO);
+
+            // 첫 번째 이미지 가져오기
+            List<GymImageDTO> images = gymImageService.getByGymId(gym.getGymId());
+            if (!images.isEmpty()) {
+                List<String> imageNames = new ArrayList<>();
+                imageNames.add(images.get(0).getGymImage());
+                gymResponseDTO.setUploadFileName(imageNames);
+            }
+
+            gymResponseList.add(gymResponseDTO);
+        }
+
+        return gymResponseList;
+    }
+
 }

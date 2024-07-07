@@ -123,6 +123,12 @@ public class GymController {
         return gymService.listWithPaging(pageRequestDTO);
     }
 
+    @GetMapping("/getGymList")
+    public List<GymResponseDTO> getGymList() {
+        List<GymResponseDTO> gymResponseList = gymService.listWithFirstImage();
+        return gymResponseList;
+    }
+    
     @GetMapping("/getList")
     public List<Gym> list() {
         List<Gym> list = gymService.list();
@@ -412,6 +418,12 @@ public class GymController {
             default:
                 return gymService.searchGyms(searchWord);
         }
+    }
+
+    @GetMapping("/LocationImage")
+    public List<GymResponseDTO> GetGymImageByLocation(@RequestParam(name = "location", required = false) String location) {
+        return gymService.searchGymsImageByLocation(location);
+
     }
 
     @GetMapping("/products/{gymId}")
