@@ -118,6 +118,7 @@ public class GymService {
         Optional<Gym> result = gymRepository.findById(gymId);
         Gym gym = result.orElseThrow();
         GymDTO dto = modelMapper.map(gym, GymDTO.class);
+        dto.setUserName(gym.getUser().getUserName());
         return dto;
     }
 
@@ -126,6 +127,7 @@ public class GymService {
         Optional<Gym> result = gymRepository.findByUser_UserId(userId);
         Gym gym = result.orElseThrow();
         GymDTO dto = modelMapper.map(gym, GymDTO.class);
+        dto.setUserName(gym.getUser().getUserName());
         return dto;
     }
 

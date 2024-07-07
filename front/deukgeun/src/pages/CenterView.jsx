@@ -217,37 +217,37 @@ const CenterView = () => {
             className="flex flex-row space-x-40 justify-center item-center mb-6 "
           >
             <button
-              className="text-2xl font-bold hover:border-grayish-red hover:border-b hover:text-peach-fuzz text-grayish-red "
+              className="text-2xl font-bold hover:text-peach-fuzz text-grayish-red "
               onClick={() => handleScrollToSection(infoRef)}
             >
               정보
             </button>
             <button
-              className="text-2xl font-bold hover:border-grayish-red hover:border-b hover:text-peach-fuzz text-grayish-red"
+              className="text-2xl font-bold hover:text-peach-fuzz text-grayish-red"
               onClick={() => handleScrollToSection(introduceRef)}
             >
               소개
             </button>
             <button
-              className="text-2xl font-bold hover:border-grayish-red hover:border-b hover:text-peach-fuzz text-grayish-red"
+              className="text-2xl font-bold hover:text-peach-fuzz text-grayish-red"
               onClick={() => handleScrollToSection(imgRef)}
             >
               시설
             </button>
             <button
-              className="text-2xl font-bold hover:border-grayish-red hover:border-b hover:text-peach-fuzz text-grayish-red"
+              className="text-2xl font-bold hover:text-peach-fuzz text-grayish-red"
               onClick={() => handleScrollToSection(priceRef)}
             >
               가격
             </button>
             <button
-              className="text-2xl font-bold hover:border-grayish-red hover:border-b hover:text-peach-fuzz text-grayish-red"
+              className="text-2xl font-bold hover:text-peach-fuzz text-grayish-red"
               onClick={() => handleScrollToSection(trainerRef)}
             >
               트레이너
             </button>
             <button
-              className="text-2xl font-bold hover:border-grayish-red hover:border-b hover:text-peach-fuzz text-grayish-red"
+              className="text-2xl font-bold hover:text-peach-fuzz text-grayish-red"
               onClick={() => handleScrollToSection(reviewRef)}
             >
               리뷰
@@ -323,11 +323,11 @@ const CenterView = () => {
                     <div>{gymData.phoneNumber}</div>
                   </div>
                 </div>
-                <div className="flex flex-row justify-end space-x-3 ">
+                <div className="flex flex-row justify-start space-x-3 ">
                   <div>
                     <Button
                       width="170px"
-                      label="문의하기"
+                      label="채팅문의"
                       height="50px"
                       className="hover:font-semibold bg-opacity-60"
                       onClick={() =>
@@ -337,14 +337,14 @@ const CenterView = () => {
                       }
                     ></Button>
                   </div>
-                  <div>
+                  {/* <div>
                     <Button
                       width="170px"
                       label="🎉 Event"
                       height="50px"
                       className="hover:font-semibold bg-opacity-60 border-"
                     ></Button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
