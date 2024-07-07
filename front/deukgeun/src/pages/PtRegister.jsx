@@ -114,7 +114,7 @@ const PtRegister = () => {
     if (filteredProductList.length > 0) {
       setSelectedProductName(
         location.state?.product?.productName ||
-        filteredProductList[0].productName
+          filteredProductList[0].productName
       );
       setSelectedProductPrice(
         location.state?.product?.price || filteredProductList[0].price
@@ -364,22 +364,24 @@ const PtRegister = () => {
 
   // 최종결제금액 표시 코드 수정
   const formatPrice = (price) => {
-    return price.toLocaleString('ko-KR'); // 원 단위로 표시하는 함수
+    return price.toLocaleString("ko-KR"); // 원 단위로 표시하는 함수
   };
 
   return (
     <>
-      <div className="flex flex-col items-center min-h-screen justify-center p-20">
-
-        <div className="flex flex-col items-center w-fit py-10 bg-white rounded-[55px] px-5">
-          <p className="font-semibold text-xl px-8 py-2 bg-yellow-500 bg-opacity-15 rounded-full">PT 등록</p>
+      <div className="flex flex-col items-center h-[86dvh]">
+        <div className="flex flex-col items-center w-fit py-10 bg-white rounded-lg shadow-md px-5">
+          <p className="font-semibold text-xl px-8 py-2 bg-yellow-500 bg-opacity-15 rounded-full">
+            PT 등록
+          </p>
           <div className="border-y-4 border-[#f7f5f2]  mt-4">
             <div className="flex flex-row justify-center items-center mt-3 relative ">
               <div
-                className={`m-10 ${isExpanded
-                  ? "w-[1700px] justify-center space-x-10 px-20 relative "
-                  : "w-[500px] justify-center"
-                  } h-[550px] flex items-center`}
+                className={`m-10 ${
+                  isExpanded
+                    ? "w-[1700px] justify-center space-x-10 px-20 relative "
+                    : "w-[500px] justify-center"
+                } h-[550px] flex items-center`}
               >
                 {/* <div
             className={`m-8 max-h-[590px] transition-max-height duration-500 overflow-hidden ${
@@ -388,13 +390,13 @@ const PtRegister = () => {
           > */}
                 <div className="flex flex-col items-start space-y-6 ">
                   <div className="flex justify-between space-x-7">
-                    <div className="x-[400px] space-y-7">
-                      <div className="flex flex-row items-center space-x-6 ">
-                        <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red">
+                    <div className="w-[380px] space-y-7">
+                      <div className="flex flex-row items-center justify-between space-x-6 ">
+                        <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red w-[86px]">
                           이름
                         </div>
                         <Input
-                          width="279px"
+                          // width="279px"
                           name="userName"
                           value={userData.userName}
                           readOnly={true}
@@ -402,13 +404,12 @@ const PtRegister = () => {
                       </div>
                       {/* 이메일 */}
 
-
-                      <div className="flex flex-row items-center space-x-6 ">
-                        <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red">
+                      <div className="flex flex-row items-center justify-between space-x-6 ">
+                        <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red w-[86px]">
                           이메일
                         </div>
                         <Input
-                          width="260px"
+                          // width="260px"
                           name="email"
                           value={userData.email}
                           readOnly={true}
@@ -423,7 +424,7 @@ const PtRegister = () => {
                 성별
               </label> */}
                         <div className="flex flex-row items-center space-x-5 ">
-                          <div className="text-lg pr-3 border-r-2 border-grayish-red">
+                          <div className="text-lg pr-3 border-grayish-red">
                             성별
                           </div>
 
@@ -432,8 +433,11 @@ const PtRegister = () => {
                               onFocus={handleGenderFocus}
                               onBlur={handleGenderBlur}
                               type="button"
-                              className={`h-11 py-3 px-4 w-[100px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${genderFocus ? "border-peach-fuzz" : "border-gray-400"
-                                } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                              className={`h-11 py-3 px-4 w-[100px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${
+                                genderFocus
+                                  ? "border-peach-fuzz"
+                                  : "border-gray-400"
+                              } focus:border-2 focus:outline-none text-sm peer my-2 `}
                               value={userGender}
                               onChange={handleChangeGender}
                             >
@@ -448,9 +452,7 @@ const PtRegister = () => {
                               )}
                             </div>
                           </div>
-
                         </div>
-
 
                         {/* 나이 */}
                         {/* <label
@@ -459,7 +461,7 @@ const PtRegister = () => {
                 나이
               </label> */}
                         <div className="flex flex-row items-center space-x-5 ">
-                          <div className="text-lg pr-3 border-r-2 border-grayish-red">
+                          <div className="text-lg pr-3 border-grayish-red">
                             나이
                           </div>
                           <div className="relative">
@@ -467,8 +469,11 @@ const PtRegister = () => {
                               onFocus={handleAgeFocus}
                               onBlur={handleAgeBlur}
                               type="button"
-                              className={`h-11 py-3 px-4 w-[100px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm  ${ageFocus ? "border-peach-fuzz" : "border-gray-400"
-                                } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                              className={`h-11 py-3 px-4 w-[100px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm  ${
+                                ageFocus
+                                  ? "border-peach-fuzz"
+                                  : "border-gray-400"
+                              } focus:border-2 focus:outline-none text-sm peer my-2 `}
                               value={userAge}
                               onChange={handleChangeAge}
                             >
@@ -486,12 +491,12 @@ const PtRegister = () => {
                       </div>
                       {/* 주소 */}
 
-                      <div className="flex flex-row items-center space-x-6 ">
-                        <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red">
+                      <div className="flex flex-row items-center justify-between space-x-6 ">
+                        <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red w-[86px]">
                           주소
                         </div>
                         <Input
-                          width="278px"
+                          // width="278px"
                           name="address"
                           value={userData.address}
                           onChange={handleUserDataChange}
@@ -502,12 +507,12 @@ const PtRegister = () => {
                         />
                       </div>
 
-                      <div className="flex flex-row items-center space-x-6 ">
-                        <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red">
+                      <div className="flex flex-row items-center justify-between space-x-6 ">
+                        <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red w-[86px]">
                           상세주소
                         </div>
                         <Input
-                          width="243px"
+                          // width="243px"
                           name="detailAddress"
                           value={userData.detailAddress}
                           onChange={handleUserDataChange}
@@ -516,13 +521,12 @@ const PtRegister = () => {
                     </div>
                     {isExpanded && (
                       <div className="flex flex-col items-start space-y-7 ">
-
                         {/* 신청사유 */}
 
                         <div className="flex flex-row items-center space-x-5">
                           <div className="relative">
-                            <div className="flex flex-row items-center space-x-6 ">
-                              <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red">
+                            <div className="flex flex-row items-center justify-between space-x-6 w-[380px]">
+                              <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red w-[86px]">
                                 신청사유
                               </div>
                               {/* <label
@@ -534,10 +538,11 @@ const PtRegister = () => {
                                 onFocus={handleMemberReasonFocus}
                                 onBlur={handleMemberReasonBlur}
                                 type="button"
-                                className={`h-11 py-3 px-4 w-[263px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userMemberReasonFocus
-                                  ? "border-peach-fuzz"
-                                  : "border-gray-400"
-                                  } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                                className={`h-11 py-3 px-4 w-[240px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
+                                  userMemberReasonFocus
+                                    ? "border-peach-fuzz"
+                                    : "border-gray-400"
+                                } focus:border-2 focus:outline-none text-sm peer my-2 `}
                                 value={userMemberReason}
                                 onChange={handleChangeMemberReason}
                               >
@@ -556,12 +561,11 @@ const PtRegister = () => {
                               </div>
                             </div>
                           </div>
-
                         </div>
                         <div className="relative">
-                          <div className="flex flex-row items-center space-x-6 ">
-                            <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red">
-                              운동경력 (선택)
+                          <div className="flex flex-row items-center justify-between w-[380px] space-x-6 ">
+                            <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red w-[86px]">
+                              운동경력
                             </div>
                             {/* 운동경력(선택) */}
                             {/* <label
@@ -574,10 +578,11 @@ const PtRegister = () => {
                               onFocus={handleWorkoutDurationFocus}
                               onBlur={handleWorkoutDurationBlur}
                               type="button"
-                              className={`h-11 py-3 px-4 w-[209px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userWorkoutDurationFocus
-                                ? "border-peach-fuzz"
-                                : "border-gray-400"
-                                } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                              className={`h-11 py-3 px-4 w-[240px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
+                                userWorkoutDurationFocus
+                                  ? "border-peach-fuzz"
+                                  : "border-gray-400"
+                              } focus:border-2 focus:outline-none text-sm peer my-2 `}
                               value={userWorkoutDuration}
                               onChange={handleChangeWorkoutDuration}
                             >
@@ -595,8 +600,8 @@ const PtRegister = () => {
                         <div className="flex flex-row items-center space-x-5 ">
                           {/* 상품 */}
                           <div className="dropdown relative">
-                            <div className="flex flex-row items-center space-x-6 my-2 ">
-                              <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red">
+                            <div className="flex flex-row items-center justify-between w-[380px] space-x-6 my-2 ">
+                              <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red w-[86px]">
                                 상품이름
                               </div>
                               {/* <label
@@ -606,38 +611,37 @@ const PtRegister = () => {
                 </label> */}
                               <button
                                 onClick={toggleDropdown}
-                                className="w-[263px] h-11 flex justify-between items-center border border-gray-400 rounded-lg p-2 "
+                                className="w-[240px] h-11 flex justify-between items-center border border-gray-400 rounded-lg p-2 "
                               >
                                 {selectedProductName}
                                 <BsChevronDown />
                               </button>
                               {isDropdownOpen && (
-                        <ul className="absolute w-full border border-gray-400 rounded-lg list-none z-10 bg-white">
-                          {gym.productList
-                            .filter((product) => product.status !== false)
-                            .sort((a, b) => a.days - b.days)
-                            .map((product) => (
-                              <li
-                                key={product.productId}
-                                className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
-                                onClick={() =>
-                                  onClickPeriod(product)
-                                }
-                              >
-                                {product.productName}
-                              </li>
-                            ))}
-                        </ul>
-                      )}
+                                <ul className="absolute w-full border border-gray-400 rounded-lg list-none z-10 bg-white">
+                                  {gym.productList
+                                    .filter(
+                                      (product) => product.status !== false
+                                    )
+                                    .sort((a, b) => a.days - b.days)
+                                    .map((product) => (
+                                      <li
+                                        key={product.productId}
+                                        className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
+                                        onClick={() => onClickPeriod(product)}
+                                      >
+                                        {product.productName}
+                                      </li>
+                                    ))}
+                                </ul>
+                              )}
                             </div>
                           </div>
                         </div>
 
-
                         {/* 트레이너 */}
                         <div className="dropdown relative">
-                          <div className="flex flex-row items-center space-x-6 my-2 ">
-                            <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red">
+                          <div className="flex flex-row items-center justify-between w-[380px] space-x-6 my-2 ">
+                            <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red w-[86px]">
                               트레이너
                             </div>
                             {/* <label
@@ -647,7 +651,7 @@ const PtRegister = () => {
                             </label> */}
                             <button
                               onClick={toggleTrainerDropdown}
-                              className=" h-11 w-[262px] flex text-sm justify-between items-center border border-gray-400 rounded-lg px-4 py-3"
+                              className=" h-11 w-[240px] flex text-sm justify-between items-center border border-gray-400 rounded-lg px-4 py-3"
                             >
                               {selectedTrainer}
                               <BsChevronDown />
@@ -660,7 +664,9 @@ const PtRegister = () => {
                                     className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
                                     onClick={() =>
                                       onClickTrainer({
-                                        target: { value: trainer.user.userName },
+                                        target: {
+                                          value: trainer.user.userName,
+                                        },
                                       })
                                     }
                                   >
@@ -676,7 +682,7 @@ const PtRegister = () => {
                           {/* 등록일 만료일 */}
                           <div className="flex flex-row items-center space-x-2 ">
                             <div className="flex items-center my-2">
-                              <div className="text-lg pr-3 mr-8 border-r-2 border-grayish-red">
+                              <div className="text-lg pr-3 mr-8 border-r-2 border-grayish-red w-[86px]">
                                 기간
                               </div>
 
@@ -712,7 +718,9 @@ const PtRegister = () => {
                               <div className="text-base font-semibold">
                                 상품명
                               </div>
-                              <div className="text-base">{selectedProductName}</div>
+                              <div className="text-base">
+                                {selectedProductName}
+                              </div>
                             </div>
                             {/* @@@@@@@@@상품 가격 표시 */}
                             {/* @@@@@@@@@상품 가격 표시 */}
@@ -722,22 +730,23 @@ const PtRegister = () => {
                               <div className="text-xl font-semibold">
                                 최종결제금액
                               </div>
-                              <div className="text-lg">{formatPrice(selectedProductPrice)}원</div>
+                              <div className="text-lg">
+                                {formatPrice(selectedProductPrice)}원
+                              </div>
                             </div>
                           </div>
-                          <div className="ml-3">
+                          <div className="ml-3 mt-4 ">
                             <button
                               onClick={handleSubmit}
                               className="flex items-center text-lg text-grayish-red  hover:font-semibold "
                             >
-                              <div className="mb-4 text-3xl">💳</div> 결제하기
+                              <div className="text-3xl">💳 </div>
+                              <span>결제하기</span>
                             </button>
                           </div>
                         </div>
                       </div>
-
                     )}
-
 
                     {/* PT시간 */}
                     {/* <div className="flex">
@@ -769,11 +778,8 @@ const PtRegister = () => {
                       </div>
                     </div>
                   </div> */}
-
-
                   </div>
                 </div>
-
               </div>
               {!isExpanded && (
                 <button onClick={toggleExpand}>
@@ -781,9 +787,7 @@ const PtRegister = () => {
                 </button>
               )}
             </div>
-
           </div>
-
         </div>
       </div>
       {isAddressModalVisible && (
