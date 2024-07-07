@@ -501,7 +501,15 @@ const PtRegister = () => {
                           value={userData.address}
                           onChange={handleUserDataChange}
                           readOnly={true}
-                          feature="검색"
+                          feature={
+                            <div className="-translate-y-1">
+                              <box-icon
+                                name="search"
+                                color="#bdbdbd"
+                                size="s"
+                              ></box-icon>
+                            </div>
+                          }
                           featureOnClick={() => setIsAddressModalVisible(true)}
                           featureEnableOnLoad={true}
                         />
