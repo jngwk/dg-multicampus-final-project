@@ -142,8 +142,8 @@ const ReviewEditModal = ({ toggleModal, gymId, review, onUpdateReview, onReviewU
 
     return (
         <ModalLayout toggleModal={toggleModal}>
-            <form onSubmit={handleSubmit}>
-                <div className="flex flex-col h-96">
+            <form onSubmit={handleSubmit} >
+                <div className="flex flex-col h-fit">
                     <div className="flex flex-col gap-1 justify-center items-center">
                         <div className="mb-2 font-semibold text-xl">
                             리뷰 수정
@@ -187,7 +187,17 @@ const ReviewEditModal = ({ toggleModal, gymId, review, onUpdateReview, onReviewU
                         </label>
                     </div>
                     <div>
-                        <div className="mt-2 flex flex-wrap">
+                        <label className="w-[400px] h-[40px] pl-2 flex text-sm items-center cursor-pointer">
+                            <IoMdPhotos className="w-7 h-7 px-1 "  color="#9f8d8d"  />
+                            이미지 추가
+                            <input
+                                type="file"
+                                className="hidden"
+                                onChange={handleImageChange}
+                                multiple
+                            />
+                        </label>
+                        <div className="mt-2 grid grid-cols-4 ">
                             {previewImages.map((image, index) => (
                                 <div key={index} className="relative">
                                     <img
@@ -205,16 +215,6 @@ const ReviewEditModal = ({ toggleModal, gymId, review, onUpdateReview, onReviewU
                                 </div>
                             ))}
                         </div>
-                        <label className="w-[400px] h-[40px] pl-2 flex text-sm items-center cursor-pointer">
-                            <IoMdPhotos className="w-7 h-7 px-1" />
-                            이미지 추가
-                            <input
-                                type="file"
-                                className="hidden"
-                                onChange={handleImageChange}
-                                multiple
-                            />
-                        </label>
                         <Button label="수정" width="100px" className="float-right mt-2" type="submit" />
                     </div>
                 </div>

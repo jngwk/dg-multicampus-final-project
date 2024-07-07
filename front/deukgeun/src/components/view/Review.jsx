@@ -137,7 +137,7 @@ const ReviewContent = ({
               className={classNames(
                 "sticky-note",
                 colorClass,
-                "w-64 h-64 p-6 m-4 shadow-lg transform rotate-2 transition duration-300 ease-in-out hover:rotate-0 hover:scale-105 relative"
+                "w-80 h-80 p-6 m-4 shadow-lg transform rotate-2 transition duration-300 ease-in-out hover:rotate-0 hover:scale-105 relative"
               )}
             >
               <BsPinAngle className="absolute -top-3 -left-3 text-gray-700 text-2xl" />
@@ -166,7 +166,7 @@ const ReviewContent = ({
                 <div className="mb-2">{renderStars(item.rating)}</div>
               </div>
 
-              <p className="text-sm mb-2 h-20 overflow-y-auto">
+              <p className="text-sm mb-3 h-24 overflow-y-auto scrollbar-hide">
                 {item.comment}
               </p>
               {item.images && item.images.length > 0 && (
@@ -179,7 +179,7 @@ const ReviewContent = ({
                     key={idx}
                     src={`/images/${image}`}
                     alt={`Review Image ${idx}`}
-                    className="w-auto h-24 object-cover rounded-lg border-gray-200 border-2 cursor-pointer"
+                    className="w-auto h-24 object-cover rounded-lg  cursor-pointer"
                     onClick={() => handleImageClick(image)}
                   />
                 ))}
