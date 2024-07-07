@@ -61,16 +61,20 @@ const TrainerInfo = ({ trainers }) => {
 
   const [openIndex, setOpenIndex] = useState(-1);
   const [selectedImage, setSelectedImage] = useState(
-    trainers[0]?.trainerImage || ""
+    (trainers?.length > 0 && trainers[0]?.trainerImage) || ""
   );
 
   const toggleOpen = (index) => {
     if (openIndex === index) {
       setOpenIndex(-1);
-      setSelectedImage(trainers[0]?.trainerImage || ""); // 첫번째 트레이너 사진으로 되돌리기
+      setSelectedImage(
+        (trainers.length > 0 && trainers[0]?.trainerImage) || ""
+      ); // 첫번째 트레이너 사진으로 되돌리기
     } else {
       setOpenIndex(index);
-      setSelectedImage(trainers[index]?.trainerImage || ""); // 선택된 트레이너 이미지로 변경
+      setSelectedImage(
+        (trainers.length > 0 && trainers[index]?.trainerImage) || ""
+      ); // 선택된 트레이너 이미지로 변경
     }
   };
 
