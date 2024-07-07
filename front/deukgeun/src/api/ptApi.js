@@ -1,10 +1,10 @@
 import axios from "axios";
 
-export const API_SERVER_HOST = 'http://localhost:8282';
-const PtPrefix = `${API_SERVER_HOST}/api/personalTraining`;
-const PtSessionPrefix = `${API_SERVER_HOST}/api/ptSession`;
-// const PtPrefix = `/api/personalTraining`; // proxy 사용
-// const PtSessionPrefix = `/api/ptSession`; // proxy 사용
+// export const API_SERVER_HOST = 'http://localhost:8282';
+// const PtPrefix = `${API_SERVER_HOST}/api/personalTraining`;
+// const PtSessionPrefix = `${API_SERVER_HOST}/api/ptSession`;
+const PtPrefix = `/api/personalTraining`; // proxy 사용
+const PtSessionPrefix = `/api/ptSession`; // proxy 사용
 
 export const registerPT = async (PTData) => {
   try {
