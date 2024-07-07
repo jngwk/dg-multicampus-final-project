@@ -44,7 +44,7 @@ function SignUpTrainerModal({ toggleModal }) {
     setCode(e.target.value);
     if (e.target.value == "") {
       setIsCodeVerified(null);
-    } else if (code && !validateCode(e.target.value)) {
+    } else if (e.target.value && !validateCode(e.target.value)) {
       setIsCodeVerified(false);
     } else {
       setIsCodeVerified(true);
