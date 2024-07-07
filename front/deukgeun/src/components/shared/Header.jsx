@@ -145,7 +145,7 @@ export default function Header() {
                   ></box-icon>
                 )}
               </div>
-              <div ref={dropdown} className="absolute right-0 top-10">
+              <div ref={dropdown} className="absolute right-0 top-14">
                 {isProfileDropdownVisible ? (
                   <ProfileDropdown type="user" userData={userData} />
                 ) : (
