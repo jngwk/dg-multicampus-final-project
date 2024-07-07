@@ -122,7 +122,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/reviews/reviewList/**", "/api/ptSession/**", "/api/gym/products/**",
                                 "/api/gym/trainers/**")
                         .permitAll()
-                        .requestMatchers("/api/trainer/update/**", "/api/ptSession/**")
+                        .requestMatchers("/api/trainer/update/**", "/api/trainer/update", "/api/ptSession/**")
                         .hasAuthority("ROLE_TRAINER") // 트레이너만 가능
                         .requestMatchers("/api/workoutSession/**",
                                 "/api/workout/**")
