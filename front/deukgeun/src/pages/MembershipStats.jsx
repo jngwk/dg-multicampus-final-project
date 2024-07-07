@@ -9,10 +9,10 @@ import { getMembershipStats } from "../api/membershipApi";
 import { getPtSession } from "../api/ptApi";
 import Fallback from "../components/shared/Fallback";
 import AlertModal from "../components/modals/AlertModal";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 
 const MembershipStats = () => {
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
   const [filterToggle, setFilterToggle] = useState(false);
   const [stats, setStats] = useState([]);
   const [filterType, setFilterType] = useState("전체");
@@ -24,7 +24,6 @@ const MembershipStats = () => {
   const [maxPtDate, setMaxPtDate] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-
 
   const today = new Date();
   const currentYear = getYear(today).toString();
@@ -44,7 +43,7 @@ const MembershipStats = () => {
   const [zoomWeek, setZoomWeek] = useState(null);
   const [chartInstance, setChartInstance] = useState(null);
   const [zoomEnabled, setZoomEnabled] = useState(false);
-  const [panEnabled, setPanEnabled] = useState(false);
+  const [panEnabled, setPanEnabled] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,7 +88,7 @@ const MembershipStats = () => {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-        setModalMessage("데이터를 불러오는 데 실패했습니다. 다시 시도해 주세요.");
+        setModalMessage("수집한 회원 데이터가 부족합니다.");
         setShowModal(true);
       } finally {
         setLoading(false);
@@ -218,8 +217,8 @@ const MembershipStats = () => {
     setZoomEnabled((prev) => !prev);
     if (chartInstance) {
       chartInstance.options.plugins.zoom.zoom.wheel.enabled = !zoomEnabled;
-      chartInstance.options.plugins.zoom.pan.enabled = panEnabled; // Ensure pan state is maintained
-      chartInstance.update("none"); // Use 'none' to prevent animation/reset
+      chartInstance.options.plugins.zoom.pan.enabled = panEnabled;
+      chartInstance.update("none");
     }
   };
 
@@ -227,8 +226,8 @@ const MembershipStats = () => {
     setPanEnabled((prev) => !prev);
     if (chartInstance) {
       chartInstance.options.plugins.zoom.pan.enabled = !panEnabled;
-      chartInstance.options.plugins.zoom.zoom.wheel.enabled = zoomEnabled; // Ensure zoom state is maintained
-      chartInstance.update("none"); // Use 'none' to prevent animation/reset
+      chartInstance.options.plugins.zoom.zoom.wheel.enabled = zoomEnabled;
+      chartInstance.update("none");
     }
   };
 
@@ -263,7 +262,36 @@ const MembershipStats = () => {
       setPtStart(formatDate(newStart));
       setPtEnd(formatDate(newEnd));
 
-      // 년, 월, 주 선택 업데이트
+      const newYear = newStart.getFullYear().toString();
+      const newMonth = (newStart.getMonth() + 1).toString();
+      const newWeek = Math.ceil((newStart.getDate() + newStart.getDay()) / 7).toString();
+
+      setSelectedYear(newYear);
+      setSelectedMonth(newMonth);
+      setSelectedWeek(newWeek);
+    }
+  };
+
+  const handleZoomToPreviousWeek = () => {
+    let newStart, newEnd;
+
+    if (zoomWeek) {
+      newStart = new Date(zoomWeek.start);
+      newStart.setDate(newStart.getDate() - 7);
+    } else {
+      newStart = new Date(maxPtDate);
+      newStart.setDate(newStart.getDate() - 7);
+    }
+    newEnd = new Date(newStart);
+    newEnd.setDate(newStart.getDate() + 6);
+
+    if (newStart < new Date(minPtDate)) {
+      resetZoom();
+    } else {
+      setZoomWeek({ start: formatDate(newStart), end: formatDate(newEnd) });
+      setPtStart(formatDate(newStart));
+      setPtEnd(formatDate(newEnd));
+
       const newYear = newStart.getFullYear().toString();
       const newMonth = (newStart.getMonth() + 1).toString();
       const newWeek = Math.ceil((newStart.getDate() + newStart.getDay()) / 7).toString();
@@ -314,7 +342,7 @@ const MembershipStats = () => {
         line1={modalMessage}
         button2={{
           label: "확인",
-          onClick: () => navigate(-1), // Go back to the previous page
+          onClick: () => navigate(-1),
         }}
       />
     );
@@ -336,7 +364,7 @@ const MembershipStats = () => {
                 className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors duration-200 focus:outline-none"
                 aria-label={filterToggle ? "필터 숨기기" : "필터 보이기"}
               >
-                <span className="text-xl">{filterToggle ? "▼" : "▲"}</span>
+                <span className="text-xl">{filterToggle ? "▲" : "▼"}</span>
               </button>
             </div>
             {filterToggle && (
@@ -465,6 +493,12 @@ const MembershipStats = () => {
                       줌 초기화
                     </button>
                     <button
+                      onClick={handleZoomToPreviousWeek}
+                      className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 hover:bg-purple-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                    >
+                      저번 주
+                    </button>
+                    <button
                       onClick={handleZoomToNextWeek}
                       className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 hover:bg-purple-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
                     >
@@ -494,6 +528,7 @@ const MembershipStats = () => {
             ptStart={zoomWeek ? zoomWeek.start : ptStart}
             ptEnd={zoomWeek ? zoomWeek.end : ptEnd}
             onZoomToNextWeek={handleZoomToNextWeek}
+            onZoomToPreviousWeek={handleZoomToPreviousWeek}
             isZoomEnabled={zoomEnabled}
             isPanEnabled={panEnabled}
             toggleZoom={toggleZoom}
