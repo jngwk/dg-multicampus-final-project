@@ -65,6 +65,7 @@ const TrainerInfo = ({ trainers }) => {
   );
 
   const toggleOpen = (index) => {
+    console.log(trainers[index]);
     if (openIndex === index) {
       setOpenIndex(-1);
       setSelectedImage(
@@ -79,7 +80,7 @@ const TrainerInfo = ({ trainers }) => {
   };
 
   return (
-    <div>
+    <div className="w-full">
       {/* 트레이너 소개 헤더 */}
       <div className="mb-10">
         <div className="flex flex-col items-center  text-center mb-2 font-semibold text-2xl">
@@ -90,14 +91,14 @@ const TrainerInfo = ({ trainers }) => {
 
       {/* 트레이너 정보 내용 */}
 
-      <div className="w-full h-full flex justify-center items-center">
+      <div className="w-full h-full flex justify-evenly items-center">
         {trainers?.length > 0 ? (
           <>
-            <div className="w-1/2 flex justify-center">
+            <div className="flex justify-evenly">
               {selectedImage ? (
                 <img
-                  className="w-2/4 h-3/4 rounded-lg object-cover shadow-lg "
-                  src={selectedImage}
+                  className="w-[400px] h-[500px] rounded-lg object-cover shadow-lg "
+                  src={`/images/${selectedImage}`}
                   alt="Profile"
                 />
               ) : (
@@ -107,7 +108,7 @@ const TrainerInfo = ({ trainers }) => {
                 </div>
               )}
             </div>
-            <div className=" w-2/3 h-[400px] flex flex-col items-start justify-center">
+            <div className=" w-1/2 h-fit flex flex-col items-start justify-center">
               <ul
                 className={`w-3/4 overflow-hidden overflow-y-auto scrollbar-hide border-t-light-black border-t-2 border-opacity-40 `}
               >
