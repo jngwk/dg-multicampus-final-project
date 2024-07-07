@@ -229,7 +229,7 @@ const CenterView = () => {
         <div className="flex flex-col min-h-screen">
           <div
             ref={menuRef}
-            className="flex flex-row space-x-40 justify-center item-center mb-6 "
+            className="sticky top-0 flex flex-row space-x-40 justify-center item-center bg-floral-white h-20 z-30"
           >
             <button
               className="text-2xl font-bold hover:text-peach-fuzz text-grayish-red "
