@@ -8,6 +8,7 @@ import Fallback from "../shared/Fallback";
 import { IoMdPhotos } from "react-icons/io";
 import { FaTimes } from "react-icons/fa";
 
+
 const ReviewEditModal = ({ toggleModal, gymId, review, onUpdateReview, onReviewUpdated }) => {
     const { userData, loading } = useAuth();
     const [formValues, setFormValues] = useState({
@@ -25,6 +26,8 @@ const ReviewEditModal = ({ toggleModal, gymId, review, onUpdateReview, onReviewU
     );
     const [imagesToDelete, setImagesToDelete] = useState([]);
     const [isUpdated, setIsUpdated] = useState(false);
+
+
 
     const fetchUpdatedReview = useCallback(async () => {
         // TODO: 여기에 업데이트된 리뷰를 가져오는 API 호출을 추가합니다.
@@ -125,6 +128,17 @@ const ReviewEditModal = ({ toggleModal, gymId, review, onUpdateReview, onReviewU
     if (loading) {
         return <Fallback />;
     }
+
+    const handleWheel = (e) => {
+        const container = e.currentTarget;
+        const delta = e.deltaY || e.detail || e.wheelDelta;
+      
+        // Adjust scroll speed and direction as needed
+        const scrollSpeed = 0.5;
+        container.scrollLeft += delta * scrollSpeed;
+      
+        e.preventDefault();
+      };
 
     return (
         <ModalLayout toggleModal={toggleModal}>

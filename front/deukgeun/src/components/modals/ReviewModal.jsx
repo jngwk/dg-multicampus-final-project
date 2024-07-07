@@ -96,6 +96,16 @@ const ReviewModal = ({ toggleModal, gymId, onReviewAdded }) => {
         }
     };
 
+    const handleWheel = (e) => {
+        const container = e.currentTarget;
+        const delta = e.deltaY || e.detail || e.wheelDelta;
+      
+        const scrollSpeed = 0.5;
+        container.scrollLeft += delta * scrollSpeed;
+      
+        e.preventDefault();
+      };
+
     if (loading) {
         return <Fallback />;
     }
@@ -147,6 +157,22 @@ const ReviewModal = ({ toggleModal, gymId, onReviewAdded }) => {
                         </label>
                     </div>
                     <div>
+                    <div className="mt-2 flex w-96 overflow-x-auto scrollbar-hide"
+                    onWheel={handleWheel}>
+                        {previewImages.map((src, index) => (
+                            <div key={index} className="relative flex-shrink-0 mr-2 mb-2">
+                                <img src={src} alt={`Preview ${index}`} className="w-24 h-24 object-cover rounded-lg border-gray-200 border-2 cursor-pointer" />
+                                <button
+                                    type="button"
+                                    className="absolute bottom-0 right-0 bg-black text-white rounded-full w-6 h-6 flex items-center justify-center"
+                                    onClick={() => handleImageRemove(index)}
+                                    style={{ zIndex: 10 }}
+                                >
+                                    <FaTimes />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
                         <label className="w-[400px] h-[40px] pl-2 flex text-sm items-center cursor-pointer">
                             <IoMdPhotos className="w-7 h-7 px-1" />
                             이미지 넣기
@@ -159,20 +185,7 @@ const ReviewModal = ({ toggleModal, gymId, onReviewAdded }) => {
                         </label>
                         <Button label="작성" width="100px" className="float-right" type="submit" />
                     </div>
-                    <div className="mt-2 flex flex-wrap">
-                        {previewImages.map((src, index) => (
-                            <div key={index} className="relative">
-                                <img src={src} alt={`Preview ${index}`} className="w-24 h-24 object-cover m-1" />
-                                <button
-                                    type="button"
-                                    className="absolute top-0 right-0 bg-black text-white rounded-full w-6 h-6 flex items-center justify-center"
-                                    onClick={() => handleImageRemove(index)}
-                                >
-                                    <FaTimes />
-                                </button>
-                            </div>
-                        ))}
-                    </div>
+                    
                 </div>
             </form>
         </ModalLayout>

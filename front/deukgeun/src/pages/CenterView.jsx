@@ -280,7 +280,8 @@ const CenterView = () => {
               </div>
               {/* text 정보 */}
               <div className=" relative flex flex-col space-y-7 box-border justify-center items w-1/2 p-14">
-                <p className="text-6xl font-semibold mb-10 w-fit rounded-2xl border-b-8 border-peach-fuzz border-opacity-40 p-4">
+                <p className="text-6xl font-semibold mb-10 w-fit rounded-2xl underline-offset-8 p-4"
+                style={{ textDecoration: 'underline', textDecorationStyle: 'wavy', textDecorationColor: 'rgba(254, 135, 66, 0.4)' }}>
                   {gymData.user.userName}
                 </p>
                 <div className="flex flex-row">

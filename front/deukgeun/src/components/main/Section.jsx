@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, {useState, useEffect} from "react";
+import { Map, MapMarker } from "react-kakao-maps-sdk";
 import Button from "../shared/Button";
 import underline from "../../assets/curved-underline.png";
 import orangeUnderline from "../../assets/curved-underline-orange.png";
@@ -14,6 +15,15 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import ChartDemo from "../ChartDemo";
+import { getGymResList, getGymResListByLocation } from "../../api/gymApi";
+import { useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import healthImage1 from "../../assets/healthImage1.jpg"
+
+import healthImage2 from "../../assets/healthImage2.jpg";
+import healthImage3 from "../../assets/healthImage3.jpg";
+import healthImage4 from "../../assets/healthImage4.jpg";
+import healthImage5 from "../../assets/healthImage5.jpg";
 // import calendarDemo from "../../assets/calendar-demo.webp";
 
 const getInitialEvents = () => {
@@ -71,10 +81,86 @@ const getInitialEvents = () => {
   ];
 };
 
+
+const { kakao } = window;
 //  TODO snap scroll 안됨
 const Section = ({}) => {
+  const { userData } = useAuth();
   const customNavigate = useCustomNavigate();
   const { toggleLoginModal } = useLoginModalContext();
+  const [gyms, setGyms] = useState([]);
+  const [locGyms, setLocGyms] = useState([]);
+  const [state, setState] = useState({
+    center: {
+      lat: 37.5033532547808,
+      lng: 127.049875769645,
+    },
+    errMsg: null,
+    isLoading: true,
+  });
+  const location = useLocation();
+  const [filter, setFilter] = useState(
+    location.state ? location.state.filter : "general"
+  );
+  const [userLocation, setUserLocation] = useState(
+    sessionStorage.getItem("isLoggedIn") && userData
+      ? userData.address.split(" ")[0] + " " + userData.address.split(" ")[1]
+      : ""
+  );
+  const [map, setMap] = useState();
+  const [useCurrentLoc, setUseCurrentLoc] = useState(false);
+  const [coords, setCoords] = useState([]);
+
+  useEffect(() => {
+    const fetchGyms = async () => {
+      try {
+        const gymData = await getGymResList();
+        console.log("파트너 헬스장 리스트: ", gymData);
+        setGyms(gymData);
+      } catch (error) {
+        console.error("Error fetching gym list:", error);
+      }
+    };
+
+    fetchGyms();
+  }, []);
+  
+
+  useEffect(() => {
+    const fetchLocGyms = async () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            
+            // 좌표를 주소로 변환
+            const geocoder = new kakao.maps.services.Geocoder();
+            geocoder.coord2Address(longitude, latitude, async (result, status) => {
+              if (status === kakao.maps.services.Status.OK) {
+                const addr = result[0].address.region_1depth_name + " " + result[0].address.region_2depth_name;
+                setUserLocation(addr);
+                
+                // 변환된 주소로 근처 헬스장 정보 가져오기
+                try {
+                  const gymData = await getGymResListByLocation(addr);
+                  setLocGyms(gymData);
+                  console.log("주변 헬스장 리스트:", gymData);
+                } catch (error) {
+                  console.error("Error fetching nearby gyms:", error);
+                }
+              }
+            });
+          },
+          (err) => {
+            console.error("Error getting current position:", err);
+          }
+        );
+      }
+    };
+
+    fetchLocGyms();
+  }, []);
+
   const [events, setEvents] = useState(getInitialEvents());
 
   const handleEventDrop = (info) => {
@@ -142,24 +228,48 @@ const Section = ({}) => {
             // prevArrow={<CustomPrevArrow />}
             // nextArrow={<CustomNextArrow />}
           >
-            <div className="bg-black h-[400px]">
-              <h3>1</h3>
+            {locGyms.map((locGym, index) => (
+              <div key={locGym.gymId || index}>
+                <img
+                  src={locGym.uploadFileName && locGym.uploadFileName.length > 0 
+                    ? `/images/${locGym.uploadFileName[0]}` 
+                    : "/path/to/default-image.jpg"}
+                  alt={`${locGym.gymName || 'Gym'} image`}
+                  className="border bg-gray-300 h-[400px] object-cover"
+                />
+              </div>
+            ))}
+            {/* <div>
+            <img
+            className="rounded-lg object-cover shadow-lg w-[495] h-[400]"
+            src={healthImage1}
+          />
             </div>
-            <div className="bg-black h-[400px]">
-              <h3>2</h3>
+            <div>
+            <img
+            className="rounded-lg object-cover shadow-lg w-[495] h-[400] "
+            src={healthImage2}
+          />
             </div>
-            <div className="bg-black h-[400px]">
-              <h3>3</h3>
+            <div>
+            <img
+            className="rounded-lg object-cover shadow-lg w-[495] h-[400]"
+            src={healthImage3}
+          />
             </div>
-            <div className="bg-black h-[400px]">
-              <h3>4</h3>
+            <div>
+            <img
+            className="=rounded-lg object-cover shadow-lg w-[495] h-[400] "
+            src={healthImage4}
+          />
             </div>
-            <div className="bg-black h-[400px]">
-              <h3>5</h3>
-            </div>
-            <div className="bg-black h-[400px]">
-              <h3>6</h3>
-            </div>
+            <div>
+            <img
+            className="rounded-lg object-cover shadow-lg w-[495] h-[400]"
+            src={healthImage5}
+          />
+            </div> */}
+            
           </Slider>
         </div>
       </div>
@@ -331,48 +441,17 @@ const Section = ({}) => {
             // prevArrow={<CustomPrevArrow />}
             // nextArrow={<CustomNextArrow />}
           >
-            <div>
-              <img
-                src=""
-                alt="image1"
-                className="border bg-gray-300 rounded-full h-[340px]"
-              />
-            </div>
-            <div>
-              <img
-                src=""
-                alt="image1"
-                className="border bg-gray-300 rounded-full h-[340px]"
-              />
-            </div>
-            <div>
-              <img
-                src=""
-                alt="image1"
-                className="border bg-gray-300 rounded-full h-[340px]"
-              />
-            </div>
-            <div>
-              <img
-                src=""
-                alt="image1"
-                className="border bg-gray-300 rounded-full h-[340px]"
-              />
-            </div>
-            <div>
-              <img
-                src=""
-                alt="image1"
-                className="border bg-gray-300 rounded-full h-[340px]"
-              />
-            </div>
-            <div>
-              <img
-                src=""
-                alt="image1"
-                className="border bg-gray-300 rounded-full h-[340px]"
-              />
-            </div>
+            {gyms.map((gym, index) => (
+              <div key={gym.gymId || index}>
+                <img
+                  src={gym.uploadFileName && gym.uploadFileName.length > 0 
+                    ? `/images/${gym.uploadFileName[0]}` 
+                    : "/path/to/default-image.jpg"}
+                  alt={`${gym.gymName || 'Gym'} image`}
+                  className="border bg-gray-300 rounded-full h-[340px] w-[340px] object-cover"
+                />
+              </div>
+            ))}
           </Slider>
         </div>
         {/* <div className="flex justify-between items-end gap-12 overflow-hidden">
