@@ -11,7 +11,8 @@ import useCustomNavigate from "../hooks/useCustomNavigate";
 import { insertImage, deleteImage, GymInfo, updateGym } from "../api/gymApi";
 import { useParams } from "react-router-dom";
 import Select from "../components/shared/Select";
-import { deleteProduct } from '../api/gymApi';
+import { deleteProduct } from "../api/gymApi";
+import AlertModal from "../components/modals/AlertModal";
 
 // 회원 정보
 const initGymData = {
@@ -38,14 +39,24 @@ const Gymset = () => {
   const [newHealthProducts, setNewHealthProducts] = useState([]);
   const [newPTProducts, setNewPTProducts] = useState([]);
   const [healthProducts, setHealthProducts] = useState([]);
-  const [newHealthProduct, setNewHealthProduct] = useState({ productName: "", days: "", price: "" });
+  const [newHealthProduct, setNewHealthProduct] = useState({
+    productName: "",
+    days: "",
+    price: "",
+  });
   const [ptProducts, setPTProducts] = useState([]);
-  const [newPTProduct, setNewPTProduct] = useState({ productName: "", ptCountTotal: "", days: "", price: "" });
+  const [newPTProduct, setNewPTProduct] = useState({
+    productName: "",
+    ptCountTotal: "",
+    days: "",
+    price: "",
+  });
   const [isAddressModalVisible, setIsAddressModalVisible] = useState(false);
   const [healthErrors, setHealthErrors] = useState({});
   const [ptErrors, setPTErrors] = useState({});
   const { validateInput } = useValidation();
   const [images, setImages] = useState([]);
+  const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
 
   useEffect(() => {
     if (gymId) {
@@ -55,12 +66,16 @@ const Gymset = () => {
 
   const fetchGymData = async (gymId) => {
     try {
-      const response = await GymInfo(gymId);
+      // const response = await GymInfo(gymId);
       const gymData = await GymInfo(gymId);
       console.log("Fetched gym data:", gymData);
-      const productData = response.data || response;
-      const healthProducts = (response.productList || []).filter(product => product.ptCountTotal === null);
-      const ptProducts = (gymData.productList || []).filter(product => product.ptCountTotal !== null);
+      const productData = gymData.data || gymData;
+      const healthProducts = (gymData.productList || []).filter(
+        (product) => product.ptCountTotal === null
+      );
+      const ptProducts = (gymData.productList || []).filter(
+        (product) => product.ptCountTotal !== null
+      );
       setGymData({
         ...gymData,
         imgList: gymData.uploadFileName || [], // Ensure imgList is an array
@@ -80,7 +95,6 @@ const Gymset = () => {
 
     validateInput(name, value);
   };
-
 
   const handleNewHealthProductChange = (e) => {
     const { name, value } = e.target;
@@ -209,15 +223,15 @@ const Gymset = () => {
         operatingHours: GymData.operatingHours,
         introduce: GymData.introduce,
         productList: [
-          ...newHealthProducts.map(product => ({
+          ...newHealthProducts.map((product) => ({
             ...product,
-            productType: "HEALTH"
+            productType: "HEALTH",
           })),
-          ...newPTProducts.map(product => ({
+          ...newPTProducts.map((product) => ({
             ...product,
-            productType: "PT"
-          }))
-        ]
+            productType: "PT",
+          })),
+        ],
       };
       console.log("gymData: ", gymData);
       const gymId = gymData.gymId;
@@ -243,6 +257,7 @@ const Gymset = () => {
         console.error("Failed to update gym:", gymRes);
         alert("Gym 정보 업데이트에 실패했습니다.");
       }
+      setIsAlertModalVisible(true);
     } catch (error) {
       console.error("Failed to add gym", error);
       alert("Gym 정보 업데이트에 실패했습니다.");
@@ -266,13 +281,15 @@ const Gymset = () => {
     }
   };
   const handleDeleteHealthProduct = async (productIdOrKey) => {
-    if (typeof productIdOrKey === 'number') {
+    if (typeof productIdOrKey === "number") {
       // 기존 상품 삭제 로직
       try {
         const result = await deleteProduct(productIdOrKey);
         if (result.RESULT === "SUCCESS") {
-          setHealthProducts(prevProducts =>
-            prevProducts.filter(product => product.productId !== productIdOrKey)
+          setHealthProducts((prevProducts) =>
+            prevProducts.filter(
+              (product) => product.productId !== productIdOrKey
+            )
           );
         }
       } catch (error) {
@@ -280,8 +297,12 @@ const Gymset = () => {
       }
     } else {
       // 새로 추가된 상품 삭제 로직
-      setHealthProducts(prevProducts =>
-        prevProducts.filter(product => product.productId !== productIdOrKey && product.tempId !== productIdOrKey)
+      setHealthProducts((prevProducts) =>
+        prevProducts.filter(
+          (product) =>
+            product.productId !== productIdOrKey &&
+            product.tempId !== productIdOrKey
+        )
       );
     }
   };
@@ -291,8 +312,10 @@ const Gymset = () => {
         const result = await deleteProduct(productIdOrKey);
         if (result.RESULT === "SUCCESS") {
           console.log("PT product deleted successfully");
-          setPTProducts(prevProducts =>
-            prevProducts.filter(product => product.productId !== productIdOrKey)
+          setPTProducts((prevProducts) =>
+            prevProducts.filter(
+              (product) => product.productId !== productIdOrKey
+            )
           );
         } else {
           console.error("Failed to delete PT product");
@@ -302,8 +325,12 @@ const Gymset = () => {
       }
     } else {
       // 새로 추가된 상품이라면 그냥 state에서 제거
-      setPTProducts(prevProducts =>
-        prevProducts.filter(product => product.productId !== productIdOrKey && product.tempId !== productIdOrKey)
+      setPTProducts((prevProducts) =>
+        prevProducts.filter(
+          (product) =>
+            product.productId !== productIdOrKey &&
+            product.tempId !== productIdOrKey
+        )
       );
     }
   };
@@ -314,9 +341,9 @@ const Gymset = () => {
 
   return (
     <>
-      <div className="space-y-8 relative flex items-center justify-center my-10">
+      <div className="space-y-8 relative flex items-center justify-center mb-10">
         <div className="flex flex-col space-y-6">
-          <div className="py-10 px-7 mx-6 flex flex-col justify-center space-y-4 h-fit w-full bg-white rounded-[55px]">
+          <div className="py-10 px-20 mx-6 flex flex-col justify-center space-y-4 h-fit w-full bg-white rounded-lg shadow-lg">
             <p className="font-extrabold text-2xl pb-4 flex flex-row items-center justify-center space-x-2">
               <box-icon name="cog" size="40px" color="#9f8d8d"></box-icon>
               <p> 헬스장 상세 정보 </p>
@@ -349,7 +376,9 @@ const Gymset = () => {
                             readOnly={true}
                             value={GymData.address}
                             feature="검색"
-                            featureOnClick={() => setIsAddressModalVisible(true)}
+                            featureOnClick={() =>
+                              setIsAddressModalVisible(true)
+                            }
                             featureEnableOnLoad={true}
                             required={true}
                             onChange={handleGymDataChange}
@@ -361,7 +390,7 @@ const Gymset = () => {
                             value={GymData.detailAddress}
                             // required={true}
                             onChange={handleGymDataChange}
-                          // readOnly={true}
+                            // readOnly={true}
                           />
                         </div>
                       </div>
@@ -416,8 +445,8 @@ const Gymset = () => {
                       name="crNumber"
                       value={GymData.crNumber}
                       readOnly={true}
-                    // required={true}
-                    // onChange={handleGymDataChange}
+                      // required={true}
+                      // onChange={handleGymDataChange}
                     />
                   </div>
                   {/* 운영시간 */}
@@ -450,6 +479,7 @@ const Gymset = () => {
                           name="productName"
                           value={newHealthProduct.productName}
                           error={healthErrors.productName}
+                          readOnly
                           required={true}
                           onChange={handleNewHealthProductChange}
                         />
@@ -464,8 +494,10 @@ const Gymset = () => {
                           className="flex flex-col justify-center items-center border border-gray-400 p-3 rounded-lg"
                         >
                           <option value="">선택해주세요.</option>
-                          {[30, 90, 180, 365].map(count => (
-                            <option key={count} value={count}>{count}일</option>
+                          {[30, 90, 180, 365].map((count) => (
+                            <option key={count} value={count}>
+                              {count}일
+                            </option>
                           ))}
                         </Select>
                         <Input
@@ -487,35 +519,46 @@ const Gymset = () => {
                       </div>
                       {/* 헬스권 상품 목록 */}
                       <div className="grid grid-cols-3 gap-4">
-                        {healthProducts.filter(product => product.status !== false).map((product, index) => (
-                          <div key={product.productId || `new-health-${index}`} className="border border-gray-400 rounded-lg py-5 px-8 mb-4 flex flex-col justify-between items-center">
-                            <div className="text-center">
-                              <span className="font-bold">{product.productName}</span><br />
-                              {product.days}일 / {product.price}원
+                        {healthProducts
+                          .filter((product) => product.status !== false)
+                          .map((product, index) => (
+                            <div
+                              key={product.productId || `new-health-${index}`}
+                              className="border border-gray-400 rounded-lg py-5 px-8 mb-4 flex flex-col justify-between items-center"
+                            >
+                              <div className="text-center">
+                                <span className="font-bold">
+                                  {product.productName}
+                                </span>
+                                <br />
+                                {product.days}일 / {product.price}원
+                              </div>
+                              <div className="mt-5">
+                                <FaCircleMinus
+                                  size="24"
+                                  color="#9f8d8d"
+                                  className="cursor-pointer"
+                                  onClick={() =>
+                                    handleDeleteHealthProduct(
+                                      product.productId || `new-health-${index}`
+                                    )
+                                  }
+                                />
+                              </div>
                             </div>
-                            <div className="mt-5">
-                              <FaCircleMinus
-                                size="24"
-                                color="#9f8d8d"
-                                className="cursor-pointer"
-                                onClick={() => handleDeleteHealthProduct(product.productId || `new-health-${index}`)}
-                              />
-                            </div>
-                          </div>
-                        ))}
+                          ))}
                       </div>
-
                     </div>
                   </div>
                   {/* 가격표 이미지 */}
-                  <div className="flex flex-row space-x-11">
+                  {/* <div className="flex flex-row space-x-11">
                     <p className="mt-3 w-44 text-lg">가격표 이미지</p>
                     <UploadBox
                       name="priceImage"
                       required={true}
                       onChange={handlePriceImageChange}
                     />
-                  </div>
+                  </div> */}
                 </div>
                 <div className="flex flex-col space-y-6">
                   {/* PT권*/}
@@ -529,6 +572,7 @@ const Gymset = () => {
                           name="productName"
                           value={newPTProduct.productName}
                           error={ptErrors.productName}
+                          readOnly
                           required={true}
                           onChange={handleNewPTProductChange}
                         />
@@ -543,8 +587,10 @@ const Gymset = () => {
                           className="flex flex-col justify-center items-center border border-gray-400 p-3 rounded-lg"
                         >
                           <option value="">선택해주세요.</option>
-                          {[10, 20, 30, 40, 50, 60].map(count => (
-                            <option key={count} value={count}>{count}회</option>
+                          {[10, 20, 30, 40, 50, 60].map((count) => (
+                            <option key={count} value={count}>
+                              {count}회
+                            </option>
                           ))}
                         </Select>
                         <Select
@@ -558,8 +604,10 @@ const Gymset = () => {
                           className="flex flex-col justify-center items-center border border-gray-400 p-3 rounded-lg"
                         >
                           <option value="">선택해주세요.</option>
-                          {[30, 90, 180, 365].map(count => (
-                            <option key={count} value={count}>{count}일</option>
+                          {[30, 90, 180, 365].map((count) => (
+                            <option key={count} value={count}>
+                              {count}일
+                            </option>
                           ))}
                         </Select>
                         <Input
@@ -580,71 +628,82 @@ const Gymset = () => {
                       </div>
                       {/* PT 상품 목록 */}
                       <div className="grid grid-cols-3 gap-4">
-                        {ptProducts.filter(product => product.status !== false).map((product, index) => (
-                          <div key={product.productId || `new-pt-${index}`} className="border border-gray-400 rounded-lg py-5 px-8 mb-4 flex flex-col justify-between items-center">
-                            <div className="text-center">
-                              <span className="font-bold">{product.productName}</span><br />
-                              {/* {product.ptCountTotal}회 /  */}
-                              {product.days}일 / {product.price}원
-                            </div>
-                            <div className="mt-5">
-                              <FaCircleMinus
-                                size="24"
-                                color="#9f8d8d"
-                                className="cursor-pointer"
-                                onClick={() => handleDeletePTProduct(product.productId || `new-pt-${index}`)}
-                              />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                  </div>
-                  {/* 센터 상세 이미지 */}
-                  <div className="flex flex-row space-x-16">
-                    <p className="mt-3 w-24 text-lg">센터이미지
-                      (최대 12장)</p>
-                    <div className="flex flex-col divide divide-y-2 divide-dashed">
-                      <UploadBox
-                        name="imgList"
-                        required={true}
-                        onChange={handleImgListChange}
-                      />
-                      <div className="pt-5 grid grid-cols-4 gap-4 m-4 w-fit overflow-x-auto">
-                        {GymData.imgList && GymData.imgList.map((img, index) => (
-                          <div key={index} className="relative">
-                            <img
-                              src={`/images/${img}`}
-                              alt={`Gym image ${index}`}
-                              className="w-24 h-24 object-cover rounded-lg border"
-                            />
-                            <button
-                              className="w-6 h-6 cursor-pointer absolute top-1 right-1 rounded-full text-red-300 hover:bg-red-300 hover:text-white transition duration-300 flex items-center justify-center"
-                              onClick={() => handleDeleteImage(img)}
+                        {ptProducts
+                          .filter((product) => product.status !== false)
+                          .map((product, index) => (
+                            <div
+                              key={product.productId || `new-pt-${index}`}
+                              className="border border-gray-400 rounded-lg py-5 px-8 mb-4 flex flex-col justify-between items-center"
                             >
-                              <PiXCircle size="20" />
-                            </button>
-                          </div>
-                        ))}
+                              <div className="text-center">
+                                <span className="font-bold">
+                                  {product.productName}
+                                </span>
+                                <br />
+                                {/* {product.ptCountTotal}회 /  */}
+                                {product.days}일 / {product.price}원
+                              </div>
+                              <div className="mt-5">
+                                <FaCircleMinus
+                                  size="24"
+                                  color="#9f8d8d"
+                                  className="cursor-pointer"
+                                  onClick={() =>
+                                    handleDeletePTProduct(
+                                      product.productId || `new-pt-${index}`
+                                    )
+                                  }
+                                />
+                              </div>
+                            </div>
+                          ))}
                       </div>
                     </div>
                   </div>
                 </div>
-
+              </div>
+              {/* 센터 상세 이미지 */}
+              <div className="flex flex-row space-x-16">
+                <p className="mt-3 w-24 text-lg">센터이미지 (최대 12장)</p>
+                <div className="flex flex-col divide divide-y-2 divide-dashed">
+                  <UploadBox
+                    name="imgList"
+                    required={true}
+                    onChange={handleImgListChange}
+                  />
+                  <div className="pt-5 px-2 grid grid-cols-4 gap-4 w-fit overflow-x-auto">
+                    {GymData.imgList &&
+                      GymData.imgList.map((img, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={`/images/${img}`}
+                            alt={`Gym image ${index}`}
+                            className="w-24 h-24 object-cover rounded-lg border"
+                          />
+                          <button
+                            className="w-6 h-6 cursor-pointer absolute top-1 right-1 rounded-full text-red-300 hover:bg-red-300 hover:text-white transition duration-300 flex items-center justify-center"
+                            onClick={() => handleDeleteImage(img)}
+                          >
+                            <PiXCircle size="20" />
+                          </button>
+                        </div>
+                      ))}
+                  </div>
+                </div>
               </div>
             </div>
             {/* Submit Button */}
             <div className="flex justify-center mt-8">
-              <button
-                className="px-4 py-2 text-white bg-indigo-400 hover:bg-indigo-600 rounded "
+              <Button
+                width="200px"
+                height="60px"
+                color="bright-orange"
+                className="px-4 py-2 rounded hover:bg-bright-orange/80"
                 onClick={handleSubmit}
-              >
-                정보 수정
-              </button>
+                label={"정보 수정"}
+              />
             </div>
           </div>
-
         </div>
       </div>
       {/* <button
@@ -659,6 +718,19 @@ const Gymset = () => {
           GymData={GymData}
           setGymData={setGymData}
           toggleModal={() => setIsAddressModalVisible(false)}
+        />
+      )}
+      {isAlertModalVisible && (
+        <AlertModal
+          headerEmoji={"✔️"}
+          line1={"정보 수정이 완료 됐습니다!"}
+          button1={{
+            label: "확인",
+            onClick: () =>
+              customNavigate("/gymSearch", {
+                state: { searchWord: GymData.userName },
+              }),
+          }}
         />
       )}
     </>

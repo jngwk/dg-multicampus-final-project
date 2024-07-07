@@ -187,6 +187,7 @@ const MyInfo = ({ toggleModal, userData, setUserData }) => {
     try {
       const gymData = await GymInfoByUserId(userData.userId);
       setGymInfo(gymData);
+      console.log("@@@@@@@@@@넘어가는 데이터", gymData);
       // 체육관 정보를 사용하여 새 페이지로 이동합니다 trainerUpdateForm
       customNavigate(`/gymSet/${gymData.gymId}`); // 라우팅 설정에 따라 URL 구조를 조정해야 합니다
     } catch (error) {
