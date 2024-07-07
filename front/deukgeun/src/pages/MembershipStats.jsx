@@ -8,8 +8,11 @@ import { GymInfo } from "../api/gymApi";
 import { getMembershipStats } from "../api/membershipApi";
 import { getPtSession } from "../api/ptApi";
 import Fallback from "../components/shared/Fallback";
+import AlertModal from "../components/modals/AlertModal";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const MembershipStats = () => {
+  const navigate = useNavigate(); // Initialize useNavigate
   const [filterToggle, setFilterToggle] = useState(false);
   const [stats, setStats] = useState([]);
   const [filterType, setFilterType] = useState("전체");
@@ -19,6 +22,9 @@ const MembershipStats = () => {
   const [ptSessions, setPtSessions] = useState([]);
   const [minPtDate, setMinPtDate] = useState("");
   const [maxPtDate, setMaxPtDate] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
 
   const today = new Date();
   const currentYear = getYear(today).toString();
@@ -50,6 +56,10 @@ const MembershipStats = () => {
           GymInfo(1),
         ]);
 
+        if (!statsData || !ptSessionsData || !gymInfoData) {
+          throw new Error("데이터를 불러오는 데 실패했습니다.");
+        }
+
         setStats(statsData);
         setPtSessions(
           ptSessionsData.sort(
@@ -79,6 +89,8 @@ const MembershipStats = () => {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+        setModalMessage("데이터를 불러오는 데 실패했습니다. 다시 시도해 주세요.");
+        setShowModal(true);
       } finally {
         setLoading(false);
       }
@@ -293,6 +305,19 @@ const MembershipStats = () => {
 
   if (loading) {
     return <Fallback />;
+  }
+  
+  if (showModal) {
+    return (
+      <AlertModal
+        headerEmoji="⚠️"
+        line1={modalMessage}
+        button2={{
+          label: "확인",
+          onClick: () => navigate(-1), // Go back to the previous page
+        }}
+      />
+    );
   }
 
   return (
