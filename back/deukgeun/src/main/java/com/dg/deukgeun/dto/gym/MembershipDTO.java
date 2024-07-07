@@ -19,7 +19,7 @@ public class MembershipDTO {
     private String expDate;
     private String userMemberReason;
     private Integer userAge;
-    private String userWorkoutDuration;
+    private Integer userWorkoutDuration;
     
     //filter
     private String userGender;
