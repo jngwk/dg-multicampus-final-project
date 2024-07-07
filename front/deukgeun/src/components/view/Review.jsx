@@ -14,6 +14,7 @@ import ReviewEditModal from "../modals/ReviewEditModal";
 import ReviewModal from "../modals/ReviewModal";
 import AlertModal from "../modals/AlertModal";
 import { useModal } from "../../hooks/useModal";
+import { findMembership } from "../../api/membershipApi";
 
 const ReviewContent = ({
   gymId,
@@ -29,6 +30,7 @@ const ReviewContent = ({
   const [selectedImage, setSelectedImage] = useState(null);
   const [colorMapping, setColorMapping] = useState({});
   const [loadingReviews, setLoadingReviews] = useState(false);
+  const [isMember, setIsMember] = useState(false);
 
   const [scrollLeft, setScrollLeft] = useState(0);
 
@@ -49,7 +51,23 @@ const ReviewContent = ({
         setLoadingReviews(false);
       }
     };
+
+    const getMembership = async () => {
+      try {
+        const membership = await findMembership();
+        if (membership.gymId === gymId) setIsMember(true);
+      } catch (error) {
+        console.error("get membership error in review", error);
+      }
+    };
+
     fetchReviews();
+    if (
+      sessionStorage.getItem("isLoggedIn") &&
+      userData?.role === "ROLE_GENERAL"
+    ) {
+      getMembership();
+    }
   }, [gymId, onReviewAdded, onReviewDeleted]);
 
   const handleEdit = (review) => {
@@ -246,7 +264,7 @@ const ReviewContent = ({
   );
 };
 
-const Review = ({ gymId }) => {
+const Review = ({ gymId, isMember }) => {
   const { isModalVisible, toggleModal } = useModal();
   const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
   const [reviews, setReviews] = useState([]);
@@ -303,18 +321,20 @@ const Review = ({ gymId }) => {
           </div>
           <div className="">등록 리뷰 수: {reviews?.length}</div>
         </div>
-        {reviews?.filter((r) => r.userId === userData?.userId).length === 0 && (
-          <button
-            className="absolute top-12 -right-2 flex items-center mr-5"
-            onClick={toggleModal}
-          >
-            <MdOutlineRateReview
-              className="mx-1 mb-1"
-              size="25"
-              color="#9F8D8D"
-            />
-          </button>
-        )}
+        {isMember &&
+          reviews?.filter((r) => r.userId === userData?.userId).length ===
+            0 && (
+            <button
+              className="absolute top-12 -right-2 flex items-center mr-5"
+              onClick={toggleModal}
+            >
+              <MdOutlineRateReview
+                className="mx-1 mb-1"
+                size="25"
+                color="#9F8D8D"
+              />
+            </button>
+          )}
         {isModalVisible && (
           <ReviewModal
             toggleModal={toggleModal}
