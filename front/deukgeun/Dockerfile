@@ -24,14 +24,15 @@ FROM nginx:alpine
 # Remove default Nginx configuration
 RUN rm /etc/nginx/conf.d/default.conf
 
-# Copy custom Nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# # Copy custom Nginx configuration
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy the build files to the Nginx HTML directory
-COPY --from=build /app/build /usr/share/nginx/html
+# COPY --from=build /app/build /usr/share/nginx/html
 
 # Expose the port the application runs on
 EXPOSE 80
+EXPOSE 443
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]

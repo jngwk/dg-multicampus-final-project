@@ -138,7 +138,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://223.130.157.92:30115", "http://223.130.157.92:80", "http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList("https://dgdg.o-r.kr:30115","http://dgdg.o-r.kr:30115","http://dgdg.o-r.kr:80","https://223.130.157.92:30115", "http://223.130.157.92:30115", "http://223.130.157.92:80", "http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(Arrays.asList("*"));
