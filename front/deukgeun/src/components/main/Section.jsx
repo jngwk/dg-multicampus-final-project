@@ -456,7 +456,7 @@ const Section = ({}) => {
               // TODO 헬스장 회원인지 확인
               onClick={() =>
                 sessionStorage.getItem("isLoggedIn")
-                  ? customNavigate("/stats")
+                  ? userData?.role === "ROLE_GYM" && customNavigate("/stats")
                   : toggleLoginModal()
               }
             />
@@ -482,7 +482,7 @@ const Section = ({}) => {
           </div>
         </div>
         {/* TODO 헬스장 불러와서 사진 표시하기 */}
-        <div className="w-full h-[340px] relative">
+        <div className="w-full h-[340px] relative overflow-hidden">
           <Slider
             dots={false}
             infinite={true}
@@ -551,7 +551,7 @@ const Section = ({}) => {
             // TODO 헬스장 회원인지 확인
             onClick={() =>
               sessionStorage.getItem("isLoggedIn")
-                ? customNavigate("/stats")
+                ? userData?.role === "ROLE_GYM" && customNavigate("/stats")
                 : customNavigate("/signUp/form", { state: { role: "gym" } })
             }
           />
