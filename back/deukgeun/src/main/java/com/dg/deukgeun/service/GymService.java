@@ -223,6 +223,7 @@ public class GymService {
             GymResponseDTO gymResponseDTO = new GymResponseDTO();
             // gym 정보를 gymResponseDTO에 복사
             BeanUtils.copyProperties(gym, gymResponseDTO);
+            gymResponseDTO.setUserName(gym.getUser().getUserName());
 
             // 첫 번째 이미지 가져오기
             List<GymImageDTO> images = gymImageService.getByGymId(gym.getGymId());
@@ -237,6 +238,7 @@ public class GymService {
 
         return gymResponseList;
     }
+
     public List<GymResponseDTO> searchGymsImageByLocation(String location) {
         List<Gym> gyms = gymRepository.searchGymsByLocation(location);
         List<GymResponseDTO> gymResponseList = new ArrayList<>();
@@ -244,6 +246,7 @@ public class GymService {
             GymResponseDTO gymResponseDTO = new GymResponseDTO();
             // gym 정보를 gymResponseDTO에 복사
             BeanUtils.copyProperties(gym, gymResponseDTO);
+            gymResponseDTO.setUserName(gym.getUser().getUserName());
 
             // 첫 번째 이미지 가져오기
             List<GymImageDTO> images = gymImageService.getByGymId(gym.getGymId());

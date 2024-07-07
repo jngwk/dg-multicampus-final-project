@@ -1,8 +1,8 @@
 import axios from "axios";
 
-// export const API_SERVER_HOST = "http://localhost:8282";
-// const prefix = `${API_SERVER_HOST}/api/gym`;
-const prefix = `/api/gym`; // proxy 사용
+export const API_SERVER_HOST = "http://localhost:8282";
+const prefix = `${API_SERVER_HOST}/api/gym`;
+// const prefix = `/api/gym`; // proxy 사용
 
 export const getGymList = async () => {
   try {
@@ -151,12 +151,12 @@ export const getGymResList = async () => {
   }
 };
 
-export const getGymResListByLocation = async(location)=>{
+export const getGymResListByLocation = async (location) => {
   try {
-    const response = await axios.get(`${prefix}/LocationImage`,{
-      params:{
+    const response = await axios.get(`${prefix}/LocationImage`, {
+      params: {
         location: location,
-      }
+      },
     });
     console.log("Gym Location list:", response.data);
     return response.data;
