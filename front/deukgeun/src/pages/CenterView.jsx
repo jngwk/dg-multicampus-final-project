@@ -217,7 +217,7 @@ const CenterView = () => {
             className="flex flex-row space-x-40 justify-center item-center mb-6 "
           >
             <button
-              className="text-2xl font-bold pb-2 hover:border-grayish-red hover:border-b hover:text-peach-fuzz text-grayish-red "
+              className="text-2xl font-bold hover:border-grayish-red hover:border-b hover:text-peach-fuzz text-grayish-red "
               onClick={() => handleScrollToSection(infoRef)}
             >
               정보
