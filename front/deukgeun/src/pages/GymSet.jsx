@@ -71,10 +71,10 @@ const Gymset = () => {
       console.log("Fetched gym data:", gymData);
       const productData = gymData.data || gymData;
       const healthProducts = (gymData.productList || []).filter(
-        (product) => product.ptCountTotal === null
+        (product) => product.ptCountTotal === null || product.ptCountTotal === 0
       );
       const ptProducts = (gymData.productList || []).filter(
-        (product) => product.ptCountTotal !== null
+        (product) => product.ptCountTotal !== null || product.ptCountTotal !== 0
       );
       setGymData({
         ...gymData,
