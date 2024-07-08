@@ -488,8 +488,9 @@ const CenterView = () => {
                         {gymData.productList
                           .filter(
                             (product) =>
-                              product.ptCountTotal === 0 ||
-                              !product.ptCountTotal
+                              (product.ptCountTotal === 0 ||
+                                !product.ptCountTotal) &&
+                              product.status !== false
                           )
                           .sort((a, b) => a.days - b.days)
                           .map((product, key) => {
