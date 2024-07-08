@@ -191,10 +191,6 @@ const GymSearchMap = () => {
       getGyms();
       return;
     }
-    if (searchFilter === "location") {
-      // 현재 위치로 이동하기
-      moveToCurrentLoc();
-    }
 
     try {
       const page = 0;
@@ -209,6 +205,10 @@ const GymSearchMap = () => {
       );
       // console.log("handleSearch in gym search map", res);
       handleLoadedGyms(res);
+      if (searchFilter === "location") {
+        // 현재 위치로 이동하기
+        moveToCurrentLoc();
+      }
     } catch (error) {
       console.error("Error fetching gym list:", error);
     }
@@ -415,7 +415,7 @@ const GymSearchMap = () => {
                 </div>
               }
               featureEnableOnLoad={true}
-              featureOnClick={handleSearch}
+              featureOnClick={() => handleSearch()}
             />
             {/* <Button label="검색하기" onClick={handleSearch} width="90%" /> */}
             {/* <Select label="필터">
