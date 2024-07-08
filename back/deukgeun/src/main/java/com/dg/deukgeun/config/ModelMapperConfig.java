@@ -11,15 +11,16 @@
 // @Configuration
 // public class ModelMapperConfig {
 
-//     @Bean
-//     public ModelMapper modelMapper() {
-//         ModelMapper modelMapper = new ModelMapper();
-//         modelMapper.addMappings(new PropertyMap<WorkoutSessionDTO, WorkoutSession>() {
-//             @Override
-//             protected void configure() {
-//                 map().setUser(source.getPtSession().getPt().getUser());
-//             }
-//         });
-//         return modelMapper;
-//     }
+// @Bean
+// public ModelMapper modelMapper() {
+// ModelMapper modelMapper = new ModelMapper();
+// modelMapper.addMappings(new PropertyMap<WorkoutSessionDTO, WorkoutSession>()
+// {
+// @Override
+// protected void configure() {
+// map().setUser(source.getPtSession().getPt().getUser());
+// }
+// });
+// return modelMapper;
+// }
 // }
