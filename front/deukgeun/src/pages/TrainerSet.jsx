@@ -88,15 +88,20 @@ const TrainerSet = () => {
       console.log("Submitting trainer data:", trainerData);
       console.log("Trainer image file:", trainerImageFile);
       console.log("Remove image:", !trainerImageFile && !imagePreview);
-      await updateTrainerInfo(trainerData, trainerImageFile, !trainerImageFile && !imagePreview);
-      setIsAlertModalVisible(false);
-      navigate("/centerView", { replace: true });
+      await updateTrainerInfo(
+        trainerData,
+        trainerImageFile,
+        !trainerImageFile && !imagePreview
+      );
+      // setIsAlertModalVisible(false);
+      // navigate("/centerView", { replace: true });
     } catch (error) {
       console.error("Failed to update trainer information:", error);
     }
   };
 
   const handleConfirmClick = () => {
+    handleSubmit();
     setIsAlertModalVisible(true);
   };
 
@@ -122,19 +127,6 @@ const TrainerSet = () => {
               ></Input>
             </div>
 
-            {/* 트레이너 경력 */}
-            <div className="flex flex-row space-x-32">
-              <p className="mt-3">트레이너 경력</p>
-              <Input
-                label="트레이너 경력"
-                width="320px"
-                name="trainerCareer"
-                value={trainerData.trainerCareer}
-                required={true}
-                onChange={handleTrainerDataChange}
-              ></Input>
-            </div>
-
             {/* 트레이너 소개 */}
             <div className="flex flex-row space-x-32">
               <p className="mt-3">트레이너 소개</p>
@@ -143,6 +135,19 @@ const TrainerSet = () => {
                 width="500px"
                 name="trainerAbout"
                 value={trainerData.trainerAbout}
+                required={true}
+                onChange={handleTrainerDataChange}
+              ></TextArea>
+            </div>
+
+            {/* 트레이너 경력 */}
+            <div className="flex flex-row space-x-32">
+              <p className="mt-3">트레이너 경력</p>
+              <TextArea
+                label="트레이너 경력"
+                width="500px"
+                name="trainerCareer"
+                value={trainerData.trainerCareer}
                 required={true}
                 onChange={handleTrainerDataChange}
               ></TextArea>
@@ -205,7 +210,9 @@ const TrainerSet = () => {
           line1={"트레이너 정보 수정이 완료되었습니다!"}
           button2={{
             label: "확인",
-            onClick: handleSubmit,
+            onClick: () => {
+              navigate(-1, { replace: true });
+            },
           }}
         />
       )}

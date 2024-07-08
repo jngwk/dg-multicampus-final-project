@@ -118,7 +118,11 @@ const TrainerInfo = ({ trainers }) => {
                     className="list-none border-light-black border-b-2 border-opacity-40"
                   >
                     <div className="flex justify-between items-center py-5 px-4">
-                      <p className="font-semibold text-lg">
+                      <p
+                        className={`${
+                          openIndex === index && ""
+                        } font-semibold text-lg`}
+                      >
                         {trainer.user.userName}
                       </p>
                       <button onClick={() => toggleOpen(index)}>
@@ -126,14 +130,35 @@ const TrainerInfo = ({ trainers }) => {
                       </button>
                     </div>
                     {openIndex === index && (
-                      <div className="expandable flex items-center p-4 mb-4 h-[300px] overflow-hidden overflow-y-auto scrollbar-hide">
+                      <div className="expandable flex items-center p-4 mb-4 overflow-hidden overflow-y-auto scrollbar-hide">
                         <ul className="list-disc pl-5 space-y-2">
-                          {/* {trainer.trainerCareer.map((item, i) => (
-                        <li key={i} className="text-sm leading-relaxed">
-                          {item}
-                        </li>
-                      ))} */}
-                          {trainer.trainerCareer}
+                          {trainer.trainerAbout || trainer.trainerCareer ? (
+                            <>
+                              <div className="mb-4">
+                                {trainer.trainerAbout
+                                  ?.split("\n")
+                                  .map((line, index) => (
+                                    <React.Fragment key={index}>
+                                      {line}
+                                      <br />
+                                    </React.Fragment>
+                                  ))}
+                              </div>
+                              {trainer.trainerCareer
+                                ?.split("\n")
+                                .map((line, index) => (
+                                  <React.Fragment key={index}>
+                                    {line}
+                                    <br />
+                                  </React.Fragment>
+                                ))}
+                            </>
+                          ) : (
+                            <p className="text-center">
+                              등록된 정보가 없습니다..{" "}
+                              <span className="text-xl">🙅</span>
+                            </p>
+                          )}
                         </ul>
                       </div>
                     )}
