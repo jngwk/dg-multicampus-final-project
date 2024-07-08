@@ -134,7 +134,10 @@ const TrainerInfo = ({ trainers }) => {
                         <ul className="list-disc pl-5 space-y-2">
                           {trainer.trainerAbout || trainer.trainerCareer ? (
                             <>
-                              <div className="mb-4">
+                              <div className="mb-6">
+                                <span className="text-xl">👋</span>
+                                <br />
+                                <br />
                                 {trainer.trainerAbout
                                   ?.split("\n")
                                   .map((line, index) => (
@@ -144,14 +147,22 @@ const TrainerInfo = ({ trainers }) => {
                                     </React.Fragment>
                                   ))}
                               </div>
-                              {trainer.trainerCareer
-                                ?.split("\n")
-                                .map((line, index) => (
-                                  <React.Fragment key={index}>
-                                    {line}
-                                    <br />
-                                  </React.Fragment>
-                                ))}
+
+                              {trainer.trainerCareer && (
+                                <>
+                                  <span className="text-xl">🏆</span>
+                                  <br />
+                                  <br />
+                                  {trainer.trainerCareer
+                                    ?.split("\n")
+                                    .map((line, index) => (
+                                      <React.Fragment key={index}>
+                                        {line}
+                                        <br />
+                                      </React.Fragment>
+                                    ))}
+                                </>
+                              )}
                             </>
                           ) : (
                             <p className="text-center">
