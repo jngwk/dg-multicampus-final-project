@@ -624,24 +624,27 @@ const PtRegister = () => {
                                 {selectedProductName}
                                 <BsChevronDown />
                               </button>
-                              {isDropdownOpen && (
-                                <ul className="absolute w-full border border-gray-400 rounded-lg list-none z-10 bg-white">
-                                  {gym.productList
-                                    .filter(
-                                      (product) => product.status !== false
-                                    )
-                                    .sort((a, b) => a.days - b.days)
-                                    .map((product) => (
-                                      <li
-                                        key={product.productId}
-                                        className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
-                                        onClick={() => onClickPeriod(product)}
-                                      >
-                                        {product.productName}
-                                      </li>
-                                    ))}
-                                </ul>
-                              )}
+                              {isDropdownOpen &&
+                                gym.productList.filter(
+                                  (product) => product.status !== false
+                                ).length > 1 && (
+                                  <ul className="absolute w-full min-h-[30px] border border-gray-400 rounded-lg list-none z-10 bg-white">
+                                    {gym.productList
+                                      .filter(
+                                        (product) => product.status !== false
+                                      )
+                                      .sort((a, b) => a.days - b.days)
+                                      .map((product) => (
+                                        <li
+                                          key={product.productId}
+                                          className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
+                                          onClick={() => onClickPeriod(product)}
+                                        >
+                                          {product.productName}
+                                        </li>
+                                      ))}
+                                  </ul>
+                                )}
                             </div>
                           </div>
                         </div>
