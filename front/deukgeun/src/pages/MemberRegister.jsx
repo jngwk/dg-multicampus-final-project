@@ -10,7 +10,6 @@ import { FaAngleDoubleRight } from "react-icons/fa";
 import { BsChevronDown } from "react-icons/bs";
 import { GiArchiveRegister } from "react-icons/gi";
 
-
 import bgimg from "../assets/reg.png";
 import TextArea from "../components/shared/TextArea";
 import { useAuth } from "../context/AuthContext";
@@ -92,7 +91,10 @@ const MemberRegister = () => {
 
   const filterProducts = () => {
     const filteredProductList =
-      gym.productList?.filter((product) => product.ptCountTotal === null) || [];
+      gym.productList?.filter(
+        (product) => product.ptCountTotal === null || product.ptCountTotal === 0
+      ) || [];
+    console.log("@@@@@@@@@@@@@@@@", gym.productList);
     const updatedGym = { ...gym, productList: filteredProductList };
     setGym(updatedGym);
     if (filteredProductList.length > 0) {
@@ -267,15 +269,16 @@ const MemberRegister = () => {
 
   // 최종결제금액 표시 코드 수정
   const formatPrice = (price) => {
-    return price.toLocaleString('ko-KR'); // 원 단위로 표시하는 함수
+    return price.toLocaleString("ko-KR"); // 원 단위로 표시하는 함수
   };
 
   return (
     <>
       <div className="flex flex-col items-center min-h-screen justify-center p-20">
-
         <div className="flex flex-col items-center w-fit py-10 bg-white rounded-[55px] px-5">
-          <p className="font-semibold text-xl px-8 py-2 bg-yellow-500 bg-opacity-15 rounded-full">회원권 등록</p>
+          <p className="font-semibold text-xl px-8 py-2 bg-yellow-500 bg-opacity-15 rounded-full">
+            회원권 등록
+          </p>
           <div className="border-y-4 border-[#f7f5f2]  mt-4">
             <div className="flex flex-row justify-center items-center mt-3 relative ">
               {/* <div
@@ -296,10 +299,11 @@ const MemberRegister = () => {
         </div> */}
 
               <div
-                className={`m-10 ${isExpanded
-                  ? "w-[1700px] justify-center space-x-10 px-20 relative "
-                  : "w-[500px] justify-center"
-                  } h-[550px] flex items-center`}
+                className={`m-10 ${
+                  isExpanded
+                    ? "w-[1700px] justify-center space-x-10 px-20 relative "
+                    : "w-[500px] justify-center"
+                } h-[550px] flex items-center`}
               >
                 <div className="flex flex-row items-start space-x-6">
                   <div className="flex justify-between space-x-7">
@@ -316,7 +320,6 @@ const MemberRegister = () => {
                           readOnly={true}
                         />
                       </div>
-
 
                       <div className="flex w-full relative justify-between ">
                         {/* 성별 */}
@@ -335,8 +338,11 @@ const MemberRegister = () => {
                               onFocus={handleGenderFocus}
                               onBlur={handleGenderBlur}
                               type="button"
-                              className={`h-11 py-3 px-4 w-[100px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${genderFocus ? "border-peach-fuzz" : "border-gray-400"
-                                } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                              className={`h-11 py-3 px-4 w-[100px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm ${
+                                genderFocus
+                                  ? "border-peach-fuzz"
+                                  : "border-gray-400"
+                              } focus:border-2 focus:outline-none text-sm peer my-2 `}
                               value={userGender}
                               onChange={handleChangeGender}
                             >
@@ -351,9 +357,7 @@ const MemberRegister = () => {
                               )}
                             </div>
                           </div>
-
                         </div>
-
 
                         {/* 나이 */}
                         {/* <label
@@ -370,8 +374,11 @@ const MemberRegister = () => {
                               onFocus={handleAgeFocus}
                               onBlur={handleAgeBlur}
                               type="button"
-                              className={`h-11 py-3 px-4 w-[100px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm  ${ageFocus ? "border-peach-fuzz" : "border-gray-400"
-                                } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                              className={`h-11 py-3 px-4 w-[100px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm  ${
+                                ageFocus
+                                  ? "border-peach-fuzz"
+                                  : "border-gray-400"
+                              } focus:border-2 focus:outline-none text-sm peer my-2 `}
                               value={userAge}
                               onChange={handleChangeAge}
                             >
@@ -389,7 +396,6 @@ const MemberRegister = () => {
                       </div>
 
                       {/* 이메일 */}
-
 
                       <div className="flex flex-row items-center space-x-6 ">
                         <div className="text-lg pr-3 mr-3 border-r-2 border-grayish-red">
@@ -435,7 +441,6 @@ const MemberRegister = () => {
                     </div>
                   </div>
                   {isExpanded && (
-
                     <div className=" flex flex-col items-start space-y-7">
                       {/* 헬스권  */}
                       <div className="dropdown relative">
@@ -455,26 +460,31 @@ const MemberRegister = () => {
                             {selectedProductName}
                             <BsChevronDown />
                           </button>
-                          {isDropdownOpen && (
-                            <ul className="absolute w-full border border-gray-400 rounded-lg list-none z-10 bg-white">
-                              {gym.productList
-                                .filter((product) => product.status !== false)
-                                .sort((a, b) => a.days - b.days)
-                                .map((product) => (
-                                  <li
-                                    key={product.productId}
-                                    className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
-                                    onClick={() =>
-                                      onClickPeriod({
-                                        target: { value: product.productName },
-                                      })
-                                    }
-                                  >
-                                    {product.productName}
-                                  </li>
-                                ))}
-                            </ul>
-                          )}
+                          {isDropdownOpen &&
+                            gym.productList.filter(
+                              (product) => product.status !== false
+                            ).length > 1 && (
+                              <ul className="absolute w-full min-h-[30px] border border-gray-400 rounded-lg list-none z-10 bg-white">
+                                {gym.productList
+                                  .filter((product) => product.status !== false)
+                                  .sort((a, b) => a.days - b.days)
+                                  .map((product) => (
+                                    <li
+                                      key={product.productId}
+                                      className="px-2 py-1 rounded-md hover:bg-grayish-red hover:bg-opacity-30"
+                                      onClick={() =>
+                                        onClickPeriod({
+                                          target: {
+                                            value: product.productName,
+                                          },
+                                        })
+                                      }
+                                    >
+                                      {product.productName}
+                                    </li>
+                                  ))}
+                              </ul>
+                            )}
                         </div>
                       </div>
                       <div className="flex flex-row relative items-center justify-between">
@@ -529,10 +539,11 @@ const MemberRegister = () => {
                               onFocus={handleMemberReasonFocus}
                               onBlur={handleMemberReasonBlur}
                               type="button"
-                              className={`h-11 py-3 px-4 w-[263px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userMemberReasonFocus
-                                ? "border-peach-fuzz"
-                                : "border-gray-400"
-                                } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                              className={`h-11 py-3 px-4 w-[263px] appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
+                                userMemberReasonFocus
+                                  ? "border-peach-fuzz"
+                                  : "border-gray-400"
+                              } focus:border-2 focus:outline-none text-sm peer my-2 `}
                               value={userMemberReason}
                               onChange={handleChangeMemberReason}
                             >
@@ -551,7 +562,6 @@ const MemberRegister = () => {
                             </div>
                           </div>
                         </div>
-
                       </div>
                       <div className="relative">
                         <div className="flex flex-row items-center space-x-6 ">
@@ -569,10 +579,11 @@ const MemberRegister = () => {
                             onFocus={handleWorkoutDurationFocus}
                             onBlur={handleWorkoutDurationBlur}
                             type="button"
-                            className={`h-11 py-3 px-4 w-[216px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${userWorkoutDurationFocus
-                              ? "border-peach-fuzz"
-                              : "border-gray-400"
-                              } focus:border-2 focus:outline-none text-sm peer my-2 `}
+                            className={`h-11 py-3 px-4 w-[216px] overflow-y-auto appearance-none bg-transparent border rounded-lg inline-flex items-center gap-x-2 text-sm font-semibold ${
+                              userWorkoutDurationFocus
+                                ? "border-peach-fuzz"
+                                : "border-gray-400"
+                            } focus:border-2 focus:outline-none text-sm peer my-2 `}
                             value={userWorkoutDuration}
                             onChange={handleChangeWorkoutDuration}
                           >
@@ -603,14 +614,15 @@ const MemberRegister = () => {
                       </div>
                     </div> */}
 
-
                       <div className="flex flex-col items-end absolute right-10 bottom-5">
                         <div className="divide-y divide-dashed space-y-2 w-[300px] flex flex-col border-y-2 border-grayish-red border-opacity-25 p-4">
                           <div className="flex flex-row justify-between">
                             <div className="text-base font-semibold">
                               상품명
                             </div>
-                            <div className="text-base">{selectedProductName}</div>
+                            <div className="text-base">
+                              {selectedProductName}
+                            </div>
                           </div>
                           {/* @@@@@@@@@상품 가격 표시 */}
                           {/* @@@@@@@@@상품 가격 표시 */}
@@ -620,7 +632,9 @@ const MemberRegister = () => {
                             <div className="text-xl font-semibold">
                               최종결제금액
                             </div>
-                            <div className="text-lg">{formatPrice(selectedProductPrice)}원</div>
+                            <div className="text-lg">
+                              {formatPrice(selectedProductPrice)}원
+                            </div>
                           </div>
                         </div>
                         <div className="ml-3">
