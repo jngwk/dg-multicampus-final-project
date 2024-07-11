@@ -3,8 +3,8 @@ spring:
     name: deukgeun
   datasource:
     url: jdbc:mysql://localhost:3306/dgdb
-    username: scott
-    password: tiger
+    username: deukgeun
+    password: deukgeun
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -44,7 +44,7 @@ com:
       path: images
 
 server:
-  port: 8282
+  port: 30000
 
 # rabbitmq 값을 dynamic하게 사용하기 위한 값
 rabbitmq:
@@ -85,6 +85,9 @@ mail:
 iamport:
   key: 7383144861344372
   secret: JbLmUseDFSoqpSadCWEGVwXv8BGwiduXEZ4CQwp3b8FuxjA66clAEv28uAN8wE3dRkIKZl8rJM7bNh7z
+
+upload:
+  path: C:\\Users\\deukgeun2\\deploy\\git\\dg-multicampus-final-project\\front\\deukgeun\\public\\images
 
 admin:
   email: jngwk.ch@gmail.com

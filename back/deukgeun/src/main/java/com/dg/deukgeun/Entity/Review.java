@@ -15,7 +15,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Entity
 @Table(name = "reviews")
 @Builder
@@ -36,7 +35,7 @@ public class Review {
     private Integer userId;
 
     private String userName;
-    
+
     private String email;
 
     @Column(nullable = false)

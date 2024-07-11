@@ -47,7 +47,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(@NonNull StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:3000") // SockJS 연결 주소
+        registry.addEndpoint("/ws").setAllowedOrigins("https://dgdg.o-r.kr:30115","http://dgdg.o-r.kr:30115","http://dgdg.o-r.kr:80","http://localhost:3000", "http://223.130.157.92:30115", "http://223.130.157.92:80", "https://223.130.157.92:30115") // SockJS 연결 주소
                 .withSockJS();
     }
 

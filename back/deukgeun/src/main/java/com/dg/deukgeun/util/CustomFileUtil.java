@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Value;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -26,37 +27,55 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @RequiredArgsConstructor
 public class CustomFileUtil {
-
-    @Value("${UPLOAD_PATH}")
-    private String uploadPath;
-    
+    // private final String uploadPath = System.getenv("UPLOAD_PATH");
+    private final String uploadPath = "C:\\Users\\deukgeun2\\deploy\\git\\dg-multicampus-final-project\\front\\deukgeun\\public\\images";
+    // @Value("${upload.path}")
+    // private String uploadPath;
     @PostConstruct
-    public void init(){
+    public void init() {
         File tempFolder = new File(uploadPath);
-        if(tempFolder.exists()==false){
+        if (tempFolder.exists() == false) {
             tempFolder.mkdir();
         }
         log.info("--------------------");
         log.info(uploadPath);
     }
-    public List<String> saveFile(List<MultipartFile> files) throws RuntimeException{
-        if(files == null || files.size()==0){
+
+    public List<String> saveFile(List<MultipartFile> files) throws RuntimeException {
+        if (files == null || files.size() == 0) {
             return List.of();
         }
         List<String> uploadNames = new ArrayList<>();
-        for(MultipartFile multipartFile : files){
+        for (MultipartFile multipartFile : files) {
             String savedName = UUID.randomUUID().toString() + "_" + multipartFile.getOriginalFilename();
-            Path savedPath = Paths.get(uploadPath,savedName);
-            try{
+            Path savedPath = Paths.get(uploadPath, savedName);
+            try {
                 log.info("before copy");
-                Files.copy(multipartFile.getInputStream(),savedPath);
+                Files.copy(multipartFile.getInputStream(), savedPath);
                 log.info("after copy");
                 uploadNames.add(savedName);
-            } catch(IOException e){
+            } catch (IOException e) {
                 throw new RuntimeException(e.getMessage());
             }
         }
         return uploadNames;
+    }
+
+    // New method to handle single file
+    public String saveFile(MultipartFile file) throws RuntimeException {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("File is null or empty.");
+        }
+        String savedName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        Path savedPath = Paths.get(uploadPath, savedName);
+        try {
+            log.info("before copy");
+            Files.copy(file.getInputStream(), savedPath);
+            log.info("after copy");
+            return savedName;
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
      // 파일 데이터를 읽어서 Resource 타입으로 반환
@@ -88,15 +107,15 @@ public class CustomFileUtil {
         return userId + "_profile.jpg"; // 예시로 파일명을 userId_profile.jpg로 가정
     }
 
-    public void deleteFiles(List<String> fileNames){
-        if(fileNames == null || fileNames.size() ==0){
+    public void deleteFiles(List<String> fileNames) {
+        if (fileNames == null || fileNames.size() == 0) {
             return;
         }
-        fileNames.forEach(fileName ->{
+        fileNames.forEach(fileName -> {
             Path filePath = Paths.get(uploadPath, fileName);
-            try{
+            try {
                 Files.deleteIfExists(filePath);
-            }catch(IOException e){
+            } catch (IOException e) {
                 throw new RuntimeException(e.getMessage());
             }
         });
@@ -106,10 +125,10 @@ public class CustomFileUtil {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("File is null or empty.");
         }
-    
+
         // Delete existing file
         deleteFile(existingFileName);
-    
+
         // Save new file
         List<MultipartFile> newFiles = new ArrayList<>();
         newFiles.add(file);

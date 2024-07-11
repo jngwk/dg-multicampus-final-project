@@ -214,7 +214,7 @@ function SignUpTrainerModal({ toggleModal }) {
           <AlertModal
             headerEmoji={"✔️"}
             line1={"트레이너 등록이 완료 됐습니다!"}
-            button1={{ label: "확인", onClick: toggleModal }}
+            button1={{ label: "확인", onClick: () => toggleModal() }}
           />
         )}
         {/* {isAddressModalVisible && (

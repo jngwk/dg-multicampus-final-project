@@ -33,7 +33,7 @@ public class EmailConfig {
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.debug", "true");
-
+        mailSender.setDefaultEncoding("UTF-8");
         return mailSender;
     }
 }

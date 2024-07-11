@@ -182,7 +182,7 @@ public class UserService {
         // 쿠키 생성
         ResponseCookie cookie = ResponseCookie.from("accessToken", token)
                 .httpOnly(true)
-                .secure(true)
+                .secure(false) // HTTPS일 경우 true
                 .path("/")
                 .maxAge(exprTime)
                 .sameSite("Strict")

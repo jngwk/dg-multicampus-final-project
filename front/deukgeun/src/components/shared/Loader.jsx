@@ -1,5 +1,5 @@
 import React from "react";
-import { SyncLoader } from "react-spinners";
+import SyncLoader from "react-spinners/SyncLoader";
 
 const Loader = () => {
   return (

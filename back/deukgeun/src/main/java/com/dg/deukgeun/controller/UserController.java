@@ -109,8 +109,10 @@ public class UserController {
 
     @GetMapping("/userInfo")
     public ResponseDTO<?> getUserInfo() {
+        log.info("get user info @@@@@@@@@@");
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
+        log.info(userDetails);
         Integer userId = userDetails.getUserId();
         return userService.getUserInfo(userId);
     }
@@ -149,7 +151,11 @@ public class UserController {
     public ResponseEntity<String> getToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
+            System.out.println("have cookies");
             for (Cookie cookie : cookies) {
+                System.out.println("cookie" + cookie);
+                System.out.println("cookie" + cookie.getValue());
+                log.info("Cookie: {} = {}", cookie.getName(), cookie.getValue());
                 if ("accessToken".equals(cookie.getName())) {
                     return ResponseEntity.ok(cookie.getValue());
                 }
@@ -212,7 +218,7 @@ public class UserController {
                 return ResponseEntity.ok()
                         .body(ResponseDTO.setSuccessData("User image retrieved successfully", userImage));
             } else {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.ok().body(null);
             }
         } catch (Exception e) {
             log.error("Failed to retrieve user image for user ID: {}", userId, e);

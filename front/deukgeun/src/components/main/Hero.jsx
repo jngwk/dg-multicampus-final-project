@@ -41,6 +41,11 @@ const Hero = () => {
     if (!manualFilterChange) setManualFilterChange(true);
     setSearchWord(e.target.value);
   };
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      handleSearchButton();
+    }
+  };
 
   return (
     <div className="relative w-full h-[86dvh] flex justify-center items-center">
@@ -98,6 +103,7 @@ const Hero = () => {
             }
             featureEnableOnLoad={true}
             featureOnClick={handleSearchButton}
+            onKeyPress={handleKeyPress}
           />
           <div className="flex justify-start gap-2 text-gray-600 px-3 text-sm">
             <span>필터 선택: </span>

@@ -61,21 +61,26 @@ const TrainerInfo = ({ trainers }) => {
 
   const [openIndex, setOpenIndex] = useState(-1);
   const [selectedImage, setSelectedImage] = useState(
-    trainers[0]?.trainerImage || ""
+    (trainers?.length > 0 && trainers[0]?.trainerImage) || ""
   );
 
   const toggleOpen = (index) => {
+    console.log(trainers[index]);
     if (openIndex === index) {
       setOpenIndex(-1);
-      setSelectedImage(trainers[0]?.trainerImage || ""); // 첫번째 트레이너 사진으로 되돌리기
+      setSelectedImage(
+        (trainers.length > 0 && trainers[0]?.trainerImage) || ""
+      ); // 첫번째 트레이너 사진으로 되돌리기
     } else {
       setOpenIndex(index);
-      setSelectedImage(trainers[index]?.trainerImage || ""); // 선택된 트레이너 이미지로 변경
+      setSelectedImage(
+        (trainers.length > 0 && trainers[index]?.trainerImage) || ""
+      ); // 선택된 트레이너 이미지로 변경
     }
   };
 
   return (
-    <div>
+    <div className="w-full">
       {/* 트레이너 소개 헤더 */}
       <div className="mb-10">
         <div className="flex flex-col items-center  text-center mb-2 font-semibold text-2xl">
@@ -86,14 +91,14 @@ const TrainerInfo = ({ trainers }) => {
 
       {/* 트레이너 정보 내용 */}
 
-      <div className="w-full h-full flex justify-center items-center">
+      <div className="w-full h-full flex justify-evenly items-center">
         {trainers?.length > 0 ? (
           <>
-            <div className="w-1/2 flex justify-center">
+            <div className="flex justify-evenly">
               {selectedImage ? (
                 <img
-                  className="w-2/4 h-3/4 rounded-lg object-cover shadow-lg "
-                  src={selectedImage}
+                  className="w-[400px] h-[500px] rounded-lg object-cover shadow-lg "
+                  src={`/images/${selectedImage}`}
                   alt="Profile"
                 />
               ) : (
@@ -103,7 +108,7 @@ const TrainerInfo = ({ trainers }) => {
                 </div>
               )}
             </div>
-            <div className=" w-2/3 h-[400px] flex flex-col items-start justify-center">
+            <div className=" w-1/2 h-fit flex flex-col items-start justify-center">
               <ul
                 className={`w-3/4 overflow-hidden overflow-y-auto scrollbar-hide border-t-light-black border-t-2 border-opacity-40 `}
               >
@@ -113,7 +118,11 @@ const TrainerInfo = ({ trainers }) => {
                     className="list-none border-light-black border-b-2 border-opacity-40"
                   >
                     <div className="flex justify-between items-center py-5 px-4">
-                      <p className="font-semibold text-lg">
+                      <p
+                        className={`${
+                          openIndex === index && ""
+                        } font-semibold text-lg`}
+                      >
                         {trainer.user.userName}
                       </p>
                       <button onClick={() => toggleOpen(index)}>
@@ -121,14 +130,46 @@ const TrainerInfo = ({ trainers }) => {
                       </button>
                     </div>
                     {openIndex === index && (
-                      <div className="expandable flex items-center p-4 mb-4 h-[300px] overflow-hidden overflow-y-auto scrollbar-hide">
+                      <div className="expandable flex items-center p-4 mb-4 overflow-hidden overflow-y-auto scrollbar-hide">
                         <ul className="list-disc pl-5 space-y-2">
-                          {/* {trainer.trainerCareer.map((item, i) => (
-                        <li key={i} className="text-sm leading-relaxed">
-                          {item}
-                        </li>
-                      ))} */}
-                          {trainer.trainerCareer}
+                          {trainer.trainerAbout || trainer.trainerCareer ? (
+                            <>
+                              <div className="mb-6">
+                                <span className="text-xl">👋</span>
+                                <br />
+                                <br />
+                                {trainer.trainerAbout
+                                  ?.split("\n")
+                                  .map((line, index) => (
+                                    <React.Fragment key={index}>
+                                      {line}
+                                      <br />
+                                    </React.Fragment>
+                                  ))}
+                              </div>
+
+                              {trainer.trainerCareer && (
+                                <>
+                                  <span className="text-xl">🏆</span>
+                                  <br />
+                                  <br />
+                                  {trainer.trainerCareer
+                                    ?.split("\n")
+                                    .map((line, index) => (
+                                      <React.Fragment key={index}>
+                                        {line}
+                                        <br />
+                                      </React.Fragment>
+                                    ))}
+                                </>
+                              )}
+                            </>
+                          ) : (
+                            <p className="text-center">
+                              등록된 정보가 없습니다..{" "}
+                              <span className="text-xl">🙅</span>
+                            </p>
+                          )}
                         </ul>
                       </div>
                     )}

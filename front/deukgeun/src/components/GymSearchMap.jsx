@@ -117,6 +117,7 @@ const GymSearchMap = () => {
     if (searchWord) {
       handleSearch();
     } else {
+      console.log("지도에서 get Gyms");
       getGyms();
     }
   }, [mapLoading]);
@@ -125,6 +126,7 @@ const GymSearchMap = () => {
     try {
       const res = await getGymList();
       handleLoadedGyms(res);
+      console.log("getGyms 들어옴");
     } catch (error) {
       console.error("Error fetching gym list:", error);
     }
@@ -191,10 +193,6 @@ const GymSearchMap = () => {
       getGyms();
       return;
     }
-    if (searchFilter === "location") {
-      // 현재 위치로 이동하기
-      moveToCurrentLoc();
-    }
 
     try {
       const page = 0;
@@ -209,6 +207,10 @@ const GymSearchMap = () => {
       );
       // console.log("handleSearch in gym search map", res);
       handleLoadedGyms(res);
+      if (searchFilter === "location") {
+        // 현재 위치로 이동하기
+        moveToCurrentLoc();
+      }
     } catch (error) {
       console.error("Error fetching gym list:", error);
     }
@@ -376,7 +378,7 @@ const GymSearchMap = () => {
           <>
             {coords.map((value) => (
               <EventMarkerContainer
-                key={`EventMarkerContainer-${value.latlng.lat}-${value.latlng.lng}`}
+                key={`EventMarkerContainer-${value.latlng.lat}-${value.latlng.lng}-${value.gym.gymId}`}
                 position={value.latlng}
                 content={value.content}
                 gym={value.gym}
@@ -415,7 +417,7 @@ const GymSearchMap = () => {
                 </div>
               }
               featureEnableOnLoad={true}
-              featureOnClick={handleSearch}
+              featureOnClick={() => handleSearch()}
             />
             {/* <Button label="검색하기" onClick={handleSearch} width="90%" /> */}
             {/* <Select label="필터">
@@ -460,7 +462,7 @@ const GymSearchMap = () => {
                                 : toggleLoginModal()
                             }
                           >
-                            문의하기
+                            채팅문의
                           </button>
                           <button
                             className="border border-gray-500 py-2 px-4 text-xs text-gray-800 rounded-md bg-bright-orange/50 hover:border-bright-orange/80 hover:bg-bright-orange/80 hover:text-white transition-all"

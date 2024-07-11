@@ -1,6 +1,7 @@
 package com.dg.deukgeun.config;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.dg.deukgeun.security.CustomUserDetails;
@@ -93,7 +98,9 @@ public class SecurityConfig {
                                 "/api/user/updateImage",
                                 "/api/gym/search/**", "/api/gym/get/**", "/api/gym/getList",
                                 "/api/gym/getListWithPaging", "/api/reviews/reviewList/**", "/api/trainer/get/**",
-                                "/api/gym/trainersWithInfo/**",  "/api/gym/getGymList","/api/gym/LocationImage/**")
+                                "/api/gym/trainersWithInfo/**", "/api/gym/getGymList", "/api/gym/LocationImage/**",
+                                "/api/reviews/avgRating/**", "/api/ptSession/**", "/api/gym/products/**",
+                                "/api/gym/trainers/**")
                         .permitAll() // 이 API는 인증 없이 접근 가능하도록 설정합니다.
                         .requestMatchers("/api/user/signUp/gym", "/api/user/signUp/general",
                                 "/api/gym/crNumberCheck", "/api/gym/crNumberCheck/**",
@@ -104,33 +111,41 @@ public class SecurityConfig {
                         .hasAnyAuthority("ROLE_GENERAL", "ROLE_GYM", "ROLE_TRAINER", "ROLE_ADMIN") // 모든 회원 타입
                         .requestMatchers("/api/personalTraining/get/**",
                                 "/api/personalTraining/post", "/api/membership/register",
-                                "/api/membership/findPT")
-                        .hasAnyAuthority("ROLE_GENERAL") // 일반 회원만 가능
-                        .requestMatchers("/api/membership/stats", "/api/membership/stats/**",
-                                "/api/user/signUp/trainer", "/api/trainer/update/**", "/api/gym/put/**",
-                                "/api/trainer/delete/**",
-                                "/api/gym/getGymByUserId", "/api/gym/insertImage/**", "/api/gym/getGymByUserId",
-                                "/api/gym/deleteProduct/**")
-                        .hasAnyAuthority("ROLE_GYM")
-                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api/reviews/delete/**", "api/reviews/update/**")
-                        .hasAnyAuthority("ROLE_GENERAL", "ROLE_ADMIN")
-                        .requestMatchers("/api/reviews/registerReview", "api/reviews/uploadImages/**",
+                                "/api/membership/findPT", "/api/reviews/registerReview", "api/reviews/uploadImages/**",
                                 "api/reviews/insertImage/**", "api/reviews/deleteImages/**",
                                 "/api/reviews/updateImages/**", "api/payment/verify/**")
-                        .hasAuthority("ROLE_GENERAL") // 일반 회원만 가능 (합치기)
-                        .requestMatchers("/api/reviews/reviewList/**", "/api/ptSession/**", "/api/gym/products/**",
-                                "/api/gym/trainers/**")
-                        .permitAll()
-                        .requestMatchers("/api/trainer/update/**", "/api/ptSession/**")
-                        .hasAuthority("ROLE_TRAINER") // 트레이너만 가능
+                        .hasAnyAuthority("ROLE_GENERAL") // 일반 회원만 가능
+                        .requestMatchers("/api/membership/stats", "/api/membership/stats/**",
+                                "/api/user/signUp/trainer", "/api/gym/put/**",
+                                "/api/trainer/delete/**",
+                                "/api/gym/getGymByUserId", "/api/gym/insertImage/**",
+                                "/api/gym/deleteProduct/**")
+                        .hasAnyAuthority("ROLE_GYM") // 헬스장 회원만 가능
+                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN") // 관리자만 가능
+                        .requestMatchers("/api/reviews/delete/**", "api/reviews/update/**")
+                        .hasAnyAuthority("ROLE_GENERAL", "ROLE_ADMIN")
                         .requestMatchers("/api/workoutSession/**",
                                 "/api/workout/**")
                         .hasAnyAuthority("ROLE_TRAINER", "ROLE_GENERAL") // 트레이너 일반 회원만 가능
+                        .requestMatchers("/api/trainer/update/**", "/api/trainer/update")
+                        .hasAnyAuthority("ROLE_TRAINER", "ROLE_GYM") // 트레이너 헬스장 회원만 가능
                         .anyRequest().authenticated()) // 그 외 모든 요청은 인증이 필요합니다
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider, customUserDetailsService),
                         UsernamePasswordAuthenticationFilter.class); // JWT 토큰 필터를 추가합니다.
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("https://dgdg.o-r.kr:30115","http://dgdg.o-r.kr:30115","http://dgdg.o-r.kr:80","https://223.130.157.92:30115", "http://223.130.157.92:30115", "http://223.130.157.92:80", "http://localhost:3000"));
+        configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setExposedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     public static class JwtTokenFilter extends OncePerRequestFilter {

@@ -4,45 +4,63 @@ import useValidation from "../hooks/useValidation";
 import Input from "../components/shared/Input";
 import TextArea from "../components/shared/TextArea";
 import Button from "../components/shared/Button";
-import TrainerList from "../components/set/TrainerList";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { FaTimes } from "react-icons/fa";
+import AlertModal from "../components/modals/AlertModal";
+import { updateTrainerInfo, getTrainerById } from "../api/trainerApi";
 
-// 트레이너정보
 const initTrainerData = {
-  userName: "", // 트레이너 이름
-  trainerCareer: "", // 트레이너 경력
-  trainerImage: "", // 트레이너 이미지
-  gymId: "", // 트레이너 ID
+  userName: "",
+  trainerCareer: "",
+  trainerAbout: "",
+  trainerImage: "",
+  userId: "",
 };
 
 const TrainerSet = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { userData } = useAuth();
   const [trainerData, setTrainerData] = useState(initTrainerData);
   const [imagePreview, setImagePreview] = useState(null);
-  const [trainers, setTrainers] = useState([]);
+  const [trainerImageFile, setTrainerImageFile] = useState(null);
+  const [isAlertModalVisible, setIsAlertModalVisible] = useState(false);
   const { validateInput } = useValidation();
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    if (location.state) {
-      console.log("setTrainerData");
-      setTrainerData(location.state.trainer);
-    }
-  }, []);
+    const fetchTrainerData = async () => {
+      if (userData?.userId) {
+        try {
+          console.log("Fetching trainer data for userId:", userData.userId);
+          const data = await getTrainerById(userData.userId);
+          console.log("Received trainer data:", data);
+          setTrainerData({
+            ...data,
+            userId: userData.userId,
+          });
+          if (data.trainerImage) {
+            setImagePreview(`/images/${data.trainerImage}`);
+          }
+        } catch (error) {
+          console.error("Failed to fetch trainer data:", error);
+        }
+      }
+    };
+    fetchTrainerData();
+  }, [userData]);
 
   const handleTrainerDataChange = (e) => {
     const { name, value, files } = e.target;
 
     if (name === "trainerImage" && files.length > 0) {
       const file = files[0];
+      setTrainerImageFile(file);
       const reader = new FileReader();
 
       reader.onloadend = () => {
         setImagePreview(reader.result);
-        setTrainerData({
-          ...trainerData,
-          [name]: reader.result,
-        });
       };
 
       reader.readAsDataURL(file);
@@ -51,15 +69,40 @@ const TrainerSet = () => {
         ...trainerData,
         [name]: value,
       });
+      validateInput(name, value);
     }
-
-    validateInput(name, value);
   };
 
-  const handleAddTrainer = () => {
-    setTrainers([...trainers, trainerData]);
+  const handleImageRemove = () => {
     setImagePreview(null);
-    setTrainerData(initTrainerData);
+    setTrainerData({
+      ...trainerData,
+      trainerImage: "",
+    });
+    setTrainerImageFile(null);
+    fileInputRef.current.value = null;
+  };
+
+  const handleSubmit = async () => {
+    try {
+      console.log("Submitting trainer data:", trainerData);
+      console.log("Trainer image file:", trainerImageFile);
+      console.log("Remove image:", !trainerImageFile && !imagePreview);
+      await updateTrainerInfo(
+        trainerData,
+        trainerImageFile,
+        !trainerImageFile && !imagePreview
+      );
+      // setIsAlertModalVisible(false);
+      // navigate("/centerView", { replace: true });
+    } catch (error) {
+      console.error("Failed to update trainer information:", error);
+    }
+  };
+
+  const handleConfirmClick = () => {
+    handleSubmit();
+    setIsAlertModalVisible(true);
   };
 
   return (
@@ -70,7 +113,7 @@ const TrainerSet = () => {
             <box-icon name="cog" size="40px" color="#9f8d8d"></box-icon>
             트레이너 정보 설정
           </p>
-          <div className="py-10 px-7 mx-6 rounded-lg flex flex-col space-y-4 w-[1000px] h-fit border border-peach-fuzz">
+          <div className="py-10 px-7 mx-6 rounded-lg flex flex-col space-y-4 w-[1000px] h-fit border border-peach-fuzz bg-white">
             {/* 트레이너 이름 */}
             <div className="flex flex-row space-x-32">
               <p className="mt-3">트레이너 이름</p>
@@ -78,10 +121,23 @@ const TrainerSet = () => {
                 label="트레이너 이름"
                 width="320px"
                 name="userName"
-                value={trainerData.userName}
+                value={userData?.userName || ""}
+                required={true}
+                readonly={true}
+              ></Input>
+            </div>
+
+            {/* 트레이너 소개 */}
+            <div className="flex flex-row space-x-32">
+              <p className="mt-3">트레이너 소개</p>
+              <TextArea
+                label="트레이너 소개"
+                width="500px"
+                name="trainerAbout"
+                value={trainerData.trainerAbout}
                 required={true}
                 onChange={handleTrainerDataChange}
-              ></Input>
+              ></TextArea>
             </div>
 
             {/* 트레이너 경력 */}
@@ -100,16 +156,34 @@ const TrainerSet = () => {
             {/* 트레이너 사진 */}
             <div className="flex flex-row space-x-32">
               <p className="mt-3">트레이너 사진</p>
-              <div className="flex flex-row ">
-                <button
-                  className="flex flex-row text-sm my-4 mr-12"
-                  type="button"
-                  onClick={() => {
-                    fileInputRef.current?.click();
-                  }}
-                >
-                  <BiSolidImageAdd size="24" color="#9F8D8D" /> 이미지 추가
-                </button>
+              <div className="flex flex-row relative">
+                {imagePreview ? (
+                  <div className="flex flex-col items-center">
+                    <img
+                      src={imagePreview}
+                      alt="Trainer Preview"
+                      className="rounded-lg w-80 h-fit object-cover"
+                    />
+                    <button
+                      type="button"
+                      className="absolute top-0 right-0 bg-black text-white rounded-full w-6 h-6 flex items-center justify-center"
+                      onClick={handleImageRemove}
+                      style={{ zIndex: 10 }}
+                    >
+                      <FaTimes />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    className="flex flex-row text-sm my-4 mr-12"
+                    type="button"
+                    onClick={() => {
+                      fileInputRef.current?.click();
+                    }}
+                  >
+                    <BiSolidImageAdd size="24" color="#9F8D8D" /> 이미지 추가
+                  </button>
+                )}
                 <input
                   className="hidden"
                   type="file"
@@ -117,37 +191,31 @@ const TrainerSet = () => {
                   ref={fileInputRef}
                   onChange={handleTrainerDataChange}
                 />
-                {/* 트레이너 사진 미리보기 */}
-                {imagePreview && (
-                  <img
-                    src={imagePreview}
-                    alt="Trainer Preview"
-                    className="rounded-lg w-80 h-fit object-cover"
-                  />
-                )}
-              </div>
-            </div>
-
-            <div className="absolute right-20 bottom-10">
-              <div className="ml-3">
-                <Button
-                  width="120px"
-                  color="peach-fuzz"
-                  label="추가"
-                  onClick={handleAddTrainer}
-                />
               </div>
             </div>
           </div>
         </div>
-
-        {/* Trainer List */}
-        <TrainerList trainers={trainers} />
-
         <div>
-          <Button width="120px" color="peach-fuzz" label="정보등록" />
+          <Button
+            width="120px"
+            color="peach-fuzz"
+            label="정보등록"
+            onClick={handleConfirmClick}
+          />
         </div>
       </div>
+      {isAlertModalVisible && (
+        <AlertModal
+          headerEmoji={"✔️"}
+          line1={"트레이너 정보 수정이 완료되었습니다!"}
+          button2={{
+            label: "확인",
+            onClick: () => {
+              navigate(-1, { replace: true });
+            },
+          }}
+        />
+      )}
     </>
   );
 };

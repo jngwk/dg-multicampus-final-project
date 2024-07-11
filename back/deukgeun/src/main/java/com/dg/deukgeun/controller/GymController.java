@@ -131,6 +131,7 @@ public class GymController {
     
     @GetMapping("/getList")
     public List<Gym> list() {
+        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ getList map");
         List<Gym> list = gymService.list();
         for (Gym gym : list) {
             gym.getUser().setPassword("");
