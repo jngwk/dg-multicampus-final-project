@@ -1,6 +1,6 @@
 # Project DeukGeun
 
-[![ko](https://img.shields.io/badge/lang-ko-green.svg)](https://github.com/jngwk/dg-multicampus-final-project/edit/main/README.md)
+[![ko](https://img.shields.io/badge/lang-ko-green.svg)](https://github.com/jngwk/dg-multicampus-final-project/blob/main/README.md)
 
 ## Usage
 Create your account or use the test accounts shown below.
