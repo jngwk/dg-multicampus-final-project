@@ -1,25 +1,25 @@
-# Project DeukGeun
+# 득근
 
 [![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/jngwk/dg-multicampus-final-project/blob/main/README.en.md)
 
-## Usage
-Create your account or use test accounts shown below.
+## 사용법
+계정을 생성해 사용하거나 아래 테스트용 계정을 사용
 
-Link: https://dgdg.o-r.kr:30115/
+링크: https://dgdg.o-r.kr:30115/
 
-General User:
+일반 이용자:
 - ID: user@gmail.com
 - PWD: Xptmxm1234!
 
-Gym:
+헬스장 운영자:
 - ID: dg@gmail.com
 - PWD: Xptmxm1234!
 
-Trainer:
+헬스장 트레이너:
 - ID: trainer@gmail.com
 - PWD: Xptmxm1234!
 
-Admin:
+관리자:
 - ID: admin
 - PWD: Xptmxm1234!
 
@@ -61,3 +61,5 @@ Admin:
 - MySQL과 Spring Data JPA를 사용해 데이터 베이스 구축 및 활용
 - Docker와 Nginx를 사용해 배포
 - CertBot과 Let's Encrypt를 통해 HTTPS 인증
+
+_작성자: jngwk_
